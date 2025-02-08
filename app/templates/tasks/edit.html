@@ -1,0 +1,72 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+                <div class="card-header">
+                    <div class="row gutters">
+                        <div class="col-6">
+                            {{ form_element(form, form.state_id, inline=True) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row gutters">
+                        <div class="col-6">
+                            {{ form_element(form, form.tracker_id, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.title) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.description) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.priority_id, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.estimation_time_cost, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.assigned_to_id, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.date_start, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.parent_task_id, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.date_end, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.readiness, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.observers) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.issues) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.services) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.related_files) }}
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-3">
+                            {{ form.submit(class='btn btn-primary') }}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

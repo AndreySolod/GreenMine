@@ -1,0 +1,51 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form action="" method="POST" class="needs-validation">
+          {{ form.hidden_tag() }}
+          <div class="form-floating">
+            {% if form.title.errors|length == 0 and not form.errors|length == 0 %}
+              {{ form.title(class="form-control is-valid", placeholder=form.title.label.text) }}
+              <div class="valid-feedback">
+                {{ _("All right") }}
+              </div>
+            {% elif form.title.errors|length != 0 %}
+              {{ form.title(class="form-control is-invalid", placeholder=form.title.label.text) }}
+              <div class="invalid-feedback">
+                {% for error in form.title.errors %}
+                  {{ error }};
+                {% endfor %}
+              </div>
+            {% else %}
+              {{ form.title(class="form-control", placeholder=form.title.label.text) }}
+            {% endif %}
+            {{ form.title.label() }}
+          </div>
+          <div class="form-floating">
+            {{ form.description(class="form-control", placeholder=form.description.label.text) }}
+            {{ form.description.label() }}
+          </div>
+          <div class="form-group row">
+            {{ form_element(form, form.directory_id) }}
+          </div>
+            <div class="form-group">
+              {{ form.text.label() }}
+              {{ form.text(class="form-control") }}
+            </div>
+          </div>
+          <div class="row justify-content-end">
+            <div class="col-3">
+              {{ form.submit(class="btn btn-primary") }}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

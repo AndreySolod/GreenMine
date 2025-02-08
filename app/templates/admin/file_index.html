@@ -1,0 +1,79 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table"    id="file-table"
+                                        data-search="true"
+                                        data-show-columns="true"
+                                        data-show-toggle="true"
+                                        data-show-export="true"
+                                        data-show-multi-sort="true"
+                                        data-filter-control="true"
+                                        data-buttons-class="primary"
+                                        data-pagination="true"
+                                        data-side-pagination="server"
+                                        data-show-pagination-switch="true"
+                                        data-page-list="[10, 25, 50, 100, 500, All]"
+                                        data-url="{{ url_for('admin.files_index_data') }}"
+                                        data-row-style="fileRowStyle">
+                <thead>
+                    <tr>
+                        <th data-field="id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.id.info["label"] }}</th>
+                        <th data-field="created_at" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.created_at.info["label"] }}</th>
+                        <th data-field="created_by_id" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["users"]|safe }}'>{{ models.FileData.created_by.info["label"] }}</th>
+                        <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.title.info["label"] }}</th>
+                        <th data-field="extension" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["extensions"]|safe }}'>{{ models.FileData.extension.info["label"] }}</th>
+                        <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.description.info["label"] }}</th>
+                    </tr>
+                </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<iframe id="file_download_iframe" style="display:none;"></iframe>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+$('#file-table').bootstrapTable({
+    exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
+    onLoadSuccess: function(data) {
+        flask_moment_render_all()
+    },
+    icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+});
+function fileRowStyle(row, index) {
+    return {
+        classes: 'with-context-menu'
+      } 
+}
+$.contextMenu({
+    selector: '.with-context-menu',
+    callback: function(key, options) {
+        if(key === 'download'){
+            document.getElementById('file_download_iframe').src = "{{ url_for('files.download_file', file_id='__file_id') }}".replace('__file_id', options.$trigger[0].children[0].textContent);
+        }
+        else if(key === 'delete') {
+            let headers = new Headers();
+            headers.append('X-CSRFToken', '{{ csrf_token() }}');
+            fetch("{{ url_for('admin.files_delete', file_id='__file_id') }}".replace('__file_id', options.$trigger[0].children[0].textContent), {
+                method: 'DELETE',
+                headers: headers,
+            }).then(response => { if (response.ok) { return response.json() } else { alert("Невозможно удалить указанный файл. Попробуйте перезагрузить страницу") } })
+            .then(response => { if (response.status == 'success') { $('#file-table').bootstrapTable('refresh') } })
+        }
+    },
+    items: {
+        download: {name: 'Скачать', icon: 'download'},
+        delete: {name: 'Удалить', icon: 'filedelete'}
+    }
+})
+</script>
+
+{% endblock %}

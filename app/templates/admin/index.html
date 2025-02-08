@@ -1,0 +1,67 @@
+{% extends 'layout/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_index.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="row gy-3 gutters gx-5 justify-content-center">
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center"> <!-- Потом поправить на col-lg-2, поскольку этот стиль нужен для того, чтобы всё было красиво -->
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.admin_main_info_edit') }}">
+            <div class="card-body">
+                <div><i class="fa-solid fa-house-chimney-crack"></i></div><div><h5>{{ _("Title page") }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.object_index') }}">
+            <div class="card-body">
+                 <div><i class="fa-solid fa-list-ol"></i></div><div><h5>{{ _("Enumeration objects") }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.status_index') }}">
+            <div class="card-body">
+                <div><i class="fa-solid fa-satellite"></i></div><h5>{{ _("State objects") }}</h5>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.issue_template_index') }}">
+            <div class="card-body">
+                <div><i class="{{ models.IssueTemplate.Meta.icon }}"></i></div><div><h5>{{ _("Issue templates") }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.task_template_index') }}">
+            <div class="card-body">
+                <div><i class="{{ models.ProjectTaskTemplate.Meta.icon }}"></i></div><div><h5>{{ _("Task templates") }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.admin_file_index') }}">
+            <div class="card-body">
+                <div><i class="{{ models.FileData.Meta.icon }}"></i></div><div><h5>{{ _("File Admini-stration") }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.project_role_index') }}">
+            <div class="card-body">
+                <div><i class="{{ models.ProjectRole.Meta.icon }}"></i></div><div><h5>{{ models.ProjectRole.Meta.verbose_name_plural }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.project_role_permissions') }}">
+            <div class="card-body">
+                <div><i class="fa-solid fa-person-walking-arrow-loop-left"></i></div><div><h5>{{ _("Edit permissions for roles") }}</h5></div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,278 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("All hosts") }}</h5>
+            </div>
+            <div id="hosts-toolbar">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ _("Export as") }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a id="button-export-ip-addresses-host" class="dropdown-item">{{ models.Host.ip_address.info["label"] }}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table"    id="hosts-table"
+                                        data-search="true"
+                                        data-show-columns="true"
+                                        data-show-toggle="true"
+                                        data-show-export="true"
+                                        data-show-multi-sort="true"
+                                        data-filter-control="true"
+                                        data-buttons-class="primary"
+                                        data-pagination="true"
+                                        data-side-pagination="server"
+                                        data-page-list="[10, 25, 50, 100, 500, All]"
+                                        data-url="{{ url_for('networks.host_index_data', project_id=project.id) }}"
+                                        data-row-style="issueRowStyle"
+                                        data-toolbar="#hosts-toolbar">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script nonce="{{ csp_nonce() }}">
+        $(function() {
+            var CookieName = "HostsIndexPageSize";
+            $('#hosts-table').bootstrapTable({
+                onPreBody: function(data) {
+
+                    var pageSizeCookie = Cookies.get(CookieName);
+                    if (pageSizeCookie != null) {
+        
+                        var pageSizeInt = parseInt(pageSizeCookie);
+                        this.pageSize = pageSizeInt;
+                    }
+                },
+                onPageChange: function(pageNumber, pageSize) {
+                    Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                },
+                filterControl: true,
+                disableUnusedSelectOptions: true,
+                columns: [
+                {
+                    field: "id",
+                    title: "#",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'from_network',
+                    title: '{{ models.Host.from_network.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["Network"]|escapejs }}'
+                },
+                {
+                    field: 'title',
+                    title: '{{ models.Host.title.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'description',
+                    title: '{{ models.Host.description.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'ip_address',
+                    title: '{{ models.Host.ip_address.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'mac',
+                    title: '{{ models.Host.mac.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'operation_system_family',
+                    title: '{{ models.Host.operation_system_family.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}'
+                },
+                {
+                    field: 'operation_system_gen',
+                    title: '{{ models.Host.operation_system_gen.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'device_type',
+                    title: '{{ models.Host.device_type.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["DeviceType"]|escapejs }}'
+                },
+                {
+                    field: 'device_vendor',
+                    title: '{{ models.Host.device_vendor.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["DeviceVendor"]|escapejs }}'
+                },
+                {
+                    field: 'device_model.title-input',
+                    title: '{{ models.Host.device_model.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                }
+                ],
+                    icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                    showColumns: true,
+                    detailView: true,
+                    onClickRow: function(row, element, field) {
+                        location = "{{ url_for('networks.host_show', **{'host_id': '__row_id'}) }}".replace("__row_id", row.id)
+                    },
+                    onExpandRow: function (index, row, $detail) {
+                        $detail.html('<table></table>').find('table').bootstrapTable({
+                            columns: [
+                            {
+                                field: 'id',
+                                title: '#',
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            },
+                            {
+                                field: 'title',
+                                title: '{{ models.Service.title.info["label"] }}',
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            },
+                            {
+                                field: 'port',
+                                title: '{{ models.Service.port.info["label"] }}',
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            },
+                            {
+                                field: 'access_protocol.title-input',
+                                title: '{{ models.Service.access_protocol.info["label"] }}',
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            },
+                            {
+                                field: 'transport_level_protocol',
+                                title: '{{ models.Service.transport_level_protocol.info["label"] }}',
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'select',
+                                filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}'
+                            },
+                            {
+                                field: 'port_state',
+                                title: "{{ models.Service.port_state.info['label'] }}",
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'select',
+                                filterData: 'json:{{ filters["ServicePortState"]|escapejs }}'
+                            },
+                            {
+                                field: 'port_state_reason',
+                                title: "{{ models.Service.port_state_reason.info['label'] }}",
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            }
+                            ],
+                            showColumns: true,
+                            search: true,
+                            showToggle: true,
+                            showPaginationSwitch: true,
+                            showExport: true,
+                            showMultiSort: true,
+                            filterControl: true,
+                            buttonsClass: 'primary',
+                            pagination: true,
+                            sidePagination: 'server',
+                            url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
+                            rowStyle: issueRowStyle,
+                            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                            onClickRow: function(row, element, field) {
+                                location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
+                            },
+                            onPreBody: function(data) {
+
+                                var pageSizeCookie = Cookies.get("ServicesByHostIndexPageSize");
+                                if(isNaN(Number(pageSizeCookie))) {
+                                    pageSizeCookie = 10;
+                                };
+                                if (pageSizeCookie != null) {
+                    
+                                    var pageSizeInt = parseInt(pageSizeCookie);
+                                    this.pageSize = pageSizeInt;
+                                }
+                            },
+                            onPageChange: function(pageNumber, pageSize) {
+                                Cookies.set("ServicesByHostIndexPageSize", pageSize, { expires: 30, path: window.location.pathname });
+                            },
+                          })
+                    }
+                })
+        })
+        function issueRowStyle(row, index) {
+            return { css: {"cursor": 'pointer' } }
+        }
+    </script>
+    <script nonce="{{ csp_nonce() }}">
+        document.getElementById('button-export-ip-addresses-host').addEventListener('click', function() {
+            special_export('ip_address');
+        });
+        function find_position(id_name) {
+            let obj = document.getElementById('hosts-table').rows[0].cells
+            for(let i = 0; i < obj.length; i++) {
+                if(obj[i].getAttribute('data-field') === id_name) {
+                    return i
+                }
+            }
+        }
+        function special_export(export_type) {
+            let ignore_columns = [];
+            let ip_position = find_position('ip_address');
+            let filename = '';
+            let require_unique = true;
+            if(export_type === 'ip_address'){
+                ignore_columns = Array.from(Array(document.getElementById('hosts-table').rows[0].cells.length).keys()).filter(item => item !== ip_position);
+                filename = "IP addresses from project #{{ project.id }}";
+            }
+            $('#hosts-table').bootstrapTable('togglePagination').tableExport({
+                type: 'txt',
+                exportDataType: "all",
+                ignoreColumn: ignore_columns,//Ignore the index of a column
+                ignoreRow: [0],
+                csvSeparator: ':',
+                fileName: filename,
+            })
+            $('#hosts-table').bootstrapTable('togglePagination')
+        }
+    </script>
+{% endblock %}

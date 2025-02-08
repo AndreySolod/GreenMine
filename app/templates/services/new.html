@@ -1,0 +1,122 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+<div class="row gutters">
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row gy-2">
+                        <div class="col-12">
+                            {{ form_element(form, form.host_id) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.title) }}
+                        </div>
+                        <div class="col-12">
+                            <div class="row gutters justify-content-around">
+                                <div class="col-lg-5 col-md-12">
+                                    <div class="form-group row">
+                                        {{ form_element(form, form.port) }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-5 col-md-12">
+                                    <div class="form-group row">
+                                        {{ form_element(form, form.transport_level_protocol_id) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.access_protocol_id, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.port_state_id, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.port_state_reason, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.description) }}
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                {{ form_element(form, form.temp_screenshot_http, inline=True) }}
+                {{ form_element(form, form.temp_screenshot_https, inline=True) }}
+                {{ form_element(form, form.issues) }}
+                {{ form_element(form, form.credentials) }}
+                {{ form_element(form, form.tasks) }}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}"> // Auto subs service when port changed
+
+    let port = document.getElementById('{{ form.port.id }}');
+    let access_proto = $('#{{ form.access_protocol_id.id }}');
+    let transport_proto = document.getElementById('{{ form.transport_level_protocol_id.id }}');
+
+    port.addEventListener('input', () => {
+        if (port.value != '') {
+            $.ajax({
+                url: '{{ url_for("networks.get_default_access_proto", port="__port", transport_proto="__transport_proto") }}'.replace("__port", port.value).replace("__transport_proto", transport_proto.value),
+                method: 'get',
+                dataType: 'json',
+            }).then(function(data) {
+                var option = new Option(data.title, data.proto, true, true);
+                
+                access_proto.append(option).trigger('change');
+
+                // manually trigger the `select2:select` event
+                access_proto.trigger({
+                    type: 'select2:select',
+                    params: {
+                        data: {id: data.proto, title: data.title}
+                    }
+                });
+            })
+        };
+    });
+    transport_proto.addEventListener('change', () => {
+        if (port.value != '') {
+            $.ajax({
+                url: '{{ url_for("networks.get_default_access_proto", port="__port", transport_proto="__transport_proto") }}'.replace("__port", port.value).replace("__transport_proto", transport_proto.value),
+                method: 'get',
+                dataType: 'json',
+            }).then(function(data) {
+                var option = new Option(data.title, data.proto, true, true);
+                
+                access_proto.append(option).trigger('change');
+
+                // manually trigger the `select2:select` event
+                access_proto.trigger({
+                    type: 'select2:select',
+                    params: {
+                        data: {id: data.proto, title: data.title}
+                    }
+                });
+            })
+        };
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    {{ form_element(form, form.title) }}
+                    {{ form_element(form, form.ip_address) }}
+                    {{ form_element(form, form.internal_ip) }}
+                    {{ form_element(form, form.asn) }}
+                    {{ form_element(form, form.connect_cmd) }}
+                    {{ form_element(form, form.description) }}
+                    <div class="row justify-content-end">
+                        <div class="col-3">
+                            {{ form.submit(class='btn btn-primary') }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

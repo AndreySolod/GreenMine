@@ -1,0 +1,109 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button_hide_if_no_mouse.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="row gutters">
+  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>{{ _("Main information") }}</h5>
+      </div>
+      <div class="card-body">
+        <table class="table table-borderless">
+          <tbody>
+            <tr>
+              <td>{{ models.Project.created_at.info["label"] }}:</td>
+              <td>{{ moment(project.created_at).format('LL') }}</td>
+            </tr>
+            <tr>
+              <td>{{ models.Project.leader.info['label'] }}:</td>
+              <td><a href="{{ url_for('users.user_show', user_id=project.leader.id) }}">{{ project.leader.title }}</a></td>
+            <tr>
+              <td>{{ models.Project.start_at.info["label"] }}:</td>
+              <td>{{ moment(project.start_at).format('LL') }}</td>
+            </tr>
+            <tr>
+              <td>{{ models.Project.end_at.info["label"] }}:</td>
+              <td>{{ moment(project.end_at).format('LL') }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="button_hide_if_no_mouse">{{ _("Participants") }}
+          {% if roles.project_role_can_make_action(current_user, project, 'edit_participants') %}
+          <button class="btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditProjectParticipants"><i class="fa-solid fa-pencil"></i></button>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body">
+        {% if project.participants|length == 0 %}
+        <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+        {% else %}
+        <table class="table table-borderless">
+          <tbody>
+            {% for role, participants in project.grouped_participants.items() %}
+            <tr>
+              <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ role.description }}"><b>{{ role.title }}</b></a></td>
+              <td>
+                {{ participants|safe }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row justify-content-md-center gutters">
+  <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+    <div class="card">
+      <div class="card-header">{{ models.Project.description.info["label"] }}:</div>
+      <div class="card-body">
+        {% autoescape false %}
+        {{ project.description }}
+        {% endautoescape %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Modal for edit project permissions #}
+<div class="modal fade modal-xl" id="modalEditProjectParticipants" tabindex="-1" aria-labelledby="modalEditProjectParticipantsLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditProjectParticipantsLabel">{{ _("Edit participants") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <form action="{{ url_for('projects.edit_project_participants', project_id=project.id) }}" method="POST">
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ project_role_user_form.hidden_tag() }}
+            {% for e in project_role_user_form.attr_names %}
+            {{ form_element(project_role_user_form, getattr(project_role_user_form, e), inline=True) }}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        {{ project_role_user_form.submit(class="btn btn-primary") }}
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

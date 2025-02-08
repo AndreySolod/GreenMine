@@ -1,0 +1,73 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% set form_id = random_string(35) %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="roles-table"
+               data-pagination="true"
+               data-show-columns="true"
+               data-show-toggle="true"
+               data-show-export="true"
+               data-show-multi-sort="true"
+               data-filter-control="true"
+               data-buttons-class="primary">
+            <thead>
+                <tr>
+                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectRole.id.info["label"] }}</th>
+                    <th data-field="string_slug" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.string_slug.info["label"] }}</th>
+                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.title.info['label'] }}</th>
+                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.description.info['label'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pr in project_roles %}
+                <tr class="with-context-menu">
+                    <td>{{ pr.id }}</td>
+                    <td>{{ pr.string_slug }}</td>
+                    <td>{{ pr.title }}</td>
+                    <td>{{ pr.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<form id="{{ form_id }}" action="" method="POST" style="opacity:0">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+</form>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+$(function() {
+    $('#roles-table').bootstrapTable({
+        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+    })
+});
+$(function() {
+    $.contextMenu({
+        selector: '.with-context-menu',
+        items: {
+            'edit': { name: '{{ _("Edit" )}}', icon: 'edit' },
+            'delete': { name: '{{ _("Delete") }}', icon: 'delete' }
+        },
+        callback: function(key, options) {
+            if(key === 'edit') {
+                window.location.href = "{{ url_for('admin.project_role_edit', role_id='__role_id') }}".replace('__role_id', options.$trigger[0].children[0].textContent)
+            }
+            else if(key === 'delete') {
+                if(confirm("{{ _('Are you sure you want to delete this role?') }}")) {
+                    let f = document.getElementById('{{ form_id }}');
+                    f.action = "{{ url_for('admin.project_role_delete', role_id='__role_id') }}".replace('__role_id', options.$trigger[0].children[0].textContent);
+                    f.submit();
+                }
+            }
+        }
+    })
+})
+</script>
+{% endblock %}

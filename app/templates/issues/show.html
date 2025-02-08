@@ -1,0 +1,353 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ issue.title|safe }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.Issue.status.info['label'] }}:</td>
+                            {% set now_style = {"background-color": issue.status.color, "color": get_complementary_color(issue.status.color), "border-radius": "16px", "padding-left": "6px", "padding-right": "6px", "padding-top": "2px", "padding-bottom": "2px"} %}
+                            <td><span {{ now_style|as_style }}>{{
+                                    issue.status.title }}</span></td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Issue.cvss.info['label'] }}:</td>
+                            <td>{{ issue.cvss|safe }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Issue.cve.info['label'] }}:</td>
+                            <td>{{ issue.cve.title|safe }}</td>
+                        </tr>
+                        {% if issue.cve != none %}
+                        <tr>
+                            <td>{{ issue.cve.__class__.description.info['label'] }}:</td>
+                            <td>{{ issue.cve.description|safe }}</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9 col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="additional_info-tab" data-bs-toggle="tab"
+                            data-bs-target="#additional_info" type="button" role="tab" aria-controls="home"
+                            aria-selected="true"><i class="fa-solid fa-list"></i>
+                            {{ _("Additional info") }}</button>
+                    </li>
+                    {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=issue.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="services-tab" data-bs-toggle="tab"
+                            data-bs-target="#services" type="button" role="tab" aria-controls="home"
+                            aria-selected="false"><i class="{{ models.Service.Meta.icon }}"></i>
+                            {{ _("Related services") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=issue.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab"
+                            data-bs-target="#tasks" type="button" role="tab" aria-controls="home"
+                            aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i>
+                            {{ _("Related tasks") }}</button>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="infoTabContent">
+                    <div class="tab-pane fade show active" id="additional_info" role="tabpanel" aria-labelledby="additional_info-tab">
+                        <div class="row gutters">
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <h5>{{ models.Issue.references.info['label'] }}:</h5>
+                                {% if not is_empty_string(issue.references) %}
+                                {% autoescape false %}
+                                {{ issue.references }}
+                                {% endautoescape %}
+                                {% else %}
+                                <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <h5>{{ models.Issue.fix.info['label'] }}:</h5>
+                                {% if not is_empty_string(issue.fix) %}
+                                {% autoescape false %}
+                                {{ issue.fix }}
+                                {% endautoescape %}
+                                {% else %}
+                                <p class="text-center text-muted">{{ pgettext('woman', "(Missing)") }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <h5>{{ models.Issue.technical.info['label'] }}:</h5>
+                                {% if not is_empty_string(issue.technical) %}
+                                {% autoescape false %}
+                                {{ issue.technical }}
+                                {% endautoescape %}
+                                {% else %}
+                                <p class="text-center text-muted">{{ pgettext('woman', "(Missing)") }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <h5>{{ models.Issue.riscs.info['label'] }}:</h5>
+                                {% if not is_empty_string(issue.riscs) %}
+                                {% autoescape false %}
+                                {{ issue.riscs }}
+                                {% endautoescape %}
+                                {% else %}
+                                <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=issue.project) %}
+                    <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+                        <div id="services-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedServices" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related services') }}"><i class="fa-solid fa-link"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="services-table" data-toolbar="#services-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Service.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.title.info["label"] }}</th>
+                                    <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.ip_address.info["label"] }}</th>
+                                    <th data-field="port" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.port.info["label"] }}</th>
+                                    <th data-field="transport_level_protocol" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Service.transport_level_protocol.info["label"] }}</th>
+                                    <th data-field="access_protocol" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.access_protocol.info["label"] }}</th>
+                                    <th data-field="technical" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.technical.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in issue.services %}
+                                <tr style="cursor:pointer">
+                                    <td>{{ service.id }}</td>
+                                    <td>{{ service.title|safe }}</td>
+                                    <td>{{ service.host.ip_address }}</td>
+                                    <td>{{ service.port }}</td>
+                                    <td>{{ service.transport_level_protocol.title }}</td>
+                                    <td>{{ service.access_protocol.title }}</td>
+                                    <td>{{ service.technical|safe }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=issue.project) %}
+                    <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                        <div id="tasks-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedTasks" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related tasks') }}"><i class="fa-solid fa-link"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="tasks-table" data-toolbar="#tasks-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
+                                    <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.tracker.info["label"] }}</th>
+                                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.priority.info["label"] }}</th>
+                                    <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.state.info["label"] }}</th>
+                                    <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.assigned_to.info["label"] }}</th>
+                                    <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in issue.tasks_by_issue %}
+                                <tr style="cursor:pointer">
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.title|safe }}</td>
+                                    <td>{{ task.tracker.title }}</td>
+                                    <td>{{ task.priority.title }}</td>
+                                    <td>{{ task.state.title }}</td>
+                                    <td>{{ task.assigned_to.title }}</td>
+                                    <td>{{ task.readiness.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ models.Issue.description.info['label'] }}:</h5>
+            </div>
+            <div class="card-body">
+                {% if not is_empty_string(issue.description) %}
+                {% autoescape false %}
+                {{ issue.description }}
+                {% endautoescape %}
+                {% else %}
+                <p class="text-center text-muted">{{ pgettext('other', "(Missing)") }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {% set first_tab = False %}
+                    {% if roles.project_role_can_make_action(current_user, issue, 'show_comments') %}
+                    {% set first_tab = True %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="comments-tab" data-bs-toggle="tab"
+                            data-bs-target="#comments" type="button" role="tab" aria-controls="home"
+                            aria-selected="true"><i class="fa-solid fa-list"></i>
+                            {{ _("Comments") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, issue, 'show_history') %}
+                    {% if first_tab %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i
+                                class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i
+                                class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    {% if roles.project_role_can_make_action(current_user, issue, 'show_comments') %}
+                    <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                        {{ object_comments(issue, moment, comment_form, current_user, roles) }}
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, issue, 'show_history') %}
+                    {% if first_tab %}
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(issue, moment, current_user) }}
+                    </div>
+                    {% else %}
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(issue, moment, current_user) }}
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# modal window to edit related tasks #}
+{% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedTasks" tabindex="-1" aria-labelledby="modalEditRelatedTasksLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedTasksLabel">{{ _("Edit related tasks") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.tasks_by_issue) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="edit_related_tasks_button">{{ _("Save") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# modal window to edit related services #}
+{% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedServices" tabindex="-1" aria-labelledby="modalEditRelatedServicesLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedServicesLabel">{{ _("Edit related services") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.services) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_services_button" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
+{% block script %}
+{{ super() }}
+{{ load_bootstrap_table_js("services-table", "networks.service_show", "service_id") }}
+{{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
+<script nonce="{{ csp_nonce() }}">
+    function default_row_style(row, index) {
+        return {css: { cursor: 'pointer' }}
+      }
+    const issueSocket = io('/issue');
+    issueSocket.on('connect', function () {
+        issueSocket.emit('join_room', '{{ issue.id }}')
+    });
+    document.getElementById('edit_related_services_button').addEventListener('click', function() {
+        let related_services = Array.from(document.getElementById("{{ edit_related_objects.services.id }}").options) // Convert options to an array
+        .filter(option => option.selected)      // Filter selected options
+        .map(option => option.value);
+        issueSocket.emit('edit related services', {'related_services': related_services});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedServices')).hide();
+    });
+    issueSocket.on('change related services', function(data) {
+        $(function() {
+            $('#services-table').bootstrapTable('load', data.rows);
+        })
+    });
+
+    document.getElementById('edit_related_tasks_button').addEventListener('click', function() {
+        let related_tasks = Array.from(document.getElementById("{{ edit_related_objects.tasks_by_issue.id }}").options) // Convert options to an array
+        .filter(option => option.selected)      // Filter selected options
+        .map(option => option.value);
+        issueSocket.emit('edit related tasks', {'related_tasks': related_tasks});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedTasks')).hide();
+    });
+    issueSocket.on('change related tasks', function(data) {
+        $(function() {
+            $('#tasks-table').bootstrapTable('load', data.rows);
+        })
+    });
+
+</script>
+{% endblock %}

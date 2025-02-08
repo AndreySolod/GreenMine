@@ -1,0 +1,75 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+
+{% block page_content %}
+<div class="row">
+    {% if all_tasks.keys()|list|length == 0 %}
+    <div class="col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="text-muted">{{ _("(There are no workers registered in the system)") }}</h5>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    {% for worker_name, worker_tasks in all_tasks.items() %}
+    <div class="col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Worker") }}: {{ worker_name }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="{{ worker_name.replace('@', '-') }}-tasks-table"
+                data-pagination="true"
+                data-search="true"
+                data-show-columns="true"
+                data-show-toggle="true"
+                data-show-multi-sort="true"
+                data-filter-control="true"
+                data-buttons-class="primary"
+                data-show-pagination-switch="true">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true" data-align="center" data-filter-control="input">{{ _("ID") }}</th>
+                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ _("Title") }}</th>
+                            <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ _("Description") }}</th>
+                            <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select">{{ _("Status") }}</th>
+                            <th data-field="eta" data-sortable="true" data-align="center" data-filter-control="input">{{ _("ETA") }}</th>
+                            <th data-field="running_user" data-sortable="true" data-align="center" data-filter-control="select">{{ _("The user who started it") }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in worker_tasks %}
+                        <tr class="with-context-menu", data-task-id="{{ task['id'] }}">
+                            <td>{{ task['id'] }}</td>
+                            <td>{{ task['title'] }}</td>
+                            <td>{{ task['description'] }}</td>
+                            <td>{{ task['status'] }}</td>
+                            {% if 'eta' in task %}
+                            <td>{{ task['eta'] }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            <td>{{ task['running_user'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $('.table').bootstrapTable({
+        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+    });
+</script>
+
+{% endblock %}

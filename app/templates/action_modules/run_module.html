@@ -1,0 +1,44 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-body">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div class="row gx-3 gy-5">
+                            {% for field in form._fields.values() %}
+                            {% if not field.flags.hidden and field.name != 'submit' %}
+                            <div class="col-12">
+                                {{ form_element(form, field, inline=True) }}
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            <div class="col-12">
+                                <div class="row gy-5 justify-content-end">
+                                    <div class="col-3">
+                                        {{ form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script  nonce="{{ csp_nonce() }}">
+    let project_id = document.getElementById('project_id')
+    if(project_id !== null) {
+        project_id.value = '{{ project.id }}';
+    }
+</script>
+{% endblock %}

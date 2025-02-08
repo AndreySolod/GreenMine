@@ -1,0 +1,19 @@
+.button_hide_if_no_mouse button {
+  display: inline-block; /* Hide button */
+  margin-left: 5px;
+  font-size: 12px;
+  opacity: 0;
+  animation: button_hide_animation 0.5s forwards;
+}
+
+.button_hide_if_no_mouse:hover button {
+   animation: button_show_animation 2.5s forwards;
+}
+@keyframes button_show_animation {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+@keyframes button_hide_animation {
+  0% {opacity: 1;}
+  100% {opacity: 0;}
+}

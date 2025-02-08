@@ -1,0 +1,94 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6>{{ _("Create by template") }}:</h6>
+                <div class="form-group row">
+                    <select id="task-pattern" name="task-pattern">
+                        <option value="0"></option>
+                        {% for template in patterns %}
+                        <option value="{{ template.id }}">{{ template.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <form action="" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="row gutters">
+                        <div class="col-6">
+                            {{ form_element(form, form.tracker_id, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.title) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.description) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.priority_id, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.estimation_time_cost, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.assigned_to_id, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.date_start, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.parent_task_id, inline=True) }}
+                        </div>
+                        <div class="col-6">
+                            {{ form_element(form, form.date_end, inline=True) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.observers) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.issues) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.services) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.related_files) }}
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-3">
+                            {{ form.submit(class='btn btn-primary') }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    let pattern = document.getElementById('task-pattern');
+    pattern.addEventListener('change', function(e) {
+        if(e.target.value !== '0') {
+            fetch('{{ url_for("tasks.projecttask_data_by_template", template_id="__templ_id") }}'.replace("__templ_id", e.target.value))
+            .then(response => {if (response.ok) {return response.json()}})
+            .then(response => {
+                document.getElementById("{{ form.title.id }}").value = response.title;
+                document.getElementById("{{ form.tracker_id.id }}").value = response.tracker;
+                document.getElementById("{{ form.priority_id.id }}").value = response.priority;
+                document.getElementById("{{ form.estimation_time_cost.id }}").value = response.eta;
+                CKEDITOR_LIST["{{ form.description.id }}"].setData(response.description)
+            })
+            .catch(error => { alert("{{ _('Something went wrong. Try to reload page') }}") })
+        };
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Template paramethers") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.ProjectTaskTemplate.title.info['label'] }}:</td>
+                            <td>{{ template.title }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h5>{{ models.ProjectTaskTemplate.description.info["label"] }}:</h5>
+                {% if template.description == '' or template.description == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% endif %}
+                {% autoescape false %}
+                {{ template.description }}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Parameters of the task being created") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.ProjectTaskTemplate.task_title.info['label'] }}:</td>
+                            <td>{{ template.task_title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.ProjectTaskTemplate.task_tracker.info['label'] }}:</td>
+                            <td>{{ template.task_tracker.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.ProjectTaskTemplate.task_priority.info['label'] }}:</td>
+                            <td>{{ template.task_priority.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.ProjectTaskTemplate.task_estimation_time_cost.info['label'] }}</td>
+                            <td>{{ template.task_estimation_time_cost }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h5>{{ models.ProjectTaskTemplate.task_description.info["label"] }}:</h5>
+                {% if template.task_description == '' or template.task_description == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% endif %}
+                {% autoescape false %}
+                {{ template.task_description }}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+libraries:
+  treeselectjs:
+    css:
+      - "css/treeselectjs.css"
+    js:
+      - "js/treeselectjs.umd.js"
+  pickr:
+    css:
+      - "css/pickr-classic-theme.min.css"
+    js:
+      - "js/pickr-classic-theme.min.js"
+      - "js/pickr.es5.min.js"
+  select2:
+    css:
+      - "css/select2.css"
+    js:
+      - "npm/node_modules/select2/dist/js/select2.full.min.js"
+  range_slider:
+    css:
+      - "css/range-slider.css"
+    js:
+      - "js/range-slider.min.js"
+  ckeditor:
+    css:
+      - "css/ckeditor.css"
+    js:
+      - "js/ckeditor5/build/ckeditor.js"
+  bootstrap_table:
+    css:
+      - "npm/node_modules/bootstrap-table/dist/bootstrap-table.min.css"
+      - "js/bootstrap-table/extensions/page-jump-to/bootstrap-table-page-jump-to.min.css"
+      - "js/bootstrap-table/extensions/filter-control/bootstrap-table-filter-control.min.css"
+    js:
+      - "npm/node_modules/bootstrap-table/dist/bootstrap-table.min.js"
+      - "js/bootstrap-table/extensions/multiple-sort/bootstrap-table-multiple-sort.min.js"
+      - "npm/node_modules/bootstrap-table/dist/extensions/page-jump-to/bootstrap-table-page-jump-to.min.js"
+      - "npm/node_modules/bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"
+      - "npm/node_modules/bootstrap-table/dist/extensions/filter-control/utils.min.js"
+      - "npm/node_modules/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js"
+      - "js/bootstrap-table/extensions/export/libs/FileSaver/FileSaver.min.js"
+      - "js/bootstrap-table/extensions/export/es6-promise.auto.min.js"
+      - "js/bootstrap-table/extensions/export/libs/html2canvas/html2canvas.min.js"
+      - "js/bootstrap-table/extensions/export/libs/js-xlsx/xlsx.core.min.js"
+      - "js/bootstrap-table/extensions/export/libs/jsPDF/jspdf.umd.min.js"
+      - "js/bootstrap-table/extensions/export/libs/jsPDF-AutoTable/jspdf.plugin.autotable.min.js"
+      - "js/bootstrap-table/extensions/export/libs/jsPDF/polyfills.umd.min.js"
+      - "js/bootstrap-table/extensions/export/libs/pdfmake/pdfmake.min.js"
+      - "js/bootstrap-table/extensions/export/tableExport.min.js"
+  notify:
+    css:
+      - "css/notifyjs/metro/notify-metro.css"
+    js:
+      - "js/notify.js"
+      - "css/notifyjs/metro/notify-metro.js"
+  socketio:
+    css:
+    js:
+      - "npm/node_modules/socket.io-client/dist/socket.io.min.js"
+  contextmenu:
+    css:
+      - "css/jquery.contextMenu.css"
+    js:
+      - "js/jquery.contextMenu.js"
+      - "js/jquery.ui.position.min.js"
+  js_cookie:
+    css:
+    js:
+      - "npm/node_modules/js-cookie/dist/js.cookie.min.js"

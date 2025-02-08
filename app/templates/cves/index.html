@@ -1,0 +1,43 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="cve-table"
+                             data-search="true"
+                             data-show-columns="true"
+                             data-show-toggle="true"
+                             data-show-export="true"
+                             data-show-multi-sort="true"
+                             data-filter-control="true"
+                             data-buttons-class="primary"
+                             data-pagination="true"
+                             data-side-pagination="server"
+                             data-page-list="[10, 25, 50, 100, 500, All]"
+                             data-url="{{ url_for('cves.cve_index_data') }}"
+                             data-row-style="cveRowStyle">
+            <thead>
+                <tr>
+                    <th data-field="id" data-sortable="true" data-align="center">#</th>
+                    <th data-field="identifier" data-sortable="true" data-align="center">{{ models.CriticalVulnerability.identifier.info["label"] }}</th>
+                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CriticalVulnerability.title.info['label'] }}</th>
+                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CriticalVulnerability.description.info["label"] }}</th>
+                    <th data-field="vulnerable_environment_type" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["VulnerableEnvironmentType"]|safe }}'>{{ models.CriticalVulnerability.vulnerable_environment_type.info["label"] }}</th>
+                    <th data-field="proof_of_concept_language" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProgrammingLanguage"]|safe }}'>{{ models.CriticalVulnerability.proof_of_concept_language.info["label"] }}</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    {{ load_bootstrap_table_js("cve-table", "cves.cve_show", "cve_id") }}
+    <script nonce="{{ csp_nonce() }}">
+        function cveRowStyle(row, index) {
+            return { css: {"cursor": 'pointer' } }
+        }
+      </script>
+{% endblock %}

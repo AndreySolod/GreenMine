@@ -1,0 +1,117 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="aslist-tab" data-bs-toggle="tab" data-bs-target="#aslist"
+                    type="button" role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-list"></i>
+                    {{ _("As list") }}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="asgrid-tab" data-bs-toggle="tab" data-bs-target="#asgrid" type="button"
+                    role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                    {{ _("As grid") }}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="archived-tab" data-bs-toggle="tab" data-bs-target="#archived"
+                    type="button" role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-box-archive"></i>
+                    {{ pgettext('they', "Archived") }}</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade" id="aslist" role="tabpanel" aria-labelledby="aslist-tab">
+                {% if projects|length != 0 %}
+                {% for project in projects %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h4><a href='{{ url_for("projects.project_show", project_id=project.id) }}'>{{ project.title|safe }}</a></h4>
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td>{{ models.Project.leader.info["label"] }}:</td>
+                                        <td><a href='{{ url_for("users.user_show", user_id=project.leader_id) }}'>{{ project.leader.title }}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ models.Project.created_at.info["label"] }}:</td>
+                                        <td>{{ moment(project.created_at).format('LL') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% autoescape false %}
+                            {{ truncate_html_words(project.description, 15) }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-center text-muted note-not-exist">{{ pgettext("they", "(Missing)") }}</p>
+                {% endif %}
+            </div>
+            <div class="tab-pane fade show active" id="asgrid" role="tabpanel" aria-labelledby="asgrid-tab">
+                <div class="row">
+                    {% if projects|length != 0 %}
+                    {% for project in projects %}
+                        <div class="col-md-12 col-lg-6 col-xl-3">
+                            <div class="card w-100">
+                                <div class="card-header">
+                                    <h4><a href='{{ url_for("projects.project_show", project_id=project.id) }}'>{{ project.title|safe }}</a></h4>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td>{{ models.Project.leader.info["label"] }}:</td>
+                                                <td><a href='{{ url_for("users.user_show", user_id=project.leader_id) }}'>{{ project.leader.title }}</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>{{ models.Project.created_at.info["label"] }}:</td>
+                                                <td>{{ moment(project.created_at).format('LL') }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    {% autoescape false %}
+                                    {{ truncate_html_words(project.description, 15) }}
+                                    {% endautoescape %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-center text-muted note-not-exist">{{ pgettext("they", "(Missing)") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
+                {% if archived|length != 0 %}
+                {% for project in archived %}
+                    <div class="card">
+                        <div class="card-body">
+                            <h4><a href='{{ url_for("projects.project_show", project_id=project.id) }}'>{{ project.title|safe }}</a></h4>
+                            <table class="table table-borderless">
+                                <tbody>
+                                    <tr>
+                                        <td>{{ models.Project.leader.info["label"] }}:</td>
+                                        <td><a href='{{ url_for("users.user_show", user_id=project.leader_id) }}'>{{ project.leader.title }}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>{{ models.Project.created_at.info["label"] }}:</td>
+                                        <td>{{ moment(project.created_at).format('LL') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            {% autoescape false %}
+                            {{ truncate_html_words(project.description, 15) }}
+                            {% endautoescape %}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-center text-muted note-not-exist">{{ pgettext("they", "(Missing)") }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

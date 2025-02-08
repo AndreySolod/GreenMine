@@ -1,0 +1,100 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="issues-table"
+                             data-search="true"
+                             data-show-columns="true"
+                             data-show-toggle="true"
+                             data-show-export="true"
+                             data-show-multi-sort="true"
+                             data-filter-control="true"
+                             data-buttons-class="primary"
+                             data-pagination="true"
+                             data-side-pagination="server"
+                             data-page-list="[10, 25, 50, 100, 500, All]"
+                             data-url="{{ url_for('issues.exist_issue_data_index', project_id=project.id) }}"
+                             data-row-style="issueRowStyle">
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script nonce="{{ csp_nonce() }}">
+        $(function() {
+          $('#issues-table').bootstrapTable('destroy').bootstrapTable({
+                    filterControl: true,
+                    disableUnusedSelectOptions: true,
+
+                    columns: [
+                    {
+                        field: "id",
+                        title: "#",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
+                    },
+                    {
+                        field:  "title",
+                        title: "{{ Issue.title.info['label'] }}",
+                        filterControl: 'input',
+                        sortable: true,
+                        align: 'center',
+                    },
+                    {
+                        field: 'description',
+                        title: '{{ Issue.description.info["label"] }}',
+                        filterControl: 'input',
+                        sortable: true,
+                        align: 'center'
+                    },
+                    {
+                        field: 'status.id-select',
+                        title: '{{ Issue.status.info["label"] }}',
+                        filterControl: 'select',
+                        filterData: 'json:{{ filters["IssueStatus"]|safe }}',
+                        sortable: true,
+                        align: 'center'
+                    },
+                    {
+                        field: 'cvss',
+                        title: '{{ Issue.cvss.info["label"] }}',
+                        filterControl: 'input',
+                        sortable: true,
+                        align: 'center'
+                    },
+                    {
+                        field: 'cve',
+                        title: '{{ Issue.cve.info["label"] }}',
+                        filterControl: 'input',
+                        sortable: true,
+                        align: 'center'
+                    }
+                    ],
+                    icons: {"columns": "fa-solid fa-list-ul",
+                            "fullscreen": "fa-solid fa-arrows-up-down-left-right",
+                            "detailOpen": "fa-solid fa-plus",
+                            "detailClose": "fa-solid fa-minus",
+                            "paginationSwitchDown": "fa-solid fa-square-caret-down",
+                            "paginationSwitchUp": "fa-solid fa-square-caret-up",
+                            "toggleOff": "fa-solid fa-toggle-off",
+                            "toggleOn": "fa-solid fa-toggle-on",
+                            "export": "fa-solid fa-file-export",
+                            "sort": "fa-solid fa-sort",
+                            "plus": "fa-solid fa-plus",
+                            "minus": "fa-solid fa-minus"},
+                    onClickRow: function(row, element, field) {
+                          location = "{{ url_for('issues.issue_show', issue_id='__row_id') }}".replace("__row_id", row.id);
+                    }
+                })
+        });
+        function issueRowStyle(row, index) {
+            return { css: {"cursor": 'pointer' } }
+        };
+      </script>
+{% endblock %}

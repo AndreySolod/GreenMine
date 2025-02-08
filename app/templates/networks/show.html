@@ -1,0 +1,359 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-lg-4 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ network.title|safe }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.Network.ip_address.info["label"] }}:</td>
+                            <td>{{ network.ip_address }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Network.internal_ip.info["label"] }}:</td>
+                            {% if network.internal_ip != none %}
+                            <td>{{ network.internal_ip }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Network.asn.info["label"] }}:</td>
+                            {% if network.asn != none %}
+                            <td>{{ network.asn|safe }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Network.connect_cmd.info["label"] }}:</td>
+                            {% if network_cmd != none %}
+                            <td>{{ network.connect_cmd|safe }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+                <h6>{{ models.Network.description.info["label"] }}:</h6>
+                {% autoescape false %}
+                {{ network.description }}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {% set first_tab = False %}
+                    {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=network.project) %}
+                    {% set first_tab = True %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="hosts-tab" data-bs-toggle="tab" data-bs-target="#hosts"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-server"></i>
+                            {{ _("Availables hosts") }}</button>
+                    </li>
+                    {% endif %}
+                    {% set second_tab = False %}
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=network.project) %}
+                    {% set second_tab = True %}
+                    {% if first_tab %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues" type="button" role="tab" aria-controls="home"
+                        aria-selected="false"><i class="{{ models.Issue.Meta.icon }}"></i> {{ _("Related issues") }}</button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues" type="button" role="tab" aria-controls="home"
+                        aria-selected="true"><i class="{{ models.Issue.Meta.icon }}"></i> {{ _("Related issues") }}</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=network.project) %}
+                    {% if first_tab or second_tab %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab" aria-controls="home"
+                        aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i> {{ _("Related tasks") }}</button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab" aria-controls="home"
+                        aria-selected="true"><i class="{{ models.ProjectTask.Meta.icon }}"></i> {{ _("Related tasks") }}</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="commentsTabContent">
+                    {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=network.project) %}
+                    <div class="tab-pane fade show active" id="hosts" role="tabpanel" aria-labelledby="hosts-tab">
+                        <div id="hosts-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, models.Host(), 'create', project=network.project) %}
+                        <a href="{{ url_for('networks.host_new', project_id=network.project_id, from_network_id=network.id) }}" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" title="Добавить хост"><i class="fa-solid fa-square-plus"></i></a>
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, models.Host(), 'update', project=network.project) %}
+                        <a id="button-reset-hosts" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Переназначить хосты"><i class="fa-solid fa-arrows-to-circle"></i>  </a>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="hosts-table"
+                                             data-pagination="true"
+                                             data-side-pagination="server"
+                                             data-show-pagination-switch="true"
+                                             data-page-list="[10, 25, 50, 100, All]"
+                                             data-url="{{ url_for('networks.host_to_network', network_id=network.id) }}"     
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true" 
+                                             data-buttons-class="primary"
+                                             data-page-size="5"
+                                             data-toolbar="#hosts-toolbar">
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=network.project) %}
+                    {% if first_tab %}
+                    <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+                    {% else %}
+                    <div class="tab-pane fade show active" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+                    {% endif %}
+                        <table class="table" id="issues-table" data-page-size="5"
+                                             data-pagination="true"
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true"
+                                             data-filter-control="true"
+                                             data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.title.info["label"] }}</th>
+                                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.description.info["label"] }}</th>
+                                    <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Issue.status.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for issue in network.issues %}
+                                <tr>
+                                    <td>{{ issue.id }}</td>
+                                    <td>{{ issue.title|safe }}</td>
+                                    <td>{{ BeautifulSoup(issue.description, 'lxml').text }}</td>
+                                    <td>{{ issue.status.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=network.project) %}
+                    {% if first_tab or second_tab %}
+                    <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                    {% else %}
+                    <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                    {% endif %}
+                        <table class="table" id="tasks-table"
+                                             data-page-size="5"
+                                             data-pagination="true"
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true"
+                                             data-filter-control="true"
+                                             data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
+                                    <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.tracker.info["label"] }}</th>
+                                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.priority.info["label"] }}</th>
+                                    <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.state.info["label"] }}</th>
+                                    <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.assigned_to.info["label"] }}</th>
+                                    <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in network.tasks %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.title|safe }}</td>
+                                    <td>{{ task.tracker.title }}</td>
+                                    <td>{{ task.priority.title }}</td>
+                                    <td>{{ task.state.title }}</td>
+                                    <td>{{ task.assigned_to.title }}</td>
+                                    <td>{{ task.readiness.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {% set first_tab = False %}
+                    {% if roles.project_role_can_make_action(current_user, network, 'show_comments') %}
+                    {% set first_tab = True %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Comment.Meta.icon }}"></i>
+                            {{ models.Comment.Meta.verbose_name_plural }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, network, 'show_history') %}
+                    {% if first_tab %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                            role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                            role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="commentsTabContent">
+                    {% if roles.project_role_can_make_action(current_user, network, 'show_comments') %}
+                    <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                        {{ object_comments(network, moment, comment_form, current_user, roles) }}
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, network, 'show_history') %}
+                    {% if first_tab %}
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                      {{ object_history(network, moment, current_user) }}
+                    </div>
+                    {% else %}
+                    <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(network, moment, current_user) }}
+                      </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    {{ load_bootstrap_table_js("issues-table", "issues.issue_show", "issue_id") }}
+    {{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
+    <script nonce="{{ csp_nonce() }}">
+        $('#hosts-table').bootstrapTable({
+            filterControl: true,
+            disableUnusedSelectOptions: true,
+            columns: [
+            {
+                field: 'id',
+                title: '{{ models.Host.id.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'title',
+                title: '{{ models.Host.title.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'ip_address',
+                title: '{{ models.Host.ip_address.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'operation_system_family',
+                title: '{{ models.Host.operation_system_family.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}'
+            },
+            {
+                field: 'operation_system_gen',
+                title: '{{ models.Host.operation_system_gen.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'device_type',
+                title: '{{ models.Host.device_type.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["DeviceType"]|escapejs }}'
+            },
+            {
+                field: 'device_vendor',
+                title: '{{ models.Host.device_vendor.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            }
+            ],
+            showColumns: true,
+            search: true,
+            showToggle: true,
+            showExport: true,
+            showMultiSort: true,
+            filterControl: true,
+            buttonClass: 'primary',
+            pagination: true,
+            sidePagination: 'server',
+            url: '{{ url_for("networks.host_to_network", network_id=network.id) }}',
+            rowStyle: hostRowStyle,
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            onClickRow: function(row, element, field) {
+                location = '{{ url_for("networks.host_show", host_id="__host_id") }}'.replace('__host_id', row.id)
+            }
+        })
+    
+        function hostRowStyle(row, index) {
+            return { css: {"cursor": 'pointer' } }
+        }
+    </script>
+{% if roles.project_role_can_make_action(current_user, network, 'update') %}
+<script nonce="{{ csp_nonce() }}">
+    const networkSocket = io('/network');
+    networkSocket.on('connect', function() {
+        networkSocket.emit('join_room', '{{ network.id }}');
+    });
+    networkSocket.on('hosts changed', function(data) {
+        $('#hosts-table').bootstrapTable('refresh');
+    });
+</script>
+<script nonce="{{ csp_nonce() }}">
+    document.getElementById('button-reset-hosts').addEventListener('click', function() {
+        networkSocket.emit('reset network hosts', {pagination_count: $('#hosts-table').bootstrapTable('getOptions').pageSize})
+    })
+</script>
+{% endif %}
+{% endblock %}

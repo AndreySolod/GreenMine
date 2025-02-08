@@ -1,0 +1,241 @@
+from app import socketio, db, sanitizer, logger
+from app.helpers.general_helpers import authenticated_only
+from app.helpers.projects_helpers import get_current_room
+from flask_socketio import emit, join_room
+from flask import url_for
+from app.helpers.roles import project_role_can_make_action
+from flask_login import current_user
+import app.models as models
+import sqlalchemy as sa
+import sqlalchemy.exc as exc
+from bs4 import BeautifulSoup
+
+
+@socketio.on("join_room", namespace="/service")
+@authenticated_only
+def join_current_service_room(data):
+    try:
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == int(data))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect service room {data}")
+        return None
+    if not project_role_can_make_action(current_user, service, 'show'):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join service room #{data}, in which he has no rights to")
+        return None
+    room = data
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join service room #{data}")
+    join_room(room, namespace="/service")
+
+
+@socketio.on('edit related issues', namespace='/service')
+@authenticated_only
+def relate_issue_to_service(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    service_id, current_room_name = r
+    try:
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == int(service_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        return None
+    if not project_role_can_make_action(current_user, service, 'update'):
+        return None
+    try:
+        now_issues = db.session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.id.in_([int(i) for i in data['related_issues']]),
+                                                                          models.Issue.project_id==service.host.from_network.project_id))).all()
+        service.issues = now_issues
+        db.session.commit()
+    except(ValueError, TypeError, KeyError):
+        return None
+    new_issues = [{'id': i.id, 'title': i.title, 'description': BeautifulSoup(i.description, 'lxml').text, 'status': i.status.title} for i in service.issues]
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related issues on service #{service.id}")
+    emit('change related issues', {'rows': new_issues},
+         namespace='/service', to=current_room_name)
+
+
+@socketio.on('edit related credentials', namespace='/service')
+@authenticated_only
+def relate_issue_to_service(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    service_id, current_room_name = r
+    try:
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == int(service_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        return None
+    if not project_role_can_make_action(current_user, service, 'update'):
+        return None
+    try:
+        now_credentials = db.session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.id.in_([int(i) for i in data['related_credentials']]),
+                                                                          models.Credential.project_id==service.host.from_network.project_id))).all()
+        updated_credentials = set(service.credentials)
+        updated_credentials = updated_credentials.union(set(now_credentials))
+        service.credentials = now_credentials
+        db.session.commit()
+    except(ValueError, TypeError, KeyError):
+        return None
+    new_credentials = []
+    for i in service.credentials:
+        nr = {'id': i.id, 'login': i.login, 'password': i.password, 'password_hash': i.password_hash}
+        nr['hash_type'] = '' if i.hash_type is None else i.hash_type.title
+        new_credentials.append(nr)
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related credentials on service #{service.id}")
+    emit('change related credentials', {'rows': new_credentials},
+         namespace='/service', to=current_room_name)
+    for credential in updated_credentials:
+        new_services = []
+        for i in credential.services:
+            ns = {'id': i.id, 'title': i.title, 'ip_address': str(i.host.ip_address), 'port': i.port, 'technical': i.technical}
+            ns['transport_level_protocol'] = '' if i.transport_level_protocol is None else i.transport_level_protocol.title
+            ns['access_protocol'] = '' if i.access_protocol is None else i.access_protocol.title
+            new_services.append(ns)
+        emit('change related services', {'rows': new_services},
+            namespace='/credential', to=str(credential.id))
+
+
+@socketio.on('edit related tasks', namespace='/service')
+@authenticated_only
+def relate_issue_to_service(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    service_id, current_room_name = r
+    try:
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == int(service_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        return None
+    if not project_role_can_make_action(current_user, service, 'update'):
+        return None
+    try:
+        now_tasks = db.session.scalars(sa.select(models.ProjectTask).where(sa.and_(models.ProjectTask.id.in_([int(i) for i in data['related_tasks']]),
+                                                                          models.ProjectTask.project_id==service.host.from_network.project_id))).all()
+        update_tasks = set(service.tasks)
+        update_tasks = update_tasks.union(set(now_tasks))
+        service.tasks = now_tasks
+        db.session.commit()
+    except(ValueError, TypeError, KeyError):
+        return None
+    new_tasks = []
+    for i in service.tasks:
+        nr = {'id': i.id, 'title': i.title, 'state': i.state.title, 'readiness': i.readiness}
+        nr['tracker'] = '' if i.tracker is None else i.tracker.title
+        nr['priority'] = '' if i.priority is None else i.priority.title
+        nr['assigned_to'] = '' if i.assigned_to is None else i.assigned_to.title
+        new_tasks.append(nr)
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related tasks on service #{service.id}")
+    emit('change related tasks', {'rows': new_tasks},
+         namespace='/service', to=current_room_name)
+    for task in update_tasks:
+        new_services = []
+        for i in task.services:
+            ns = {'id': i.id, 'title': i.title, 'ip_address': str(i.host.ip_address), 'port': i.port, 'technical': i.technical}
+            ns['transport_level_protocol'] = '' if i.transport_level_protocol is None else i.transport_level_protocol.title
+            ns['access_protocol'] = '' if i.access_protocol is None else i.access_protocol.title
+            new_services.append(ns)
+        emit('change related services', {'rows': new_services},
+            namespace='/task', to=str(task.id))
+
+
+@socketio.on("join_room", namespace="/host")
+@authenticated_only
+def join_current_host_room(data):
+    try:
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == int(data))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect host room {data}")
+        return None
+    if not project_role_can_make_action(current_user, host, 'show'):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join host room #{data}, in which he has no rights to")
+        return None
+    room = data
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join host room #{data}")
+    join_room(room, namespace="/host")
+
+
+@socketio.on('add dns name', namespace='/host')
+@authenticated_only
+def add_dns_name_to_host(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    host_id, current_room_name = r
+    try:
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == int(host_id))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, host, 'update'):
+        return None
+    try:
+        dns = models.HostDnsName(title = sanitizer.escape(data['title']), dns_type = sanitizer.escape(data['dns_type']), to_host=host)
+        db.session.add(dns)
+        db.session.commit()
+    except(KeyError, exc.IntegrityError):
+        return None
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' add new dns name to host #{host_id}")
+    emit('edit dns names', {'dns': [{'title': i.title, 'dns_type': i.dns_type, 'id': i.id} for i in host.dnsnames]},
+         namespace='/host', to=current_room_name)
+
+
+@socketio.on('remove dns name', namespace='/host')
+@authenticated_only
+def remove_dns_name_from_host(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    _, current_room_name = r
+    try:
+        dns = db.session.scalars(sa.select(models.HostDnsName).where(models.HostDnsName.id == int(data['dns_id']))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, dns.to_host, 'update'):
+        return None
+    host = dns.to_host
+    db.session.delete(dns)
+    db.session.commit()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' remove dns name #{data['dns_id']} from host #{host.id}")
+    emit('edit dns names', {'dns': [{'id': i.id, 'title': i.title, 'dns_type': i.dns_type} for i in host.dnsnames]},
+         namespace='/host', to=current_room_name)
+
+
+@socketio.on("join_room", namespace="/network")
+@authenticated_only
+def join_current_host_room(data):
+    try:
+        network = db.session.scalars(sa.select(models.Network).where(models.Network.id == int(data))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect network room {data}")
+        return None
+    if not project_role_can_make_action(current_user, network, 'show'):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join network room #{data}, in which he has no rights to")
+        return None
+    room = data
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join network room #{data}")
+    join_room(room, namespace="/network")
+
+
+@socketio.on("reset network hosts", namespace="/network")
+@authenticated_only
+def reset_network_hosts(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    current_room, current_room_name = r
+    try:
+        network = db.session.scalars(sa.select(models.Network).where(models.Network.id == int(current_room))).one()
+        pagination_count = int(data['pagination_count'])
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, network, 'update'):
+        return None
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request reset hosts to network")
+    old_networks = []
+    for h in db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(models.Network.project_id == network.project_id)):
+        if h.ip_address in network.ip_address:
+            old_networks.append(h.from_network.id)
+            h.from_network = network
+    db.session.commit()
+    lst = []
+    emit('hosts changed', {'update': True}, namespace='/network', to=current_room_name)
+    for i in old_networks:
+        emit('hosts changed', {'update': True}, namespace='/network', to=str(i))

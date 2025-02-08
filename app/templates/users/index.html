@@ -1,0 +1,97 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="aslist-tab" data-bs-toggle="tab" data-bs-target="#aslist"
+                    type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                    {{ _("As list") }}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="asgrid-tab" data-bs-toggle="tab" data-bs-target="#asgrid" type="button"
+                    role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                    {{ _("As grid") }}</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="aslist" role="tabpanel" aria-labelledby="aslist-tab">
+                {% for user in users %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row gutters justify-content-between">
+                            <div class="col-2">
+                                <a href="{{ url_for('users.user_show', user_id=user.id) }}">
+                                <img src="{{ url_for('files.download_file', file_id=user.avatar_id) }}" class="avatar rounded"
+                                    width="100px"></a>
+                            </div>
+                            <div class="col-6">
+                                <h5><a href="{{ url_for('users.user_show', user_id=user.id) }}">{{ user.title }}</a></h5>
+                                <p>{{ models.User.position.info["label"] }}: {{ user.position.title }}</p>
+                                <p>{{ models.User.manager.info["label"] }}: <a href="{{ url_for('users.user_show', user_id=user.manager.id) }}">{{ user.manager.title }}</a></p>
+                            </div>
+                            <div class="col-4">
+                                {% if roles.has_user_role([roles.UserHimself], user) %}
+                                <a href="{{ url_for('users.user_edit', user_id=user.id) }}"
+                                    class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left"
+                                    title="Редактировать"><i class="fa-solid fa-user-pen"></i></a>
+                                {% set now_random_string = random_string(25) %}
+                                <a data-user-id="{{ user.id }}" class="button-click-to-delete-user btn btn-danger float-right" 
+                                data-toggle="tooltip" data-placement="left" title="Удалить" ><i class="fa-solid fa-user-minus"></i></a>
+                                 {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="tab-pane fade" id="asgrid" role="tabpanel" aria-labelledby="asgrid-tab">
+                <div class="row">
+                    {% for user in users %}
+                    <div class="col-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{{ url_for('users.user_show', user_id=user.id) }}">
+                                <img src="{{ url_for('files.download_file', file_id=user.avatar_id) }}" class="avatar"
+                                    width="100px"></a>
+                                <h5><a href="{{ url_for('users.user_show', user_id=user.id) }}">{{ user.title }}</a></h5>
+                                <p>{{ models.User.position.info["label"] }}: {{ user.position.title }}</p>
+                                <p>{{ models.User.manager.info["label"] }}: <a href="{{ url_for('users.user_show', user_id=user.manager.id) }}">{{ user.manager.title }}</a></p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{{ url_for('users.user_edit', user_id=user.id) }}"
+                                    class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left"
+                                    title="Редактировать"><i class="fa-solid fa-user-pen"></i></a>
+                                    <a data-user-id="{{ user.id }}" class="button-click-to-delete-user btn btn-danger float-right" 
+                                    data-toggle="tooltip" data-placement="left" title="Удалить" ><i class="fa-solid fa-user-minus"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="form-to-delete-user" style="display: none;" id="delete-user-form" action="{{ url_for('users.user_delete') }}" method="POST">
+    {{ form_delete.hidden_tag() }}
+    {{ form_delete.user_id.label() }}
+    {{ form_delete.user_id() }}
+</form>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+let buttons_click_to_delete = document.getElementsByClassName('button-click-to-delete-user');
+for(i = 0; i < buttons_click_to_delete.length; i++) {
+    buttons_click_to_delete[i].addEventListener('click', function() {
+        if(confirm("{{ _('Are you sure you want to delete this user?') }}")) {
+            document.getElementById('{{ form_delete.user_id.id }}').value = this.getAttribute("data-user-id");
+            document.getElementById("form-to-delete-user").submit();
+        };
+    });
+};
+</script>
+{% endblock %}

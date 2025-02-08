@@ -1,0 +1,47 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <form action="" method="POST" class="needs-validation">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{ _("Template paramethers") }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form_element(form, form.title) }}
+                            {{ form_element(form, form.description) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{ _("Parameters of the issue being created") }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form_element(form, form.issue_title) }}
+                            {{ form_element(form, form.issue_description) }}
+                            {{ form_element(form, form.issue_fix) }}
+                            {{ form_element(form, form.issue_technical) }}
+                            {{ form_element(form, form.issue_riscs) }}
+                            {{ form_element(form, form.issue_references) }}
+                            {{ form_element(form, form.issue_cvss) }}
+                            {{ form_element(form, form.issue_cve_id) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

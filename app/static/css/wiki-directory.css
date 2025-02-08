@@ -1,0 +1,117 @@
+
+.wiki-directory-card-header:first-child {
+    border-radius: 0;
+}
+.wiki-directory-card-header {
+    background-color: #f7f7f9;
+    margin-bottom: 0;
+    border:none;
+    border-radius: 5px;
+    padding: 0;
+}
+.wiki-directory-a-elem{
+    color:#565656;
+    outline:none;
+    text-decoration:none;
+    width: 100%;
+    vertical-align: middle;
+    display: inline-block;
+}
+.wiki-directory-a-elem.collapsed::before {
+    font-family: FontAwesome;
+    font-size: 30px;
+    content: '\f07b';
+    padding-left: 0;
+    padding-right: 25px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.wiki-directory-a-elem:not(.collapsed)::before {
+    font-family: FontAwesome;
+    font-size: 30px;
+    content: '\f07c';
+    padding-left: 0;
+    padding-right: 25px;
+    display: inline-block;
+    vertical-align: middle;
+}
+.wiki-directory-a-elem.collapsed::after {
+    font-family: FontAwesome;
+    font-size: 30px;
+    content: '\f105';
+    display: inline-block;
+    vertical-align: middle;
+}
+.wiki-directory-a-elem:not(.collapsed)::after {
+    font-family: FontAwesome;
+    font-size: 30px;
+    content: '\f107';
+    display: inline-block;
+    vertical-align: middle;
+}
+.wiki-directory-card-text-a {
+    width: 85%;
+    display: inline-block;
+    vertical-align: middle;
+}
+.wiki-directory-card-header a:hover{
+    cursor: pointer;
+    outline:none;
+    text-decoration:none;
+    background-color: var(--hovering-main-element-color);
+}
+.wiki-directory-card-header p{
+    margin:0;
+}
+
+.wiki-directory-card-text-a h3{
+    margin:0 0 0px;
+    font-size:20px;
+    font-weight:bold;
+    color: var(--main-color);
+}
+.wiki-directory-card-body {
+    -moz-box-flex: 1;
+    flex: 1 1 auto;
+    color:#232323;
+    box-shadow:inset 1px 4px 5px rgba(0,0,0,0.1);
+    border-top:1px soild #000;
+    border-radius: 1px;
+}
+.wiki-directory-link-to-page {
+    text-decoration: none;
+    outline: none;
+    display: flex;
+    box-shadow:inset 1px 4px 5px rgba(0,0,0,0.1);
+    border: 1px solid var(--main-color);
+    border-radius: 20px;
+    color:#565656;
+}
+.wiki-directory-link-to-page h3 {
+    color: var(--main-color);
+    font-size: 20px;
+    padding-top: 10px;
+}
+.wiki-directory-link-to-page p {
+    font-size: 16px;
+}
+.wiki-directory-link-to-page:hover {
+    cursor: pointer;
+    border: 1px solid var(--main-color);
+    border-radius: 20px;
+    background-color: var(--hovering-main-element-color);
+}
+.wiki-directory-link-to-page::before {
+    font-family: FontAwesome;
+    font-size: 30px;
+    content: '\f1ea';
+    padding-left: 10px;
+    padding-right: 25px;
+    margin: auto;
+    color: var(--main-color);
+}
+.wiki-directory-link-to-page-text {
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+}

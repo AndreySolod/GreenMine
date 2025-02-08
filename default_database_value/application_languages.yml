@@ -1,0 +1,10 @@
+ApplicationLanguage:
+    - auto:
+        title: 'Auto'
+        code: 'auto'
+    - russian:
+        title: 'Русский'
+        code: 'ru'
+    - english:
+        title: 'English'
+        code: 'en'

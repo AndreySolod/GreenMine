@@ -1,0 +1,36 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="loginBox"> <i class="fa fa-user-secret user text-center"></i>
+    <h3>{{ _("Enter - PCF") }}</h3>
+    <form method="post">
+        <div class="inputBox">
+            {{ form.hidden_tag() }}
+            <div class="form-floating">
+                {{ form.login(class="form-control", placeholder=form.login.label.text) }}
+                {{ form.login.label() }}
+            </div>
+            <div class="form-floating">
+                {{ form.password(class="form-control", placeholder=form.login.label.text) }}
+                {{ form.password.label() }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-check form-check-reverse">
+                    {{ form.remember_me.label(class="form-check-label") }}
+                    {{ form.remember_me(value="", class="form-check-input") }}
+                </div>
+            </div>
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+
+{% endblock %}

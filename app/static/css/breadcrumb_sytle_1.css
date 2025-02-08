@@ -1,0 +1,29 @@
+.breadcrumb {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    --bs-breadcrumb-divider: '/';
+    --bs-breadcrumb-divider-color: var(--main-text-color);
+    font-size: 20px;
+    border-radius: 0;
+    color: var(--main-text-color);
+}
+
+.breadcrumb .breadcrumb-item a {
+    font-size: 20px;
+    color: var(--main-text-color);
+}
+
+.breadcrumb .breadcrumb-item a i {
+    font-size: 24px;
+    color: var(--main-text-color);
+}
+
+.breadcrumb .breadcrumb-item.active {
+    font-size: 20px;
+    color: var(--neightboring-main-color);
+}
+
+.breadcrumb.light {
+    color: var(--main-text-color);
+    background-color: #d2ddf3
+}

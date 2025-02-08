@@ -1,0 +1,516 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, bootstrap_table_icons, form_element %}
+
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-lg-4 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                {% if host.title != none and host.title != '' %}
+                <h5>{{ host.title|safe }}</h5>
+                {% else %}
+                <h5 class="text-muted">{{ _("(Title is missing)") }}</h5>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.Host.from_network.info["label"] }}:</td>
+                            <td><a href="{{ url_for('networks.network_show', network_id=host.from_network_id) }}">{{ host.from_network.fulltitle }}</a></td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.ip_address.info["label"] }}:</td>
+                            <td>{{ host.ip_address }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.state.info["label"] }}:</td>
+                            {% if host.state != none %}
+                            <td>{{ host.state.title }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.state_reason.info["label"] }}:</td>
+                            {% if host.state_reason != none %}
+                            <td>{{ host.state_reason|safe }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.mac.info["label"] }}:</td>
+                            {% if host.mac == none %}
+                            <td></td>
+                            {% else %}
+                            {% if host.mac_info == none %}
+                            <td>{{ host.mac }}</td>
+                            {% else %}
+                            <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.mac_info.info['label'] }}: {{ host.mac_info.title }}">{{ host.mac }}</a></td>
+                            {% endif %}
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.operation_system_family.info["label"] }}:</td>
+                            <td>{{ host.operation_system_family.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.operation_system_gen.info["label"] }}:</td>
+                            <td>{{ host.operation_system_gen }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.device_type.info["label"] }}:</td>
+                            {% if host.device_type != none %}
+                            <td>{{ host.device_type.title }}</td>
+                            {% else %}
+                            <td>{{ _("Not defined") }}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.device_vendor.info["label"] }}:</td>
+                            {% if host.device_vendor != none %}
+                            <td>{{ host.device_vendor.title }}</td>
+                            {% else %}
+                            <td>{{ _("Not defined") }}</td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.device_model.info["label"] }}:</td>
+                            {% if host.device_model != none %}
+                            <td>{{ host.device_model.title }}</td>
+                            {% else %}
+                            <td>{{ _("Not defined") }}</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>    
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="attrsTab" role="tablist">
+                    <li class="nav-item" role="presentaion">
+                        <button class="nav-link active" id="dnsnames-tab" data-bs-toggle="tab" data-bs-target="#dnsnames"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                            {{ models.Host.dnsnames.info['label'] }}</button>
+                    </li>
+                    {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentaion">
+                        <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Service.Meta.icon }}"></i>
+                            {{ _("Available services") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Issue.Meta.icon }}"></i>
+                            {{ _("Related issues") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i>
+                            {{ _("Related tasks") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="credentials-tab" data-bs-toggle="tab" data-bs-target="#credentials"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Credential.Meta.icon }}"></i>
+                            {{ _("Related credentials") }}</button>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="attrsTabContent">
+                    <div class="tab-pane fade show active" id="dnsnames" role="tabpanel" aria-labelledby="dnsnames-tab">
+                        <div id="dns-names-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, host, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalAddNewDNSname" data-toggle="tooltip" data-placement="top" title="{{ _('Add new DNS name to host') }}"><i class="fa-solid fa-square-plus"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="dns-table" data-page-size="5"
+                        data-show-columns="true"
+                        data-show-toggle="true"
+                        data-buttons-class="primary"
+                        data-row-attributes="dns_row_attributes",
+                        data-row-style="dns_row_style"
+                        data-toolbar="#dns-names-toolbar">
+                            <thead>
+                                <tr>
+                                    <th data-field="title" data-align="center">{{ models.HostDnsName.title.info["label"] }}</th>
+                                    <th data-field="dns_type" data-align="center">{{ models.HostDnsName.dns_type.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dns in host.dnsnames %}
+                                <tr class="with-context-menu-dnsnames" data-id="{{ dns.id }}">
+                                    <td style="text-align:center">{{ dns.title }}</td>
+                                    <td style="text-align:center">{{ dns.dns_type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>        
+                    </div>
+                    {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+                        <div id="services-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, models.Service(), 'create', project_id=host.from_network.project_id) %}
+                        <a href="{{ url_for('networks.service_new', project_id=host.from_network.project_id, host_id=host.id) }}" class="btn btn-primary" data-toggle="tooltip" data-placement="left" title="{{ _('Add new service') }}"><i class="fa-solid fa-square-plus"></i></a>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="services-table"
+                                             data-pagination="true"
+                                             data-side-pagination="server"
+                                             data-show-pagination-switch="true"
+                                             data-page-list="[10, 25, 50, 100, All]"
+                                             data-url="{{ url_for('networks.service_to_host', host_id=host.id) }}"     
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true" 
+                                             data-buttons-class="primary"
+                                             data-page-size="5"
+                                             data-toolbar="#services-toolbar">
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+                        <table class="table" id="issues-table" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.title.info["label"] }}</th>
+                                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.description.info["label"] }}</th>
+                                    <th data-field="cvss" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.cvss.info["label"] }}</th>
+                                    <th data-field="cve" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.cve.info["label"] }}</th>
+                                    <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["IssueStatus"]|safe }}'>{{ models.Issue.status.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for issue in host.issues %}
+                                <tr style="cursor:pointer;">
+                                    <td>{{ issue.id }}</td>
+                                    <td>{{ issue.title|safe }}</td>
+                                    {% if issue.description != none %}
+                                    <td>{{ BeautifulSoup(issue.description, "lxml").text }}</td>
+                                    {% else %}
+                                    <td></td>
+                                    {% endif %}
+                                    <td>{{ issue.cvss }}</td>
+                                    {% if issue.cvss != none %}
+                                    <td>{{ issue.cve.title }}</td>
+                                    {% else %}
+                                    <td></td>
+                                    {% endif %}
+                                    <td>{{ issue.status.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                        <table class="table" id="tasks-table" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
+                                    <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.tracker.info["label"] }}</th>
+                                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.priority.info["label"] }}</th>
+                                    <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.state.info["label"] }}</th>
+                                    <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.assigned_to.info["label"] }}</th>
+                                    <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in host.tasks %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.title|safe }}</td>
+                                    <td>{{ task.tracker.title }}</td>
+                                    <td>{{ task.priority.title }}</td>
+                                    <td>{{ task.state.title }}</td>
+                                    <td>{{ task.assigned_to.title }}</td>
+                                    <td>{{ task.readiness.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+                        <table class="table" id="credentials-table" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Credential.id.info["label"] }}</th>
+                                    <th data-field="login" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.login.info["label"] }}</th>
+                                    <th data-field="password" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password.info["label"] }}</th>
+                                    <th data-field="password_hash" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password_hash.info["label"] }}</th>
+                                    <th data-field="hash_type" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.hash_type.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for credential in host.credentials %}
+                                <tr>
+                                    <td>{{ credential.id }}</td>
+                                    <td>{{ credential.login|safe }}</td>
+                                    <td>{{ credential.password|safe }}</td>
+                                    <td>{{ credential.password_hash|safe }}</td>
+                                    <td>{{ credential.hash_type.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ models.Host.description.info["label"] }}: </h5>
+            </div>
+            <div class="card-body">
+                {% autoescape false %}
+                {% if host.description != none and host.description != '' %}
+                {{ host.description }}
+                {% else %}
+                <p class="text-center text-muted note-not-exist">{{ pgettext("other", "(Missing)") }}</p>
+                {% endif %}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ models.Host.technical.info["label"] }}</h5>
+            </div>
+            <div class="card-body">
+                {% if host.technical == none or host.technical == '' %}
+                <p class="text-center text-muted note-not-exist">{{ pgettext("woman", "(Missing)") }}</p>
+                {% else %}
+                {{ host.technical }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    {% set first_tab = False %}
+                    {% if roles.project_role_can_make_action(current_user, host, 'show_comments') %}
+                    {% set first_tab = True %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                            {{ _("Comments") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, host, 'show_history') %}
+                    {% if first_tab %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                            role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                            role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    {% if roles.project_role_can_make_action(current_user, host, 'show_comments') %}
+                    <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                        {{ object_comments(host, moment, comment_form, current_user, roles) }}
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, host, 'show_history') %}
+                    {% if first_tab %}
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                      {{ object_history(host, moment, current_user) }}
+                    </div>
+                    {% else %}
+                    <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(host, moment, current_user) }}
+                      </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# modal window to add DNS names #}
+{% if roles.project_role_can_make_action(current_user, host, 'update') %}
+<div class="modal fade modal-xl" id="modalAddNewDNSname" tabindex="-1" aria-labelledby="modalAddNewDNSnameLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalAddNewDNSnameLabel">{{ _("Add new DNS name to host") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(dns_name_form, dns_name_form.title) }}
+            {{ form_element(dns_name_form, dns_name_form.dns_type) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="add-host-dns-name-button" class="btn btn-primary">{{ _("Add") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    {{ load_bootstrap_table_js("issues-table", "issues.issue_show", "issue_id") }}
+    {{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
+    {{ load_bootstrap_table_js("credentials-table", "credentials.credential_show", "credential_id") }}
+    <script nonce="{{ csp_nonce() }}">
+        $('#dns-table').bootstrapTable({
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+        });
+    </script>
+    <script nonce="{{ csp_nonce() }}">
+        $('#services-table').bootstrapTable({
+            filterControl: true,
+            disableUnusedSelectOptions: true,
+            columns: [
+            {
+                field: 'id',
+                title: '{{ models.Service.id.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'title',
+                title: '{{ models.Service.title.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'technical',
+                title: '{{ models.Service.technical.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'port',
+                title: '{{ models.Service.port.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'access_protocol.title-input',
+                title: '{{ models.Service.access_protocol.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            ],
+            showColumns: true,
+            search: true,
+            showToggle: true,
+            showExport: true,
+            showMultiSort: true,
+            filterControl: true,
+            buttonsClass: 'primary',
+            pagination: true,
+            sidePagination: 'server',
+            url: '{{ url_for("networks.service_to_host", host_id=host.id) }}',
+            rowStyle: serviceRowStyle,
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            onClickRow: function(row, element, field) {
+                location = '{{ url_for("networks.service_show", service_id="__service_id") }}'.replace('__service_id', row.id)
+            }
+        })
+    
+        function serviceRowStyle(row, index) {
+            return { css: {"cursor": 'pointer' } }
+        }
+    </script>
+    <script nonce="{{ csp_nonce() }}">
+        function dns_row_attributes(row, index) {
+            return {'data-id': row.id};
+        }
+        function dns_row_style(row, index) {
+            return { 
+                classes: 'with-context-menu-dnsnames',
+                css: {
+                    'text-align': 'center'
+                }
+            }
+        }
+        const hostSocket = io('/host');
+        hostSocket.on('connect', function() {
+            hostSocket.emit('join_room', '{{ host.id }}');
+        });
+        document.getElementById('add-host-dns-name-button').addEventListener('click', function() {
+            let dns_title = document.getElementById('{{ dns_name_form.title.id }}').value;
+            let dns_type = document.getElementById('{{ dns_name_form.dns_type.id }}').value;
+            hostSocket.emit('add dns name', {'title': dns_title, 'dns_type': dns_type});
+            bootstrap.Modal.getInstance(document.getElementById('modalAddNewDNSname')).hide();
+        })
+        hostSocket.on('edit dns names', function(data) {
+            $(function() {
+                $('#dns-table').bootstrapTable('load', data.dns);
+            })
+        })
+
+        $(function() {
+            $.contextMenu({
+                selector: '.with-context-menu-dnsnames',
+                callback: function(key, options) {
+                    if(key === 'copy') {
+                        navigator.clipboard.writeText(options.$trigger[0].children[0].textContent)
+                        .then(() => {
+                            // Success!
+                        })
+                    }
+                    else if (key === 'delete') {
+                      let dns_id = options.$trigger[0].getAttribute('data-id');
+                      hostSocket.emit('remove dns name', {'dns_id': dns_id})
+                    }
+                },
+                items: {
+                    "copy": {name: "{{ _('Copy DNS record') }}", icon: "copy"},
+                    "delete": {name: '{{ _("Delete DNS record") }}', icon: "thumbtack-stash"}
+                }
+            });
+        });
+    </script>
+{% endblock %}

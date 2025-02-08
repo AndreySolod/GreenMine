@@ -1,0 +1,84 @@
+{% extends 'layout/base.html' %}
+
+{% set form_id = random_string(35) %}
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="objects-table"
+                             data-search="true"
+                             data-show-columns="true"
+                             data-show-toggle="true"
+                             data-show-export="true"
+                             data-show-multi-sort="true"
+                             data-filter-control="true"
+                             data-buttons-class="primary"
+                             data-pagination="true"
+                             data-side-pagination="server"
+                             data-page-list="[10, 25, 50, 100, 500, All]"
+                             data-url="{{ url_for('admin.object_type_index_data', object_type=object_type) }}">
+            <thead>
+                <tr>
+                    {% for attr_id, attr_name, attr_type, attr_data in attrs %}
+                    {% if attr_type == none %}
+                    <th data-field="{{ attr_id }}" data-sortable="true" data-align="center" data-valign="center">{{ attr_name }}</th>
+                    {% elif attr_data == none %}
+                    <th data-field="{{ attr_id }}" data-sortable="true" data-align="center" data-valign="center" data-filter-control="{{ attr_type }}">{{ attr_name }}</th>
+                    {% else %}
+                    <th data-field="{{ attr_id }}" data-sortable="true" data-align="center" data-valign="center" data-filter-control="{{ attr_type }}" data-filter-data='json:{{ attr_data }}'>{{ attr_name }}</th>
+                    {% endif %}
+                    {% endfor %}
+                    <th data-field="_operations" data-align="center" data-formatter="operationFormatter" data-events="window.operateEvents">Действия</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<form id="{{ form_id }}" method="POST" action="{{ url_for('admin.object_type_delete', object_type=object_type) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="id" id="form_object_id" value="">
+</form>
+
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script nonce="{{ csp_nonce() }}">
+    $(function() {
+        $('#objects-table').bootstrapTable({
+                  icons: {"columns": "fa-solid fa-list-ul",
+                          "fullscreen": "fa-solid fa-arrows-up-down-left-right",
+                          "detailOpen": "fa-solid fa-plus",
+                          "detailClose": "fa-solid fa-minus",
+                          "paginationSwitchDown": "fa-solid fa-square-caret-down",
+                          "paginationSwitchUp": "fa-solid fa-square-caret-up",
+                          "toggleOff": "fa-solid fa-toggle-off",
+                          "toggleOn": "fa-solid fa-toggle-on",
+                          "export": "fa-solid fa-file-export",
+                          "sort": "fa-solid fa-sort",
+                          "plus": "fa-solid fa-plus",
+                          "minus": "fa-solid fa-minus"}
+              })
+      })
+    </script>
+    <script nonce="{{ csp_nonce() }}">
+        function operationFormatter(value, row, index) {
+            return [
+              `<a class="btn btn-warning" href="{{ url_for('admin.object_type_edit', object_type=object_type, object_id='__row_id') }}" title="Редактировать">`.replace('__row_id', row.id),
+              '<i class="fa-solid fa-square-pen"></i>',
+              '</a>  ',
+              '<a class="btn btn-danger remove_object" href="javascript:void(0)" title="Удалить">',
+              '<i class="fa-solid fa-trash"></i>',
+              '</a>'
+            ].join('')
+          }
+        window.operateEvents = {
+            'click .remove_object': function (e, value, row, index) {
+                if (confirm('Вы уверены, что хотите удалить этот объект?')) {
+                    form_delete = $('#{{ form_id }}')[0]
+                    $('#form_object_id')[0].value = row.id
+                    form_delete.submit()
+                }
+            }
+        }
+    </script>
+{% endblock %}

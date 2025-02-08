@@ -1,0 +1,36 @@
+{% extends 'layout/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/file_list.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Main information") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.ProjectReportTemplate.title.info['label'] }}:</td>
+                            <td>{{ template.title|safe }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.ProjectReportTemplate.description.info['label'] }}:</td>
+                            <td>{{ template.description|safe }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h5>{{ models.ProjectReportTemplate.template.info['label'] }}:</h5>
+                <div class="file-list">
+                    <a href="{{ url_for('files.download_file', file_id=template.template_id) }}" download class="file-item"><span>{{ _("Download") }}</span><span>{{ template.template.title}}</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

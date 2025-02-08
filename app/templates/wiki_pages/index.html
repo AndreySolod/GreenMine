@@ -1,0 +1,323 @@
+{% extends 'layout/base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/wiki-directory.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/contextmenu_edit_page.css') }}">
+{% endblock %}
+
+{% macro link_to_page(page) %}
+<a href="{{ url_for('wiki_pages.wikipage_show', wikipage_id=page.id) }}" class="wiki-directory-link-to-page with-context-menu-page">
+    <div class="wiki-directory-link-to-page-text" wiki-page-id="{{ page.id }}">
+        <textarea name="title" rows="1" maxlength="80" class="input-h3 input-editable-context-menu-page" readonly="readonly">{{ page.title }}</textarea>
+        {% if page.description != none %}
+        <textarea name="description" rows="1" class="input-p input-editable-context-menu-page" readonly="readonly">{{ page.description }}</textarea>
+        {% else %}
+        <textarea name="description" rows="1" class="input-p input-editable-context-menu-page" readonly="readonly"></textarea>
+        {% endif %}
+        {# <h3>{{ page.title }}</h3>
+        {% if page.description != none %}
+        <p>{{ page.description }}</p>
+        {% endif %} #}
+    </div>
+</a>
+{% endmacro %}
+
+{% macro directory_content(dir, accordion_id) %}
+<div class="card accordion-item">
+    <div class="card-header wiki-directory-card-header with-context-menu-folder" role="tab">
+        <a data-bs-toggle="collapse" data-bs-target="#WikiContent_{{ dir.id }}" aria-expanded="false"
+            aria-controls="WikiContent_{{ dir.id }}" class="wiki-directory-a-elem collapsed" role="button">
+            <div class="wiki-directory-card-text-a" directory-id="{{ dir.id }}">
+                <textarea name="title" rows="1" maxlength="50" class="input-h3 input-editable-context-menu-folder" readonly="readonly">{{ dir.title }}</textarea>
+                {% if dir.description != none and dir.description != '' %}
+                <textarea name="description" rows="1" class="input-p input-editable-context-menu-folder" readonly="readonly">{{ dir.description }}</textarea>
+                {% else %}
+                <textarea name="description" rows="1" class="input-p input-editable-context-menu-folder" readonly="readonly"></textarea>
+                {% endif %}
+            </div>
+        </a>
+    </div>
+    <div id="WikiContent_{{ dir.id }}" class="collapse" role="tabpanel" aria-labelledby="WikiContent_{{ dir.id }}"
+        aria-expanded="false" data-bs-parent="#{{ accordion_id }}">
+        <div class="card-body wiki-directory-card-body">
+            <div class="accordion" id="{{ 'WikiDirectory_' + dir.id|string }}" role="tablist">
+                {% for subdir in dir.subdirectories %}
+                {{ directory_content(subdir, 'WikiDirectory_' + dir.id|string) }}
+                {% endfor %}
+            </div>
+            {% for page in dir.pages %}
+            {{ link_to_page(page) }}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% block page_content %}
+<h4>Возможно, строка поиска...</h4>
+<div class="accordion" id="MainAccordion" role="tablist">
+    {% for dir in directories %}
+    {{ directory_content(dir, 'MainAccordion') }}
+    {% endfor %}
+</div>
+
+{% for page in pages %}
+{{ link_to_page(page) }}
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/stretchable_textareas.js') }}" nonce="{{ csp_nonce() }}"></script>
+<script nonce="{{ csp_nonce() }}">
+    $(function() {
+        $.contextMenu({
+            selector: '.with-context-menu-folder',
+            callback: function(key, options) {
+                if(key == 'edit') {
+                    for(i = 0; i < 2; i++) {
+                        options.$trigger[0].children[0].children[0].children[i].readOnly = false;
+                        options.$trigger[0].children[0].setAttribute('data-bs-toggle', '');
+                    };
+                }
+                else if(key == 'add_folder'){
+                    folder = options.$trigger[0]
+                    target_to_folder = folder.parentElement.children[1].children[0].children[0]
+                    $.ajax({
+                        url: "{{ url_for('wiki_pages.pagedirectory_ajax_new') }}",
+                        method: 'POST',
+                        headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+                        dataType: 'json',
+                        data: {
+                            'title': '',
+                            'description': '',
+                            'parent_dir_id': folder.children[0].children[0].getAttribute('directory-id')
+                        },
+                        success: function(data) {
+                            if(data['status'] == 'success'){
+                                t1 = document.createElement('textarea');
+                                setMultipleAttributes(t1, {'rows': 1, 'name': 'title', 'maxlength': "50", 'class': "input-h3 input-editable-context-menu-folder", 'placeholder': '{{ _("Title") }}'});
+                                t1.addEventListener("input", ChangeTextAreaOnInput, false);
+                                t1.addEventListener("keypress", send_edit_request_on_enter );
+                                t2 = document.createElement('textarea');
+                                setMultipleAttributes(t2, {'rows': 1, 'name': 'description', 'class': "input-p input-editable-context-menu-folder", 'placeholder': '{{ _("Description") }}'});
+                                t2.addEventListener("input", ChangeTextAreaOnInput, false);
+                                t2.addEventListener("keypress", send_edit_request_on_enter );
+                                sdiv = document.createElement('div');
+                                setMultipleAttributes(sdiv, {'class': 'wiki-directory-card-text-a', 'directory-id': data['id']});
+                                sdiv.appendChild(t1);
+                                sdiv.appendChild(t2);
+                                aelem = document.createElement('a');
+                                setMultipleAttributes(aelem, {'data-bs-toggle': "collapse", 'data-bs-target': `#WikiContent_${data['id']}`, 'aria-expanded': "false", 'aria-controls': `WikiContent_${data['id']}`, 'class': "wiki-directory-a-elem collapsed", 'role': "button"});
+                                aelem.appendChild(sdiv);
+                                s1 = document.createElement('div');
+                                setMultipleAttributes(s1, {'class': 'card-header wiki-directory-card-header with-context-menu-folder', 'role': 'tab'});
+                                s1.appendChild(aelem);
+                                wiki_content_div = document.createElement('div');
+                                setMultipleAttributes(wiki_content_div, {'id':`WikiContent_${data['id']}`, 'class': "collapse", 'role': "tabpanel", 'aria-labelledby': `WikiContent_${data['id']}`, 'aria-expanded': "false", 'data-bs-parent': target_to_folder.getAttribute('id')});
+                                div_card_body = document.createElement('div');
+                                div_card_body.setAttribute('class', "card-body wiki-directory-card-body");
+                                new_accordion = document.createElement('div');
+                                setMultipleAttributes(new_accordion, {'class': "accordion", 'id': `WikiDirectory_${data['id']}`, 'role': "tablist"});
+                                div_card_body.appendChild(new_accordion);
+                                wiki_content_div.appendChild(div_card_body);
+                                new_folder = document.createElement('div');
+                                new_folder.setAttribute('class', 'card accordion-item');
+                                new_folder.appendChild(s1);
+                                new_folder.appendChild(wiki_content_div);
+                                target_to_folder.appendChild(new_folder);
+                                bootstrap.Collapse.getOrCreateInstance(folder.parentElement.children[1]).show();
+                                // Rebuild all TextAreas:
+                                all_textareas = document.getElementsByTagName('textarea');
+                                for (i = 0; i < all_textareas.length; i++){
+                                    rebuildTextArea(all_textareas[i]);
+                                }
+                            }
+                        }
+                    })
+                }
+                else if(key == 'add_page'){
+                    folder = options.$trigger[0]
+                    directory_id = folder.children[0].children[0].getAttribute('directory-id')
+                    $.ajax({
+                        url: "{{ url_for('wiki_pages.wikipage_ajax_new') }}",
+                        method: 'POST',
+                        headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+                        dataType: 'json',
+                        data: {
+                            'parent_dir_id': directory_id
+                        },
+                        success: function(data) {
+                            if(data["status"] == "success") {
+                                t1 = document.createElement('textarea');
+                                setMultipleAttributes(t1, {'rows': 1, 'name': 'title', 'maxlength': "80", 'class': "input-h3 input-editable-context-menu-page", 'placeholder': '{{ _("Title") }}'});
+                                t1.addEventListener("input", ChangeTextAreaOnInput, false);
+                                t1.addEventListener("keypress", send_edit_request_on_enter_to_page );
+                                t2 = document.createElement('textarea');
+                                setMultipleAttributes(t2, {'name': 'description', 'class': "input-p input-editable-context-menu-page", 'placeholder': '{{ _("Description") }}'});
+                                t2.addEventListener("input", ChangeTextAreaOnInput, false);
+                                t2.addEventListener("keypress", send_edit_request_on_enter_to_page );
+                                pd = document.createElement('div');
+                                setMultipleAttributes(pd, {"class": "wiki-directory-link-to-page-text", 'wiki-page-id': data["page_id"]});
+                                pd.appendChild(t1);
+                                pd.appendChild(t2);
+                                aelem = document.createElement('a');
+                                setMultipleAttributes(aelem, {"href": "javascript:void(0)", "old-href": "{{ url_for('wiki_pages.wikipage_show', wikipage_id='__page_id') }}".replace('__page_id', data["page_id"]), "class": "wiki-directory-link-to-page with-context-menu-page"});
+                                aelem.appendChild(pd);
+                                options.$trigger[0].parentElement.children[1].children[0].appendChild(aelem)
+                                bootstrap.Collapse.getOrCreateInstance(folder.parentElement.children[1]).show();
+                                // Rebuild all textareas:
+                                all_textareas = document.getElementsByTagName('textarea');
+                                for (i = 0; i < all_textareas.length; i++){
+                                    rebuildTextArea(all_textareas[i]);
+                                }
+                            }
+                        }
+                    })
+                }
+                else if(key == 'delete') {
+                    if(confirm(`Вы уверены, что хотите удалить директорию "${options.$trigger[0].children[0].children[0].children[0].value}"?`)) {
+                        $.ajax({
+                            url: '{{ url_for("wiki_pages.pagedirectory_delete", wikidirectory_id="__dir_id") }}'.replace('__dir_id', options.$trigger[0].children[0].children[0].getAttribute('directory-id')),
+                            method: 'POST',
+                            headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+                            dataType: 'json',
+                            success: function(data) {
+                                if(data['status'] == 'success') {
+                                    options.$trigger[0].parentElement.remove();
+                                }
+                                else {
+                                    alert("{{ _('Something went wrong. Try to reload page') }}");
+                                }
+                            }
+                        });
+                    }
+                }
+            },
+            items: {
+                "edit": {name: "{{ _('Edit') }}", icon: "edit"},
+                "add_folder": {name: "{{ _('Add subfolder') }}", icon: "addfolder"},
+                "add_page": {name: '{{ _("Add new article") }}', icon: "addpage"},
+                "delete": {name: "{{ _('Delete') }}", icon: "delete"},
+                //"move": {name: "{{ _('Move to') }}", icon: "fa-solid fa-file-import"}
+            }
+        });
+        $.contextMenu({
+            selector: '.with-context-menu-page',
+            callback: function(key, options) {
+                if(key == 'edit') {
+                    options.$trigger[0].children[0].children[0].readOnly = false;
+                    options.$trigger[0].children[0].children[1].readOnly = false;
+                    options.$trigger[0].setAttribute('old-href', options.$trigger[0].getAttribute('href'))
+                    options.$trigger[0].setAttribute('href', 'javascript: void(0)')
+                }
+                else if (key == 'delete') {
+                    if (confirm("{{ _('Are you sure you want to delete this page?') }}")) {
+                        $.ajax({
+                            url: "{{ url_for('wiki_pages.wikipage_ajax_delete') }}",
+                            method: 'POST',
+                            headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+                            dataType: 'json',
+                            data: {
+                                'page_id': options.$trigger[0].children[0].getAttribute('wiki-page-id'),
+                            },
+                            success: function(data) {
+                                if(data['status'] == 'success'){
+                                    options.$trigger[0].remove();
+                                }
+                                else {
+                                    alert('{{ _("Something went wrong. Try to reload page") }}')
+                                }
+                            }
+                        })
+                    }
+                }
+            },
+            items: {
+                "edit": {"name": "{{ _('Rename') }}", icon: 'edit'},
+                "delete": {"name": "{{ _('Delete') }}", icon: "delete"}
+            }
+        });
+
+        function send_edit_request_on_enter(event) {
+            // Action when clicked on any key on keyboard
+            if (event.key === "Enter") {
+              event.preventDefault();
+              title = event.target.parentElement.children[0].value;
+              description = event.target.parentElement.children[1].value;
+              dir_id = event.target.parentElement.getAttribute('directory-id');
+              $.ajax({
+                url: '{{ url_for("wiki_pages.pagedirectory_edit", wikidirectory_id="__dir_id") }}'.replace('__dir_id', dir_id),
+                method: 'post',
+                headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+                dataType: 'json',
+                data: {
+                    'title': title,
+                    'description': description
+                },
+                success: function(data) {
+                    if(data['status'] == 'success'){
+                        for(i = 0; i < 2; i++){
+                        event.target.parentElement.children[i].readOnly = true;
+                    }
+                    event.target.parentElement.parentElement.setAttribute('data-bs-toggle', 'collapse');
+                    }
+                    else {
+                        alert("{{ _('Something went wrong. Try to reload page') }}");
+                    }
+                }
+              });
+            }
+          };
+        function send_edit_request_on_enter_to_page(event) {
+            if (event.key == 'Enter'){
+                event.preventDefault();
+                title = event.target.parentElement.children[0].value;
+                description = event.target.parentElement.children[1].value;
+                page_id = event.target.parentElement.getAttribute('wiki-page-id');
+            $.ajax({
+                url: '{{ url_for("wiki_pages.wikipage_ajax_edit") }}',
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token() }}'},
+                dataType: 'json',
+                data: {
+                    'title': title,
+                    'description': description,
+                    'page_id': page_id
+                },
+                success: function(data) {
+                    if(data["status"] == 'success') {
+                        event.target.parentElement.children[0].readOnly = true;
+                        event.target.parentElement.children[1].readOnly = true;
+                        event.target.parentElement.parentElement.setAttribute('href', event.target.parentElement.parentElement.getAttribute('old-href'))
+                        event.target.parentElement.parentElement.removeAttribute('old-href')
+                    }
+                }
+            })
+            }
+        }
+
+        $(".input-editable-context-menu-folder").each(function(i, input_elem){
+            input_elem.addEventListener("keypress", send_edit_request_on_enter );
+        })
+
+        $('.input-editable-context-menu-page').each(function(i, input_elem){
+            input_elem.addEventListener("keypress", send_edit_request_on_enter_to_page);
+        })
+
+    all_buttons = $('.wiki-directory-a-elem');
+    for(i = 0; i < all_buttons.length; i++){ // rebuild all TextAreas when directory is opened
+        all_buttons[i].addEventListener('click', function() {
+            all_textareas = document.getElementsByTagName('textarea')
+            for (i = 0; i < all_textareas.length; i++){
+                rebuildTextArea(all_textareas[i])
+            }
+        });
+    }
+    for (i = 0; i < all_textareas.length; i++){
+        rebuildTextArea(all_textareas[i]) // Rebuild all TextAreas before start working
+    }
+    });
+
+</script>
+{% endblock %}

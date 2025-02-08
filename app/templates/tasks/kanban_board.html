@@ -1,0 +1,41 @@
+{% extends 'layout/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/kanban.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/responsive-grid.css') }}">
+<style>
+
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div id="task-kanban-board"></div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/dragula.js') }}" nonce="{{ csp_nonce() }}"></script>
+<script src="{{ url_for('static', filename='js/kanban.js') }}" nonce="{{ csp_nonce() }}"></script>
+<script nonce="{{ csp_nonce() }}">
+    let translation_dict = {'The specified transition between statuses is prohibited!': "{{ _('The specified transition between statuses is prohibited!') }}",
+                        'You have no right to perform this action': "{{ _('You have no right to perform this action') }}",
+                        'No data for displaying': "{{ _('No data for displaying') }}"}
+    function buildKanban() {
+        const kanban_io = io('/tasks');
+        kanban_io.on('connect', function() {
+            kanban_io.emit('join_room', '{{ project.id }}')
+            fetch('{{ url_for("tasks.projecttask_kanban_board_config") }}')
+                .then((response) => response.json())
+                .then((config) => {
+                    materialKanban.initialize('task-kanban-board', config, kanban_io, false, true, true, translation_dict);
+                })
+                .catch((error) => {
+                    alert('{{ _("Cannot connect to server. Try to refresh page") }}')
+                    console.error(`Unable to get data from server: ${error}`)
+                })
+        });
+    }
+    buildKanban();
+</script>
+{% endblock %}

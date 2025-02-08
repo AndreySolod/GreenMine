@@ -1,0 +1,55 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table" id="modules-table" data-search="true"
+                                                            data-show-columns="true"
+                                                            data-show-toggle="true"
+                                                            data-show-multi-sort="true"
+                                                            data-filter-control="true"
+                                                            data-buttons-class="primary"
+                                                            data-pagination="true"
+                                                            data-show-pagination-switch="true"
+                                                            data-page-list="[10, 25, 50, 100, 500, All]">
+                        <thead>
+                            <tr>
+                                <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">Заголовок</th>
+                                <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">Описание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for action_module in action_modules %}
+                            <tr data-action-module-name="{{ action_module.__class__.__name__ }}">
+                                <td>{{ action_module.title }}</td>
+                                <td>{{ action_module.description }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $('#modules-table').bootstrapTable({
+        rowStyle: function(row, index) {
+            return {css: { cursor: 'pointer' } };
+        },
+        onClickRow: function(row, element, field) {
+            z = row._data
+            location = ("{{ url_for('action_modules.module_run', project_id=project.id, module_name='__module_name') }}".replace('__module_name', row._data["action-module-name"]))
+        },
+        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+    });
+</script>
+{% endblock %}

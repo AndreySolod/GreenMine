@@ -1,0 +1,514 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-md-4 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                {% if service.title != none and service.title != '' %}
+                <h5>{{ service.title|safe }}</h5>
+                {% else %}
+                <h5 class="text-muted">{{ _("(Missing)") }}</h5>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.Host.from_network.info["label"] }}:</td>
+                            <td><a href="{{ url_for('networks.network_show', network_id=service.host.from_network.id) }}">{{ service.host.from_network.fulltitle|safe }}</a></td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Service.host.info["label"] }}:</td>
+                            <td><a href="{{ url_for('networks.host_show', host_id=service.host_id) }}">{{ service.host.fulltitle|safe }}</a></td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Service.port.info["label"] }}:</td>
+                            <td>{{ service.port }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Service.port_state.info["label"] }}:</td>
+                            <td>{{ service.port_state.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Service.port_state_reason.info["label"] }}:</td>
+                            <td>{{ service.port_state_reason|safe }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Service.transport_level_protocol.info["label"] }}:</td>
+                            <td>{{ service.transport_level_protocol.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Service.access_protocol.info["label"] }}:</td>
+                            <td>{{ service.access_protocol.title }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="CommentTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="screenshot-tab" data-bs-toggle="tab" data-bs-target="#screenshot"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                            {{ _("Site screenshot") }}</button>
+                    </li>
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=service.host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Issue.Meta.icon }}"></i>
+                            {{ _("Related issues") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=service.host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="credentials-tab" data-bs-toggle="tab" data-bs-target="#credentials"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Credential.Meta.icon }}"></i>
+                            {{ _("Related credentials") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=service.host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i>
+                            {{ _("Related tasks") }}</button>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="ServiceDataTabContent">
+                    <div class="tab-pane fade show active" id="screenshot" role="tabpanel" aria-labelledby="screenshot-tab">
+                        <ul class="nav nav-tabs" id="ScreenshotTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="screenshot-http-tab" data-bs-toggle="tab" data-bs-target="#screenshot_http"
+                                    type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-regular fa-image"></i>
+                                    {{ models.Service.screenshot_http.info["label"] }}</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="screenshot-https-tab" data-bs-toggle="tab" data-bs-target="#screenshot_https" type="button"
+                                    role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-image"></i>
+                                    {{ models.Service.screenshot_https.info["label"] }}</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="ScreenshotTabContent">
+                            <div class="tab-pane fade show active row g-2" id="screenshot_http" role="tabpanel" aria-labelledby="screenshot-http-tab">
+                                {% if roles.project_role_can_make_action(current_user, service, 'take_screenshot') %}
+                                <div class="d-flex justify-content-end">
+                                    <div class="col-1">
+                                        <a id="http-take-screenshot-button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" aria-label="{{ _('Take screenshot') }}" data-bs-original-title="{{ _('Take screenshot') }}"><i class="fa-solid fa-camera-retro"></i></a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="d-flex">
+                                    {% if service.screenshot_http_id != none %}
+                                    <img src="{{ url_for('files.download_file', file_id=service.screenshot_http_id) }}" alt="{{ _('Error when content loading') }}">
+                                    {% else %}
+                                    <h6 class="text-muted text-center">{{ _("(Missing)") }}</h6>
+                                    {% endif %}
+                                </div>
+                                
+                            </div>
+                            <div class="tab-pane fade" id="screenshot_https" role="tabpanel" aria-labelledby="screenshot-https-tab">
+                                {% if roles.project_role_can_make_action(current_user, service, 'take_screenshot') %}
+                                <div class="d-flex justify-content-end">
+                                    <div class="col-1">
+                                        <a id="https-take-screenshot-button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" aria-label="{{ _('Take screenshot') }}" data-bs-original-title="{{ _('Take screenshot') }}"><i class="fa-solid fa-camera-retro"></i></a>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                {% if service.screenshot_https_id != none %}
+                                <img src="{{ url_for('files.download_file', file_id=service.screenshot_https_id) }}" alt="{{ _('Error when content loading') }}">
+                                {% else %}
+                                <h6 class="text-muted text-center">{{ _("(Missing)") }}</h6>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=service.host.from_network.project) %}
+                    <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+                        <div id="issues-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, service, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedIssues" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related issues') }}"><i class="fa-solid fa-link"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="issues-table" data-toolbar="#issues-toolbar" data-pagination="true" data-page-size="5" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.title.info["label"] }}</th>
+                                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.description.info["label"] }}</th>
+                                    <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Issue.status.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for issue in service.issues %}
+                                <tr style="cursor:pointer">
+                                    <td>{{ issue.id }}</td>
+                                    <td>{{ issue.title|safe }}</td>
+                                    <td>{{ BeautifulSoup(issue.description, 'lxml').text }}</td>
+                                    <td>{{ issue.status.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=service.host.from_network.project) %}
+                    <div class="tab-pane fade" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+                        <div id="credentials-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, service, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedCredentials" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related credentials') }}"><i class="fa-solid fa-link"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="credentials-table" data-toolbar="#credentials-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Credential.id.info["label"] }}</th>
+                                    <th data-field="login" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.login.info["label"] }}</th>
+                                    <th data-field="password" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password.info["label"] }}</th>
+                                    <th data-field="password_hash" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password_hash.info["label"] }}</th>
+                                    <th data-field="hash_type" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.hash_type.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for credential in service.credentials %}
+                                <tr style="cursor:pointer">
+                                    <td>{{ credential.id }}</td>
+                                    <td>{{ credential.login|safe }}</td>
+                                    <td>{{ credential.password|safe }}</td>
+                                    <td>{{ credential.password_hash|safe }}</td>
+                                    <td>{{ credential.hash_type.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=service.host.from_network.project) %}
+                    <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                        <div id="tasks-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, service, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedTasks" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related tasks') }}"><i class="fa-solid fa-link"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="tasks-table" data-toolbar="#tasks-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
+                                    <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.tracker.info["label"] }}</th>
+                                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.priority.info["label"] }}</th>
+                                    <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.state.info["label"] }}</th>
+                                    <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.assigned_to.info["label"] }}</th>
+                                    <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in service.tasks %}
+                                <tr style="cursor:pointer">
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.title|safe }}</td>
+                                    <td>{{ task.tracker.title }}</td>
+                                    <td>{{ task.priority.title }}</td>
+                                    <td>{{ task.state.title }}</td>
+                                    <td>{{ task.assigned_to.title }}</td>
+                                    <td>{{ task.readiness }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ models.Service.description.info["label"] }}</h5>
+            </div>
+            <div class="card-body">
+                {% autoescape false %}
+                {% if service.description != none and service.description != '' %}
+                {{ service.description }}
+                {% else %}
+                <p class="text-muted">{{ _("(Missing)") }}</p>
+                {% endif %}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ models.Service.technical.info["label"] }}</h5>
+            </div>
+            <div class="card-body">
+                {% if service.technical != none and service.technical != '' %}
+                {{ service.technical|safe }}
+                {% else %}
+                <p class="text-muted">{{ _("(Missing)") }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-12 col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="CommentTab" role="tablist">
+                    {% set first_tab = False %}
+                    {% if roles.project_role_can_make_action(current_user, service, 'show_comments') %}
+                    {% set first_tab = True %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                            {{ _("Comments") }}</button>
+                    </li>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, service, 'show_history') %}
+                    {% if first_tab %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                            role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% else %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                            role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="CommentTabContent">
+                    {% if roles.project_role_can_make_action(current_user, service, 'show_comments') %}
+                    <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                        {{ object_comments(service, moment, comment_form, current_user, roles) }}
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, service, 'show_history') %}
+                    {% if first_tab %}
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                      {{ object_history(service, moment, current_user) }}
+                    </div>
+                    {% else %}
+                    <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(service, moment, current_user) }}
+                      </div>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# modal window to edit related tasks #}
+{% if roles.project_role_can_make_action(current_user, service, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedTasks" tabindex="-1" aria-labelledby="modalEditRelatedTasksLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedTasksLabel">{{ _("Edit related tasks") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.tasks) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_tasks_button" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# modal window to edit related credentials #}
+{% if roles.project_role_can_make_action(current_user, service, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedCredentials" tabindex="-1" aria-labelledby="modalEditRelatedCredentialsLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedCredentialsLabel">{{ _("Edit related credentials") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.credentials) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_credentials" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# modal window to edit related issues #}
+{% if roles.project_role_can_make_action(current_user, service, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedIssues" tabindex="-1" aria-labelledby="modalEditRelatedIssuesLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedIssuesLabel">{{ _("Edit related issues") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.issues) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_issues" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    
+function reload_screenshot(proto) {
+    let div_data = null
+    if(proto === 'http') {
+        div_data = document.getElementById('screenshot_http');
+    }
+    else if(proto === 'https') {
+        div_data = document.getElementById('screenshot_https');
+    }
+    for (let i = 2; i < div_data.childNodes.length + 1;i++){
+        div_data.removeChild(div_data.childNodes[2]);
+    }
+    let spinner = document.createElement("div");
+    setMultipleAttributes(spinner, {"class": "spinner-border text-primary text-center", "role": "status"});
+    let child_span = document.createElement("span");
+    child_span.setAttribute("class", "visually-hidden");
+    child_span.innerHTML = "Загрузка...";
+    let over_div = document.createElement('div');
+    setMultipleAttributes(over_div, {'class': 'd-flex justify-content-center'});
+    spinner.appendChild(child_span);
+    over_div.appendChild(spinner);
+    div_data.appendChild(over_div);
+    let params = new URLSearchParams();
+    params.set('service_id', '{{ service.id }}');
+    params.set("proto", proto)
+    let headers = new Headers();
+    headers.append('X-CSRFToken', '{{ csrf_token() }}');
+    let req = fetch ("{{ url_for('networks.take_service_screenshot') }}", {method: 'POST',
+                                                                           headers: headers,
+                                                                           body: params})
+    .then(response => {if (response.ok) {return response.json()} else {console.error(response);alert("{{ _('Got an error when taking screenshot') }}")}})
+    .then(response => {if (response.address !== null) {
+        new_screenshot = document.createElement('img');
+        setMultipleAttributes(new_screenshot, {'src': response.address, 'onerror': '{{ _("Cannot load a screenshot") }}'});
+        let div_data = null
+        if (proto === 'http') {
+            div_data = document.getElementById('screenshot_http');
+        }
+        else if (proto === 'https') {
+            div_data = document.getElementById('screenshot_https');
+        }
+        div_data.removeChild(div_data.lastChild);
+        div_data.appendChild(new_screenshot);
+    }
+    else {
+        let h6_placeholder = data = document.createElement('h6')
+        h6_placeholder.innerHTML = "(Отсутствует)"
+        h6_placeholder.setAttribute('class', 'text-muted text-center')
+        let div_data = null
+        if (proto === 'http') {
+            div_data = document.getElementById('screenshot_http');
+        }
+        else if (proto === 'https') {
+            div_data = document.getElementById('screenshot_https');
+        }
+        div_data.removeChild(div_data.lastChild);
+        div_data.appendChild(h6_placeholder);
+    }
+})
+}
+</script>
+{{ load_bootstrap_table_js("issues-table", "issues.issue_show", "issue_id") }}
+{{ load_bootstrap_table_js("credentials-table", "credentials.credential_show", "credential_id") }}
+{{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
+
+<script nonce="{{ csp_nonce() }}">
+    document.getElementById('http-take-screenshot-button').addEventListener('click', function(){
+        reload_screenshot('http');
+    });
+    document.getElementById('https-take-screenshot-button').addEventListener('click', function() {
+        reload_screenshot('https')
+    })
+    function default_row_style(row, index) {
+        return {css: { cursor: 'pointer' }}
+      }
+    const serviceSocket = io('/service');
+    serviceSocket.on('connect', function () {
+        serviceSocket.emit('join_room', '{{ service.id }}')
+    });
+    document.getElementById('edit_related_issues').addEventListener('click', function() {
+        let related_issues = Array.from(document.getElementById("{{ edit_related_objects.issues.id }}").options) // Convert options to an array
+        .filter(option => option.selected)      // Filter selected options
+        .map(option => option.value);
+        serviceSocket.emit('edit related issues', {'related_issues': related_issues});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedIssues')).hide();
+    });
+    serviceSocket.on('change related issues', function(data) {
+        $(function() {
+            $('#issues-table').bootstrapTable('load', data.rows);
+        })
+    });
+
+    document.getElementById('edit_related_credentials').addEventListener('click', function() {
+        let related_credentials = Array.from(document.getElementById("{{ edit_related_objects.credentials.id }}").options) // Convert options to an array
+        .filter(option => option.selected)      // Filter selected options
+        .map(option => option.value);
+        serviceSocket.emit('edit related credentials', {'related_credentials': related_credentials});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedCredentials')).hide();
+    });
+    serviceSocket.on('change related credentials', function(data) {
+        $(function() {
+            $('#credentials-table').bootstrapTable('load', data.rows);
+        })
+    });
+    
+    document.getElementById('edit_related_tasks_button').addEventListener('click', function() {
+        let related_tasks = Array.from(document.getElementById("{{ edit_related_objects.tasks.id }}").options) // Convert options to an array
+        .filter(option => option.selected)      // Filter selected options
+        .map(option => option.value);
+        serviceSocket.emit('edit related tasks', {'related_tasks': related_tasks});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedTasks')).hide();
+    });
+    serviceSocket.on('change related tasks', function(data) {
+        $(function() {
+            $('#tasks-table').bootstrapTable('load', data.rows);
+        })
+    });
+</script>
+{% endblock %}

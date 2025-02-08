@@ -1,0 +1,98 @@
+{% extends 'layout/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/simple-scrollbar.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Project chat") }}</h5>
+            </div>
+            <div class="with-scrollbar" style="height:45vh;">
+                <div class="card-body">
+                    <ul class="chats" id="ChatMessageList">
+                        {% for message in chat_messages %}
+                        {% if current_user.id != message.created_by_id %}
+                        <li class="chats-left">
+                        {% else %}
+                        <li class="chats-right">
+                        {% endif %}
+                            <div class="chats-avatar">
+                                <img src="{{ url_for('files.download_file', file_id=message.created_by.avatar_id) }}" alt="Avatar for {{ message.created_by.title }}">
+                                <div class="chats-name">{{ message.created_by.title }}</div>
+                            </div>
+                            <div class="chats-text info">
+                                {{ message.text|safe }}
+                            </div>
+                            <div class="chats-hour">{{ moment(message.created_at).fromNow() }}</div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% if roles.project_role_can_make_action(current_user, models.ChatMessage(), 'create', project=project) %}
+            <div id="ChatMessageNew" class="wysiwyg"></div>
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    <button class="btn btn-primary" id="CreateNewMessageChat">{{ _("Add") }}</button>
+                </div> 
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/simplescrollbar.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+<script nonce="{{ csp_nonce() }}">
+    SimpleScrollbar.initEl(document.querySelector('.with-scrollbar'))
+</script>
+<script nonce="{{ csp_nonce() }}">
+    const chat_connection = io('/chats')
+    chat_connection.on('connect', function() {
+        chat_connection.emit('join_room', '{{ project.id }}')
+    });
+document.getElementById('CreateNewMessageChat').addEventListener('click', function(event) {
+    let text = CKEDITOR_LIST['ChatMessageNew'].getData()
+    chat_connection.emit('add_comment', {'text': text})
+    CKEDITOR_LIST['ChatMessageNew'].setData('')
+})
+chat_connection.on('create_comment', function(data) {
+    let d1 = document.createElement('div');
+    d1.setAttribute('class', 'chats-avatar');
+    let ii = document.createElement('img');
+    ii.setAttribute('src', data.created_by_ava);
+    ii.setAttribute('alt', "Avatar for " + ii.created_by_title);
+    let id = document.createElement('div');
+    id.setAttribute('class', 'chats-name');
+    id.innerHTML = data.created_by_title;
+    d1.appendChild(ii);
+    d1.appendChild(id);
+    let d2 = document.createElement('div');
+    d2.setAttribute('class', 'chats-text info');
+    d2.innerHTML = data['text'];
+    let d3 = document.createElement('div');
+    d3.setAttribute('class', 'chats-hour');
+    d3.innerHTML = data.created_at;
+    let oli = document.createElement('li')
+    let current_user_id = Number("{{ current_user.id }}")
+    if (current_user_id === Number(data.created_by_id)) {
+        oli.setAttribute('class', 'chats-right created')
+    }
+    else {
+        oli.setAttribute('class', 'chats-left created')
+    }
+    oli.appendChild(d1)
+    oli.appendChild(d2)
+    oli.appendChild(d3)
+    document.getElementById('ChatMessageList').appendChild(oli)
+    flask_moment_render_all()
+})
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="card">
+    <div class="card-body">
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <table class="table table-bordered table-striped table-hover table-responsive">
+                {# Сперва печатаем верхнюю панель #}
+                <thead>
+                    <tr>
+                        <th>Из\В</th>
+                        {% for obj in all_objs %}
+                        <th>{{ obj.title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                
+                {# Теперь печатаем сами объекты #}
+                <tbody>
+                    {% for line, obj in zip(form_attrs, all_objs) %}
+                    <tr>
+                        <th>{{ obj.title }}</th>
+                        {% for e in line %}
+                        <td>{{ e() }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

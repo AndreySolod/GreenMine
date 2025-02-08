@@ -1,0 +1,72 @@
+{% extends 'layout/base.html' %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/breadcrumb_wiki.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/jstree/jstree.css') }}">
+{% endblock %}
+
+{% macro build_route(obj) %}
+{% if obj.parent == none %}
+<li><a href="#">{{ obj.title }}</a></li>
+{% else %}
+{{ build_route(obj.parent) }}
+<li><a href="#">{{ obj.title }}</a></li>
+{% endif %}
+{% endmacro %}
+
+{% block page_content %}
+<div class="col-12">
+    <ol class="breadcrumb">
+        <li><a data-bs-toggle="offcanvas" href="#FastWikiStructure" role="button" aria-controls="FastWikiStructure">{{ _("Table of contents") }}</a></li>
+        {{ build_route(page) }}
+    </ol>
+    <div class="card w-100">
+        <div class="card-header">
+            <h3>{{ page.title|safe }}</h3>
+            <h5 class="card-subtitle">{{ page.description }}</h5>
+        </div>
+        <div class="card-body">
+            {% autoescape false %}
+            {{ page.text }}
+            {% endautoescape %}
+        </div>
+    </div>
+</div>
+
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="FastWikiStructure" aria-labelledby="FastWikiStructureLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="FastWikiStructureLabel">{{ _("Table of contents") }}</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ _('Close') }}"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div>
+            <div id="WikiStructureTree"></div>
+        </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/jstree.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+<script nonce="{{ csp_nonce() }}">
+    $('#WikiStructureTree').jstree({
+		'core' : {
+			'data' : {
+				"url" : "{{ url_for('wiki_pages.wiki_ajax_struct') }}",
+				"data" : function (node) {
+					return { "id" : node.id };
+				}
+			}
+		}
+	}).on('changed.jstree', function (e, data) {
+        var href = data.node.a_attr.href;
+        var parentId = data.node.a_attr.parent_id;
+        if(href == '#')
+        return '';
+        window.location.href = href;
+    });
+</script>
+{% endblock %}

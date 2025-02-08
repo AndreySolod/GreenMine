@@ -1,0 +1,102 @@
+services:
+    greenmine:
+        container_name: greenmine
+        image: greenmine:latest
+        restart: always
+        depends_on:
+          postgres:
+            condition: service_healthy
+          redis:
+            condition: service_started
+        volumes:
+            - "./config.py:/app/config.py"
+            - "./logs:/app/logs"
+            - "/etc/localtime:/etc/localtime:ro"
+        environment:
+            - ENVIRONMENT=DEVELOP
+            - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
+            - CELERY_BROKER_URL=redis://@redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        ports:
+            - 5000:5000
+        expose:
+            - 5000
+        networks:
+            - innerNetwork
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
+        stop_signal: SIGINT
+    celery_worker:
+        container_name: celery_worker
+        image: greenmine:latest
+        restart: always
+        depends_on:
+            greenmine:
+                condition: service_started
+        volumes:
+            - "./config.py:/app/config.py"
+            - "/etc/localtime:/etc/localtime:ro"
+        environment:
+            - ENVIRONMENT=DEVELOP
+            - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
+            - CELERY_BROKER_URL=redis://@redis:6379/0
+            - CELERY_RESULT_BACKEND=redis://redis:6379/0
+        networks:
+            - innerNetwork
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
+        stop_signal: SIGINT
+        command: celery -A run worker --loglevel=INFO
+    postgres:
+        image: postgres
+        restart: always
+        container_name: postgres
+        hostname: postgres
+        volumes:
+            #- "./postgres:/var/lib/postgresql/data"
+            - "/etc/localtime:/etc/localtime:ro"
+        networks:
+            - innerNetwork
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+            - POSTGRES_DB=postgres
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 1s
+            timeout: 1s
+            retries: 20
+
+    redis:
+        container_name: redis
+        image: redis
+        restart: always
+        hostname: redis
+        networks:
+            - innerNetwork
+        volumes:
+            - "/etc/localtime:/etc/localtime:ro"
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
+
+networks:
+    innerNetwork:
+        external: false

@@ -1,0 +1,57 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="projecttask-templates-table"
+               data-pagination="true"
+               data-show-columns="true"
+               data-show-toggle="true"
+               data-show-export="true"
+               data-show-multi-sort="true"
+               data-filter-control="true"
+               data-buttons-class="primary">
+            <thead>
+                <tr>
+                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTaskTemplate.id.info["label"] }}</th>
+                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.title.info["label"] }}</th>
+                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.description.info["label"] }}</th>
+                    <th data-field="task_title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.task_title.info["label"] }}</th>
+                    <th data-field="task_description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.task_description.info["label"] }}</th>
+                    <th data-field="task_tracker" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProjectTaskTracker"]|safe }}'>{{ models.ProjectTaskTemplate.task_tracker.info['label'] }}</th>
+                    <th data-field="task_priority" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProjectTaskPriority"]|safe }}'>{{ models.ProjectTaskTemplate.task_priority.info['label'] }}</th>
+                    <th data-field="task_estimation_time_cost" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.task_estimation_time_cost.info['label'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for template in templates %}
+                <tr style="cursor:pointer">
+                    <td>{{ template.id }}</td>
+                    <td>{{ template.title }}</td>
+                    {% if template.description == none %}
+                    <td></td>
+                    {% else %}
+                    <td>{{ BeautifulSoup(template.description, "lxml").text }}</td>
+                    {% endif %}
+                    <td>{{ template.task_title }}</td>
+                    {% if template.task_description == none %}
+                    <td></td>
+                    {% else %}
+                    <td>{{ BeautifulSoup(template.task_description, "lxml").text }}</td>
+                    {% endif %}
+                    <td>{{ template.task_tracker.title }}</td>
+                    <td>{{ template.task_priority.title }}</td>
+                    <td>{{ template.task_estimation_time_cost }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{{ load_bootstrap_table_js('projecttask-templates-table', 'admin.task_template_show', 'template_id') }}
+{% endblock %}

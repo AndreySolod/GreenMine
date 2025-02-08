@@ -1,0 +1,374 @@
+{% macro sidebar(data, current_user) %}
+{# На вход sidebar будет получать список data типа [SidebarElement] #}
+<aside class="app-side {{ current_user.environment_setting.sidebar_class }}" id="app-side">
+  <div class="side-content ">
+    <div class="sidebarNavScroll">
+      <nav class="side-nav">
+        <ul class="unifyMenu" id="unifyMenu">
+          {% autoescape false %}
+          {% for element in data %}
+          {{ element.sidebar() }}
+          {% endfor %}
+          {% endautoescape %}
+        </ul>
+    </nav>
+  </div>
+</div>
+</aside>
+{% endmacro %}
+
+{% macro form_label(element, class_name) %}
+{% if element.description %}
+{{ element.label(class=class_name, data_toggle="tooltip", data_placement="top", data_bs_title=element.description) }}
+{% else %}
+{{ element.label(class=class_name) }}
+{% endif %}
+{% endmacro %}
+
+{% macro form_element(form, element, spec_class='auto', inline=False, subdivide=3) %}
+  {% if not inline %}
+    {% if element.__class__.__name__ == 'BooleanField' %}
+    {{ form_label(element, "form-check-label") }}
+    {% else %}
+    {{ form_label(element, 'form-label') }}
+    {% endif %}
+  {% else %}
+  <div class="row align-items-center">
+    <div class="col-sm-{{ subdivide|string }}">
+      {% if element.__class__.__name__ == 'BooleanField' %}
+        {{ form_label(element, "form-check-label") }}
+      {% else %}
+        {{ form_label(element, "col-form-label") }}
+      {% endif %}
+    </div>
+  <div class="col-sm-{{ 12 - subdivide }}">
+  {% endif %}
+  {% if spec_class != 'auto' %}
+    {% if element.errors|length == 0 and not form.errors|length == 0 %}
+      {{ element(class=spec_class + " is-valid") }}
+    {% elif element.errors|length != 0 %}
+      {{ element(class=spec_class + " is-invalid") }}
+    {% else %}
+      {{ element(class=spec_class) }}
+    {% endif %}
+  {% else %}
+    {% if element.errors|length == 0 and not form.errors|length == 0 %}
+    {% set additional_class = ' is-valid' %}
+    {% elif element.errors|length != 0 %}
+    {% set additional_class = ' is-invalid' %}
+    {% else %}
+    {% set additional_class = '' %}
+    {% endif %}
+    {% if element.__class__.__name__ == 'BooleanField' %}
+    {{ element(class=("form-check-input" + additional_class)) }}
+    {% elif element.__class__.__name__ == 'SelectField' %}
+    {{ element(class=("form-select" + additional_class)) }}
+    {% else %}
+    {{ element(class=('form-control' + additional_class)) }}
+    {% endif %}
+  {% endif %}
+  {% if inline %}
+  </div>
+  </div>
+  {% endif %}
+  {% if element.errors|length == 0 and not form.errors|length == 0 %}
+    <div class="valid-feedback">
+      {{ _("All right") }}
+    </div>
+  {% elif element.errors|length != 0 %}
+    <div class="invalid-feedback">
+      {% for e in element.errors %}
+      {{ e }};
+      {% endfor %}
+      {#{{ "; ".join(element.errors) }} {# element.errors may contains a lazy string, we must convert this to string directly #}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro navbar(current_user, breadcrumbs=[]) %}
+<header class="app-header">
+  <div class="container-fluid">
+    <div class="row ">
+      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-8 col-8">
+        <a href="{{ url_for('main_page.main_page') }}" class="logo">
+          <img src="{{ url_for('static', filename='img/icon.png') }}" alt="App icon">
+        </a>
+        <a class="mini-nav-btn" href="#" id="app-side-mini-toggler">
+          <i class="fa-solid fa-chart-bar"></i>
+        </a>
+        <a href="#app-side" data-toggle="onoffcanvas" class="onoffcanvas-toggler" aria-expanded="true">
+          <i class="fa-solid fa-circle-chevron-right"></i>
+        </a>
+      </div>
+      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-4 col-4">
+        <ul class="header-actions">
+          <li class="dropdown">
+            <a class="dropdown-toggle" href="#" id="notifications" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <i class="fa-solid fa-bell"></i>
+            </a>
+            <ul id="user-notification-list" class="dropdown-menu dropdown-menu-right lg imp-notify">
+            {% if current_user.notifications %}
+              {% for notification in current_user.notifications[:5:] %}
+              <li>
+                <a href="{{ notification.link_to_object }}" class="dropdown-item">
+                  {% if notification.by_user == none %}
+                  {% set user_name = _("Deleted user") %}
+                  {% else %}
+                  {% set user_name = notification.by_user.title %}
+                  {% endif %}
+                  {% if notification.is_technical %}
+                  <div class="icon secondary">{{ user_name[0] }}</div>
+                  {% else %}
+                  <div class="icon">{{ user_name[0] }}</div>
+                  {% endif %}
+                  <div class="details">
+                    <p><span>{{ user_name }}</span>{{ gettext(notification.description, **notification.technical_info) }}</p>
+                  </div>
+                </a>
+              </li>
+              {% endfor %}
+              {% else %}
+              <div class='details' id="details-user-notification-missing">
+              <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+              </div>
+              {% endif %}
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a href="#" id="userSettings" class="user-settings" data-bs-toggle="dropdown"
+              aria-expanded="false">
+              <img class="avatar" src="{{ url_for('files.download_file', file_id=current_user.avatar_id) }}" alt="User Thumb">
+            </a>
+            <div class="dropdown-menu lg dropdown-menu-right" aria-labelledby="userSettings">
+              <ul class="user-settings-list">
+                <li>
+                  <a href="{{ url_for('users.user_show', user_id=current_user.id) }}">
+                    <div class="icon">
+                      <i class="fa-solid fa-user"></i>
+                    </div>
+                    <p>{{ _("Profile") }}</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ url_for('users.user_show', user_id=current_user.id) }}">
+                    <div class="icon red">
+                      <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <p>{{ _("Activity") }}</p>
+                  </a>
+                </li>
+                <li>
+                  <a href="{{ url_for('users.user_logout') }}">
+                    <div class="icon yellow">
+                      <i class="fa-solid fa-door-open"></i>
+                    </div>
+                    <p>{{ _("Exit") }}</p>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>
+{% endmacro %}
+
+{%  macro comment_text(comment, moment, current_user) %}
+<div class="comment" id="comment-{{ comment.id }}">
+  <div class="d-flex flex-start align-items-center">
+    <img class="rounded-circle shadow-1-strong me-3"
+      src="{{ url_for('files.download_file', file_id=comment.created_by.avatar_id) }}" alt="avatar" width="60"
+      height="60" />
+    <div class="media-body">
+      <h5 class="mt-0 media-heading"><a href="{{ url_for('users.user_show', user_id=comment.created_by.id) }}">{{ comment.created_by.title }}</a> <span class="date">{{ moment(comment.created_at).fromNow() }}</span></h5>
+      <p class="text-muted small mb-0">
+        {{ comment.created_by.position.title }}
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-3 mb-4 pb-2">
+    {% autoescape false %}
+    {{ comment.text }}
+    {% endautoescape %}
+  </div>
+
+  <div class="comments-footer clearfix">
+    <ul>
+      <li>
+        {% if comment.has_reaction_by_user(current_user, True) %}
+        <a href="#" class="comment-reaction-high high" data-comment-id="{{ comment.id }}" id="positive-reaction-for-comment-{{ comment.id }}"><span class="count">{{ comment.positive_reactions_count() }}</span><i class="fa-solid fa-thumbs-up"></i></a>
+        {% else %}
+        <a href="#" class="comment-reaction-high high" data-comment-id="{{ comment.id }}" id="positive-reaction-for-comment-{{ comment.id }}"><span class="count">{{ comment.positive_reactions_count() }}</span><i class="fa-regular fa-thumbs-up"></i></a>
+        {% endif %}
+      </li>
+      <li>
+        {% if comment.has_reaction_by_user(current_user, False) %}
+        <a href="#" class="comment-reaction-low low" data-comment-id="{{ comment.id }}" id="negative-reaction-for-comment-{{ comment.id }}"><span class="count">{{ comment.negative_reactions_count() }}</span><i class="fa-solid fa-thumbs-down"></i></a>
+        {% else %}
+        <a href="#" class="comment-reaction-low low" data-comment-id="{{ comment.id }}" id="negative-reaction-for-comment-{{ comment.id }}"><span class="count">{{ comment.negative_reactions_count() }}</span><i class="fa-regular fa-thumbs-down"></i></a>
+        {% endif %}
+      </li>
+      <li>
+        <a href="#addCommentModal" data-bs-toggle="modal" data-comment-id="{{ comment.id }}">Ответить</a>
+      </li>
+    </ul>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro comment_list(comments, moment, current_user, reply_to_id=none, default_shift=40) %}
+{% for comment in comments %}
+  {% if comment.reply_to_id == reply_to_id %}
+    <div class="media">
+      {{ comment_text(comment, moment, current_user) }}
+      <hr />
+      {% if comment.replyed_comments|length != 0 %}
+      {% set new_style = {'padding-left': default_shift|string + 'px'} %}
+        <div class="media" {{ new_style|as_style }} id="comment-media-{{ comment.id }}">
+          {{ comment_list(comments, moment, current_user, comment.id, default_shift) }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+{% endfor %}
+{% endmacro %}
+
+{% macro object_comments(object_with_comments, moment, comment_form, current_user, roles=none) %}
+<div class="row g-3">
+  <div class="col-2">
+    {% if roles.project_role_can_make_action(current_user, object_with_comments, 'add_comment') %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommentModal">
+      <i class="fa-solid fa-square-plus"></i> {{ _("Add new comment") }}</button>
+    {% endif %}
+  </div>
+  <div class="col-12">
+    {% if object_with_comments.comments|length != 0 %}
+      <div class="comment-list" id="comment-list">
+        {% if current_user.environment_setting.comment_order_asc %}
+        {{ comment_list(object_with_comments.comments, moment, current_user, default_shift=current_user.environment_setting.comment_reply_padding) }}
+        {% else %}
+        {{ comment_list(object_with_comments.comments_desc, moment, current_user, default_shift=current_user.environment_setting.comment_reply_padding) }}
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="comment-list" id="comment-list">
+        <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+      </div>
+      {% endif %}
+  </div>
+</div>
+{% if roles.project_role_can_make_action(current_user, object_with_comments, 'add_comment') %}
+<div class="modal fade" id="addCommentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addCommentModalLabel">{{ _("Add new comment") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group row">
+          {% set comment_form = comment_form() %}
+          {{ form_element(comment_form, comment_form.text) }}
+        </div>
+        {{ comment_form.reply_to_id(style="display: none") }}
+      </div>
+      <div class="modal-footer">
+        {{ comment_form.submit(class='btn btn-primary') }}
+      </div>
+    </div>
+  </div>
+</div>
+{{ comment_form.load_comment_script(object_with_comments) }}
+{% endif %}
+{% endmacro %}
+
+{% macro history_list(history, moment) %}
+{% for event in history %}
+<div class="media">
+  <div class="d-flex flex-start align-items-center">
+    {% if event.created_by_id != None %}
+    <img class="rounded-circle shadow-1-strong me-3"
+      src="{{ url_for('files.download_file', file_id=event.created_by.avatar_id) }}" alt="avatar" width="60"
+      height="60" />
+    <div class="media-body">
+      <h5 class="mt-0 media-heading"><a href="{{ url_for('users.user_show', user_id=event.created_by_id) }}">{{ event.created_by.title }}</a> <span class="date">{{ moment(event.created_at).fromNow() }}</span></h5>
+      <p class="text-muted small mb-0">
+        {{ event.created_by.position.title }}
+      </p>
+    </div>
+    {% else %}
+    <img class="rounded-circle shadow-1-strong me-3"
+      src="#" alt="avatar" width="60"
+      height="60" />
+    <div class="media-body">
+      <h5 class="mt-0 media-heading"><a href="#">{{ _("Removed user") }}</a> <span class="date">{{ moment(event.created_at).fromNow() }}</span></h5>
+      <p class="text-muted small mb-0">
+        {{ pgettext("woman", "(Missing)") }}
+    </p>
+    </div>
+    
+    {% endif %}
+  </div>
+
+  <div class="mt-3 mb-4 pb-2">
+    {{ event.as_markup_text() }}
+  </div>
+</div>
+<hr />
+{% endfor %}
+{% endmacro %}
+
+{% macro object_history(object_with_history, moment, current_user) %}
+{% if object_with_history.history|length != 0 %}
+<div id="div-history-list" class="history-list">
+  {% if current_user.environment_setting.comment_order_asc %}
+    {{ history_list(object_with_history.history, moment) }}
+  {% else %}
+    {{ history_list(reversed(object_with_history.history, moment)) }}
+  {% endif %}
+</div>
+{% else %}
+<div id="div-history-list" class="history-list">
+  <p id="p-history-missing" class="text-center text-muted">{{ pgettext('woman', '(Missing)') }}</p>
+</div>
+{% endif %}
+{{ object_with_history.__class__.history.prop.entity.class_.load_history_script(object_with_history) }}
+{% endmacro %}
+
+
+{% macro bootstrap_table_icons() %}
+{% set icons = {"columns": "fa-solid fa-list-ul",
+                      "fullscreen": "fa-solid fa-arrows-up-down-left-right",
+                      "detailOpen": "fa-solid fa-plus",
+                      "detailClose": "fa-solid fa-minus",
+                      "paginationSwitchDown": "fa-solid fa-square-caret-down",
+                      "paginationSwitchUp": "fa-solid fa-square-caret-up",
+                      "toggleOff": "fa-solid fa-toggle-off",
+                      "toggleOn": "fa-solid fa-toggle-on",
+                      "export": "fa-solid fa-file-export",
+                      "sort": "fa-solid fa-sort",
+                      "plus": "fa-solid fa-plus",
+                      "minus": "fa-solid fa-minus"} %}
+{{ icons|escapejs }}
+{% endmacro %}
+
+
+{% macro load_bootstrap_table_js(table_id, link_class, link_attr, forbidden_field=[]) %}
+<script nonce="{{ csp_nonce() }}">
+  $(function() {
+    $('#{{ table_id }}').bootstrapTable({
+              icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+              buttonsClass: 'primary',
+              exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
+              onClickRow: function(row, element, field) {
+                location = "{{ url_for(link_class, **{link_attr: '__row_id'}) }}".replace("__row_id", row.id)
+              }
+          })
+  });
+</script>
+{% endmacro %}

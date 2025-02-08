@@ -1,0 +1,55 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="issue-templates-table"
+               data-pagination="true"
+               data-show-columns="true"
+               data-show-toggle="true"
+               data-show-export="true"
+               data-show-multi-sort="true"
+               data-filter-control="true"
+               data-buttons-class="primary">
+            <thead>
+                <tr>
+                    <th data-field="id" data-sortable="true" data-align="center">{{ models.IssueTemplate.id.info["label"] }}</th>
+                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.title.info["label"] }}</th>
+                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.description.info["label"] }}</th>
+                    <th data-field="issue_title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_title.info["label"] }}</th>
+                    <th data-field="issue_description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_description.info["label"] }}</th>
+                    <th data-field="issue_fix" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_fix.info["label"] }}</th>
+                    <th data-field="issue_technical" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_technical.info["label"] }}</th>
+                    <th data-field="issue_riscs" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_riscs.info["label"] }}</th>
+                    <th data-field="issue_cvss" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_cvss.info["label"] }}</th>
+            </thead>
+            <tbody>
+                {% for template in templates %}
+                <tr style="cursor:pointer">
+                    <td>{{ template.id }}</td>
+                    <td>{{ template.title }}</td>
+                    <td>{{ BeautifulSoup(template.description, "lxml").text }}</td>
+                    <td>{{ template.issue_title }}</td>
+                    <td>{{ BeautifulSoup(template.issue_description, "lxml").text }}</td>
+                    <td>{{ BeautifulSoup(template.issue_fix, "lxml").text }}</td>
+                    <td>{{ BeautifulSoup(template.issue_technical, "lxml").text }}</td>
+                    <td>{{ BeautifulSoup(template.issue_riscs, "lxml").text }}</td>
+                    {% if template.issue_cvss != none %}
+                    <td>{{ template.issue_cvss }}</td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{{ load_bootstrap_table_js('issue-templates-table', 'admin.issue_template_show', 'template_id') }}
+{% endblock %}

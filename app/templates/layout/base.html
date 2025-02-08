@@ -1,0 +1,338 @@
+{% from 'layout/_macrosses.html' import navbar, sidebar %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Pentest Collaboration Framework" />
+	<meta name="keywords" content="Pentest, Pentest-Collaboration, In-Develop" />
+	<meta name="author" content="Tovarisch Stalin" />
+	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.webp') }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% if title %}{{ title }} - PCF{% else %}{{ _("Welcome to PCF") }}{% endif %}{% endblock %}</title>
+    {% block styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" nonce="{{ csp_nonce() }}">
+		{% if not current_user.is_anonymous %}
+		<link rel="stylesheet" href="{{ url_for('static', filename='js/highlight/styles/' + current_user.programming_language_theme.relative_path()) }}" nonce="{{ csp_nonce() }}">
+        {% endif %}
+		{% if not (ckeditor_height) is defined %}
+		<style nonce="{{ csp_nonce() }}">
+			.ck-editor__editable_inline {
+				min-height: 400px;
+			}
+		</style>
+		{% else %}
+		<style nonce="{{ csp_nonce() }}">
+			.ck-editor__editable_inline {
+				min-height: {{ ckeditor_height }};
+			}
+		</style>
+		{% endif %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome/css/all.min.css') }}" nonce="{{ csp_nonce() }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/iconmoon/style.css') }}" nonce="{{ csp_nonce() }}">
+        {% if not (need_main_style) is defined or need_main_style %}
+			{% if not current_user.is_anonymous %}
+			<style nonce="{{ csp_nonce() }}">
+				:root {
+					--main-color: {{ current_user.theme_style.main_color }};
+					--neightboring-main-color: {{ current_user.theme_style.neightboring_main_color }};
+					--secondary-main-color: {{ current_user.theme_style.secondary_main_color }};
+					--main-text-color: {{ current_user.theme_style.main_text_color }};
+					--hovering-main-element-color: {{ current_user.theme_style.hovering_main_element_color }};
+					--sidebar-background-color: {{ current_user.theme_style.sidebar_background_color }};
+					--main-content-background-color: {{ current_user.theme_style.main_content_background_color }};
+					--color-card-background-header: {{ current_user.theme_style.color_card_background_header }};
+					--color-chats-hour: {{ current_user.theme_style.color_chats_hour }};
+					--color-chats-my-message: {{ current_user.theme_style.color_chats_my_message }};
+					--color-chats-my-message-text: {{ current_user.theme_style.color_chats_my_message_text }};
+					--color-chats-other-message: {{ current_user.theme_style.color_chats_other_message }};
+					--color-chats-other-message-text: {{ current_user.theme_style.color_chats_other_message_text }};
+					--bs-card-color: {{ current_user.theme_style.bs_card_color }};
+				}
+			</style>
+			{% else %}
+			<style nonce="{{ csp_nonce() }}">
+				:root {
+					--main-color: #0a7700;
+					--neightboring-main-color: #167000;
+					--secondary-main-color: #65ab53;
+					--main-text-color: #ffffff;
+					--hovering-main-element-color: #1fb7dd;
+					--sidebar-background-color: #2b394c;
+					--main-content-background-color: #e6ecf3;
+					--color-card-background-header: #f0f4f9;
+					--color-chats-hour: #004715;
+					--color-chats-my-message: #89ff99;
+					--color-chats-my-message-text: #000000;
+					--color-chats-other-message: #e6ecf3;
+					--color-chats-other-message-text: #000000;
+					--bs-card-color: #000000;
+				}
+			</style>
+			{% endif %}
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/main.min.css') }}" type="text/css" nonce="{{ csp_nonce() }}">
+        {% endif %}
+		{{ side_libraries.get_css_required_libraries() }}
+    {% endblock %}
+</head>
+<body>
+    {% block loading_wrapper %}
+    {% if not (loading_wrapper is defined) or loading_wrapper %}
+        <div class="loading-wrapper">
+            <div class="loading"></div>
+        </div>
+    {% endif %}
+    {% endblock %}
+
+	<div class="app-wrap">
+		{% if not (need_main_style is defined) or need_main_style %}
+		{{ navbar(current_user) }}
+        {% endif %}
+		<!-- END: .app-heading -->
+		<!-- BEGIN .app-container -->
+		<div class="app-container">
+			<!-- BEGIN .app-side -->
+			{% if not (need_main_style is defined) or need_main_style %}
+			{{ sidebar(sidebar_data, current_user) }}
+			{% endif %}
+
+			<!-- BEGIN .app-main -->
+			<div class="app-main">
+				<!-- BEGIN .main-heading -->
+				{% if not (need_main_style is defined) or need_main_style %}
+				<header class="main-heading">
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+								<div class="page-icon">
+									<i class="{{ current_object.icon }}"></i>
+								</div>
+								<div class="page-title">
+									<h5>{{ current_object.title }}</h5>
+									{% if current_object.subtitle|length != 0 %}
+									<h6 class="sub-heading">{{ current_object.subtitle }}</h6>
+									{% endif %}
+								</div>
+							</div>
+							<div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+								<div class="right-actions">
+									{% autoescape false %}
+									{{ current_object.print_actions() }}
+									{% endautoescape %}
+								</div>
+							</div>
+						</div>
+					</div>
+				</header>
+				{% endif %}
+				<!-- END: .main-heading -->
+				<!-- BEGIN .main-content -->
+				<div class="main-content">
+					{% if flash_in_header is defined and flash_in_header %}
+						{% with messages = get_flashed_messages(with_categories=true) %}
+							{% if messages %}
+								<div class="row gutters">
+									<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+									{% for category, message in messages %}
+										<div class="alert custom alert-{{ category }}">
+											{% if category == 'info' %}
+											<i class="fa-solid fa-circle-info"></i>{{ message }}
+											{% elif category == 'warning' %}
+											<i class="fa-solid fa-bolt"></i>{{ message }}
+											{% elif category == 'danger' %}
+											<i class="fa-solid fa-triangle-exclamation"></i>{{ message }}
+											{% elif category == 'success' %}
+											<i class="fa-solid fa-check"></i>{{ message }}
+											{% endif %}
+										</div>
+									{% endfor %}
+									</div>
+								</div>
+							{% endif %}
+						{% endwith %}
+					{% endif %}
+					
+					{% block page_content %}
+					{% endblock %}
+				</div>
+				<!-- END: .main-content -->
+			</div>
+			<!-- END: .app-main -->
+		</div>
+		<!-- END: .app-container -->
+		<!-- BEGIN .main-footer -->
+		<footer class="main-footer fixed-btm">
+			{% block page_footer %}
+			{% endblock %}
+		</footer>
+		<!-- END: .main-footer -->
+	</div>
+	{# block safe load params #}
+	{% block script %}
+	<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+	{% if not (need_main_style is defined) or need_main_style %}
+	<script src="{{ url_for('static', filename='npm/node_modules/socket.io-client/dist/socket.io.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+	<script src="{{ url_for('static', filename='js/main_helpers.js') }}" nonce="{{ csp_nonce() }}"></script>
+	{{ side_libraries.get_js_required_libraries(csp_nonce=csp_nonce()) }}
+	<script lang="javascript" nonce="{{ csp_nonce() }}">
+		
+		if("{{ current_user.is_anonymous }}" !== 'True') {
+			const userSocket = io('/user');
+			userSocket.on('connect', function() {
+				userSocket.emit('join_room', "{{ current_user.id }}");
+			});
+			userSocket.on('new notification', function(data) {
+				userSocket.emit('get notification', { notification_id: data['notification_id'], lang: "{{ g.locale }}" }, function(data) {
+					let notification_list = document.getElementById('user-notification-list');
+					let no_data_message = document.getElementById('details-user-notification-missing');
+					if(no_data_message !== null) {
+						no_data_message.remove();
+					};
+					let new_icon = document.createElement('div');
+					new_icon.classList.add('icon');
+					new_icon.innerHTML = data.by_user[0];
+					let new_details = document.createElement('div');
+					new_details.classList.add('details');
+					let new_p_details = document.createElement('p');
+					new_p_details.innerHTML = `<span>${data.by_user}</span> ${data.description}`;
+					new_details.appendChild(new_p_details);
+					let new_a = document.createElement('a');
+					new_a.href = data.link;
+					new_a.classList.add('dropdown-item');
+					new_a.appendChild(new_icon);
+					new_a.appendChild(new_details);
+					let new_li = document.createElement('li');
+					new_li.appendChild(new_a);
+					notification_list.prepend(new_li);
+					$.notify(data.description, "info", {
+						clickToHide: true,
+						autoHide: true,
+						autoHideDelay: 5000,
+						globalPosition: 'top right'
+					})
+				});
+			});
+			document.getElementById('app-side-mini-toggler').addEventListener('click', function() {
+				userSocket.emit("toggle sidebar");
+			});
+		};
+		
+	</script>
+	{% if not (flash_in_header is defined) or not flash_in_header  %}
+		{% with messages = get_flashed_messages(with_categories=true) %}
+		{% for category, message in messages %}
+			<script nonce="{{ csp_nonce() }}" lang="javascript">
+				$.notify("{{ message }}", "{{ category }}", {
+					clickToHide: true,
+					autoHide: true,
+					autoHideDelay: 5000,
+					globalPosition: 'top right'
+				})
+			
+			</script>
+		{% endfor %}
+	{% endwith %}
+	{% endif %}
+	<script src="{{ url_for('static', filename='js/unifyMenu.js') }}" nonce="{{ csp_nonce() }}"></script>
+	<script src="{{ url_for('static', filename='js/onoffcanvas.js') }}" nonce="{{ csp_nonce() }}"></script>
+	<script src="{{ url_for('static', filename='js/main_style_script.js') }}" nonce="{{ csp_nonce() }}"></script>
+	{{ moment.include_moment(local_js=url_for('static', filename='npm/node_modules/moment/min/moment-with-locales.min.js'), locale=g.locale, csp_nonce=csp_nonce()) }}
+	{% endif %}
+
+	{% if side_libraries.is_library_required('ckeditor') %}
+      <script nonce="{{ csp_nonce() }}">
+		var CKEDITOR_LIST = {}
+
+document.querySelectorAll('.wysiwyg').forEach(item => {
+    ClassicEditor
+        .create( item, {
+                // Changing the language of the interface requires loading the language file using the <script> tag.
+                 language: '{{ g.locale|escapejs }}',
+                list: {
+                    properties: {
+                        styles: true,
+                        startIndex: true,
+                        reversed: true
+                    }
+                },
+                // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: '{{ _("Paragraph") }}', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: '{{ _("Header 1") }}', class: 'ck-heading_heading1' },
+                        { model: 'heading2', view: 'h2', title: '{{ _("Header 2") }}', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: '{{ _("Header 3") }}', class: 'ck-heading_heading3' },
+                        { model: 'heading4', view: 'h4', title: '{{ _("Header 4") }}', class: 'ck-heading_heading4' },
+                        { model: 'heading5', view: 'h5', title: '{{ _("Header 5") }}', class: 'ck-heading_heading5' },
+                        { model: 'heading6', view: 'h6', title: '{{ _("Header 6") }}', class: 'ck-heading_heading6' }
+                    ]
+                },
+                codeBlock: {
+                    languages: JSON.parse("{{ current_user.get_js_list_programming_languages()|escapejs }}").languages,
+                },
+                // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
+                placeholder: '{{ _("Enter text here") }}',
+                // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+                fontFamily: {
+                    options: [
+                        'default',
+                        'Arial, Helvetica, sans-serif',
+                        'Courier New, Courier, monospace',
+                        'Georgia, serif',
+                        'Lucida Sans Unicode, Lucida Grande, sans-serif',
+                        'Tahoma, Geneva, sans-serif',
+                        'Times New Roman, Times, serif',
+                        'Trebuchet MS, Helvetica, sans-serif',
+                        'Verdana, Geneva, sans-serif'
+                    ],
+                    supportAllValues: true
+                },
+                fontSize: {
+                    options: [ 10, 12, 14, 'default', 18, 20, 22 ],
+                    supportAllValues: true
+                },
+            mention: {
+                    feeds: [
+                        {
+                            marker: '@',
+                            feed: JSON.parse("{{ models.User.get_list_mentions()|escapejs }}").mentions,
+                            minimumCharacters: 1
+                        }
+                    ]
+                },
+				simpleUpload: {
+					uploadUrl: '{{ url_for("files.upload_file") }}',
+					withCredentials: true,
+					headers: {
+						'X-CSRFToken': '{{ csrf_token() }}',
+					}
+				},
+		} )
+		.then( editor => {
+			window.editor = editor;
+            CKEDITOR_LIST[item.getAttribute('id')] = editor;
+		} )
+		.catch( err => {
+			console.error( err.stack );
+		} );
+})
+
+
+	  </script>
+	{% endif %}
+	{% if side_libraries.is_library_required('bootstrap_table') %}
+	{% if g.locale == 'ru' %}
+	<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='npm/node_modules/bootstrap-table/dist/locale/bootstrap-table-ru-RU.min.js') }}"></script>
+	{% elif g.locale == 'en' %}
+	<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='npm/node_modules/bootstrap-table/dist/locale/bootstrap-table-en-US.min.js') }}"></script>
+	{% endif %}
+	{% endif %}
+	{% if not current_user.is_anonymous %}
+	<script src="{{ url_for('static', filename='js/highlight/highlight.min.js') }}" nonce="{{ csp_nonce() }}"></script>
+    <script nonce="{{ csp_nonce() }}">hljs.highlightAll();</script>
+	{% endif %}
+	{{ side_libraries.render_all_additional_scripts(csp_nonce=csp_nonce()) }}
+	{% endblock %}
+</body>
+</html>

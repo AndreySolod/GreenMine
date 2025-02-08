@@ -1,0 +1,832 @@
+User:
+    - admin:
+        login: "admin"
+        first_name: "Admin"
+        last_name: "GreenMine"
+        email: "admin@localhost.com"
+        middle_name:
+        manager: admin
+        position: admin
+        programming_language_theme: tomorrow-night-bright
+        programming_languages:
+            - c
+            - c++
+            - bash
+            - docker
+            - python
+            - haskell
+        is_administrator: true
+        _function__set_password: "admin"
+    - worker:
+        login: "worker"
+        first_name: "Worker"
+        last_name: "GreenMine"
+        middle_name: "Black-Skin"
+        email: "worker@localhost.com"
+        manager: admin
+        is_administrator: false
+        position: worker
+        programming_language_theme: tomorrow-night-bright
+        _function__set_password: "worker"
+
+
+UserPosition:
+    - admin:
+        title: "Администратор"
+        is_default: false
+    - worker:
+        title: "Раб бесправный"
+        is_default: true
+
+UserThemeStyle:
+    - classic_green:
+        title: "Классический зелёный"
+        is_default: true
+        main_color: "#0a7700"
+        neightboring_main_color: "#167000"
+        secondary_main_color: "#65ab53"
+        main_text_color: "#ffffff"
+        hovering_main_element_color: "#1fb7dd"
+        sidebar_background_color: "#2b394c"
+        main_content_background_color: "#e6ecf3"
+        color_card_background_header: "#f0f4f9"
+        color_chats_hour: "#004715"
+        color_chats_my_message: "#89ff99"
+        color_chats_my_message_text: "#000000"
+        color_chats_other_message: "#e6ecf3"
+        color_chats_other_message_text: "#000000"
+        bs_card_color: "#000000"
+        fixed_sidebar: false
+        sidebar_position_left: true
+    - classic_blue:
+        title: "Классический голубой"
+        is_default: false
+        main_color: "#4266b2"
+        neightboring_main_color: "#3b5b9f"
+        secondary_main_color: "#5da9ff"
+        main_text_color: "#ffffff"
+        hovering_main_element_color: "#65ab53"
+        sidebar_background_color: "#2b394c"
+        main_content_background_color: "#e6ecf3"
+        color_card_background_header: "#f0f4f9"
+        color_chats_hour: "#000147"
+        color_chats_my_message: "#70bfff"
+        color_chats_my_message_text: "#000000"
+        color_chats_other_message: "#e6ecf3"
+        color_chats_other_message_text: "#000000"
+        bs_card_color: "#000000"
+        fixed_sidebar: false
+        sidebar_position_left: true
+    - right_green:
+        title: "Правый зелёный"
+        is_default: false
+        main_color: "#0a7700"
+        neightboring_main_color: "#167000"
+        secondary_main_color: "#65ab53"
+        main_text_color: "#ffffff"
+        hovering_main_element_color: "#1fb7dd"
+        sidebar_background_color: "#2b394c"
+        main_content_background_color: "#e6ecf3"
+        color_card_background_header: "#f0f4f9"
+        color_chats_hour: "#004715"
+        color_chats_my_message: "#89ff99"
+        color_chats_my_message_text: "#000000"
+        color_chats_other_message: "#e6ecf3"
+        color_chats_other_message_text: "#000000"
+        bs_card_color: "#000000"
+        fixed_sidebar: false
+        sidebar_position_left: false
+    - right_blue:
+        title: "Правый голубой"
+        is_default: false
+        main_color: "#4266b2"
+        neightboring_main_color: "#3b5b9f"
+        secondary_main_color: "#5da9ff"
+        main_text_color: "#ffffff"
+        hovering_main_element_color: "#65ab53"
+        sidebar_background_color: "#2b394c"
+        main_content_background_color: "#e6ecf3"
+        color_card_background_header: "#f0f4f9"
+        color_chats_hour: "#000147"
+        color_chats_my_message: "#70bfff"
+        color_chats_my_message_text: "#000000"
+        color_chats_other_message: "#e6ecf3"
+        color_chats_other_message_text: "#000000"
+        bs_card_color: "#000000"
+        fixed_sidebar: false
+        sidebar_position_left: false
+    - fixed_green_left:
+        title: "Фиксированный левый зелёный"
+        is_default: false
+        main_color: "#0a7700"
+        neightboring_main_color: "#167000"
+        secondary_main_color: "#65ab53"
+        main_text_color: "#ffffff"
+        hovering_main_element_color: "#1fb7dd"
+        sidebar_background_color: "#2b394c"
+        main_content_background_color: "#e6ecf3"
+        color_card_background_header: "#f0f4f9"
+        color_chats_hour: "#004715"
+        color_chats_my_message: "#89ff99"
+        color_chats_my_message_text: "#000000"
+        color_chats_other_message: "#e6ecf3"
+        color_chats_other_message_text: "#000000"
+        bs_card_color: "#000000"
+        fixed_sidebar: true
+        sidebar_position_left: true
+    - fixed_green_right:
+        title: "Фиксированный правый зелёный"
+        main_color: "30a7700"
+        neightboring_main_color: "#167000"
+        secondary_main_color: "#65ab53"
+        main_text_color: "#ffffff"
+        hovering_main_element_color: "#1fb7dd"
+        sidebar_background_color: "#2b394c"
+        main_content_background_color: "#e6ecf3"
+        color_card_background_header: "#f0f4f9"
+        color_chats_hour: "#004715"
+        color_chats_my_message: "#89ff99"
+        color_chats_my_message_text: "#000000"
+        color_chats_other_message: "#e6ecf3"
+        color_chats_other_message_text: "#000000"
+        bs_card_color: "#000000"
+        fixed_sidebar: true
+        sidebar_position_left: false
+
+
+ProgrammingLanguageClass:
+    - imperative:
+        title: "Императивные языки"
+    - declarative:
+        title: "Декларативные языки"
+    - logs:
+        title: "Языки логов"
+    - configs:
+        title: "Языки конфигураций"
+    - noclass:
+        title: "Бесклассовые языки"
+    - querylang:
+        title: "Query Language"
+
+
+ProgrammingLanguage:
+    - c:
+        title: "C"
+        alias: "c"
+        is_default: true
+        language_class: imperative
+    - c++:
+        title: "C++"
+        alias: "c++"
+        is_default: true
+        language_class: imperative
+    - bash:
+        title: "Bash"
+        alias: "bash"
+        is_default: true
+        language_class: imperative
+    - docker:
+        title: "Docker"
+        alias: "dockerfile"
+        is_default: false
+        language_class: configs
+    - python:
+        title: "Python"
+        alias: "python"
+        is_default: true
+        language_class: imperative
+    - haskell:
+        title: "Haskell"
+        alias: "haskell"
+        is_default: false
+        language_class: imperative
+    - 1c:
+        title: "1C"
+        alias: "1c"
+        is_default: false
+        language_class: imperative
+    - 4d:
+        title: "4D"
+        alias: "4d"
+        is_default: false
+        language_class: imperative
+    - abap:
+        title: "ABAP"
+        alias: "abap"
+        is_default: false
+        language_class: imperative
+    - accesslog:
+        title: "Access logs"
+        alias: "accesslog"
+        is_default: true
+        language_class: logs
+    - ada:
+        title: "Ada"
+        alias: "ada"
+        is_default: true
+        language_class: imperative
+    - apex:
+        title: "Apex"
+        alias: "apex"
+        is_default: false
+        language_class: imperative
+    - arduino:
+        title: "Arduino"
+        alias: "arduino"
+        is_default: true
+        language_class: imperative
+    - arm:
+        title: "ARM assembler"
+        alias: "arm"
+        is_default: false
+        language_class: noclass
+    - avrasm:
+        title: "AVR assembler"
+        alias: "avrasm"
+        is_default: false
+        language_class: noclass
+    - actionscript:
+        title: "ActionScript"
+        alias: "actionscript"
+        is_default: false
+        language_class: imperative
+    - alanif:
+        title: "Alan IF"
+        alias: "alan"
+        is_default: false
+        language_class: imperative
+    - alan:
+        title: "Alan"
+        alias: "ln"
+        is_default: false
+        language_class: imperative
+    - angelscript:
+        title: "AngelScript"
+        alias: "angelscript"
+        is_default: false
+        language_class: imperative
+    - apache:
+        title: "Apache"
+        alias: "apache"
+        is_default: true
+        language_class: configs
+    - basic:
+        title: "Basic"
+        alias: "basic"
+        is_default: true
+        language_class: imperative
+    - csharp:
+        title: "C#"
+        alias: "csharp"
+        is_default: true
+        language_class: imperative
+    - cmake:
+        title: "CMake"
+        alias: "cmake"
+        is_default: true
+        language_class: configs
+    - css:
+        title: "CSS"
+        alias: "css"
+        is_default: false
+        language_class: configs
+    - cisco:
+        title: "Cisco CLI"
+        alias: "cisco"
+        is_default: true
+        language_class: configs
+    - clojure:
+        title: "Clojure"
+        alias: "clojure"
+        is_default: true
+        language_class: declarative
+    - dns:
+        title: "DNS Zone file"
+        alias: "dns"
+        is_default: true
+        language_class: configs
+    - elixir:
+        title: "Elixir"
+        alias: "elixir"
+        is_default: true
+        language_class: declarative
+    - erlang:
+        title: "Erlang"
+        alias: "erlang"
+        is_default: true
+        language_class: declarative
+    - fortran:
+        title: "Fortran"
+        alias: "fortran"
+        is_default: true
+        language_class: imperative
+    - graphql:
+        title: "GraphQL"
+        alias: "graphql"
+        is_default: false
+        language_class: querylang
+    - http:
+        title: "HTTP"
+        alias: "http"
+        is_default: true
+        language_class: configs
+    - json:
+        title: "JSON"
+        alias: "json"
+        is_default: true
+        language_class: configs
+    - java:
+        title: "Java"
+        alias: "java"
+        is_default: true
+        language_class: imperative
+    - javascript:
+        title: "JavaScript"
+        alias: "javascript"
+        is_default: true
+        language_class: imperative
+    - julia:
+        title: "Julia"
+        alias: "julia"
+        is_default: true
+        language_class: declarative
+    - tex:
+        title: "LaTeX"
+        alias: "tex"
+        is_default: true
+        language_class: configs
+    - lisp:
+        title: "Lisp"
+        alias: "lisp"
+        is_default: true
+        language_class: declarative
+    - makefile:
+        title: "Makefile"
+        alias: "makefile"
+        is_default: true
+        language_class: configs
+    - markdown:
+        title: "Markdown"
+        alias: "markdown"
+        is_default: true
+        language_class: configs
+    - nginx:
+        title: "Nginx"
+        alias: "nginx"
+        is_default: true
+        language_class: configs
+    - plaintext:
+        title: "Plaintext"
+        alias: "plaintext"
+        is_default: true
+        language_class: configs
+    - php:
+        title: "PHP"
+        alias: "php"
+        is_default: true
+        language_class: imperative
+    - perl:
+        title: "Perl"
+        alias: "perl"
+        is_default: true
+        language_class: imperative
+    - pgsql:
+        title: "PostgreSQL & PL/pgSQL"
+        alias: "pgsql"
+        is_default: true
+        language_class: querylang
+    - powershell:
+        title: "PowerShell"
+        alias: "powershell"
+        is_default: true
+        language_class: imperative
+    - puppet:
+        title: "Puppet"
+        alias: "puppet"
+        is_default: true
+        language_class: configs
+    - qml:
+        title: "QML"
+        alias: "qml"
+        is_default: true
+        language_class: declarative
+    - r:
+        title: "R"
+        alias: "r"
+        is_default: true
+        language_class: imperative
+    - riscv:
+        title: "RISC-V Assembly"
+        alias: "riscv"
+        is_default: false
+        language_class: noclass
+    - ruby:
+        title: "Ruby"
+        alias: "ruby"
+        is_default: true
+        language_class: imperative
+    - rust:
+        title: "Rust"
+        alias: "rust"
+        is_default: true
+        language_class: declarative
+    - scss:
+        title: "SCSS"
+        alias: "scss"
+        is_default: false
+        language_class: configs
+    - sql:
+        title: "SQL"
+        alias: "sql"
+        is_default: true
+        language_class: querylang
+    - scala:
+        title: "Scala"
+        alias: "scala"
+        is_default: false
+        language_class: declarative
+    - shell:
+        title: "Shell"
+        alias: "shell"
+        is_default: true
+        language_class: imperative
+    - typescript:
+        title: "TypeScript"
+        alias: "typescript"
+        is_default: false
+        language_class: imperative
+    - unicornralislog:
+        title: "Unicorn Rails Log"
+        alias: "unicorn-rails-log"
+        is_default: true
+        language_class: logs
+    - vba:
+        title: "VBA"
+        alias: "vba"
+        is_default: true
+        language_class: imperative
+    - tsql:
+        title: "Transact-SQL"
+        alias: "tsql"
+        is_default: true
+        language_class: querylang
+    - vim:
+        title: "Vim Script"
+        alias: "vim"
+        is_default: false
+        language_class: imperative
+    - x86asm:
+        title: "x86 Assembly"
+        alias: "x86asm"
+        is_default: false
+        language_class: noclass
+    - x86asmatt:
+        title: "x86 Assembly (AT&T)"
+        alias: "x86asmatt"
+        is_default: false
+        language_class: noclass
+    - yaml:
+        title: "YAML"
+        alias: "yaml"
+        is_default: true
+        language_class: configs
+
+ProgrammingLanguageTheme:
+    - _import_module: 'gen_list_themes'
+
+ProjectTaskPriority:
+    - low:
+        title: "Низкий"
+        description: "Низкая вероятность успеха при попытке реализации"
+        is_default: true
+        color: null
+    - middle:
+        title: "Средний"
+        description: "Средняя вероятность успеха при попытке реализации"
+        color: "rgba(176, 0, 0, 0.2)"
+    - high:
+        title: "Высокий"
+        description: "Высокая вероятность успеха при попытке реализации"
+        color: "rgba(176, 0, 0, 0.35)"
+    - emergency:
+        title: "Срочный"
+        description: "Возможна эксплуатация уязвимости злоумышленниками"
+        color: "rgba(176, 0, 0, 0.5)"
+    - immediate:
+        title: "Немедленный"
+        description: "Данная уязвимость уже активно эксплуатируется злоумышленниками"
+        color: "rgba(176, 0, 0, 0.8)"
+
+ProjectTaskTracker:
+    - error:
+        title: "Ошибка конфигурации"
+        description: "Возможная ошибка и/или недоработка файла конфигурации, которая может создать вектор атаки"
+    - improvement:
+        title: "Улучшение"
+        description: "Анализ возможности улучшения конфигурации, вектор атаки маловероятен"
+    - cve:
+        title: "Критическая уязвимость"
+        description: "Возможная уязвимость, признанная разработчиками как CVE и которая не закрыта"
+
+TaskState:
+    - new:
+        title: "Новая"
+        description: "Задача только что была зарегистрирована"
+        color: "#34C6CD"
+        icon: "fa-solid fa-circle-dot"
+        can_switch_to_state:
+            - inprogress
+            - resolved
+            - canceled
+    - inprogress:
+        title: "В работе"
+        description: "Задача взята в разработку/анализ"
+        color: "#2618B1"
+        icon: "fa-solid fa-circle-play"
+        can_switch_to_state:
+            - resolved
+            - paused
+            - canceled
+    - resolved:
+        title: "Решена"
+        description: "Задача успешно выполнена"
+        color: "#25D500"
+        icon: "fa-solid fa-circle-check"
+    - paused:
+        title: "Приостановлена"
+        description: "Задача временно приостановлена, работа над ней не ведётся"
+        color: "#FFFF00"
+        icon: "fa-solid fa-circle-pause"
+        can_switch_to_state:
+            - inprogress
+            - resolved
+            - canceled
+    - canceled:
+        title: "Отменена"
+        color: "#FF0700"
+        icon: "fa-solid fa-circle-minus"
+        description: "Сделанная гипотеза о возможной проблеме не подтвердилась"
+
+OperationSystemFamily:
+    - windows:
+        title: "Windows"
+    - linux:
+        title: 'Linux'
+
+AccessProtocol:
+    - _import_module: "gen_list_access_protocols"
+
+DefaultPortAndTransportProto:
+    - _import_module: "gen_list_default_port_and_proto"
+
+ServicePortState:
+    - opened:
+        title: "Открыт"
+    - closed:
+        title: "Закрыт"
+    - filtered:
+        title: "Фильтруется"
+
+ServiceTransportLevelProtocol:
+    - tcp:
+        title: "TCP"
+    - udp:
+        title: "UDP"
+
+HashType:
+    - _import_module: "gen_list_hash_types"
+
+HashPrototype:
+    - _import_module: "gen_list_hash_prototypes"
+
+CheckWordlist:
+    - top10k:
+        title: "Топ 10 тысяч паролей"
+        description: "Топ 10 тысяч наиболее часто используемых паролей"
+    - top100k:
+        title: "Топ 100 тысяч паролей"
+        description: "Топ 100 тысяч наиболее часто встречающихся паролей"
+    - top1m:
+        title: "Топ 1 миллион паролей"
+        description: "Топ 1 миллион наиболее часто встречающихся паролей"
+
+IssueStatus:
+    - check:
+        title: "Нуждается в проверке"
+        description: "Проблема ещё не подтверждена"
+        color: "#00FFFF"
+    - recheck:
+        title: "Нуждается в повторной проверке"
+        description: "Наличие проблемы необходимо проверить ещё раз"
+        color: "#7FFFD4"
+    - confirmed:
+        title: "Подтверждена"
+        description: "Проблема действительно присутствует"
+        color: "#FF4500"
+    - notconfirmed:
+        title: "Не подтверждена"
+        description: "Проблема не подтверждена"
+        color: "#808000"
+    - pending:
+        title: "Рассматривается"
+        description: "Наличие проблемы на текущий момент только рассматривается"
+        color: "#1E90FF"
+    - fixing:
+        title: "В процессе исправления"
+        description: "Проблема находится в процессе исправления"
+        color: "#6B8E23"
+    - fixed:
+        title: "Исправлена"
+        description: "Проблема более не наблюдается"
+        color: "#228B22"
+
+NoteImportance:
+    - low:
+        title: 'Низкая'
+        color: Null
+    - medium:
+        title: 'Средняя'
+        color: 'rgba(236, 255, 64, 0.3)'
+    - high:
+        title: 'Высокая'
+        color: 'rgba(255, 196, 18, 0.6)'
+
+VulnerableEnvironmentType:
+    - docker:
+        title: 'Docker'
+        description: 'Docker - это платформа контейнеризации, предназначенная для создания изолированных сред'
+    - virtualbox:
+        title: 'VirtualBox'
+        description: 'VirtualBox - это решение для виртуализации операционных систем'
+
+DeviceType:
+    - webcam:
+        title: 'IP-камера'
+        description: "Различного рода камеры, которые могут сохранять или передавать изображения и/или видео."
+        nmap_name: "webcam"
+    - ip_phone:
+        title: 'VoIP-телефон'
+        description: "Телефон, поддерживающий возможность использования протокола VoIP"
+        nmap_name: "VoIP phone"
+    - pbx:
+        title: "PBX"
+        description: "Private Branch Exchange (PBX) - Частная телефонная станция - маршрутизирует телефонные звонки внутри частной организации и подключает их к телефонной сети общего пользования, или VOIP"
+        nmap_name: "PBX"
+    - pda:
+        title: "PDA"
+        description: "Карманный компьютер. Устройства, которые так же являются и телефонами, относятся к категории 'Телефоны'"
+        nmap_name: "PDA"
+    - phone:
+        title: "Телефон"
+        description: "Телефон, поддерживающий работу в сети, который не является VoIP-телефоном. Обычно устройства из этой категории - мобильные телефоны"
+        nmap_name: "phone"
+    - power_device:
+        title: 'Устройства регулирования мощности'
+        description: 'Разнообразные устройства регулирования мощности, такие как источники бесперебойного питания и устройства защиты от перенапряжения'
+        nmap_name: 'power-device'
+    - printer:
+        title: 'Принтер/МФУ'
+        description: "Принтера, доступные по сети, включая принтера со встроенным принт сервером"
+        nmap_name: 'printer'
+    - computer:
+        title: 'Компьютер'
+        nmap_name: 'general purpose'
+    - router:
+        title: "Маршрутизатор"
+        description: "Устройство уровня L3, соединяющее множество сетей, и умеющее пересылать пакеты между соединёнными сетями."
+        nmap_name: "router"
+    - switch:
+        title: 'Коммутатор'
+        description: "Устройство, соединяющее сегменты сети путём ретрансляции всего трафика на выходные порты. Имеет встроенную таблицу сопоставления MAC-адреса и порта, что позволяет уменьшать нагрузку в сети"
+        nmap_name: "switch"
+    - hub:
+        title: "Хаб"
+        description: "Устройство, соединяющее сегменты сети путём ретрансляции всего трафика на все выходные порты. Отличается от свича тем, что пересылает весь входящий трафик на все порты."
+        nmap_name: "hub"
+    - nas:
+        title: "NAS"
+        description: "Устройство, предназначенное для хранения данных на общем сетевом ресурсе. Так же может поддерживать множество других функций."
+        nmap_name: 'storage-misc'
+    - game_console:
+        title: "Игровая консоль"
+        description: "Игровая видео-консоль наподобие Xbox или PlayStation"
+        nmap_name: 'game console'
+    - load_balancer:
+        title: "Балансировщик нагрузки"
+        description: "Устройство, распределяющее входящий трафик между несколькими устройствами для уменьшения нагрузки на каждое устройство"
+        nmap_name: 'load balancer'
+    - media_device:
+        title: "Медиа-устройство"
+        description: "В эту категорию входят все виды аудиовизуального оборудования, включая портативные музыкальные проигрыватели, домашние аудио системы, ТВ и проекторы."
+        nmap_name: 'media device'
+    - firewall:
+        title: "Фаэрволл"
+        description: "Устройство, контролирующее, какому трафику разрешается входить или выходить из заданной сети."
+        nmap_name: 'firewall'
+    - another:
+        title: "Другое"
+        description: "Другие устройства, не относящиеся ни к одной из категорий"
+
+DeviceVendor:
+    - kyocera:
+        title: 'Kyocera'
+    - canon:
+        title: 'Canon'
+    - brother:
+        title: 'Brother'
+    - zyxel:
+        title: "Zyxel"
+    - acuvox:
+        title: 'Acuvox'
+    - yealink:
+        title: "YeaLink"
+    - mikrotik:
+        title: "MikroTik"
+    - eltex:
+        title: 'Eltex'
+    - samsung:
+        title: 'Samsung'
+    - cisco:
+        title: 'Cisco'
+    - grandstream:
+        title: 'GrandStream'
+    - xerox:
+        title: 'Xerox'
+    - enterasys:
+        title: 'Enterasys'
+    - netgear:
+        title: 'Netgear'
+    - dell:
+        title: 'Dell'
+    - google:
+        title: "Google"
+    - fortinet:
+        title: 'Fortinet'
+    - lexmark:
+        title: "Lexmark"
+    - linksys:
+        title: "LinkSys"
+    - asus:
+        title: "Asus"
+    - geovision:
+        title: "GeoVision"
+    - hikvision:
+        title: "HikVision"
+
+DeviceModel:
+    - kyocera_all:
+        title: 'Все модели Kyocera'
+        device_type: printer
+        vendor: kyocera
+    - kyocera_m2030dn:
+        title: 'EcoSys M2030DN'
+        device_type: printer
+        vendor: kyocera
+    - kyocera_m2035dn:
+        title: 'Kyocera EcoSys M2035DN'
+        device_type: printer
+        vendor: kyocera
+    - canon_all:
+        title: 'Все модели Canon'
+        device_type: printer
+        vendor: canon
+    - brother_all:
+        title: 'Все модели Brother'
+        device_type: printer
+        vendor: kyocera
+    - zyxel_all:
+        title: 'Все модели Zyxel'
+        device_type: switch
+        vendor: zyxel
+    - acuvox_all:
+        title: 'Все модели Acuvox'
+        device_type: ip_phone
+        vendor: acuvox
+    - yealink_all:
+        title: 'Все модели YeaLink'
+        device_type: ip_phone
+        vendor: yealink
+
+MacAddressInfo:
+    - _import_module: "gen_list_mac_vendors"
+
+HostStatus:
+    - up:
+        title: "Активен"
+    - down:
+        title: "Неактивен"
+
+ProjectRole:
+    - anonymous:
+        title: "Анонимная роль"
+        description: "Роль, присваиваемая пользователям, не участвующим в проекте"
+    - manager:
+        title: 'Менеджер'
+        description: "Человек, управляющий действиями на проекте"
+    - developer:
+        title: 'Разработчик'
+        description: 'Человек, выполняющий действия на проекте'
+    - observer:
+        title: 'Наблюдатель'
+        description: 'Человек, наблюдающий за проектом'
+

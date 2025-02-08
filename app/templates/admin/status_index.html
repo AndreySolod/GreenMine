@@ -1,0 +1,51 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <table class="table" id="statuses-table" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+            <thead>
+                <tr>
+                    <th data-field="class_name" data-sortable="true" data-align="center" data-filter-control="input">{{ _("The internal name of class") }}</th>
+                    <th data-field="class_title" data-sortable="true" data-align="center" data-filter-control="input">{{ _("Status object") }}</th>
+                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ _("Description of the status object") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objs %}
+                <tr style="cursor:pointer">
+                    <td>{{ obj.__name__ }}</td>
+                    <td>{{ obj.Meta.verbose_name }}</td>
+                    <td>{{ obj.Meta.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script nonce="{{ csp_nonce() }}">
+    $(function() {
+        $('#statuses-table').bootstrapTable({
+                  icons: {"columns": "fa-solid fa-list-ul",
+                          "fullscreen": "fa-solid fa-arrows-up-down-left-right",
+                          "detailOpen": "fa-solid fa-plus",
+                          "detailClose": "fa-solid fa-minus",
+                          "paginationSwitchDown": "fa-solid fa-square-caret-down",
+                          "paginationSwitchUp": "fa-solid fa-square-caret-up",
+                          "toggleOff": "fa-solid fa-toggle-off",
+                          "toggleOn": "fa-solid fa-toggle-on",
+                          "export": "fa-solid fa-file-export",
+                          "sort": "fa-solid fa-sort",
+                          "plus": "fa-solid fa-plus",
+                          "minus": "fa-solid fa-minus"},
+                  onClickRow: function(row, element, field) {
+                    location = "{{ url_for('admin.status_type_transits', object_type='__row_name') }}".replace("__row_name", row.class_name)
+                  }
+              })
+      })
+    </script>
+{% endblock %}

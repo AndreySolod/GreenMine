@@ -1,0 +1,372 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+  <div class="col-12">
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="aslist-tab" data-bs-toggle="tab" data-bs-target="#aslist" type="button"
+          role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+          {{ _("As list") }}</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="asgrid-tab" data-bs-toggle="tab" data-bs-target="#asgrid" type="button" role="tab"
+          aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+          {{ _("As grid") }}</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="aslist" role="tabpanel" aria-labelledby="aslist-tab">
+        <div class="accordion" id="NotesAccordion">
+          {% if notes|length == 0 %}
+          <p class="text-center text-muted note-not-exist">{{ pgettext("they", "(Missing)") }}</p>
+          {% endif %}
+          {% for note in notes %}
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              {% set now_style = {"background-color": note.importance.color} %}
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseAccordion{{ note.id }}" aria-expanded="true"
+                aria-controls="collapseAccordion{{ note.id }}" {{ now_style|as_style }}
+                id="button-accordion-note-title-{{ note.id }}">
+                {{ note.title|safe }}
+              </button>
+            </h2>
+            <div id="collapseAccordion{{ note.id }}" class="accordion-collapse collapse"
+              data-bs-parent="#NotesAccordion">
+              <div class="accordion-body">
+                <p class="text-muted">{{ _("Added by") }} <a
+                    href="{{ url_for('users.user_show', user_id=note.created_by_id) }}">{{ note.created_by.title }}</a>
+                  {{ moment(note.created_at).fromNow() }}</p>
+                <p class="text-muted" id="p-accordion-note-updated-by-{{ note.id }}">
+                  {% if note.updated_by_id != none %}
+                  {{ _("Changed by") }} <a href="{{ url_for('users.user_show', user_id=note.updated_by_id) }}">{{
+                    note.updated_by.title }}</a>{{ moment(note.updated_at).fromNow() }}
+                  {% endif %}
+                </p>
+                <div id="note-accorditon-description-{{ note.id }}">
+                  {{ note.description|safe }}
+                </div>
+                <p id="p-accordion-note-importance-{{ note.id }}">{{ models.Note.importance.info["label"] }}: {{ note.importance.title }}</p>
+                <div class="text-end">
+                  {% if roles.project_role_can_make_action(current_user, models.Note(), 'update', project=project) %}
+                  <a href="#" class="btn btn-secondary click-to-edit" data-toggle="tooltip" data-bs-toggle="modal"
+                    data-bs-target="#modalEditNote" title="{{ _('Edit note') }}" note-id="{{ note.id }}"><i
+                      class="fa-solid fa-square-pen"></i></a>
+                  {% endif %}
+                  {% if roles.project_role_can_make_action(current_user, models.Note(), 'delete', project=project) %}
+                  <a href="javascript:void(0)" class="btn btn-danger click-to-delete" data-toggle="tooltip"
+                    title="{{ _('Delete note') }}" note-id="{{ note.id }}"><i class="fa-solid fa-trash"></i></a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="tab-pane fade" id="asgrid" role="tabpanel" aria-labelledby="asgrid-tab">
+        <div class="row row-cols-1 row-cols-md-3 g-4" id="NotesGrid">
+          {% if notes|length == 0 %}
+          <p class="text-center text-muted note-not-exist">{{ pgettext("they", "(Missing)") }}</p>
+          {% endif %}
+          {% for note in notes %}
+          <div class="col">
+            <div class="card w-100 h-100">
+              {% set now_style = {"background-color": note.importance.color} %}
+              <div class="card-header" id="div-card-header-note-{{ note.id }}"
+                {{ now_style|as_style }}>
+                <h4 class="card-title" id="note-title-{{ note.id }}">{{ note.title|safe }}</h4>
+                <h6 class="card-subtitle text-body-secondary">{{ _("Added by") }} <a
+                    href="{{ url_for('users.user_show', user_id=note.created_by_id) }}">{{ note.created_by.title }}</a>
+                  {{ moment(note.created_at).fromNow() }}</h6>
+
+                <h6 class="card-subtitle text-body-secondary" id="h6-card-note-updated-by-{{ note.id }}">
+                  {% if note.updated_by_id != none %}
+                  {{ _("Changed by") }}: <a href="{{ url_for('users.user_show', user_id=note.updated_by_id) }}">{{
+                    note.updated_by.title }}</a> {{ moment(note.updated_at).fromNow() }}
+                  {% endif %}
+                </h6>
+              </div>
+              <div class="card-body" id="note-description-{{ note.id }}">
+                {{ note.description|safe }}
+              </div>
+              <div class="card-footer">
+                <h5 id="note-importance-{{ note.id }}" note-importance="{{ note.importance_id }}">{{ models.Note.importance.info["label"] }}: {{
+                  note.importance.title }}</h5>
+                <div class="text-end">
+                  {% if roles.project_role_can_make_action(current_user, models.Note(), 'update', project=project) %}
+                  <a href="#" class="btn btn-secondary click-to-edit" data-toggle="tooltip" data-bs-toggle="modal"
+                    data-bs-target="#modalEditNote" title="{{ _('Edit note') }}" note-id="{{ note.id }}"><i
+                      class="fa-solid fa-square-pen"></i></a>
+                  {% endif %}
+                  {% if roles.project_role_can_make_action(current_user, models.Note(), 'delete', project=project) %}
+                  <a href="javascript:void(0)" class="btn btn-danger click-to-delete" data-toggle="tooltip"
+                    title="{{ _('Delete note') }}" note-id="{{ note.id }}"><i class="fa-solid fa-trash"></i></a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Modal window for note add #}
+<div class="modal fade modal-xl" id="modalAddNewNote" tabindex="-1" aria-labelledby="modalAddNewNoteLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalAddNewNoteLabel">{{ _("Add new note") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(note_new_form, note_new_form.title) }}
+          </div>
+          <div class="form-group">
+            {{ form_element(note_new_form, note_new_form.importance_id) }}
+          </div>
+          <div class="form-group">
+            {{ form_element(note_new_form, note_new_form.description) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        {{ note_new_form.submit(class="btn btn-primary") }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Modal for note edit #}
+<div class="modal fade modal-xl" id="modalEditNote" tabindex="-1" aria-labelledby="modalEditNoteLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditNoteLabel">{{ _("Edit note") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ note_edit_form.hidden_tag() }}
+            {{ form_element(note_edit_form, note_edit_form.title) }}
+          </div>
+          <div class="form-group">
+            {{ form_element(note_edit_form, note_edit_form.importance_id) }}
+          </div>
+          <div class="form-group">
+            {{ form_element(note_edit_form, note_edit_form.description) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        {{ note_edit_form.submit(class="btn btn-primary") }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# Form for note delete #}
+<form id="form-delete-note" action="{{ url_for('notes.note_delete') }}" method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="id" id="form_note_id" value="">
+</form>
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+
+  function event_listener_for_click_to_edit(obj) {
+    let note_id = obj.currentTarget.getAttribute('note-id')
+    let note_title = document.getElementById('note-title-' + note_id).innerHTML;
+    let note_description = document.getElementById('note-description-' + note_id).innerHTML;
+    let note_importance = document.getElementById('note-importance-' + note_id).getAttribute('note-importance');
+    document.getElementById('{{ note_edit_form.id.id }}').value = note_id;
+    document.getElementById('{{ note_edit_form.title.id }}').value = note_title;
+    document.getElementById('{{ note_edit_form.importance_id.id }}').value = note_importance;
+    CKEDITOR_LIST["{{ note_edit_form.description.id }}"].setData(note_description);
+  };
+  var all_click_to_edit = document.getElementsByClassName('click-to-edit')
+  for (const item of all_click_to_edit) {
+    item.addEventListener('click', event_listener_for_click_to_edit);
+  }
+  function event_listener_for_click_to_delete(obj) {
+    if (confirm('{{ _("Are you sure you want to delete this note?") }}')) {
+      document.getElementById('form_note_id').value = obj.currentTarget.getAttribute('note-id');
+      document.getElementById('form-delete-note').submit();
+    }
+  }
+  var all_click_to_delete = document.getElementsByClassName('click-to-delete')
+  for (const item of all_click_to_delete) {
+    item.addEventListener('click', event_listener_for_click_to_delete);
+  };
+
+</script>
+<script nonce="{{ csp_nonce() }}">
+  const noteSocket = io('/notes')
+  noteSocket.on('connect', function () {
+    noteSocket.emit('join_room', '{{ project.id }}')
+  });
+
+  document.getElementById('{{ note_edit_form.submit.id }}').addEventListener('click', function (event) {
+    let title = document.getElementById('{{ note_edit_form.title.id }}').value;
+    let id = document.getElementById('{{ note_edit_form.id.id }}').value;
+    let description = CKEDITOR_LIST["{{ note_edit_form.description.id }}"].getData()
+    let importance = document.getElementById('{{ note_edit_form.importance_id.id }}').value;
+    noteSocket.emit('edit_note', { note_title: title, note_description: description, note_id: id, note_importance: importance });
+    let modal_edit_note = bootstrap.Modal.getInstance(document.getElementById('modalEditNote'))
+    modal_edit_note.hide()
+  })
+
+  noteSocket.on('note edited', function (data) {
+    let accordion_note_title = document.getElementById('button-accordion-note-title-' + data.note_id);
+    accordion_note_title.style.backgroundColor = data.importance_color;
+    accordion_note_title.innerHTML = data.title;
+    document.getElementById('div-card-header-note-' + data.note_id).style.backgroundColor = data.importance_color;
+    document.getElementById('note-title-' + data.note_id).innerHTML = data.title;
+    let updated_by = `{{ _("Updated by") }} <a href="${data.user_href}">${data.user_title}</a> ${data.updated_at}`;
+    document.getElementById('h6-card-note-updated-by-' + data.note_id).innerHTML = updated_by;
+    document.getElementById('p-accordion-note-updated-by-' + data.note_id).innerHTML = updated_by;
+    document.getElementById('note-accorditon-description-' + data.note_id).innerHTML = data.description;
+    document.getElementById('note-description-' + data.note_id).innerHTML = data.description;
+    document.getElementById('p-accordion-note-importance-' + data.note_id).innerHTML = '{{ models.Note.importance.info["label"] }}: ' + data.importance_title;
+    document.getElementById('note-importance-' + data.note_id).innerHTML = '{{ models.Note.importance.info["label"] }}: ' + data.importance_title;
+    document.getElementById('note-importance-' + data.note_id).setAttribute('note-importance', data.importance_id);
+    flask_moment_render_all();
+  })
+
+  document.getElementById('{{ note_new_form.submit.id }}').addEventListener('click', function (event) {
+    let data = {
+      'title': document.getElementById('{{ note_new_form.title.id }}').value,
+      'description': CKEDITOR_LIST['{{ note_new_form.description.id }}'].getData(),
+      'importance_id': document.getElementById('{{ note_new_form.importance_id.id }}').value
+    };
+    noteSocket.emit('create note', data);
+    document.getElementById('{{ note_new_form.title.id }}').value = '';
+    document.getElementById('{{ note_new_form.importance_id.id }}').value = '';
+
+    // close modal window
+    let modal_add_note = bootstrap.Modal.getInstance(document.getElementById('modalAddNewNote'))
+    modal_add_note.hide()
+  })
+
+  noteSocket.on('note created', function (data) {
+    let note_not_exist = document.getElementsByClassName('note-not-exist');
+    for(const item of note_not_exist) {
+      item.remove();
+    }
+    let note_accordion = document.getElementById('NotesAccordion');
+    let button_title = document.createElement('button');
+    setMultipleAttributes(button_title, {
+      'class': 'accordion-button collapsed', 'type': 'button', 'data-bs-toggle': 'collapse',
+      'data-bs-target': '#collapseAccordion' + data.note_id, 'aria-expanded': 'true',
+      'aria-controls': 'collapseAccordion' + data.note_id, 'id': 'button-accordion-note-title-' + data.note_id
+    });
+    button_title.style.backgroundColor = data.importance_color;
+    button_title.innerHTML = data.title;
+    let accordion_header = document.createElement('h2');
+    accordion_header.appendChild(button_title);
+    accordion_header.setAttribute('class', 'accordion-header');
+    let accordion_item = document.createElement('div');
+    accordion_item.setAttribute('class', 'accordion-item')
+    accordion_item.appendChild(accordion_header);
+    let collapse_accordion = document.createElement('div');
+    setMultipleAttributes(collapse_accordion, { 'id': 'collapseAccordion' + data.note_id, 'class': 'accordion-collapse collapse', 'data-bs-parent': '#NotesAccordion' });
+    let accordion_body = document.createElement('div');
+    accordion_body.setAttribute('class', 'accordion-body');
+    let p_added = document.createElement('p');
+    p_added.setAttribute('class', 'text-muted');
+    let created_by = `{{ _("Created by") }} <a href="${data.user_href}">${data.user_title}</a> ${data.created_at}`
+    p_added.innerHTML = created_by;
+    accordion_body.appendChild(p_added);
+    let p_updated = document.createElement('p');
+    setMultipleAttributes(p_updated, { 'class': 'text-muted', 'id': 'p-accordion-note-updated-by-' + data.note_id });
+    accordion_body.appendChild(p_updated);
+    let note_accordion_description = document.createElement('div');
+    note_accordion_description.setAttribute('id', 'note-accordion-description-' + data.note_id);
+    note_accordion_description.innerHTML = data.description;
+    accordion_body.appendChild(note_accordion_description);
+    let p_note_importance = document.createElement('p');
+    setMultipleAttributes(p_note_importance, { 'id': 'p-accordion-note-importance-' + data.note_id });
+    p_note_importance.innerHTML = 'Важность: ' + data.importance_title;
+    accordion_body.appendChild(p_note_importance);
+    let text_end = document.createElement('div')
+    text_end.setAttribute('class', 'text-end')
+    let a_edit_note = document.createElement('a')
+    setMultipleAttributes(a_edit_note, {
+      'href': '#', 'class': 'btn btn-secondary click-to-edit', 'data-toggle': 'tooltip', 'data-bs-toggle': 'modal',
+      'data-bs-target': '#modalEditNote', 'title': 'Редактировать заметку', 'note-id': data.note_id
+    });
+    a_edit_note.innerHTML = '<i class="fa-solid fa-square-pen"></i>';
+    let a_delete_note = document.createElement('a');
+    setMultipleAttributes(a_delete_note, {
+      'href': 'javascript:void(0)', 'class': 'btn btn-danger click-to-delete', 'data-toggle': 'tooltip',
+      'title': 'Удалить заметку', 'note-id': data.note_id
+    });
+    a_delete_note.innerHTML = '<i class="fa-solid fa-trash"></i>';
+    text_end.appendChild(a_edit_note);
+    text_end.appendChild(a_delete_note);
+    accordion_body.appendChild(text_end);
+    collapse_accordion.appendChild(accordion_body);
+    accordion_item.appendChild(collapse_accordion);
+    note_accordion.appendChild(accordion_item);
+    a_edit_note.addEventListener('click', event_listener_for_click_to_edit);
+    a_delete_note.addEventListener('click', event_listener_for_click_to_delete);
+
+    // Now create note for grid
+    let notes_grid = document.getElementById('NotesGrid');
+    let inner_col = document.createElement('div');
+    notes_grid.appendChild(inner_col);
+    inner_col.setAttribute('class', 'col');
+    let card = document.createElement('div');
+    card.setAttribute('class', 'card w-100 h-100');
+    inner_col.appendChild(card);
+    let card_header = document.createElement('div');
+    card.appendChild(card_header);
+    setMultipleAttributes(card_header, { 'id': 'div-card-header-note-' + data.note_id });
+    card_header.style.backgroundColor = data.importance_color;
+    let card_title = document.createElement('h4');
+    card_header.appendChild(card_title);
+    card_title.setAttribute('id', 'note-title-' + data.note_id);
+    card_title.innerHTML = data.title;
+    let card_subtitle = document.createElement('h6');
+    card_header.appendChild(card_subtitle);
+    card_subtitle.setAttribute('class', 'card-subtitle text-body-secondary');
+    card_subtitle.innerHTML = created_by;
+    let card_subtitle_updated_by = document.createElement('h6');
+    card_header.appendChild(card_subtitle_updated_by);
+    setMultipleAttributes(card_subtitle_updated_by, { 'class': 'card-subtitle text-body-secondary', 'id': 'h6-card-note-updated-by-' + data.note_id })
+    let card_body = document.createElement('div')
+    card.appendChild(card_body);
+    setMultipleAttributes(card_body, { 'class': 'card-body', 'id': 'note-description-' + data.note_id });
+    card_body.innerHTML = data.description;
+    let card_footer = document.createElement('div');
+    card.appendChild(card_footer);
+    card_footer.setAttribute('class', 'card-footer');
+    let h5_note_importance = document.createElement('h5');
+    card_footer.appendChild(h5_note_importance);
+    setMultipleAttributes(h5_note_importance, { 'id': 'note-importance-' + data.note_id, 'note-importance': data.importance_id });
+    h5_note_importance.innerHTML = '{{ models.Note.importance.info["label"] }}: ' + data.importance_title;
+    let new_text_end = text_end.cloneNode(true);
+    new_a_edit_note = new_text_end.childNodes[0];
+    new_a_delete_note = new_text_end.childNodes[1];
+    new_a_edit_note.addEventListener('click', event_listener_for_click_to_edit);
+    new_a_delete_note.addEventListener('click', event_listener_for_click_to_delete);
+    card_footer.appendChild(new_text_end);
+
+    // render all moment units
+    flask_moment_render_all()
+  });
+</script>
+{% endblock %}

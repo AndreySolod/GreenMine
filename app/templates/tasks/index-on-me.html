@@ -1,0 +1,78 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <table class="table"    id="task-table"
+                                        data-search="true"
+                                        data-show-columns="true"
+                                        data-show-toggle="true"
+                                        data-show-export="true"
+                                        data-show-multi-sort="true"
+                                        data-filter-control="true"
+                                        data-buttons-class="primary"
+                                        data-pagination="true"
+                                        data-side-pagination="server"
+                                        data-page-list="[10, 25, 50, 100, 500, All]"
+                                        data-show-pagination-switch="true"
+                                        data-url="{{ url_for('tasks.projecttask_index_on_me_data', project_id=project.id) }}"
+                                        data-row-style="issueRowStyle">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true" data-align="center">#</th>
+                            <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProjectTaskTracker"]|safe }}'>{{ models.ProjectTask.tracker.info['label'] }}</th>
+                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
+                            <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.description.info["label"] }}</th>
+                            <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProjectTaskPriority"]|safe }}'>{{ models.ProjectTask.priority.info["label"] }}</th>
+                            <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["User"]|safe }}'>{{ models.ProjectTask.assigned_to.info["label"] }}</th>
+                            <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
+                            <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["TaskState"]|safe }}'>{{ models.ProjectTask.state.info["label"] }}</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script nonce="{{ csp_nonce() }}">
+        $(function() {
+            var CookieName = "ProjectTaskIndexPageSize";
+            $('#task-table').bootstrapTable({
+                onPreBody: function(data) {
+
+                    var pageSizeCookie = Cookies.get(CookieName);
+                    if(isNaN(Number(pageSizeCookie))) {
+                        pageSizeCookie = 10;
+                    };
+                    if (pageSizeCookie != null) {
+        
+                        var pageSizeInt = parseInt(pageSizeCookie);
+                        this.pageSize = pageSizeInt;
+                    }
+                },
+                onPageChange: function(pageNumber, pageSize) {
+                    Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                },
+                icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                buttonsClass: 'primary',
+                exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
+                onClickRow: function(row, element, field) {
+                    location = "{{ url_for('tasks.projecttask_show', projecttask_id='__row_id') }}".replace("__row_id", row.id)
+                }
+            })
+          });
+    </script>
+    <script nonce="{{ csp_nonce() }}">
+        function issueRowStyle(row, index) {
+            return { css: {"cursor": 'pointer', 'background-color': row.background_color } }
+        }
+      </script>
+{% endblock %}

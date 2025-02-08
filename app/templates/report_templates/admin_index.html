@@ -1,0 +1,41 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("All project report templates list") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="report-templates-table" data-pagination="true" data-search="true"
+                       data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true"
+                       data-filter-control="true" data-buttons-class="primary" data-show-pagination-switch="true">
+                       <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectReportTemplate.id.info['label'] }}</th>
+                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectReportTemplate.title.info['label'] }}</th>
+                            <th data-field="description" data-align="center" data-filter-control="input">{{ models.ProjectReportTemplate.description.info['label'] }}</th>
+                        </tr>
+                       </thead>
+                       <tbody>
+                        {% for templ in templates %}
+                        <tr>
+                            <td>{{ templ.id }}</td>
+                            <td>{{ templ.title }}</td>
+                            <td>{{ templ.description }}</td>
+                        </tr>
+                        {% endfor %}
+                       </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{{ load_bootstrap_table_js('report-templates-table', 'admin.report_templates_show', 'template_id') }}
+{% endblock %}

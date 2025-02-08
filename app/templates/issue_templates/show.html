@@ -1,0 +1,95 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-lg-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Template paramethers") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.IssueTemplate.title.info["label"] }}:</td>
+                            <td>{{ template.title|safe }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h5>{{ models.IssueTemplate.description.info["label"] }}:</h5>
+                {% if template.description == '' or template.description == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% endif %}
+                {% autoescape false %}
+                {{ template.description }}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Parameters of the issue being created") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.IssueTemplate.issue_title.info["label"] }}:</td>
+                            <td>{{ template.issue_title|safe }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.IssueTemplate.issue_cvss.info["label"] }}:</td>
+                            {% if template.issue_cvss != none %}
+                            <td>{{ template.issue_cvss }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>{{ models.IssueTemplate.issue_cve_id.info["label"] }}:</td>
+                            {% if template.issue_cve_id == none %}
+                            <td></td>
+                            {% else %}
+                            <td><a href="{{ url_for('cves.cve_show', cve_id=template.issue_cve_id) }}">{{ template.cve.title }}</a></td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+                <h5>{{ models.IssueTemplate.issue_description.info["label"] }}:</h5>
+                {% if template.issue_description == '' or template.issue_description == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% else %}
+                {% autoescape false %}
+                {{ template.issue_description }}
+                {% endautoescape %}
+                {% endif %}
+                <h5>{{ models.IssueTemplate.issue_fix.info["label"] }}:</h5>
+                {% if template.issue_fix == '' or template.issue_fix == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% else %}
+                {{ template.issue_fix|safe }}
+                {% endif %}
+                <h5>{{ models.IssueTemplate.issue_technical.info["label"] }}:</h5>
+                {% if template.issue_technical == '' or template.issue_technical == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% else %}
+                {{ template.issue_technical|safe }}
+                {% endif %}
+                <h5>{{ models.IssueTemplate.issue_riscs.info["label"] }}:</h5>
+                {% if template.issue_riscs == '' or template.issue_riscs == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% else %}
+                {{ template.issue_riscs|safe }}
+                {% endif %}
+                <h5>{{ models.IssueTemplate.issue_references.info["label"] }}:</h5>
+                {% if template.issue_references == '' or template.issue_references == none %}
+                <p class="text-center text-muted">{{ _("(Missing)") }}</p>
+                {% else %}
+                {{ template.issue_references|safe }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

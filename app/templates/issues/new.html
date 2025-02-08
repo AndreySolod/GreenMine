@@ -1,0 +1,85 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6>{{ _("Create by template") }}:</h6>
+                <div class="form-group row">
+                    <select id="issue-pattern" name="issue-pattern">
+                        <option value="0"></option>
+                        {% for template in patterns %}
+                        <option value="{{ template.id }}">{{ template.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12">
+                            {{ form_element(form, form.title) }}
+                            {{ form_element(form, form.cvss) }}
+                            {{ form_element(form, form.cve_id) }}
+                            {{ form_element(form, form.status_id) }}
+                            {{ form_element(form, form.services) }}
+                            {{ form_element(form, form.tasks_by_issue) }}
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="form-group row">
+                                {{ form_element(form, form.description) }}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            {{ form_element(form, form.fix) }}
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            {{ form_element(form, form.technical) }}
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            {{ form_element(form, form.riscs) }}
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            {{ form_element(form, form.references) }}
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-3">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    let pattern = document.getElementById("issue-pattern")
+    pattern.addEventListener('change', function (e) {
+        if (e.target.value != '0') {
+            $.ajax({
+                "method": "GET",
+                "url": "{{ url_for('issues.issue_data_by_template', template_id='__template_id') }}".replace("__template_id", e.target.value)
+            }).done(function (response) {
+                $('#{{ form.title.id }}')[0].value = response.title;
+                CKEDITOR_LIST['{{ form.description.id }}'].setData(response.description);
+                CKEDITOR_LIST['{{ form.fix.id }}'].setData(response.fix);
+                CKEDITOR_LIST['{{ form.technical.id }}'].setData(response.technical)
+                CKEDITOR_LIST['{{ form.riscs.id }}'].setData(response.riscs)
+                CKEDITOR_LIST['{{ form.references.id }}'].setData(response.references)
+                $('#{{ form.cvss.id }}')[0].value = response.cvss
+                $('#{{ form.cve_id.id }}')[0].value = response.cve_id
+            }).fail(function (error) {
+                alert("{{ _('Something went wrong. Try to reload page') }}")
+            })
+        }
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="row gutters">
+                        <div class="col-md-6 col-sm-12">
+                            {{ form_element(form, form.login) }}
+                            {{ form_element(form, form.first_name) }}
+                            {{ form_element(form, form.last_name) }}
+                            {{ form_element(form, form.middle_name) }}
+                            {{ form_element(form, form.email) }}
+                            {{ form_element(form, form.password) }}
+                            {{ form_element(form, form.password_again) }}
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            {{ form_element(form, form.avatar) }}
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            {{ form_element(form, form.position) }}
+                            {{ form_element(form, form.manager) }}
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            {{ form_element(form, form.theme_style) }}
+                            {{ form_element(form, form.programming_language_theme) }}
+                        </div>
+                        <div class="col-12">
+                            {{ form_element(form, form.programming_languages) }}
+                        </div>
+                        <div class="col-3 justify-content-end">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="card">
+        <div class="card-body">
+            <form action="" method="POST" class="needs-validation">
+                {{ form.hidden_tag() }}
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">{{ _("Description") }}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="proof-of-concept-tab" data-bs-toggle="tab" data-bs-target="#proof-of-concept"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">{{ _("Proof of Concept") }}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="environment-tab" data-bs-toggle="tab" data-bs-target="#environment"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">{{ _("Vulnerable environment") }}</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                        {{ form_element(form, form.year) }}
+                        {{ form_element(form, form.identifier) }}
+                        {{ form_element(form, form.title) }}
+                        {{ form_element(form, form.description) }}
+                        {{ form_element(form, form.cvss) }}
+                        {{ form_element(form, form.wikipage_id) }}
+                    </div>
+                    <div class="tab-pane fade" id="proof-of-concept" role="tabpanel" aria-labelledby="proof-of-concept-tab">
+                        {{ form_element(form, form.proof_of_concept_language_id) }}
+                        {{ form_element(form, form.proof_of_concept_code) }}
+                    </div>
+                    <div class="tab-pane fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
+                        {{ form_element(form, form.vulnerable_environment_type_id) }}
+                        {{ form_element(form, form.vulnerable_environment) }}
+                    </div>
+                </div>
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "layout/base.html" %}
+{% from "layout/_macrosses.html" import form_element %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button_hide_if_no_mouse.css') }}">
+<style>
+.form-popup {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    box-shadow: 0px 5px 10px 0px rgba(13, 255, 0, 0.5);
+    width: 50%;
+    padding-left: 0;
+    padding-right: 0;
+    border-color: green;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    overflow: hidden;
+    animation: button_show_animation 1.5s forwards;
+}
+.div_value {
+    display: inline-block;
+}
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-8 col-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Information, displayed on the cover page") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.GlobalSettings.main_page_name.info["label"] }}:</td>
+                            <td class="button_hide_if_no_mouse"><div id="global_settings_value" class="div_value">{{ global_settings.main_page_name }}</div><button id="button-toggle-edit-main-page-name" class="btn-outline-light btn-rounded"><i class="fa-solid fa-pencil"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h5 class="button_hide_if_no_mouse">{{ models.GlobalSettings.text_main_page.info["label"] }}:<button class="btn-outline-light btn-rounded" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#modalEditTextMainPage"><i class="fa-solid fa-pencil"></i></button></h5>
+                {{ global_settings.text_main_page|safe }}
+            </div>
+        </div>
+    </div>
+    <div id="edit-main-page-name" class="form-popup">
+        {{ name_form.main_page_name(class="form-control", placeholder=name_form.main_page_name.label.text) }}
+    </div>
+</div>
+
+{# Modal window for editing the text of the title page #}
+<div class="modal fade modal-xl" id="modalEditTextMainPage" tabindex="-1" aria-labelledby="modalEditTextMainPageLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditTextMainPageLabel">{{ _("Edit the text of the title page") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <form action="{{ url_for('admin.admin_main_info_edit', edit_elem='text_main_page') }}" method="POST">
+      {{ text_form.hidden_tag() }}
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(text_form, text_form.text_main_page) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        {{ text_form.submit(class="btn btn-primary") }}
+      </div>
+      </form>
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block script %}
+
+{{ super() }}
+{# Скрипт всплывающего окна для редактирования заголовка титульной страницы #}
+<script nonce="{{ csp_nonce() }}">document.getElementById("{{ name_form.main_page_name.id }}").addEventListener("keydown", function(e) {
+    if (e.key == 'Enter') {
+        let params = new URLSearchParams();
+        params.set('main_page_name', document.getElementById('{{ name_form.main_page_name.id }}').value);
+        let headers = new Headers();
+        headers.append('X-CSRFToken', '{{ csrf_token() }}');
+        let req = fetch ("{{ url_for('admin.admin_main_info_edit', edit_elem='main_page_name') }}", {method: 'POST',
+                                                                                           headers: headers,
+                                                                                           body: params})
+            .then(response => {if (response.ok) {return response.json()} else {console.error(response);alert("{{ _('The specified settings cannot be saved. The title of the cover page should not be extolled by %(length)s characters', length=models.GlobalSettings.main_page_name.type.length) }}")}})
+            .then(response => {if (response.status == 'success') {
+                document.getElementById('global_settings_value').innerHTML = document.getElementById('{{ name_form.main_page_name.id }}').value;
+                closeForm('edit-main-page-name')
+            }})
+    }
+    else if (e.key == 'Escape'){
+        closeForm(e.target.parentElement.id)
+    }
+})
+function toggleForm(event, form_name) {
+    let element = document.getElementById(form_name)
+    let click_count = 0
+    function hideFormIfClickOutside(eve) {
+        click_count += 1;
+        if (eve.target?.parentElement?.id !== form_name && eve.target !== event.target){
+            document.getElementById(form_name).style.display = 'none';
+        }
+        if (click_count >= 2) {
+            document.removeEventListener('click', hideFormIfClickOutside)
+        }
+    }
+    if (element.style.display == 'none' || element.style.display == '') {
+        element.style.left = window.innerWidth - event.clientX - 50  + 'px';
+        element.style.top = event.clientY - 50 + 'px';
+        element.style.display = 'block';
+        element.style.position = 'fixed';
+        document.addEventListener('click', hideFormIfClickOutside)
+    }
+    else {
+        element.style.display = 'none';
+    }
+    
+}
+function closeForm(form_name) {
+    document.getElementById(form_name).style.display = 'none';
+    document.removeEventListener('click', toggleForm.hideFormIfClickOutside)
+}
+document.getElementById('button-toggle-edit-main-page-name').addEventListener('click', function(event) {
+    toggleForm(event, 'edit-main-page-name');
+})
+</script>
+{% endblock %}

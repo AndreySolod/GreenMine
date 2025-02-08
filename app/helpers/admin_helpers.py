@@ -1,0 +1,220 @@
+from flask import url_for
+from .general_helpers import SidebarElement, SidebarElementSublink
+from .general_helpers import CurrentObjectAction, CurrentObjectInfo
+from app import db
+from sqlalchemy.inspection import inspect
+import app.models as models
+from flask_babel import lazy_gettext as _l
+import functools
+
+
+enumerated_object_list = []  # This is a list of all the enumerations that can be processed in the /admin panel
+status_object_list = []  # This is a list of all objects of the "Status" type - that is, the attributes of the object for which the conditions for transition from one state to another are defined.
+
+
+def register_enumerated_object(*obj):
+    global enumerated_object_list
+    enumerated_object_list.extend(obj)
+
+
+def register_status_object(*obj):
+    global status_object_list
+    status_object_list.extend(obj)
+
+
+def project_enumerated_object(obj):
+    global enumerated_object_list
+    enumerated_object_list.append(obj)
+    return obj
+
+
+def project_status_object(obj):
+    global status_object_list
+    status_object_list.append(obj)
+    return obj
+
+
+def get_enumerated_objects():
+    global enumerated_object_list
+    return enumerated_object_list
+
+
+def get_status_objects():
+    global status_object_list
+    return status_object_list
+
+
+# Roles
+PROJECT_OBJECTS = set()
+def register_new_project_object(obj):
+    ''' Added new project object to list '''
+    global PROJECT_OBJECTS
+    PROJECT_OBJECTS.add(obj)
+
+
+def project_object_with_permissions(obj):
+    global PROJECT_OBJECTS
+    PROJECT_OBJECTS.add(obj)
+    return obj
+
+
+def get_all_project_objects():
+    global PROJECT_OBJECTS
+    for i in PROJECT_OBJECTS:
+        yield i
+
+
+class DefaultSidebar:
+    def __init__(self, address: str, obj=None):
+        global enumerated_object_list, status_object_list
+        sel11 = SidebarElementSublink(_l("List of tools"), url_for('admin.index'), address=='index')
+        sel12 = SidebarElementSublink(_l("Title page"), url_for('admin.admin_main_info_edit'), address=='admin_main_info_edit')
+        se1 = SidebarElement(_l("Administration Tools"), url_for('admin.index'), "fa-solid fa-screwdriver-wrench", address in ['index', 'admin_main_info_edit'], [sel11, sel12])
+        sels2 = [SidebarElementSublink(_l("All enumeration objects"), url_for('admin.object_index'), address=='object_index')]
+        for e in enumerated_object_list:
+            nsel = SidebarElementSublink(e.Meta.verbose_name_plural, url_for('admin.object_type_index', object_type=e.__name__), address=='object_type_index' and obj.__name__==e.__name__)
+            sels2.append(nsel)
+        se2 = SidebarElement(_l("Enumeration objects"), url_for('admin.object_index'), 'fa-solid fa-list-ol', address in ['object_type_index', 'object_type_new', 'object_type_edit'], sels2)
+        sels3 = [SidebarElementSublink(_l("All state objects"), url_for('admin.status_index'), address=='status_index')]
+        for e in status_object_list:
+            nsel = SidebarElementSublink(e.Meta.verbose_name_plural, url_for('admin.status_type_transits', object_type=e.__name__), address=='status_type_transits' and obj.__name__==e.__name__)
+            sels3.append(nsel)
+        se3 = SidebarElement(_l("State objects"), url_for('admin.status_index'), "fa-solid fa-satellite", address in ['status_type_transits', 'status_index'], sels3)
+        sel41 = SidebarElementSublink(_l("All issue templates"), url_for('admin.issue_template_index'), address=='issue_template_index')
+        sel42 = SidebarElementSublink(_l("Add new issue template"), url_for('admin.issue_template_new'), address=='issue_template_new')
+        if obj.__class__.__name__ == 'IssueTemplate':
+            sel43 = SidebarElementSublink(_l("Issue template #%(templ_id)s", templ_id=obj.id), url_for('admin.issue_template_show', template_id=obj.id), address=="issue_template_show")
+            sel44 = SidebarElementSublink(_l("Edit issue template #%(templ_id)s", templ_id=obj.id), url_for('admin.issue_template_edit', template_id=obj.id), address=='issue_template_edit')
+            se4 = SidebarElement(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), models.IssueTemplate.Meta.icon, address.startswith('issue_template'), [sel41, sel42, sel43, sel44])
+        else:
+            se4 = SidebarElement(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), models.IssueTemplate.Meta.icon, address.startswith('issue_template'), [sel41, sel42])
+        sel51 = SidebarElementSublink(_l("All files"), url_for('admin.admin_file_index'), address=="admin_file_index")
+        se5 = SidebarElement(models.FileData.Meta.verbose_name_plural, url_for('admin.admin_file_index'), models.FileData.Meta.icon, address=='admin_file_index')
+        sel61 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), address=='background_tasks_index')
+        sel62 = SidebarElementSublink(_l("Background task options"), url_for('admin.background_tasks_options_index'), address=='background_tasks_options_index')
+        se6 = SidebarElement(_l("Background tasks"), url_for('admin.background_tasks_index'), "fa-solid fa-bars-progress", address in ['background_tasks_index', 'background_tasks_options_index'], [sel61, sel62])
+        sel71 = SidebarElementSublink(_l("Project roles list"), url_for('admin.project_role_index'), address=='project_role_index')
+        sel72 = SidebarElementSublink(_l("Add new project role"), url_for('admin.project_role_new'), address=='project_role_new')
+        sel73 = SidebarElementSublink(_l("Edit role permissions"), url_for('admin.project_role_permissions'), address=='project_role_permissions')
+        se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address in ['project_role_index', 'project_role_new', 'project_role_edit', 'project_role_permissions'], [sel71, sel72, sel73])
+        sel81 = SidebarElementSublink(_l("All project task templates"), url_for('admin.task_template_index'), address=='task_template_index')
+        sel82 = SidebarElementSublink(_l("Add new project task template"), url_for('admin.task_template_new'), address=='task_template_new')
+        if obj.__class__.__name__ == 'ProjectTaskTemplate':
+            sel83 = SidebarElementSublink(_l("Project task template #%(templ_id)s", templ_id=obj.id), url_for('admin.task_template_show', template_id=obj.id), address=="task_template_show")
+            sel84 = SidebarElementSublink(_l("Edit project task template #%(templ_id)s", templ_id=obj.id), url_for('admin.task_template_edit', template_id=obj.id), address=='task_template_edit')
+            se8 = SidebarElement(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), models.ProjectTaskTemplate.Meta.icon, address.startswith('task_template'), [sel81, sel82, sel83, sel84])
+        else:
+            se8 = SidebarElement(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), models.ProjectTaskTemplate.Meta.icon, address.startswith('task_template'), [sel81, sel82])
+        
+        sel91 = SidebarElementSublink(_l("All report templates"), url_for('admin.report_templates_index'), address=='report_templates_index')
+        sel92 = SidebarElementSublink(_l("Add new report template"), url_for('admin.report_templates_new'), address=='report_templates_new')
+        se9 = SidebarElement(models.ProjectReportTemplate.Meta.verbose_name_plural, url_for('admin.report_templates_index'), models.ProjectReportTemplate.Meta.icon, address.startswith('report_templates'), [sel91, sel92])
+        self.se = [se1, se2, se3, se4, se8, se5, se6, se7, se9]
+
+    def __call__(self):
+        return self.se
+
+
+class DefaultEnvironment:
+    def __init__(self, address: str, obj=None):
+        match address:
+            case 'index':
+                title = _l("Administration")
+                current_object = CurrentObjectInfo(_l("The administration panel. List of administrative tools"), 'fa-solid fa-screwdriver-wrench')
+            case 'admin_main_info_edit':
+                title = _l("Editing information about an organization")
+                current_object = CurrentObjectInfo(_l("The administration panel. The title page"), 'fa-solid fa-house-chimney-crack')
+            case 'object_index':
+                title = _l("Administration of enumeration objects")
+                current_object = CurrentObjectInfo(_l("The administration panel. Enumeration objects"), 'fa-solid fa-list-ol', subtitle=_l("Enumerations are simple objects (most often consisting of 1-2 attributes) that are referenced by other objects."))
+            case 'object_type_index':
+                title = obj.Meta.verbose_name_plural
+                act1 = CurrentObjectAction(_l("Add"), "fa-solid fa-square-plus", url_for('admin.object_type_new', object_type=obj.__name__))
+                current_object = CurrentObjectInfo(obj.Meta.verbose_name_plural, "fa-regular fa-rectangle-list", actions=[act1])
+            case 'object_type_new':
+                title = obj.Meta.title_new
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus")
+            case 'object_type_edit':
+                title = _l("Edit %(object_name)s", object_name=obj.Meta.verbose_name)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case 'status_index':
+                title = _l("The administration panel. State object")
+                current_object = CurrentObjectInfo(title, 'fa-solid fa-satellite', subtitle=_l("State objects are objects that are attributes of other objects, for which conditions for changing to a different value in the attributes are defined."))
+            case 'status_type_transits':
+                title = _l("Edit transitions between states for an object «%(name)s»", name=obj.Meta.verbose_name)
+                current_object = CurrentObjectInfo(title, 'fa-solid fa-square-pen', subtitle=_l("Simple conditions for changing to a different value can be defined for the status object on this page"))
+            case 'issue_template_index':
+                title = models.IssueTemplate.Meta.verbose_name_plural
+                act1 = CurrentObjectAction(_l("Add new template"), "fa-solid fa-square-plus", url_for('admin.issue_template_new'))
+                current_object = CurrentObjectInfo(models.IssueTemplate.Meta.verbose_name_plural, models.IssueTemplate.Meta.icon, subtitle=_l("Issue templates allow you to speed up the addition of new issue to the project"), actions=[act1])
+            case 'issue_template_new':
+                title = _l("Add new issue template")
+                current_object = CurrentObjectInfo(_l("Add new issue template"), "fa-solid fa-square-plus")
+            case 'issue_template_show':
+                title = _l("Issue template #%(templ_id)s", templ_id=obj.id)
+                act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('admin.issue_template_edit', template_id=obj.id))
+                act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('admin.issue_template_delete', template_id=obj.id), confirm=_l("Are you sure you want to delete this template?"), btn_class='btn-danger', method='DELETE')
+                current_object = CurrentObjectInfo(_l("Issue template «%(title)s»", title=obj.title), models.IssueTemplate.Meta.icon, actions=[act1, act2])
+            case 'issue_template_edit':
+                title = _l("Edit issue template #%(templ_id)s", templ_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case 'admin_file_index':
+                title = _l("File Administration")
+                current_object = CurrentObjectInfo(_l("Files"), models.FileData.Meta.icon, subtitle=_l("All files saved in the database"))
+            case 'background_tasks_index':
+                title = _l("Background tasks")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-bars-progress", subtitle=_l("Tasks performed in the background via Celery"))
+            case 'background_tasks_options_index':
+                title = _l("Background Task Options")
+                current_object = CurrentObjectInfo(title, 'fa-solid fa-bars-progress', subtitle=_l("Options for tasks running in the background"))
+            case 'project_role_index':
+                title = _l("Project roles list")
+                act1 = CurrentObjectAction(_l("Add new project role"), "fa-solid fa-square-plus", url_for('admin.project_role_new'))
+                act2 = CurrentObjectAction(_l("Edit permissions for roles"), "fa-solid fa-person-walking-arrow-loop-left", url_for('admin.project_role_permissions'))
+                current_object = CurrentObjectInfo(title, models.ProjectRole.Meta.icon, subtitle=_l("A list of all the roles that a user can have on a project"), actions=[act1, act2])
+            case 'project_role_new':
+                title = _l("Add new project role")
+                current_object = CurrentObjectInfo(title, models.ProjectRole.Meta.icon)
+            case 'project_role_edit':
+                title = _l("Edit project role #%(role_id)s", role_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case 'project_role_permissions':
+                title = _l("Edit permissions for roles")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-person-walking-arrow-loop-left", subtitle="List of actions available for this role on the project")
+            case 'task_template_index':
+                title = models.ProjectTaskTemplate.Meta.verbose_name_plural
+                act1 = CurrentObjectAction(_l("Add new template"), "fa-solid fa-square-plus", url_for('admin.task_template_new'))
+                current_object = CurrentObjectInfo(models.ProjectTaskTemplate.Meta.verbose_name_plural, models.ProjectTaskTemplate.Meta.icon, subtitle=_l("Task templates allow you to speed up the addition of new tasks to the project"), actions=[act1])
+            case 'task_template_new':
+                title = _l("Add new task template")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus")
+            case 'task_template_show':
+                title = _l("Task template #%(templ_id)s", templ_id=obj.id)
+                act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('admin.task_template_edit', template_id=obj.id))
+                act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('admin.task_template_delete', template_id=obj.id), confirm=_l("Are you sure you want to delete this template?"), btn_class='btn-danger', method='DELETE')
+                current_object = CurrentObjectInfo(_l("Task template «%(title)s»", title=obj.title), models.ProjectTaskTemplate.Meta.icon, actions=[act1, act2])
+            case 'task_template_edit':
+                title = _l("Edit task template #%(templ_id)s", templ_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case 'report_templates_index':
+                title = models.ProjectReportTemplate.Meta.verbose_name_plural
+                act1 = CurrentObjectAction(_l("Add new report template"), "fa-solid fa-square-plus", url_for('admin.report_templates_new'))
+                current_object = CurrentObjectInfo(title, models.ProjectReportTemplate.Meta.icon, subtitle=_l("Report templates is a Jinja2 templater file, in which one paramether is passed - current project"), actions=[act1])
+            case 'report_templates_new':
+                title = _l("Add new project report template")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=_l("Report templates is a Jinja2 templater file, in which one paramether is passed - current project"))
+            case 'report_templates_show':
+                title = _l("Report template #%(templ_id)s", templ_id=obj.id)
+                act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('admin.report_templates_edit', template_id=obj.id))
+                act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('admin.report_templates_delete', template_id=obj.id), confirm=_l("Are you sure you want to delete this template?"), btn_class='btn-danger', method='DELETE')
+                current_object = CurrentObjectInfo(_l("Report template #%(templ_id)s: «%(title)s»", templ_id=obj.id, title=obj.title), models.ProjectReportTemplate.Meta.icon, actions=[act1, act2])
+            case 'report_templates_edit':
+                title = _l("Edit report template #%(templ_id)s", templ_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+
+        sidebar_data = DefaultSidebar(address, obj)()
+        self.context = {'title': title, 'current_object': current_object,
+                        'sidebar_data': sidebar_data}
+
+    def __call__(self):
+        return self.context

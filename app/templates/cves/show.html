@@ -1,0 +1,134 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>CVE-{{ cve.year }}-{{ cve.identifier }}</h5>
+            </div>
+            <div class="card-body">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">{{ _("Basic information") }}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="proof-of-concept-tab" data-bs-toggle="tab" data-bs-target="#proof-of-concept"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">{{ _("Proof of Concept") }}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="environment-tab" data-bs-toggle="tab" data-bs-target="#environment"
+                            type="button" role="tab" aria-controls="home" aria-selected="true">{{ _("Vulnerable environment") }}</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ models.CriticalVulnerability.title.info["label"] }}:</td>
+                                            <td>{{ cve.title|safe }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ models.CriticalVulnerability.cvss.info["label"] }}:</td>
+                                            <td>{{ cve.cvss|safe }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ models.CriticalVulnerability.wikipage.info["label"] }}:</td>
+                                            {% if cve.wikipage_id != none %}
+                                            <td><a href="{{ url_for('wiki_pages.wikipage_show', wikipage_id=cve.wikipage_id) }}">{{ cve.wikipage.title }}</a></td>
+                                            {% else %}
+                                            <td></td>
+                                            {% endif %}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-12">
+                                <h5>{{ models.CriticalVulnerability.description.info["label"] }}:</h5>
+                                {% autoescape false %}
+                                {{ cve.description }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="proof-of-concept" role="tabpanel" aria-labelledby="proof-of-concept-tab">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ models.CriticalVulnerability.proof_of_concept_language.info["label"] }}:</td>
+                                            <td>{{ cve.proof_of_concept_language.title }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-12">
+                                <h5>{{ models.CriticalVulnerability.proof_of_concept_code.info["label"] }}:</h5>
+                                {% autoescape false %}
+                                {{ cve.proof_of_concept_code }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="environment" role="tabpanel" aria-labelledby="environment-tab">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-6 col-sm-12">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ models.CriticalVulnerability.vulnerable_environment_type.info["label"] }}:</td>
+                                            <td>{{ cve.vulnerable_environment_type.title }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-12">
+                                <h5>{{ models.CriticalVulnerability.vulnerable_environment.info["label"] }}:</h5>
+                                {% autoescape false %}
+                                {{ cve.vulnerable_environment }}
+                                {% endautoescape %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i
+                                class="fa-solid fa-list"></i>
+                            {{ _("Comments") }}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i
+                                class="fa-solid fa-grip"></i>
+                            {{ _("History of property changes") }}</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                        {{ object_comments(cve, moment, comment_form, current_user) }}
+                    </div>
+                    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(cve, moment, current_user) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,604 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/button_hide_if_no_mouse.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/file_list.css') }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="row gutters">
+  <div class="col-lg-6 col-md-12">
+    <div class="card">
+      <div class="card-header">
+        {{ task_tree_header(task) }}
+      </div>
+      <div class="card-body">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.ProjectTask.tracker.info['help_text'] }}">{{ models.ProjectTask.tracker.info['label'] }}:</td>
+                  <td id="task-tracker-title">{{ task.tracker.title }}</td>
+                </tr>
+                <tr>
+                  <td data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.ProjectTask.state.info['help_text'] }}">{{ models.ProjectTask.state.info['label'] }}:</td>
+                  {% if task.state != none %}
+                  {% set now_style = {'border-radius': '16px', 'background-color': task.state.color, 'color': get_complementary_color(task.state.color), 'padding-left': '6px', 'padding-right': '6px', 'padding-top': '2px', 'padding-bottom': '2px'} %}
+                  <td ><span id="task-state-title" {{ now_style|as_style }}>{{ task.state.title }}</span></td>
+                  {% else %}
+                  <td><span id="task-state-title" style="border-radius: 16px;padding-left:6px;padding-right:6px;padding-top:2px;padding-bottom:2px;">{{ pgettext('man', "(Missing)") }}</span></td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.ProjectTask.priority.info['help_text'] }}">{{ models.ProjectTask.priority.info['label'] }}:</td>
+                  {% if task.priority != none %}
+                  {% set now_style = {'border-radius': '16px', 'background-color': task.priority.color, 'color': get_complementary_color(task.priority.color), 'padding-left': '6px', 'padding-right': '6px', 'padding-top': '2px', 'padding-bottom': '2px'} %}
+                  <td><span id="task-priority-title" {{ now_style|as_style }}>{{ task.priority.title }}</span></td>
+                  {% else %}
+                  <td><span id="task-priority-title" style="border-radius: 16px;padding-left:6px;padding-right:6px;padding-top:2px;padding-bottom:2px;">{{ pgettext('man', "(Missing)") }}</span></td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>{{ models.ProjectTask.assigned_to.info['label'] }}:</td>
+                  {% if task.assigned_to != None %}
+                  <td id="task-assigned-to"><a href="{{ url_for('users.user_show', user_id=task.assigned_to.id) }}">{{ task.assigned_to.title }}</a></td>
+                  {% else %}
+                  <td id="task-assigned-to"><a href="#"></a></td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>{{ models.ProjectTask.readiness.info['label'] }}:</td>
+                  <td id="task-readiness"><div class="progress" role="progressbar" aria-label="Готовность задачи" aria-valuenow="{{ task.readiness }}" aria-valuemin="0" aria-valuemax="100">
+                    {% set now_style = {'width': task.readiness|string + '%'} %}
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" {{ now_style|as_style }}>{{ task.readiness }}%</div>
+                  </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6 col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-tabs" id="additionalParamethers" role="tablist">
+          <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="additional_paramethers-tab" data-bs-toggle="tab" data-bs-target="#additional_parameters"
+                  type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                  {{ _("Additional parameters") }}</button>
+          </li>
+          {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=task.project) %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services"
+                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Service.Meta.icon }}"></i>
+                {{ _("Related services") }}</button>
+          </li>
+          {% endif %}
+          {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=task.project) %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues"
+                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Issue.Meta.icon }}"></i>
+                {{ _("Related issues") }}</button>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="additional_parameters" role="tabpanel" aria-labelledby="additional_parameters-tab">
+            <table class="table table-borderless">
+              <tbody>
+                <tr>
+                  <td>{{ models.ProjectTask.estimation_time_cost.info['label'] }}:</td>
+                  {% if task.estimation_time_cost %}
+                  <td id="task-estimation-time-cost">{{ task.estimation_time_cost }}</td>
+                  {% else %}
+                  <td id="task-estimation-time-cost"></td>
+                  {% endif %}
+                  {#<td>{{ fast_edit_form.estimation_time_cost(class='form-control editable-input-data', readonly=True) }}</td>#}
+                </tr>
+                <tr>
+                  <td>{{ models.ProjectTask.date_start.info['label'] }}:</td>
+                  {% if task.date_start %}
+                  <td id="task-date-start">{{ moment(task.date_start).format('LL') }}</td>
+                  {% else %}
+                  <td id="task-date-start"></td>
+                  {% endif %}
+                </tr>
+                <tr>
+                  <td>{{ models.ProjectTask.date_end.info['label'] }}:</td>
+                  {% if task.date_end %}
+                  <td  id="task-date-end">{{ moment(task.date_end).format('LL') }}</td>
+                  {% else %}
+                  <td id="task-date-end"></td>
+                  {% endif %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=task.project) %}
+          <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+            <div id="services-toolbar">
+            {% if roles.project_role_can_make_action(current_user, task, 'update') %}
+            <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedServices" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related services') }}"><i class="fa-solid fa-link"></i></button>
+            {% endif %}
+            </div>
+            <table class="table" id="services-table" data-toolbar="#services-toolbar" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-button-class="primary" data-row-style="default_row_style">
+              <thead>
+                  <tr>
+                      <th data-field="id" data-sortable="true" data-align="center">{{ models.Service.id.info["label"] }}</th>
+                      <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.title.info["label"] }}</th>
+                      <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.ip_address.info["label"] }}</th>
+                      <th data-field="port" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.port.info["label"] }}</th>
+                      <th data-field="transport_level_protocol" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Service.transport_level_protocol.info["label"] }}</th>
+                      <th data-field="access_protocol" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.access_protocol.info["label"] }}</th>
+                      <th data-field="technical" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Service.technical.info["label"] }}</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for service in task.services %}
+                  <tr style="cursor:pointer">
+                      <td>{{ service.id }}</td>
+                      <td>{{ service.title|safe }}</td>
+                      <td>{{ service.host.ip_address }}</td>
+                      <td>{{ service.port }}</td>
+                      <td>{{ service.transport_level_protocol.title }}</td>
+                      <td>{{ service.access_protocol.title }}</td>
+                      <td>{{ service.technical|safe }}</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+          {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=task.project) %}
+          <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+            <div id="issues-toolbar">
+            {% if roles.project_role_can_make_action(current_user, task, 'update') %}
+            <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedIssues" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related issues') }}"><i class="fa-solid fa-link"></i></button>
+            {% endif %}
+            </div>
+            <table class="table" id="issues-table" data-pagination="true" data-toolbar="#issues-toolbar" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-button-class="primary" data-row-style="default_row_style">
+              <thead>
+                  <tr>
+                      <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
+                      <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.title.info["label"] }}</th>
+                      <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.description.info["label"] }}</th>
+                      <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Issue.status.info["label"] }}</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for issue in task.issues %}
+                  <tr style="cursor:pointer">
+                      <td>{{ issue.id }}</td>
+                      <td>{{ issue.title|safe }}</td>
+                      <td>{{ BeautifulSoup(issue.description, 'lxml').text }}</td>
+                      <td>{{ issue.status.title }}</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-12">
+            <h5 data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.ProjectTask.description.info['help_text'] }}">{{ models.ProjectTask.description.info['label'] }}:</h5>
+            <div id="task-description">
+            {% if task.description == none or task.description == '' %}
+            <p class="text-center text-muted">{{ pgettext("other", "(Missing)") }}</p>
+            {% else %}
+            {% autoescape false %}
+            {{ task.description }}
+            {% endautoescape %}
+            {% endif %}
+            </div>
+          </div>
+          <hr />
+          <div class="col-12">
+            <h5 class="button_hide_if_no_mouse">{{ models.ProjectTask.subtasks.info['label'] }}:
+              {% if roles.project_role_can_make_action(current_user, task, 'create') %}
+              <button id="add-new-subtask-button" class="btn-outline-light btn-rounded" data-toggle="tooltip" data-placement="top" title="{{ _('Add new subtask') }}"><i class="fa-solid fa-square-plus"></i></button>
+              {% endif %}
+            </h5>
+            <table class="table table-stripped table-hover">
+              <thead>
+                <tr>
+                  <th>{{ models.ProjectTask.title.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.state.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.date_start.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.date_end.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.readiness.info['label'] }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for subtask in task.subtasks %}
+                <tr class="subtask-for-task" data-location-target="{{ url_for('tasks.projecttask_show', projecttask_id=subtask.id) }}" style="cursor:pointer;">
+                  <td>{{ subtask.tracker.title + " #" + subtask.id|string + ": " + subtask.title|safe }}</td>
+                  <td>{{ subtask.state.title }}</td>
+                  {% if subtask.date_start == none %}
+                  <td></td>
+                  {% else %}
+                  <td>{{ moment(subtask.date_start).format('LL') }}</td>
+                  {% endif %}
+                  {% if subtask.date_end == none %}
+                  <td></td>
+                  {% else %}
+                  <td>{{ moment(subtask.date_end).format('LL') }}</td>
+                  {% endif %}
+                  <td><div class="progress" role="progressbar" aria-label="{{ _('Task readiness') }}" aria-valuenow="{{ subtask.readiness }}" aria-valuemin="0" aria-valuemax="100">
+                    {% set now_style = {'width': subtask.readiness|string + '%'} %}
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" {{ now_style|as_style }}>{{ subtask.readiness }}%</div>
+                  </div></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <hr />
+          <div class="col-12">
+            <h5 class="button_hide_if_no_mouse">{{ models.ProjectTask.related_tasks.info['label'] }}:
+              {% if roles.project_role_can_make_action(current_user, task, 'update') %}
+              <button class="btn-outline-light btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedTask" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related task') }}"><i class="fa-solid fa-link"></i></button>
+              {% endif %}
+            </h5>
+            <table class="table table-stripped table-hover" id="related-tasks-table">
+              <thead>
+                <tr>
+                  <th>{{ models.ProjectTask.title.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.state.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.date_start.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.date_end.info['label'] }}</th>
+                  <th>{{ models.ProjectTask.readiness.info['label'] }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for related_task in task.related_tasks %}
+                <tr class="with-context-menu-related-task" data-url="{{ url_for('tasks.projecttask_show', projecttask_id=related_task.id) }}" style="cursor:pointer;" data-id="{{ related_task.id }}">
+                  <td>{{ related_task.tracker.title + " #" + related_task.id|string + ": " + related_task.title|safe }}</td>
+                  <td>{{ related_task.state.title }}</td>
+                  {% if related_task.date_start == none %}
+                  <td></td>
+                  {% else %}
+                  <td>{{ moment(related_task.date_start).format('LL') }}</td>
+                  {% endif %}
+                  {% if related_task.date_end == none %}
+                  <td></td>
+                  {% else %}
+                  <td>{{ moment(related_task.date_end).format('LL') }}</td>
+                  {% endif %}
+                  <td><div class="progress" role="progressbar" aria-label="{{ _('Task readiness') }}" aria-valuenow="{{ related_task.readiness }}" aria-valuemin="0" aria-valuemax="100">
+                    {% set new_style = {'width': related_task.readiness|string + '%'} %}
+                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" {{ new_style|as_style }}>{{ related_task.readiness }}%</div>
+                  </div></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+    <div class="card">
+      <div class="card-header">
+        <h5>{{ models.ProjectTask.related_files.info['label'] }}</h5>
+      </div>
+      <div class="card-body">
+        <div class="file-list">
+          {% if task.related_files_info|length == 0 %}
+          <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+          {% else %}
+          {% for file in task.related_files_info %}
+          <a id="file-download-{{ file['id'] }}" href="{{ url_for('files.download_file', file_id=file['id']) }}" download class="file-item with-context-menu-files" data-id="{{ file['id'] }}"><span>{{ _("Download") }}</span><span>{{ file['title']|safe }}</span></a>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="card">
+      <div class="card_header">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          {% set first_tab = False %}
+          {% if roles.project_role_can_make_action(current_user, task, 'show_comments') %}
+          {% set first_tab = True %}
+          <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                  type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                  {{ _("Comments") }}</button>
+          </li>
+          {% endif %}
+          {% if roles.project_role_can_make_action(current_user, task, 'show_history') %}
+          <li class="nav-item" role="presentation">
+            {% if first_tab %}
+              <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                  role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                  {{ _("History of property changes") }}</button>
+            {% else %}
+            <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                  role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                  {{ _("History of property changes") }}</button>
+            {% endif %}
+          </li>
+          {% endif %}
+      </ul>
+      </div>
+      <div class="card-body">
+        <div class="tab-content" id="myTabContent">
+          {% if roles.project_role_can_make_action(current_user, task, 'show_comments') %}
+          <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+            {{ object_comments(task, moment, comment_form, current_user, roles) }}
+          </div>
+          {% endif %}
+          {% if roles.project_role_can_make_action(current_user, task, 'show_history') %}
+          {% if first_tab %}
+          <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+            {{ object_history(task, moment, current_user) }}
+          </div>
+          {% else %}
+          <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+            {{ object_history(task, moment, current_user) }}
+          </div>
+          {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# modal window to add relate task #}
+<div class="modal fade modal-xl" id="modalEditRelatedTask" tabindex="-1" aria-labelledby="modalEditRelatedTaskLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedTaskLabel">{{ _("Edit related tasks") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.related_tasks) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="add_related_tasks" class="btn btn-primary">{{ _("Save") }}</button> 
+      </div>
+    </div>
+  </div>
+</div>
+
+{# modal window to edit related service #}
+{% if roles.project_role_can_make_action(current_user, task, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedServices" tabindex="-1" aria-labelledby="modalEditRelatedServicesLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedServicesLabel">{{ _("Edit related services") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+              {{ form_element(edit_related_objects, edit_related_objects.services) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_services" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{# modal window to edit related issues #}
+{% if roles.project_role_can_make_action(current_user, task, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedIssues" tabindex="-1" aria-labelledby="modalEditRelatedIssuesLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedIssuesLabel">{{ _("Edit related issues") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.issues) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_issues" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{# Processing actions on related tasks via the context menu #}
+<script nonce="{{ csp_nonce() }}">
+  $(function() {
+    $.contextMenu({
+        selector: '.with-context-menu-related-task',
+        callback: function(key, options) {
+            if(key === 'open') {
+                window.open("{{ url_for('tasks.projecttask_show', projecttask_id='__projecttask_id') }}".replace("__projecttask_id", options.$trigger[0].getAttribute('data-id')), '_blank').focus()
+            }
+            else if (key === 'delete') {
+              taskSocket.emit('untie task', options.$trigger[0].getAttribute('data-id'));
+            }
+        },
+        items: {
+            "open": {name: "{{ _('Open in new tab') }}", icon: "filescroll"},
+            "delete": {name: '{{ _("Untie it") }}', icon: "thumbtack-stash"}
+        }
+    });
+});
+$(function() {
+  $.contextMenu({
+    selector: '.with-context-menu-files',
+    callback: function(key, options) {
+      if(key === 'download') {
+        options.$trigger[0].click()
+      }
+      else if(key === 'delete') {
+        taskSocket.emit('delete related files', {file_id: options.$trigger[0].getAttribute('data-id')});
+      }
+    },
+    items: {
+      "download": {name: "{{ _('Download file') }}", icon: "download"},
+      "delete": {name: "{{ _('Delete file') }}", icon: 'filedelete'}
+    }
+  })
+})
+</script>
+
+{{ load_bootstrap_table_js("services-table", "networks.service_show", "service_id") }}
+{{ load_bootstrap_table_js('issues-table', 'issues.issue_show', 'issue_id') }}
+<script nonce="{{ csp_nonce() }}">
+  const taskSocket = io("/task");
+  taskSocket.on('connect', function () {
+    taskSocket.emit('join_room', '{{ task.id }}')
+  });
+
+  document.getElementById('add_related_tasks').addEventListener('click', function(event) {
+    let related_tasks = Array.from(document.getElementById("{{ edit_related_objects.related_tasks.id }}").options) // Convert options to an array
+    .filter(option => option.selected)      // Filter selected options
+    .map(option => option.value);
+    taskSocket.emit('relate task', {'related_tasks': related_tasks});
+    bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedTask')).hide();
+  })
+
+  taskSocket.on('change related tasks', function(data) {
+    var table = document.getElementById('related-tasks-table').getElementsByTagName('tbody')[0];
+    table.innerHTML = '';
+    data.tasks.forEach(function(entry) {
+      let current_row = table.insertRow()
+      current_row.style.cursor = 'pointer';
+      current_row.classList.add('with-context-menu-related-task');
+      current_row.setAttribute('data-url', entry.link); // TODO: Change here!
+      current_row.addEventListener('click', context_menu_related_tasks_event_listener)
+      current_row.setAttribute('data-id', entry.id);
+      current_row.insertCell().appendChild(document.createTextNode(entry.title));
+      current_row.insertCell().appendChild(document.createTextNode(entry.state));
+      current_row.insertCell().innerHTML = entry.date_start;
+      current_row.insertCell().innerHTML = entry.date_end;
+      let div_1 = document.createElement('div');
+      div_1.classList.add('progress');
+      div_1.setAttribute('role', 'progressbar');
+      div_1.setAttribute('aria-label', "{{ _('Task readiness') }}");
+      div_1.setAttribute('aria-valuenow', entry.readiness);
+      div_1.setAttribute('aria-valuemin', "0");
+      div_1.setAttribute('aria-valuemax', "100");
+      let div_2 = document.createElement('div');
+      div_2.classList.add('progress-bar', 'bg-success', 'progress-bar-striped', 'progress-bar-animated');
+      div_2.style.width = entry.readiness + '%';
+      div_2.innerHTML = entry.readiness + '%';
+      div_1.appendChild(div_2);
+      current_row.insertCell().appendChild(div_1);
+      flask_moment_render_all();
+    });
+  });
+
+  function default_row_style(row, indes) {
+    return {css: { cursor: 'pointer' }}
+  }
+
+  document.getElementById('edit_related_issues').addEventListener('click', function() {
+    let related_issues = Array.from(document.getElementById("{{ edit_related_objects.issues.id }}").options) // Convert options to an array
+    .filter(option => option.selected)      // Filter selected options
+    .map(option => option.value);
+    taskSocket.emit('edit related issues', {'related_issues': related_issues});
+    bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedIssues')).hide();
+  })
+
+  taskSocket.on('change related issues', function(data) {
+    $(function() {
+        $('#issues-table').bootstrapTable('load', data.rows);
+    })
+  });
+
+  document.getElementById('edit_related_services').addEventListener('click', function() {
+    let related_services = Array.from(document.getElementById("{{ edit_related_objects.services.id }}").options) // Convert options to an array
+    .filter(option => option.selected)      // Filter selected options
+    .map(option => option.value);
+    taskSocket.emit('edit related services', {'related_services': related_services});
+    bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedServices')).hide();
+  });
+
+  taskSocket.on('change related services', function(data) {
+    $(function() {
+      $('#services-table').bootstrapTable('load', data.rows);
+    })
+  });
+  taskSocket.on('file deleted', function(data) {
+    document.getElementById('file-download-' + data['file_id']).remove();
+  })
+  taskSocket.on('task edited', function(data) {
+    $.notify("{{ _('Task changed by another user') }}", "info", {
+      clickToHide: true,
+      autoHide: true,
+      autoHideDelay: 5000,
+      globalPosition: 'top right'
+    });
+    document.getElementById('task-title').innerHTML = data.title;
+    document.getElementById('task-tracker-title').innerHTML = data.tracker;
+    let task_state = document.getElementById('task-state-title');
+    task_state.innerHTML = data.state;
+    task_state.style.backgroundColor = data.state_background_color;
+    task_state.style.color = data.state_color;
+    let task_priority = document.getElementById('task-priority-title');
+    task_priority.innerHTML = data.priority;
+    task_priority.style.backgroundColor = data.priority_background_color;
+    task_priority.style.color = data.priority_color;
+    let task_assigned_to = document.getElementById('task-assigned-to').children[0];
+    task_assigned_to.href = data.assigned_to_href;
+    task_assigned_to.innerHTML = data.assigned_to_title;
+    let task_readiness = document.getElementById('task-readiness');
+    task_readiness.children[0].setAttribute('aria-valuenow', data.readiness);
+    task_readiness.children[0].children[0].style.width = String(data.readiness) + "%";
+    task_readiness.children[0].children[0].innerHTML = `${data.readiness}%`;
+    document.getElementById('task-estimation-time-cost').innerHTML = data.estimation_time_cost;
+    document.getElementById('task-date-start').innerHTML = data.date_start;
+    document.getElementById('task-date-end').innerHTML = data.date_end;
+    document.getElementById('task-description').innerHTML = data.description;
+    flask_moment_render_all();
+  });
+  document.getElementById('add-new-subtask-button').addEventListener('click', function() {
+    location.href="{{ url_for('tasks.projecttask_new', project_id=task.project_id, parent_task_id=task.id) }}";
+  });
+  let subtask_for_tasks = document.getElementsByClassName('subtask-for-task');
+  for(i = 0;i < subtask_for_tasks.length; i++){
+    subtask_for_tasks[i].addEventListener('click', function(){
+      location.href=this.getAttribute('data-location-target');
+    });
+  };
+  let context_menu_related_tasks = document.getElementsByClassName('with-context-menu-related-task');
+  let context_menu_related_tasks_event_listener = function() {
+    location.href = this.getAttribute('data-url');
+  };
+  for(i = 0; i < context_menu_related_tasks.length; i++) {
+    context_menu_related_tasks[i].addEventListener('click', context_menu_related_tasks_event_listener);
+  };
+</script>
+{% endblock %}

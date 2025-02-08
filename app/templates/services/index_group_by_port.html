@@ -1,0 +1,192 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Services grouped by port") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table"    id="services-table"
+                                        data-search="true"
+                                        data-show-columns="true"
+                                        data-show-toggle="true"
+                                        data-show-export="true"
+                                        data-filter-control="true"
+                                        data-buttons-class="primary"
+                                        data-pagination="true"
+                                        data-side-pagination="server"
+                                        data-page-list="[10, 25, 50, 100, 500, All]"
+                                        data-url="{{ url_for('networks.all_services_port_data', project_id=project.id) }}"
+                                        data-row-style="issueRowStyle">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    
+    $(function() {
+        let services_toolbar_table = `<div id="services-toolbar">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ _("Export as") }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li><a id="button-export-ip-address-services-__port_number-__transport_level_protocol" class="dropdown-item">{{ models.Service.host.entity.class_.ip_address.info["label"] }}</a></li>
+                            <li><a id="button-export-ip-port-services-__port_number-__transport_level_protocol" class="dropdown-item">{{ models.Service.host.entity.class_.ip_address.info["label"] }}:{{ models.Service.port.info["label"] }}</a></li>
+                        </ul>
+                    </div>
+                </div>`;
+        var service_transport_level_protocol_filters = JSON.parse('{{ filters["reversed_TransportLevelProtocol"]|escapejs }}');
+        var CookieName = "ServiceByPortIndexPageSize";
+        $('#services-table').bootstrapTable({
+            onPreBody: function(data) {
+
+                var pageSizeCookie = Cookies.get(CookieName);
+                if(isNaN(Number(pageSizeCookie))) {
+                    pageSizeCookie = 10;
+                };
+                if (pageSizeCookie != null) {
+    
+                    var pageSizeInt = parseInt(pageSizeCookie);
+                    this.pageSize = pageSizeInt;
+                }
+            },
+            onPageChange: function(pageNumber, pageSize) {
+                Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+            },
+            filterControl: true,
+                disableUnusedSelectOptions: true,
+                columns: [
+                    {
+                        field: "port_number",
+                        title: "{{ _('Port Number') }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
+                    },
+                    {
+                        field: "transport_level_protocol",
+                        title: "{{ _('Transport level protocol') }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'select',
+                        filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}'
+                    },
+                    {
+                        field: "default_access_protocol",
+                        title: "{{ _('Default access protocol') }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
+                    }
+                ],
+                icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                showColumns: true,
+                detailView: true,
+                onExpandRow: function(index, row, $detail) {
+                    var stt = services_toolbar_table.replace("__port_number", row.port_number).replace("__transport_level_protocol", row.transport_level_protocol)
+                    var table_id = `service-table-${row.port_number}-${row.transport_level_protocol}`
+                    $detail.html(`<table id="${table_id}"></table>` + stt).find('table').bootstrapTable({
+                        columns: [
+                        {
+                            field: "id",
+                            title: "{{ models.Service.id.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'title',
+                            title: "{{ models.Service.title.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'technical',
+                            title: "{{ models.Service.technical.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'host.ip_address-input',
+                            title: "{{ models.Service.host.entity.class_.ip_address.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'access_protocol.title-input',
+                            title: "{{ models.Service.access_protocol.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'port_state',
+                            title: "{{ models.Service.port_state.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'select',
+                            filterData: 'json:{{ filters["ServicePortState"]|escapejs }}'
+                        },
+                        {
+                            field: 'port_state_reason',
+                            title: "{{ models.Service.port_state_reason.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        }
+                        ],
+                        showColumns: true,
+                        search: true,
+                        showToggle: true,
+                        showPaginationSwitch: true,
+                        showExport: true,
+                        showMultiSort: true,
+                        filterControl: true,
+                        buttonsClass: 'primary',
+                        pagination: true,
+                        toolbar: '#services-toolbar',
+                        sidePagination: 'server',
+                        url: '{{ url_for("networks.services_by_port_data", port="__port_id", transport_level_protocol="__transport_protocol", project_id=project.id) }}'.replace('__port_id', row.port_number).replace("__transport_protocol", service_transport_level_protocol_filters[row.transport_level_protocol]),
+                        rowStyle: serviceRowStyle,
+                        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                        onClickRow: function(row, element, field) {
+                            location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
+                        }
+                    })
+                }
+        })
+    });
+    function serviceRowStyle(row, index) {
+        return { classes: "with-context-menu-service", css: {"cursor": 'pointer' } }
+    };
+    $(function () {
+        $.contextMenu({
+            selector: '.with-context-menu-service',
+            callback: function (key, options) {
+                if (key === 'open') {
+                    window.open("{{ url_for('networks.service_show', service_id='__service_id') }}".replace("__service_id", options.$trigger[0].children[0].textContent), '_blank')
+                }
+                else if(key === 'edit') {
+                    window.open("{{ url_for('networks.service_edit', service_id='__service_id') }}".replace('__service_id', options.$trigger[0].children[0].textContent), '_blank').focus()
+                }
+            },
+            items: {
+                "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
+                "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+            }
+        });
+    });
+</script>
+{% endblock %}

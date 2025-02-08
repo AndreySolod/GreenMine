@@ -1,0 +1,31 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row gutters">
+    <div class="col-lg-6 col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form action="" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    {{ form_element(form, form.from_network_id) }}
+                    {{ form_element(form, form.title) }}
+                    {{ form_element(form, form.ip_address) }}
+                    {{ form_element(form, form.mac) }}
+                    {{ form_element(form, form.operation_system_family_id) }}
+                    {{ form_element(form, form.operation_system_gen) }}
+                    {{ form_element(form, form.description) }}
+                    {{ form_element(form, form.device_type_id) }}
+                    {{ form_element(form, form.device_vendor_id) }}
+                    {{ form_element(form, form.device_model_id) }}
+                    <div class="row justify-content-end">
+                        <div class="col-3">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
