@@ -44,6 +44,7 @@ class NetworkForm(FlaskForm):
 
 class NetworkCreateForm(NetworkForm):
     submit = wtforms.SubmitField(_l("Create"))
+    submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 
 
 class NetworkEditForm(NetworkForm):
@@ -106,7 +107,9 @@ class HostForm(FlaskForm):
 
 
 class HostFormNew(HostForm):
+    excluded = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Host.device_vendor_id.info["label"]))
     submit = wtforms.SubmitField(_l("Create"))
+    submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 
 
 class HostFormEdit(HostForm):

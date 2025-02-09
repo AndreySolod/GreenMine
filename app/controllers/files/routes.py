@@ -3,7 +3,7 @@ from app import db, logger, sanitizer
 from flask import request, send_file, url_for, abort, jsonify
 from flask_login import login_required, current_user
 from app.models import FileData, FileDirectory
-from app.helpers.projects_helpers import gen_new_name_for_file_or_dir
+from app.helpers.webfiles_helpers import gen_new_name_for_file_or_dir
 from werkzeug.utils import secure_filename
 from io import BytesIO
 import sqlalchemy as sa

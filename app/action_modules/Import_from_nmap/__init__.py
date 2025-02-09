@@ -6,7 +6,6 @@ import sqlalchemy.orm as so
 from xml.etree import ElementTree
 import ipaddress
 from typing import Optional
-from markupsafe import escape
 from app.controllers.forms import FlaskForm
 import wtforms
 import wtforms.validators as validators
@@ -156,7 +155,7 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                     serv.technical = f'<p>Extrainfo: {service_attr.get('extrainfo')}</p>'
             if port.find('script') is not None:
                 for script in port.iter('script'):
-                    technical = f'\n<h5>Script data:</h5>\n<h6>{script.get('id')}</h6><p>{escape(script.get('output')).replace('\n', '<br />')}</p>'
+                    technical = f'\n<h5>Script data:</h5>\n<h6>{script.get('id')}</h6><p>{sanitizer.escape(script.get('output')).replace('\n', '<br />')}</p>'
                     if serv.technical is not None:
                         serv.technical += technical
                     else:

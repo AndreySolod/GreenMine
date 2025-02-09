@@ -2,6 +2,7 @@ from flask import Flask
 from pybluemonday import UGCPolicy, Policy
 from typing import List, Optional
 from jinja2.filters import Markup
+from bs4 import BeautifulSoup
 
 
 class TextSanitizerManager:
@@ -14,7 +15,10 @@ class TextSanitizerManager:
             self.init_app(app)
         
     def init_app(self, app: Flask):
+        if not hasattr(app, 'extensions'):  # pragma: no cover
+            app.extensions = {}
         app.extensions['TextSanitizer'] = self
+        app.jinja_env.globals['sanitizer'] = self
     
     def sanitize(self, text: Optional[str]) -> Optional[str]:
         """ Sanitize text with current policy filters
@@ -46,3 +50,10 @@ class TextSanitizerManager:
         if text is None:
             return None
         return str(Markup.unescape(text))
+    
+    def pure_text(self, text: Optional[str]) -> str:
+        ''' returned text, that are cleaned from all html tags. Cleaned via BeautifulSoup(text, 'lxml').text
+        :param text: text to clean from html tags. May be None, than returned an empty string '''
+        if text is None:
+            return ''
+        return BeautifulSoup(text, 'lxml').text

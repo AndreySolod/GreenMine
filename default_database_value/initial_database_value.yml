@@ -17,18 +17,6 @@ User:
             - haskell
         is_administrator: true
         _function__set_password: "admin"
-    - worker:
-        login: "worker"
-        first_name: "Worker"
-        last_name: "GreenMine"
-        middle_name: "Black-Skin"
-        email: "worker@localhost.com"
-        manager: admin
-        is_administrator: false
-        position: worker
-        programming_language_theme: tomorrow-night-bright
-        _function__set_password: "worker"
-
 
 UserPosition:
     - admin:
@@ -510,11 +498,11 @@ ProjectTaskPriority:
         color: "rgba(176, 0, 0, 0.35)"
     - emergency:
         title: "Срочный"
-        description: "Возможна эксплуатация уязвимости злоумышленниками"
+        description: "1"
         color: "rgba(176, 0, 0, 0.5)"
     - immediate:
         title: "Немедленный"
-        description: "Данная уязвимость уже активно эксплуатируется злоумышленниками"
+        description: "2"
         color: "rgba(176, 0, 0, 0.8)"
 
 ProjectTaskTracker:
@@ -572,6 +560,54 @@ OperationSystemFamily:
         title: "Windows"
     - linux:
         title: 'Linux'
+    - ios:
+        title: "IOS"
+    - ios_xe:
+        title: "IOS-XE"
+    - openbsd:
+        title: "OpenBSD"
+    - android:
+        title: "Android"
+    - apple_tv:
+        title: "Apple TV"
+    - arubaos:
+        title: "ArubaOS"
+    - esxi:
+        title: "ESXi"
+    - fortios:
+        title: "FortiOS"
+    - freebsd:
+        title: "FreeBSD"
+    - freenas:
+        title: "FreeNAS"
+    - idrac:
+        title: "iDRAC"
+    - ilo:
+        title: "iLO"
+    - irix:
+        title: "IRIX"
+    - macos:
+        title: "macOS"
+    - macosx:
+        title: "Mac OS X"
+    - solaris:
+        title: "Solaris"
+    - reactos:
+        title: "ReactOS"
+    - micropython:
+        title: "Micropython"
+    - vxwork:
+        title: "VxWorks"
+    - xbox:
+        title: "Xbox 360"
+    - xen_server:
+        title: "XenServer"
+    - hiveos:
+        title: "HiveOS"
+    - netware:
+        title: "NetWare"
+    - nexenta:
+        title: "Nexenta"
 
 AccessProtocol:
     - _import_module: "gen_list_access_protocols"
@@ -621,7 +657,7 @@ IssueStatus:
         color: "#7FFFD4"
     - confirmed:
         title: "Подтверждена"
-        description: "Проблема действительно присутствует"
+        description: "Присутствие проблемы подтверждено"
         color: "#FF4500"
     - notconfirmed:
         title: "Не подтверждена"
@@ -772,6 +808,52 @@ DeviceVendor:
         title: "GeoVision"
     - hikvision:
         title: "HikVision"
+    - dlink:
+        title: "D-Link"
+    - thomson:
+        title: "Thomson"
+    - nrg:
+        title: "NRG"
+    - hp:
+        title: "HP"
+    - shoretel:
+        title: "ShoreTel"
+    - avaya:
+        title: "Avaya"
+    - oki:
+        title: "Oki"
+    - apple:
+        title: "Apple"
+    - polycom:
+        title: "Polycom"
+    - zebra:
+        title: "Zebra"
+    - sagemcom:
+        title: "Sagemcom"
+    - moxa:
+        title: "MOXA"
+    - lg:
+        title: "LG"
+    - epson:
+        title: "Epson"
+    - motorolla:
+        title: "Motorolla"
+    - nokia:
+        title: "Nokia"
+    - qemu:
+        title: "QEMU"
+    - ubiquiti:
+        title: "Ubiquiti"
+    - western_digital:
+        title: "Western Digital"
+    - xiaomi:
+        title: "Xiaomi"
+    - tp_link:
+        title: "TP-LINK"
+    - tanberg:
+        title: "Tanberg"
+    - synology:
+        title: "Synology"
 
 DeviceModel:
     - kyocera_all:

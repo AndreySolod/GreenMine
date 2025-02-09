@@ -47,7 +47,7 @@ def relate_issue_to_service(data):
         db.session.commit()
     except(ValueError, TypeError, KeyError):
         return None
-    new_issues = [{'id': i.id, 'title': i.title, 'description': BeautifulSoup(i.description, 'lxml').text, 'status': i.status.title} for i in service.issues]
+    new_issues = [{'id': i.id, 'title': i.title, 'description': sanitizer.pure_text(i.description), 'status': i.status.title} for i in service.issues]
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related issues on service #{service.id}")
     emit('change related issues', {'rows': new_issues},
          namespace='/service', to=current_room_name)
@@ -239,3 +239,43 @@ def reset_network_hosts(data):
     emit('hosts changed', {'update': True}, namespace='/network', to=current_room_name)
     for i in old_networks:
         emit('hosts changed', {'update': True}, namespace='/network', to=str(i))
+
+
+@socketio.on('join_room', namespace="/hosts-excluded")
+@authenticated_only
+def join_hosts_room(data):
+    try:
+        project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(data))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect hosts room {data}")
+        return None
+    if not project_role_can_make_action(current_user, models.Network(), 'index', project=project):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join hosts room #{data}, in which he has no rights to")
+        return None
+    room = data
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join hosts room #{data}")
+    join_room(room, namespace="/hosts-excluded")
+
+
+@socketio.on('include to research', namespace='/hosts-excluded')
+@authenticated_only
+def include_host_to_research(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    current_room, current_room_name = r
+    try:
+        project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(current_room))).one()
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == int(data['host_id']))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, host, 'update'):
+        return None
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request add host to reseqrch")
+    host.excluded = False
+    db.session.add(host)
+    db.session.commit()
+    all_excluded_hosts = db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project.id, models.Host.excluded==True))).all()
+    excluded_hosts = [{'id': i.id, 'title': i.title, 'from_network': str(i.from_network.fulltitle), 'ip_address': str(i.ip_address),
+                      'description': sanitizer.pure_text(i.description)} for i in all_excluded_hosts]
+    emit("excluded hosts changed", {'hosts': excluded_hosts}, namespace="/hosts-excluded", to=current_room_name)

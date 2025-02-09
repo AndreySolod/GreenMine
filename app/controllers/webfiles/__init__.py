@@ -12,6 +12,7 @@ bp = Blueprint('webfiles', __name__, url_prefix='/webfiles')
 
 import app.controllers.webfiles.routes
 import app.controllers.webfiles.websockets
+import app.controllers.webfiles.webdav
 
 
 def sidebar(current_object, act: str, **kwargs) -> SidebarElement:

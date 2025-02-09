@@ -65,7 +65,7 @@ class FlaskForm(flask_wtf.FlaskForm):
                 if inspect(o.__class__).column_attrs[name].columns[0].type.python_type == datetime.timedelta and getattr(o, name) is not None:
                     field.data = getattr(o, name).seconds // 60 // 60
                 elif isinstance(field, fields.StringField) or isinstance(field, fields.TextAreaField):
-                    field.data = Markup.unescape((getattr(o, name)))
+                    field.data = sanitizer.unescape((getattr(o, name)))
                 else:
                     field.data = getattr(o, name)
             elif (hasattr(o, name)):

@@ -56,11 +56,13 @@ def sidebar_host(current_object, act: str, **kwargs) -> Optional[SidebarElement]
     sels = []
     if project_role_can_make_action(current_user, Host(), 'index', project=proj):
         sel41 = SidebarElementSublink(_l("All hosts"), url_for('networks.host_index', project_id=proj.id), con=='Host' and act=='index')
+        sel45 = SidebarElementSublink(_l("Excluded hosts"), url_for('networks.hosts_excluded_index', project_id=proj.id), con=='Host' and act=='excluded-index')
         sels.append(sel41)
+        sels.append(sel45)
     if project_role_can_make_action(current_user, Host(), 'create', project=proj):
         sel42 = SidebarElementSublink(_l("Add new host"), url_for('networks.host_new', project_id=proj.id), con=='Host' and act=='new')
         sels.append(sel42)
-    if con == "Host" and act not in ['index', 'new']:
+    if con == "Host" and act not in ['index', 'excluded-index', 'new']:
         if project_role_can_make_action(current_user, current_object, 'show'):
             sel43 = SidebarElementSublink(current_object.fulltitle, url_for('networks.host_show', host_id=current_object.id), act=='show')
             sels.append(sel43)
@@ -142,12 +144,24 @@ def environment_host(obj, action, **kwargs):
             act1 = CurrentObjectAction(_l("Add new host"), "fa-solid fa-square-plus", url_for('networks.host_new', project_id=proj.id))
             acts.append(act1)
         current_object = CurrentObjectInfo(_l("All hosts"), obj.Meta.icon_index, subtitle=proj.fulltitle, actions=acts)
+    elif action == 'excluded-index':
+        title = _l("Excluded hosts")
+        acts = []
+        if project_role_can_make_action(current_user, obj, 'create', project=proj):
+            act1 = CurrentObjectAction(_l("Add new excluded host"), "fa-solid fa-square-plus", url_for('networks.host_new', project_id=proj.id, excluded=True))
+            acts.append(act1)
+        current_object = CurrentObjectInfo(_l("Excluded hosts"), "fa-solid fa-crosshairs", subtitle=proj.fulltitle, actions=acts)
     elif action == 'show':
         title = _l("Host «%(ip_addr)s»", ip_addr=str(obj.ip_address))
         acts = []
         if project_role_can_make_action(current_user, obj, 'update'):
             act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('networks.host_edit', host_id=obj.id))
             acts.append(act1)
+            if obj.excluded:
+                act3 = CurrentObjectAction(_l("Include to research"), "icon-target", url_for("networks.add_host_to_research", host_id=obj.id), btn_class="btn-warning", method='POST')
+            else:
+                act3 = CurrentObjectAction(_l("Exclude from research"), "icon-no-target", url_for('networks.exclude_host_from_research', host_id=obj.id), btn_class="btn-warning", method='POST')
+            acts.append(act3)
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('networks.host_delete', host_id=obj.id), confirm=_l("Are you sure you want to delete this host?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)

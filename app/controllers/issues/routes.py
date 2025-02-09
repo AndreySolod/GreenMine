@@ -134,6 +134,8 @@ def issue_new():
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new issue #{issue.id}")
         flash(_l("Issue #%(issue_id)s has been successfully added", issue_id=issue.id), 'success')
+        if form.submit_and_add_new.data:
+            return redirect(url_for('issues.issue_new', **request.args))
         if project_role_can_make_action(current_user, issue, 'show'):
             return redirect(url_for('issues.issue_show', issue_id=issue.id))
         return redirect(url_for('issues.issue_index', project_id=project_id))

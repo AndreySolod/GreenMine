@@ -1,0 +1,111 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Hosts, that are excluded from the study") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table" id="hosts-table" data-search="true"
+                data-show-columns="true"
+                data-show-toggle="true"
+                data-show-export="true"
+                data-show-multi-sort="true"
+                data-filter-control="true"
+                data-buttons-class="primary"
+                data-pagination="true"
+                data-side-pagination="server"
+                data-page-list="[10, 25, 50, 100, 500, All]"
+                data-row-style="hostsRowStyle">
+                <thead>
+                    <tr>
+                        <th data-field="id" data-sortable="true" data-align="center">{{ models.Host.id.info["label"] }}</th>
+                        <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.title.info['label'] }}</th>
+                        <th data-field="from_network" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Host.from_network.info['label'] }}</th>
+                        <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.ip_address.info['label'] }}</th>
+                        <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.description.info['label'] }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for host in hosts %}
+                    <tr>
+                        <td>{{ host.id }}</td>
+                        <td>{{ sanitizer.pure_text(host.title) }}</td>
+                        <td>{{ host.from_network.fulltitle }}</td>
+                        <td>{{ host.ip_address }}</td>
+                        <td>{{ sanitizer.pure_text(host.description) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $(function() {
+        var CookieName = "HostsIndexPageSize";
+        $('#hosts-table').bootstrapTable({
+                onPreBody: function(data) {
+
+                    var pageSizeCookie = Cookies.get(CookieName);
+                    if(isNaN(Number(pageSizeCookie))) {
+                        pageSizeCookie = 10;
+                    };
+                    if (pageSizeCookie != null) {
+        
+                        var pageSizeInt = parseInt(pageSizeCookie);
+                        this.pageSize = pageSizeInt;
+                    }
+                },
+                onPageChange: function(pageNumber, pageSize) {
+                    Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                },
+                icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                buttonsClass: 'primary',
+                exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
+                onClickRow: function(row, element, field) {
+                    location = "{{ url_for('networks.host_show', host_id='__row_id') }}".replace("__row_id", row.id)
+                }
+              })
+    });
+    function  hostsRowStyle(row, index) {
+        return { classes: "with-context-menu-hosts", css: {"cursor": 'pointer' } }
+    }
+    const hostsSocket = io('/hosts-excluded')
+    hostsSocket.on('connect', function() {
+        hostsSocket.emit('join_room', '{{ project.id }}');
+    })
+    $(function () {
+        $.contextMenu({
+            selector: '.with-context-menu-hosts',
+            callback: function (key, options) {
+                if (key === 'open') {
+                    window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", options.$trigger[0].children[0].textContent), '_blank').focus();
+                }
+                else if(key === 'edit') {
+                    window.open("{{ url_for('networks.host_edit', host_id='__host_id') }}".replace('__host_id', options.$trigger[0].children[0].textContent), '_blank').focus();
+                }
+                else if (key === 'include') {
+                    hostsSocket.emit('include to research', {host_id: options.$trigger[0].children[0].textContent});
+                };
+            },
+            items: {
+                "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
+                "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                "include": { name: '{{ _("Include to research") }}', icon: 'crosshairs' }
+            }
+        });
+        hostsSocket.on('excluded hosts changed', function(data) {
+            $('#hosts-table').bootstrapTable('load', data.hosts)
+        })
+    });
+</script>
+{% endblock %}

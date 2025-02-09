@@ -197,6 +197,8 @@ def projecttask_new():
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new project task #{task.id}")
         flash(_l("Task #%(task_id)s has been successfully added", task_id=task.id), 'success')
+        if form.submit_and_add_new.data:
+            return redirect(url_for('tasks.projecttask_new', **request.args))
         if project_role_can_make_action(current_user, task, 'show'):
             return redirect(url_for('tasks.projecttask_show', projecttask_id=task.id))
         return redirect(url_for('tasks.projecttask_index', project_id=project_id))

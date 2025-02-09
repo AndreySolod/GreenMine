@@ -6,7 +6,7 @@ from .datatypes import NetworkAddress, IPAddress, LimitedLengthString
 from .issues import Issue
 from .tasks import ProjectTask
 from .credentials import Credential
-from typing import List, Optional
+from typing import List, Optional, Set
 import sqlalchemy as sa
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -186,6 +186,11 @@ class HostStatus(db.Model):
         title_new = _l("Add new host status")
 
 
+class HostAnotherInterface(db.Model):
+    first_interface_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), primary_key=True)
+    second_interface_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), primary_key=True)
+
+
 @project_object_with_permissions
 class Host(HasComment, db.Model, HasHistory):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': 'ID'})
@@ -219,6 +224,8 @@ class Host(HasComment, db.Model, HasHistory):
     device_vendor: so.Mapped[DeviceVendor] = so.relationship(info={'label': _l("Device vendor")})
     device_model_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(DeviceModel.id, ondelete='SET NULL'), info={'label': _l("Device model")})
     device_model: so.Mapped[DeviceModel] = so.relationship(info={'label': _l("Device model")})
+    interfaces: so.Mapped[Set["Host"]] = so.relationship(secondary=HostAnotherInterface.__table__, primaryjoin=id==HostAnotherInterface.first_interface_id,
+                                                         secondaryjoin=HostAnotherInterface.second_interface_id==id, lazy='select', info={'label': _l("Another IP addresses")})
     excluded: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Excluded from the study")})
 
     @property
@@ -271,6 +278,20 @@ class Host(HasComment, db.Model, HasHistory):
         return self.from_network
 
     __table_args__ = (sa.UniqueConstraint('from_network_id', 'ip_address', name='_unique_ip_and_network_together'),)
+
+    def assign_interface(self, interface: "Host"):
+        ''' Mark host (interface paramether) as another interface of current host. Also marked interface as another host for all current host interfaces '''
+        for i in self.interfaces:
+            i.interfaces.add(interface)
+        self.interfaces.add(interface)
+    
+    def drop_interface(self, interface: "Host"):
+        ''' Drop host (interface paramether) from interfaces list of current host. Also dropped from another interfaces '''
+        for i in self.interfaces:
+            if i is interface:
+                continue
+            i.interfaces.remove(interface)
+        self.interfaces.remove(interface)
 
     class Meta:
         verbose_name = _l("Host")

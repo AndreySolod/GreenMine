@@ -38,7 +38,8 @@ class IssueForm(FlaskForm):
 
 
 class IssueCreateForm(IssueForm):
-    submit = wtforms.SubmitField(_l("Create"))
+    submit = wtforms.SubmitField(_l('Create'))
+    submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 
 
 class IssueEditForm(IssueForm):

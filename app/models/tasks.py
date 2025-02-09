@@ -24,8 +24,8 @@ from app.extensions.moment import moment
 
 
 class StateToStateTask(db.Model):
-    from_state_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('task_state.id'), primary_key=True)
-    to_state_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('task_state.id'), primary_key=True)
+    from_state_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('task_state.id', ondelete='CASCADE'), primary_key=True)
+    to_state_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('task_state.id', ondelete='CASCADE'), primary_key=True)
 
 
 @project_enumerated_object

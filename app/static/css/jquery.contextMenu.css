@@ -143,6 +143,10 @@
   content: "\e05e";
   font-family: "FontAwesome";
 }
+.context-menu-icon-crosshairs:before {
+  content: "\f05b";
+  font-family: "FontAwesome";
+}
 
 .context-menu-icon::before {
   position: absolute;

@@ -29,7 +29,7 @@
 		</style>
 		{% endif %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome/css/all.min.css') }}" nonce="{{ csp_nonce() }}">
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/iconmoon/style.css') }}" nonce="{{ csp_nonce() }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon/style.css') }}" nonce="{{ csp_nonce() }}">
         {% if not (need_main_style) is defined or need_main_style %}
 			{% if not current_user.is_anonymous %}
 			<style nonce="{{ csp_nonce() }}">

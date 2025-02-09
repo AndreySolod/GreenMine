@@ -8,7 +8,8 @@ from app.controllers.webfiles import bp
 from app import db, logger
 from app.models import Project, FileDirectory, FileData
 from app.helpers.general_helpers import get_or_404
-from app.helpers.projects_helpers import get_default_environment, gen_new_name_for_file_or_dir
+from app.helpers.projects_helpers import get_default_environment
+from app.helpers.webfiles_helpers import gen_new_name_for_file_or_dir
 from sqlalchemy import exc
 from flask_babel import lazy_gettext as _l
 from app.helpers.roles import project_role_can_make_action_or_abort

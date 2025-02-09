@@ -26,6 +26,12 @@ class FileDirectory(db.Model):
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l('Project')})
     project: so.Mapped["Project"] = so.relationship(lazy='joined', foreign_keys=[project_id], backref=so.backref('file_directories', cascade='all, delete-orphan'), info={'label': _l('Project')}) # type: ignore
 
+    @property
+    def parent(self):
+        if self.parent_dir is None:
+            return self
+        return self.parent_dir
+
     class Meta:
         verbose_name = _l('Directory')
         verbose_name_plural = _l('Directorys')

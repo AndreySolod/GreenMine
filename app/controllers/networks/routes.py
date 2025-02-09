@@ -96,6 +96,8 @@ def network_new():
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new newtork {network.id}")
         flash(_l("Network #%(network_id)s has been successfully added", network_id=network.id), 'success')
+        if form.submit_and_add_new.data:
+            return redirect(url_for('networks.host_new', **request.args))
         if project_role_can_make_action(current_user, network, 'show'):
             return redirect(url_for('networks.network_show', network_id=network.id))
         return redirect(url_for('networks.network_index', project_id=project_id))
@@ -116,7 +118,7 @@ def host_index_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'title', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
-                         'base_select': lambda x: x.join(models.Host.from_network).where(models.Network.project_id==project_id)}
+                         'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -161,8 +163,27 @@ def host_index():
                "DeviceType": json.dumps(device_types), "DeviceVendor": json.dumps(device_vendors)}
     ctx = get_default_environment(models.Host(), 'index', proj=project)
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
     context = {'filters': filters, 'project': project}
     return render_template('hosts/index.html', **context, **ctx)
+
+
+@bp.route('/hosts/excluded-index')
+@login_required
+def hosts_excluded_index():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request hosts excluded index with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = get_or_404(db.session, models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project=project)
+    excluded_hosts = db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id, models.Host.excluded==True))).all()
+    ctx = get_default_environment(models.Host(), 'excluded-index', proj=project)
+    side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
+    context = {'project': project, 'hosts': excluded_hosts}
+    return render_template('hosts/excluded-index.html', **ctx, **context)
 
 
 @bp.route("/hosts/new", methods=["GET", "POST"])
@@ -183,10 +204,13 @@ def host_new():
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new host #{host.id}")
         flash(_l("Host #%(host_id)s has been successfully added", host_id=host.id), 'success')
+        if form.submit_and_add_new.data:
+            return redirect(url_for('networks.host_new', **request.args))
         if project_role_can_make_action(current_user, host, 'show'):
             return redirect(url_for('networks.host_show', host_id=host.id))
         return redirect(url_for('networks.host_index', project_id=project_id))
     elif request.method == 'GET':
+        form.load_default_data(db.session, models.Host)
         form.load_data_from_json(request.args)
     ctx = get_default_environment(models.Host(), 'new', proj=project)
     return render_template('hosts/new.html', form=form, **ctx)
@@ -336,7 +360,7 @@ def network_edit(network_id):
         form.load_exist_value(network)
         form.load_data_from_json(request.args)
     ctx = get_default_environment(network, 'edit')
-    return render_template('networks/new.html', form=form, **ctx)
+    return render_template('networks/edit.html', form=form, **ctx)
 
 
 @bp.route("/networks/<int:network_id>/delete", methods=["POST"])
@@ -375,9 +399,14 @@ def host_show(host_id):
     return render_template('hosts/show.html', **context, **ctx)
 
 
-@bp.route("/hosts/<int:host_id>/edit", methods=["GET", "POST"])
+@bp.route("/hosts/<host_id>/edit", methods=["GET", "POST"])
 @login_required
 def host_edit(host_id):
+    try:
+        host_id = int(host_id)
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host edit with non-integer host_id {host_id}")
+        abort(404)
     host = get_or_404(db.session, models.Host, host_id)
     project_role_can_make_action_or_abort(current_user, host, 'update')
     form = forms.HostFormEdit(host.ip_address, host.from_network.project_id)
@@ -392,7 +421,29 @@ def host_edit(host_id):
         form.load_exist_value(host)
         form.load_data_from_json(request.args)
     ctx = get_default_environment(host, 'edit')
-    return render_template('hosts/new.html', form=form, **ctx)
+    return render_template('hosts/edit.html', form=form, **ctx)
+
+
+@bp.route('/hosts/<int:host_id>/include-to-research', methods=['POST'])
+@login_required
+def add_host_to_research(host_id: int):
+    host = get_or_404(db.session, models.Host, host_id)
+    project_role_can_make_action_or_abort(current_user, host, 'update')
+    host.excluded = False
+    db.session.add(host)
+    db.session.commit()
+    return redirect(url_for('networks.host_show', host_id=host.id))
+
+
+@bp.route('/hosts/<int:host_id>/exclude-from-research', methods=['POST'])
+@login_required
+def exclude_host_from_research(host_id: int):
+    host = db.get_or_404(models.Host, host_id)
+    project_role_can_make_action_or_abort(current_user, host, 'update')
+    host.excluded = True
+    db.session.add(host)
+    db.session.commit()
+    return redirect(url_for('networks.host_show', host_id=host.id))
 
 
 @bp.route("/hosts/<int:host_id>/delete", methods=["POST"])
@@ -545,8 +596,11 @@ def generate_all_included_ip_addresses():
     networks = db.session.scalars(sa.select(models.Network).where(models.Network.id.in_(network_ids))).all()
     ip_list = set()
     send_data = BytesIO()
+    excluded_ips = db.session.scalars(sa.select(models.Host.ip_address).join(models.Host.from_network).where(models.Network.project_id == project_id)).all()
     for n in networks:
         for i in n.ip_address:
+            if i in excluded_ips:
+                continue
             ip_list.add(str(i))
     for i in ip_list:
         send_data.write(i.encode())

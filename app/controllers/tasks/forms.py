@@ -60,6 +60,7 @@ class ProjectTaskForm(FlaskForm):
 
 class ProjectTaskCreateForm(ProjectTaskForm):
     submit = wtforms.SubmitField(_l("Create"))
+    submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 
 
 class ProjectTaskEditForm(ProjectTaskForm):

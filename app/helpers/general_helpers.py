@@ -184,6 +184,12 @@ class CurrentObjectAction:
             script = f"document.getElementById('{element_id}').addEventListener('click', function() {{if(confirm('{self.confirm}')) {{ document.getElementById('{self.unique_identifier}').submit() }} }});"
             side_libraries.require_script(script)
             return f'<a id="{element_id}" class="btn {self.btn_class} float-right" data-toggle="tooltip" data-placement="left" title="{self.title}" ><i class="{self.icon}"></i></a><form id="{self.unique_identifier}" action="{self.link}" method="POST"><input type="hidden" name="csrf_token" value="{g.csrf_token}" /></form>'
+        elif self.method == 'POST':
+            element_id = 'a_confirm' + random_string(20)
+            script = f"document.getElementById('{element_id}').addEventListener('click', function() {{ document.getElementById('{self.unique_identifier}').submit() }});"
+            side_libraries.require_script(script)
+            return f'<a id="{element_id}" class="btn {self.btn_class} float-right" data-toggle="tooltip" data-placement="left" title="{self.title}" ><i class="{self.icon}"></i></a><form id="{self.unique_identifier}" action="{self.link}" method="POST"><input type="hidden" name="csrf_token" value="{g.csrf_token}" /></form>'
+
 
 
 class CurrentObjectInfo:

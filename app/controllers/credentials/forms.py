@@ -31,6 +31,7 @@ class CredentialForm(FlaskForm):
 
 class CredentialCreateForm(CredentialForm):
     submit = wtforms.SubmitField(_l("Create"))
+    submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 
 
 class CredentialEditForm(CredentialForm):

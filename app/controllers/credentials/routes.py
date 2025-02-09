@@ -69,6 +69,8 @@ def credential_new():
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new credential #{cred.id}")
         flash(_l("Credential for «%(login)s» has been successfully added", login=cred.login), 'success')
+        if form.submit_and_add_new.data:
+            return redirect(url_for('credentials.credential_new', **request.args))
         if project_role_can_make_action(current_user, cred, 'show'):
             return redirect(url_for('credentials.credential_show', credential_id=cred.id))
         return redirect(url_for('credentials.credential_index', project_id=project_id))
