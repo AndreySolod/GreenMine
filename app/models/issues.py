@@ -1,7 +1,7 @@
 from app import db
 from app.helpers.general_helpers import default_string_slug, utcnow
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
-from typing import List, Optional
+from typing import List, Optional, Set
 import datetime
 from .generic import HasComment, HasHistory
 import sqlalchemy as sa
@@ -119,7 +119,7 @@ class Issue(HasComment, db.Model, HasHistory):
     cve: so.Mapped['CriticalVulnerability'] = so.relationship(lazy='joined', info={'label': _l('CVE')})
     status_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('issue_status.id', ondelete='SET NULL'), info={'label': _l('Status')})
     status: so.Mapped['IssueStatus'] = so.relationship(lazy='joined', info={'label': _l('Status')})
-    services: so.Mapped[List["Service"]] = so.relationship(secondary=IssueHasService.__table__, # type: ignore
+    services: so.Mapped[Set["Service"]] = so.relationship(secondary=IssueHasService.__table__, # type: ignore
                                                                      primaryjoin='Issue.id==IssueHasService.issue_id',
                                                                      secondaryjoin='Service.id==IssueHasService.service_id',
                                                                      back_populates="issues",

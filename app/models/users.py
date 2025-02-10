@@ -1,4 +1,4 @@
-from app import db, login
+from app import db, login, logger
 from flask import current_app
 from app.helpers.general_helpers import default_string_slug, utcnow
 from app.helpers.users_helpers import generate_avatar
@@ -15,12 +15,14 @@ import sqlalchemy.orm as so
 from sqlalchemy import event
 from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.ext.hybrid import hybrid_property
+import sqlalchemy.exc as exc
 from .generic import Comment, Reaction
 from .files import FileData
 from markupsafe import Markup
 from flask_babel import lazy_gettext as _l
 import secrets
 import json
+from .global_settings import ApplicationLanguage
 
 
 @project_enumerated_object
@@ -306,6 +308,13 @@ def update_user_default_value_if_not_exist(session):
             es = UserEnvironmentSetting()
             session.add(es)
             user.environment_setting = es
+        
+        if (user.preferred_language is None):
+            try:
+                pf = session.scalars(sa.select(ApplicationLanguage).where(ApplicationLanguage.string_slug == 'auto')).one()
+                user.preferred_language = pf
+            except (exc.MultipleResultsFound, exc.NoResultFound):
+                logger.error("Application language with string_slug 'auto' does not exist!")
 
 
 @login.user_loader

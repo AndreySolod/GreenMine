@@ -40,7 +40,7 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
     session.commit()
 
 
-def exploit(filled_form: dict, running_user_id: int, default_options: dict) -> None:
+def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str='en') -> None:
     ''' Retrieves screenshots from the web services specified in the completed filled_form form and saves them to the database '''
     logger.info(f"Running module <Inner enumerate> by ID: {running_user_id}")
     with db.sessionmaker(db.engine, autoflush = False)() as session:

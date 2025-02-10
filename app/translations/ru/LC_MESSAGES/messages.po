@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-09 12:26+1000\n"
-"PO-Revision-Date: 2025-02-09 12:28+1000\n"
+"POT-Creation-Date: 2025-02-10 20:27+1000\n"
+"PO-Revision-Date: 2025-02-10 20:29+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -49,15 +49,15 @@ msgstr "Видеть список модулей автоматизации"
 msgid "Run action modules by target"
 msgstr "Запускать модули автоматизации"
 
-#: app/action_modules/Import_from_nmap/__init__.py:214
+#: app/action_modules/Import_from_nmap/__init__.py:230
 msgid "Nmap scan result file:"
 msgstr "Файл результатов скана Nmap:"
 
-#: app/action_modules/Import_from_nmap/__init__.py:214
+#: app/action_modules/Import_from_nmap/__init__.py:230
 msgid "Only an xml file!"
 msgstr "Только xml-файлы!"
 
-#: app/action_modules/Import_from_nmap/__init__.py:214
+#: app/action_modules/Import_from_nmap/__init__.py:230
 #: app/action_modules/Inner_enumerate/__init__.py:80
 #: app/action_modules/Inner_enumerate/__init__.py:81
 #: app/action_modules/Inner_enumerate/__init__.py:82
@@ -90,15 +90,15 @@ msgstr "Только xml-файлы!"
 msgid "This field is mandatory!"
 msgstr "Это поле является обязательным!"
 
-#: app/action_modules/Import_from_nmap/__init__.py:215
+#: app/action_modules/Import_from_nmap/__init__.py:231
 msgid "Ignore ports that do not have the status <Open>:"
 msgstr "Игнорировать порты, не имеющие статус <Открыт>:"
 
-#: app/action_modules/Import_from_nmap/__init__.py:216
+#: app/action_modules/Import_from_nmap/__init__.py:232
 msgid "Ignore hosts without open ports and ARP response:"
 msgstr "Игнорировать хосты без открытых портов и ARP-ответа:"
 
-#: app/action_modules/Import_from_nmap/__init__.py:217
+#: app/action_modules/Import_from_nmap/__init__.py:233
 msgid ""
 "Add hosts for which an ARP response has been received and there are no open "
 "ports:"
@@ -106,25 +106,43 @@ msgstr ""
 "Добавлять хосты, для которых был получен ARP-ответ и у которых отсутствуют "
 "открытые порты:"
 
-#: app/action_modules/Import_from_nmap/__init__.py:218
+#: app/action_modules/Import_from_nmap/__init__.py:234
 msgid "Process host operating system data:"
 msgstr "Обрабатывать данные об операционной системе хоста:"
 
-#: app/action_modules/Import_from_nmap/__init__.py:219
+#: app/action_modules/Import_from_nmap/__init__.py:235
 msgid "Project ID:"
 msgstr "ID проекта:"
 
-#: app/action_modules/Import_from_nmap/__init__.py:220
+#: app/action_modules/Import_from_nmap/__init__.py:236
 msgid "Import"
 msgstr "Импортировать"
 
-#: app/action_modules/Import_from_nmap/__init__.py:224
+#: app/action_modules/Import_from_nmap/__init__.py:240
 msgid "Import from Nmap"
 msgstr "Импорт из Nmap"
 
-#: app/action_modules/Import_from_nmap/__init__.py:225
+#: app/action_modules/Import_from_nmap/__init__.py:241
 msgid "Imports the data of the scan results with the Nmap scanner"
 msgstr "Импортирует данные результатов сканирования через сканер Nmap"
+
+#: app/action_modules/Import_from_nmap/nmap_script_processing.py:42
+msgid "Message signing enabled but not required"
+msgstr "Подпись сообщений активирована, но не требуется"
+
+#: app/action_modules/Import_from_nmap/nmap_script_processing.py:50
+msgid "There is no SMB signature requirement for some hosts."
+msgstr ""
+"У некоторых конечных устройств отсутствует требование к подписи SMB-сообщений"
+
+#: app/action_modules/Import_from_nmap/nmap_script_processing.py:51
+msgid "Enable SMB signature requirement for all hosts"
+msgstr "Включить подпись SMB для всех конечных устройств"
+
+#: app/action_modules/Import_from_nmap/nmap_script_processing.py:52
+msgid "The absence of an SMB signature allows an attacker to perform MitM attacks"
+msgstr ""
+"Отсутствие подписи SMB позволяет выполнять атаки типа \"Человек посередине\""
 
 #: app/action_modules/Inner_enumerate/__init__.py:80
 msgid "Dimensions of the created image (in pixels):"
@@ -212,8 +230,8 @@ msgid "Select an option"
 msgstr "Выберите опцию"
 
 #: app/controllers/forms.py:418 app/controllers/forms.py:443
-#: app/controllers/forms.py:445 app/helpers/projects_helpers.py:268
-#: app/helpers/projects_helpers.py:270
+#: app/controllers/forms.py:445 app/helpers/projects_helpers.py:223
+#: app/helpers/projects_helpers.py:225
 msgid "Not a valid choice."
 msgstr "Не является корректным выбором."
 
@@ -495,7 +513,7 @@ msgstr "Редактировать %(title)s"
 
 #: app/controllers/credentials/__init__.py:46
 #: app/controllers/credentials/__init__.py:58 app/models/credentials.py:117
-#: app/models/networks.py:441
+#: app/models/networks.py:442
 msgid "Credentials"
 msgstr "Учётные данные"
 
@@ -529,12 +547,12 @@ msgstr "Учётные данные для логина «%(login)s»"
 #: app/controllers/networks/__init__.py:158
 #: app/controllers/networks/__init__.py:203
 #: app/controllers/projects/__init__.py:41 app/controllers/tasks/__init__.py:77
-#: app/controllers/users/routes.py:32 app/helpers/admin_helpers.py:155
-#: app/helpers/admin_helpers.py:193 app/helpers/admin_helpers.py:208
+#: app/controllers/users/routes.py:32 app/helpers/admin_helpers.py:165
+#: app/helpers/admin_helpers.py:203 app/helpers/admin_helpers.py:218
 #: app/helpers/main_page_helpers.py:64 app/helpers/main_page_helpers.py:83
 #: app/helpers/users_helpers.py:52 app/templates/admin/project_role_index.html:55
 #: app/templates/credentials/index.html:141
-#: app/templates/hosts/excluded-index.html:102
+#: app/templates/hosts/excluded-index.html:102 app/templates/hosts/index.html:311
 #: app/templates/networks/index.html:347 app/templates/services/index.html:202
 #: app/templates/services/index_group_by_port.html:187
 #: app/templates/tasks/index.html:90 app/templates/wiki_pages/index.html:198
@@ -546,11 +564,12 @@ msgstr "Редактировать"
 #: app/controllers/networks/__init__.py:166
 #: app/controllers/networks/__init__.py:206
 #: app/controllers/projects/__init__.py:47 app/controllers/tasks/__init__.py:80
-#: app/controllers/users/routes.py:34 app/helpers/admin_helpers.py:156
-#: app/helpers/admin_helpers.py:194 app/helpers/admin_helpers.py:209
+#: app/controllers/users/routes.py:34 app/helpers/admin_helpers.py:166
+#: app/helpers/admin_helpers.py:204 app/helpers/admin_helpers.py:219
 #: app/helpers/main_page_helpers.py:65 app/helpers/main_page_helpers.py:84
 #: app/templates/admin/project_role_index.html:56
-#: app/templates/wiki_pages/index.html:201 app/templates/wiki_pages/index.html:238
+#: app/templates/hosts/index.html:313 app/templates/wiki_pages/index.html:201
+#: app/templates/wiki_pages/index.html:238
 msgid "Delete"
 msgstr "Удалить"
 
@@ -647,7 +666,7 @@ msgid "Edit issue #%(issue_id)s"
 msgstr "Редактировать проблему #%(issue_id)s"
 
 #: app/controllers/issues/__init__.py:48 app/models/issues.py:147
-#: app/models/networks.py:440 app/models/tasks.py:156
+#: app/models/networks.py:441 app/models/tasks.py:156
 msgid "Issues"
 msgstr "Проблемы"
 
@@ -729,7 +748,7 @@ msgstr "Исключённые конечные устройства"
 msgid "Add new host"
 msgstr "Добавить новое конечное устройство"
 
-#: app/controllers/networks/__init__.py:74 app/models/networks.py:298
+#: app/controllers/networks/__init__.py:74 app/models/networks.py:299
 msgid "Hosts"
 msgstr "Конечные устройства"
 
@@ -748,7 +767,7 @@ msgstr "Службы по портам"
 msgid "Add new service"
 msgstr "Добавить новую службу"
 
-#: app/controllers/networks/__init__.py:103 app/models/networks.py:481
+#: app/controllers/networks/__init__.py:103 app/models/networks.py:482
 msgid "Services"
 msgstr "Службы"
 
@@ -784,7 +803,7 @@ msgstr "Включить в исследование"
 msgid "Exclude from research"
 msgstr "Исключить из исследования"
 
-#: app/controllers/networks/__init__.py:166
+#: app/controllers/networks/__init__.py:166 app/templates/hosts/index.html:301
 msgid "Are you sure you want to delete this host?"
 msgstr "Вы уверены в том, что хотите удалить это конечное устройство?"
 
@@ -991,7 +1010,7 @@ msgid "Project #%(project_id)s successfully archived"
 msgstr "Проект #%(project_id)s успешно перемещён в архив"
 
 #: app/controllers/reports/__init__.py:27 app/controllers/reports/__init__.py:38
-#: app/helpers/admin_helpers.py:109
+#: app/helpers/admin_helpers.py:119
 msgid "All report templates"
 msgstr "Все шаблоны отчётов"
 
@@ -1193,32 +1212,32 @@ msgstr "Пользователь #%(uid)s: «%(title)s» успешно удал
 msgid "Invalid user login or password"
 msgstr "Неверный логин пользователя и/или пароль"
 
-#: app/controllers/webfiles/__init__.py:27 app/controllers/webfiles/__init__.py:31
-#: app/helpers/admin_helpers.py:163 app/models/files.py:21 app/models/files.py:51
+#: app/controllers/webfiles/__init__.py:28 app/controllers/webfiles/__init__.py:32
+#: app/helpers/admin_helpers.py:173 app/models/files.py:21 app/models/files.py:57
 msgid "Files"
 msgstr "Файлы"
 
-#: app/controllers/webfiles/__init__.py:37 app/helpers/admin_helpers.py:91
+#: app/controllers/webfiles/__init__.py:38 app/helpers/admin_helpers.py:101
 msgid "All files"
 msgstr "Все файлы"
 
-#: app/controllers/webfiles/__init__.py:38
+#: app/controllers/webfiles/__init__.py:39
 msgid "Files, related with project"
 msgstr "Файлы, связанные с проектом"
 
-#: app/controllers/webfiles/routes.py:101
-#: app/controllers/webfiles/websockets.py:69
+#: app/controllers/webfiles/routes.py:102
+#: app/controllers/webfiles/websockets.py:70
 msgid "A directory with that name already exists"
 msgstr "Директория с таким именем уже существует"
 
-#: app/controllers/webfiles/routes.py:117
-#: app/controllers/webfiles/websockets.py:78
+#: app/controllers/webfiles/routes.py:118
+#: app/controllers/webfiles/websockets.py:79
 msgid "A file with that name already exists"
 msgstr "Файл с таким именем уже существует"
 
-#: app/controllers/webfiles/websockets.py:62
-#: app/controllers/webfiles/websockets.py:71
-#: app/controllers/webfiles/websockets.py:80
+#: app/controllers/webfiles/websockets.py:63
+#: app/controllers/webfiles/websockets.py:72
+#: app/controllers/webfiles/websockets.py:81
 msgid "Something went wrong. Try refresh your page"
 msgstr "Что-то пошло не так. Попробуйте обновить страницу"
 
@@ -1239,128 +1258,128 @@ msgstr "Страница успешно обновлена"
 msgid "The page has been deleted successfully"
 msgstr "Страница успешно удалена"
 
-#: app/helpers/admin_helpers.py:70
+#: app/helpers/admin_helpers.py:80
 msgid "List of tools"
 msgstr "Список инструментов"
 
-#: app/helpers/admin_helpers.py:71 app/helpers/main_page_helpers.py:45
+#: app/helpers/admin_helpers.py:81 app/helpers/main_page_helpers.py:45
 #: app/templates/admin/index.html:13
 msgid "Title page"
 msgstr "Титульная страница"
 
-#: app/helpers/admin_helpers.py:72
+#: app/helpers/admin_helpers.py:82
 msgid "Administration Tools"
 msgstr "Инструменты администрирования"
 
-#: app/helpers/admin_helpers.py:73
+#: app/helpers/admin_helpers.py:83
 msgid "All enumeration objects"
 msgstr "Все объекты перечисления"
 
-#: app/helpers/admin_helpers.py:77 app/helpers/main_page_helpers.py:29
+#: app/helpers/admin_helpers.py:87 app/helpers/main_page_helpers.py:29
 #: app/templates/admin/index.html:20
 msgid "Enumeration objects"
 msgstr "Объекты перечисления"
 
-#: app/helpers/admin_helpers.py:78
+#: app/helpers/admin_helpers.py:88
 msgid "All state objects"
 msgstr "Все объекты состояния"
 
-#: app/helpers/admin_helpers.py:82 app/helpers/main_page_helpers.py:30
+#: app/helpers/admin_helpers.py:92 app/helpers/main_page_helpers.py:30
 #: app/templates/admin/index.html:27
 msgid "State objects"
 msgstr "Объекты состояния"
 
-#: app/helpers/admin_helpers.py:83
+#: app/helpers/admin_helpers.py:93
 msgid "All issue templates"
 msgstr "Все шаблоны проблем"
 
-#: app/helpers/admin_helpers.py:84 app/helpers/admin_helpers.py:151
-#: app/helpers/admin_helpers.py:152
+#: app/helpers/admin_helpers.py:94 app/helpers/admin_helpers.py:161
+#: app/helpers/admin_helpers.py:162
 msgid "Add new issue template"
 msgstr "Добавить новый шаблон проблем"
 
-#: app/helpers/admin_helpers.py:86 app/helpers/admin_helpers.py:154
+#: app/helpers/admin_helpers.py:96 app/helpers/admin_helpers.py:164
 #, python-format
 msgid "Issue template #%(templ_id)s"
 msgstr "Шаблон проблем #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:87 app/helpers/admin_helpers.py:159
+#: app/helpers/admin_helpers.py:97 app/helpers/admin_helpers.py:169
 #, python-format
 msgid "Edit issue template #%(templ_id)s"
 msgstr "Редактировать шаблон проблем #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:93
+#: app/helpers/admin_helpers.py:103
 msgid "Background task states"
 msgstr "Состояния фоновых задач"
 
-#: app/helpers/admin_helpers.py:94
+#: app/helpers/admin_helpers.py:104
 msgid "Background task options"
 msgstr "Опции фоновых задач"
 
-#: app/helpers/admin_helpers.py:95 app/helpers/admin_helpers.py:165
+#: app/helpers/admin_helpers.py:105 app/helpers/admin_helpers.py:175
 msgid "Background tasks"
 msgstr "Фоновые задачи"
 
-#: app/helpers/admin_helpers.py:96 app/helpers/admin_helpers.py:171
+#: app/helpers/admin_helpers.py:106 app/helpers/admin_helpers.py:181
 msgid "Project roles list"
 msgstr "Список ролей проекта"
 
-#: app/helpers/admin_helpers.py:97 app/helpers/admin_helpers.py:172
-#: app/helpers/admin_helpers.py:176 app/models/projects.py:106
+#: app/helpers/admin_helpers.py:107 app/helpers/admin_helpers.py:182
+#: app/helpers/admin_helpers.py:186 app/models/projects.py:106
 msgid "Add new project role"
 msgstr "Добавить новую роль проекта"
 
-#: app/helpers/admin_helpers.py:98
+#: app/helpers/admin_helpers.py:108
 msgid "Edit role permissions"
 msgstr "Редактировать разрешения ролей"
 
-#: app/helpers/admin_helpers.py:100
+#: app/helpers/admin_helpers.py:110
 msgid "All project task templates"
 msgstr "Все шаблоны задач"
 
-#: app/helpers/admin_helpers.py:101
+#: app/helpers/admin_helpers.py:111
 msgid "Add new project task template"
 msgstr "Добавить новый шаблон задачи"
 
-#: app/helpers/admin_helpers.py:103
+#: app/helpers/admin_helpers.py:113
 #, python-format
 msgid "Project task template #%(templ_id)s"
 msgstr "Шаблон задачи проекта #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:104
+#: app/helpers/admin_helpers.py:114
 #, python-format
 msgid "Edit project task template #%(templ_id)s"
 msgstr "Редактировать шаблон задачи проекта #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:110 app/helpers/admin_helpers.py:201
+#: app/helpers/admin_helpers.py:120 app/helpers/admin_helpers.py:211
 msgid "Add new report template"
 msgstr "Добавить новый шаблон отчёта"
 
-#: app/helpers/admin_helpers.py:122
+#: app/helpers/admin_helpers.py:132
 msgid "Administration"
 msgstr "Администрирование"
 
-#: app/helpers/admin_helpers.py:123
+#: app/helpers/admin_helpers.py:133
 msgid "The administration panel. List of administrative tools"
 msgstr "Панель администратора. Список инструментов администрирования"
 
-#: app/helpers/admin_helpers.py:125
+#: app/helpers/admin_helpers.py:135
 msgid "Editing information about an organization"
 msgstr "Редактировать информацию об организации"
 
-#: app/helpers/admin_helpers.py:126
+#: app/helpers/admin_helpers.py:136
 msgid "The administration panel. The title page"
 msgstr "Панель администрирования. Титульная страница"
 
-#: app/helpers/admin_helpers.py:128
+#: app/helpers/admin_helpers.py:138
 msgid "Administration of enumeration objects"
 msgstr "Администрирование объектов перечисления"
 
-#: app/helpers/admin_helpers.py:129
+#: app/helpers/admin_helpers.py:139
 msgid "The administration panel. Enumeration objects"
 msgstr "Панель администрирования. Объекты перечисления"
 
-#: app/helpers/admin_helpers.py:129
+#: app/helpers/admin_helpers.py:139
 msgid ""
 "Enumerations are simple objects (most often consisting of 1-2 attributes) that "
 "are referenced by other objects."
@@ -1368,21 +1387,21 @@ msgstr ""
 "Перечисления - это простые объекты (часто состоящие из 1-2 аттрибутов), на "
 "которые ссылаются другие объекты."
 
-#: app/helpers/admin_helpers.py:132 app/templates/chats/index.html:41
+#: app/helpers/admin_helpers.py:142 app/templates/chats/index.html:41
 #: app/templates/hosts/show.html:385
 msgid "Add"
 msgstr "Добавить"
 
-#: app/helpers/admin_helpers.py:138
+#: app/helpers/admin_helpers.py:148
 #, python-format
 msgid "Edit %(object_name)s"
 msgstr "Редактировать %(object_name)s"
 
-#: app/helpers/admin_helpers.py:141
+#: app/helpers/admin_helpers.py:151
 msgid "The administration panel. State object"
 msgstr "Панель администрирования. Объекты состояния"
 
-#: app/helpers/admin_helpers.py:142
+#: app/helpers/admin_helpers.py:152
 msgid ""
 "State objects are objects that are attributes of other objects, for which "
 "conditions for changing to a different value in the attributes are defined."
@@ -1390,12 +1409,12 @@ msgstr ""
 "Объекты состояния - это объекты, являющиеся атрибутами других объектов, для "
 "которых определены условия смены на другое значение в атрибутах."
 
-#: app/helpers/admin_helpers.py:144
+#: app/helpers/admin_helpers.py:154
 #, python-format
 msgid "Edit transitions between states for an object «%(name)s»"
 msgstr "Редактирование переходов между статусами для объекта «%(name)s»"
 
-#: app/helpers/admin_helpers.py:145
+#: app/helpers/admin_helpers.py:155
 msgid ""
 "Simple conditions for changing to a different value can be defined for the "
 "status object on this page"
@@ -1403,84 +1422,84 @@ msgstr ""
 "Для объекта состояния могут быть определены простые условия смены на другое "
 "значение на данной странице"
 
-#: app/helpers/admin_helpers.py:148 app/helpers/admin_helpers.py:186
+#: app/helpers/admin_helpers.py:158 app/helpers/admin_helpers.py:196
 msgid "Add new template"
 msgstr "Добавить новый шаблон"
 
-#: app/helpers/admin_helpers.py:149
+#: app/helpers/admin_helpers.py:159
 msgid ""
 "Issue templates allow you to speed up the addition of new issue to the project"
 msgstr "Шаблон проблем позволяет быстрее создавать новые проблемы на проекте"
 
-#: app/helpers/admin_helpers.py:156 app/helpers/admin_helpers.py:194
-#: app/helpers/admin_helpers.py:209
+#: app/helpers/admin_helpers.py:166 app/helpers/admin_helpers.py:204
+#: app/helpers/admin_helpers.py:219
 msgid "Are you sure you want to delete this template?"
 msgstr "Вы уверены в том, что хотите удалить данный шаблон?"
 
-#: app/helpers/admin_helpers.py:157
+#: app/helpers/admin_helpers.py:167
 #, python-format
 msgid "Issue template «%(title)s»"
 msgstr "Шаблон проблемы «%(title)s»"
 
-#: app/helpers/admin_helpers.py:162
+#: app/helpers/admin_helpers.py:172
 msgid "File Administration"
 msgstr "Администрирование файлов"
 
-#: app/helpers/admin_helpers.py:163
+#: app/helpers/admin_helpers.py:173
 msgid "All files saved in the database"
 msgstr "Все файлы сохраняются в базу данных"
 
-#: app/helpers/admin_helpers.py:166
+#: app/helpers/admin_helpers.py:176
 msgid "Tasks performed in the background via Celery"
 msgstr "Задачи, выполняемые в фоновом режиме через Celery"
 
-#: app/helpers/admin_helpers.py:168
+#: app/helpers/admin_helpers.py:178
 msgid "Background Task Options"
 msgstr "Опции фоновых задач"
 
-#: app/helpers/admin_helpers.py:169
+#: app/helpers/admin_helpers.py:179
 msgid "Options for tasks running in the background"
 msgstr "Опции задач, выполняемых в фоновом режиме"
 
-#: app/helpers/admin_helpers.py:173 app/helpers/admin_helpers.py:182
+#: app/helpers/admin_helpers.py:183 app/helpers/admin_helpers.py:192
 #: app/templates/admin/index.html:62
 msgid "Edit permissions for roles"
 msgstr "Редактировать разрешения для ролей"
 
-#: app/helpers/admin_helpers.py:174
+#: app/helpers/admin_helpers.py:184
 msgid "A list of all the roles that a user can have on a project"
 msgstr "Список всех ролей, которые пользователь может иметь на заданном проекте"
 
-#: app/helpers/admin_helpers.py:179
+#: app/helpers/admin_helpers.py:189
 #, python-format
 msgid "Edit project role #%(role_id)s"
 msgstr "Редактировать роль проекта #%(role_id)s"
 
-#: app/helpers/admin_helpers.py:187
+#: app/helpers/admin_helpers.py:197
 msgid ""
 "Task templates allow you to speed up the addition of new tasks to the project"
 msgstr "Шаблоны задач позволяют быстрее создавать новые задачи на проекте"
 
-#: app/helpers/admin_helpers.py:189
+#: app/helpers/admin_helpers.py:199
 msgid "Add new task template"
 msgstr "Добавить новый шаблон задачи"
 
-#: app/helpers/admin_helpers.py:192
+#: app/helpers/admin_helpers.py:202
 #, python-format
 msgid "Task template #%(templ_id)s"
 msgstr "Шаблон задачи #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:195
+#: app/helpers/admin_helpers.py:205
 #, python-format
 msgid "Task template «%(title)s»"
 msgstr "Шаблон задачи «%(title)s»"
 
-#: app/helpers/admin_helpers.py:197
+#: app/helpers/admin_helpers.py:207
 #, python-format
 msgid "Edit task template #%(templ_id)s"
 msgstr "Редактировать шаблон задачи #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:202 app/helpers/admin_helpers.py:205
+#: app/helpers/admin_helpers.py:212 app/helpers/admin_helpers.py:215
 msgid ""
 "Report templates is a Jinja2 templater file, in which one paramether is passed "
 "- current project"
@@ -1488,21 +1507,21 @@ msgstr ""
 "Шаблон отчёта - это файл шаблонизатора Jinja2, в который для генерации "
 "передаётся один параметр - текущий проект"
 
-#: app/helpers/admin_helpers.py:204
+#: app/helpers/admin_helpers.py:214
 msgid "Add new project report template"
 msgstr "Добавить новый шаблон отчёта"
 
-#: app/helpers/admin_helpers.py:207
+#: app/helpers/admin_helpers.py:217
 #, python-format
 msgid "Report template #%(templ_id)s"
 msgstr "Шаблон отчёта #%(templ_id)s"
 
-#: app/helpers/admin_helpers.py:210
+#: app/helpers/admin_helpers.py:220
 #, python-format
 msgid "Report template #%(templ_id)s: «%(title)s»"
 msgstr "Шаблон отчёта #%(templ_id)s: «%(title)s»"
 
-#: app/helpers/admin_helpers.py:212
+#: app/helpers/admin_helpers.py:222
 #, python-format
 msgid "Edit report template #%(templ_id)s"
 msgstr "Редактировать шаблон отчёта #%(templ_id)s"
@@ -1570,7 +1589,7 @@ msgstr "Моя страница"
 msgid "Add new user"
 msgstr "Добавить нового пользователя"
 
-#: app/helpers/main_page_helpers.py:25 app/models/users.py:229
+#: app/helpers/main_page_helpers.py:25 app/models/users.py:231
 msgid "Users"
 msgstr "Пользователи"
 
@@ -1665,11 +1684,11 @@ msgstr "Список пользователей"
 msgid "All users"
 msgstr "Все пользователи"
 
-#: app/helpers/projects_helpers.py:284
+#: app/helpers/projects_helpers.py:239
 msgid "Reply to comment"
 msgstr "Ответить"
 
-#: app/helpers/projects_helpers.py:370 app/templates/issues/show.html:78
+#: app/helpers/projects_helpers.py:325 app/templates/issues/show.html:78
 #: app/templates/issues/show.html:108 app/templates/layout/_macrosses.html:133
 #: app/templates/layout/_macrosses.html:260 app/templates/notes/index.html:23
 #: app/templates/notes/index.html:72 app/templates/projects/index.html:49
@@ -1685,16 +1704,16 @@ msgid "Profile"
 msgstr "Профиль"
 
 #: app/models/chats.py:14 app/models/credentials.py:83 app/models/files.py:15
-#: app/models/files.py:42 app/models/generic.py:37 app/models/generic.py:197
+#: app/models/files.py:48 app/models/generic.py:37 app/models/generic.py:197
 #: app/models/issues.py:48 app/models/issues.py:105 app/models/networks.py:29
-#: app/models/networks.py:204 app/models/networks.py:420 app/models/notes.py:31
-#: app/models/projects.py:25 app/models/tasks.py:117 app/models/users.py:137
+#: app/models/networks.py:205 app/models/networks.py:421 app/models/notes.py:31
+#: app/models/projects.py:25 app/models/tasks.py:117 app/models/users.py:139
 #: app/models/wiki_pages.py:12 app/models/wiki_pages.py:43
 msgid "Created at"
 msgstr "Создан в"
 
-#: app/models/chats.py:15 app/models/chats.py:16 app/models/files.py:43
-#: app/models/files.py:44 app/templates/notes/index.html:39
+#: app/models/chats.py:15 app/models/chats.py:16 app/models/files.py:49
+#: app/models/files.py:50 app/templates/notes/index.html:39
 #: app/templates/notes/index.html:81
 msgid "Added by"
 msgstr "Добавил(а)"
@@ -1730,21 +1749,21 @@ msgstr "Добавлять новые сообщения"
 
 #: app/models/credentials.py:23 app/models/credentials.py:37
 #: app/models/credentials.py:60 app/models/credentials.py:79
-#: app/models/files.py:13 app/models/files.py:38 app/models/generic.py:36
+#: app/models/files.py:13 app/models/files.py:44 app/models/generic.py:36
 #: app/models/generic.py:187 app/models/global_settings.py:10
 #: app/models/global_settings.py:17 app/models/global_settings.py:24
 #: app/models/issues.py:19 app/models/issues.py:34 app/models/issues.py:47
 #: app/models/issues.py:103 app/models/issues.py:160 app/models/networks.py:25
 #: app/models/networks.py:80 app/models/networks.py:96 app/models/networks.py:115
 #: app/models/networks.py:132 app/models/networks.py:154
-#: app/models/networks.py:168 app/models/networks.py:324
-#: app/models/networks.py:340 app/models/networks.py:377
-#: app/models/networks.py:399 app/models/networks.py:415 app/models/notes.py:14
+#: app/models/networks.py:168 app/models/networks.py:325
+#: app/models/networks.py:341 app/models/networks.py:378
+#: app/models/networks.py:400 app/models/networks.py:416 app/models/notes.py:14
 #: app/models/notes.py:29 app/models/projects.py:21
 #: app/models/report_templates.py:17 app/models/tasks.py:34 app/models/tasks.py:61
-#: app/models/tasks.py:80 app/models/tasks.py:113 app/models/users.py:28
-#: app/models/users.py:50 app/models/users.py:74 app/models/users.py:101
-#: app/models/users.py:136 app/models/wiki_pages.py:11 app/models/wiki_pages.py:42
+#: app/models/tasks.py:80 app/models/tasks.py:113 app/models/users.py:30
+#: app/models/users.py:52 app/models/users.py:76 app/models/users.py:103
+#: app/models/users.py:138 app/models/wiki_pages.py:11 app/models/wiki_pages.py:42
 #: app/templates/admin/background_tasks_index.html:34
 msgid "ID"
 msgstr "ID"
@@ -1771,9 +1790,9 @@ msgstr "Добавить прототип хэша"
 
 #: app/models/credentials.py:38 app/models/credentials.py:80
 #: app/models/issues.py:54 app/models/issues.py:104 app/models/issues.py:161
-#: app/models/networks.py:26 app/models/networks.py:197 app/models/networks.py:416
+#: app/models/networks.py:26 app/models/networks.py:198 app/models/networks.py:417
 #: app/models/notes.py:30 app/models/projects.py:23 app/models/tasks.py:114
-#: app/models/tasks.py:356 app/models/users.py:139
+#: app/models/tasks.py:356 app/models/users.py:141
 msgid "Archived"
 msgstr "Архивный"
 
@@ -1781,29 +1800,29 @@ msgstr "Архивный"
 #: app/models/global_settings.py:18 app/models/issues.py:20
 #: app/models/issues.py:35 app/models/issues.py:162 app/models/networks.py:81
 #: app/models/networks.py:97 app/models/networks.py:116 app/models/networks.py:133
-#: app/models/networks.py:180 app/models/networks.py:325
-#: app/models/networks.py:378 app/models/networks.py:400 app/models/notes.py:15
+#: app/models/networks.py:180 app/models/networks.py:326
+#: app/models/networks.py:379 app/models/networks.py:401 app/models/notes.py:15
 #: app/models/projects.py:98 app/models/tasks.py:35 app/models/tasks.py:62
-#: app/models/tasks.py:81 app/models/tasks.py:357 app/models/users.py:30
-#: app/models/users.py:51 app/models/users.py:76 app/models/users.py:103
-#: app/models/users.py:138
+#: app/models/tasks.py:81 app/models/tasks.py:357 app/models/users.py:32
+#: app/models/users.py:53 app/models/users.py:78 app/models/users.py:105
+#: app/models/users.py:140
 msgid "Slug"
 msgstr "Слаг"
 
 #: app/models/credentials.py:40 app/models/credentials.py:62
-#: app/models/files.py:14 app/models/files.py:39 app/models/global_settings.py:19
+#: app/models/files.py:14 app/models/files.py:45 app/models/global_settings.py:19
 #: app/models/global_settings.py:25 app/models/issues.py:21
 #: app/models/issues.py:36 app/models/issues.py:58 app/models/issues.py:111
 #: app/models/networks.py:27 app/models/networks.py:82 app/models/networks.py:98
 #: app/models/networks.py:117 app/models/networks.py:134
 #: app/models/networks.py:169 app/models/networks.py:181
-#: app/models/networks.py:198 app/models/networks.py:326
-#: app/models/networks.py:341 app/models/networks.py:379
-#: app/models/networks.py:401 app/models/networks.py:417 app/models/notes.py:16
+#: app/models/networks.py:199 app/models/networks.py:327
+#: app/models/networks.py:342 app/models/networks.py:380
+#: app/models/networks.py:402 app/models/networks.py:418 app/models/notes.py:16
 #: app/models/notes.py:37 app/models/projects.py:22 app/models/projects.py:99
 #: app/models/report_templates.py:18 app/models/tasks.py:36 app/models/tasks.py:63
-#: app/models/tasks.py:82 app/models/users.py:29 app/models/users.py:52
-#: app/models/users.py:75 app/models/users.py:102 app/models/wiki_pages.py:18
+#: app/models/tasks.py:82 app/models/users.py:31 app/models/users.py:54
+#: app/models/users.py:77 app/models/users.py:104 app/models/wiki_pages.py:18
 #: app/models/wiki_pages.py:49 app/templates/admin/background_tasks_index.html:35
 #: app/templates/wiki_pages/index.html:99 app/templates/wiki_pages/index.html:153
 msgid "Title"
@@ -1842,10 +1861,10 @@ msgstr "Тип хэша"
 msgid "Add hash type"
 msgstr "Добавить новый тип хэша"
 
-#: app/models/credentials.py:63 app/models/files.py:41 app/models/generic.py:194
+#: app/models/credentials.py:63 app/models/files.py:47 app/models/generic.py:194
 #: app/models/issues.py:37 app/models/issues.py:59 app/models/issues.py:112
 #: app/models/networks.py:28 app/models/networks.py:99 app/models/networks.py:135
-#: app/models/networks.py:199 app/models/networks.py:418 app/models/projects.py:24
+#: app/models/networks.py:200 app/models/networks.py:419 app/models/projects.py:24
 #: app/models/projects.py:100 app/models/report_templates.py:19
 #: app/models/tasks.py:38 app/models/tasks.py:64 app/models/tasks.py:116
 #: app/models/wiki_pages.py:19 app/models/wiki_pages.py:50
@@ -1871,8 +1890,8 @@ msgstr "Добавить новый словарь"
 #: app/models/files.py:16 app/models/files.py:17 app/models/generic.py:39
 #: app/models/issues.py:49 app/models/issues.py:50 app/models/issues.py:106
 #: app/models/issues.py:107 app/models/networks.py:30 app/models/networks.py:31
-#: app/models/networks.py:205 app/models/networks.py:206
-#: app/models/networks.py:421 app/models/networks.py:422 app/models/notes.py:32
+#: app/models/networks.py:206 app/models/networks.py:207
+#: app/models/networks.py:422 app/models/networks.py:423 app/models/notes.py:32
 #: app/models/notes.py:33 app/models/projects.py:26 app/models/projects.py:27
 #: app/models/tasks.py:118 app/models/tasks.py:119 app/models/wiki_pages.py:13
 #: app/models/wiki_pages.py:14 app/models/wiki_pages.py:44
@@ -1882,7 +1901,7 @@ msgstr "Добавил(а)"
 
 #: app/models/credentials.py:86 app/models/files.py:18 app/models/generic.py:38
 #: app/models/issues.py:51 app/models/issues.py:108 app/models/networks.py:32
-#: app/models/networks.py:207 app/models/networks.py:423 app/models/notes.py:34
+#: app/models/networks.py:208 app/models/networks.py:424 app/models/notes.py:34
 #: app/models/projects.py:28 app/models/tasks.py:120 app/models/wiki_pages.py:15
 #: app/models/wiki_pages.py:46
 msgid "Updated at"
@@ -1891,9 +1910,9 @@ msgstr "Изменён в"
 #: app/models/credentials.py:87 app/models/credentials.py:88
 #: app/models/files.py:19 app/models/files.py:20 app/models/issues.py:52
 #: app/models/issues.py:53 app/models/issues.py:109 app/models/issues.py:110
-#: app/models/networks.py:33 app/models/networks.py:34 app/models/networks.py:208
-#: app/models/networks.py:209 app/models/networks.py:424
-#: app/models/networks.py:425 app/models/notes.py:35 app/models/notes.py:36
+#: app/models/networks.py:33 app/models/networks.py:34 app/models/networks.py:209
+#: app/models/networks.py:210 app/models/networks.py:425
+#: app/models/networks.py:426 app/models/notes.py:35 app/models/notes.py:36
 #: app/models/projects.py:29 app/models/projects.py:30 app/models/tasks.py:121
 #: app/models/tasks.py:122 app/models/wiki_pages.py:16 app/models/wiki_pages.py:17
 #: app/models/wiki_pages.py:47 app/models/wiki_pages.py:48
@@ -1901,7 +1920,7 @@ msgstr "Изменён в"
 msgid "Updated by"
 msgstr "Изменил(а)"
 
-#: app/models/credentials.py:89 app/models/users.py:140
+#: app/models/credentials.py:89 app/models/users.py:142
 msgid "Login"
 msgstr "Логин"
 
@@ -1909,7 +1928,7 @@ msgstr "Логин"
 msgid "Additional information"
 msgstr "Дополнительная информация"
 
-#: app/models/credentials.py:91 app/models/users.py:141
+#: app/models/credentials.py:91 app/models/users.py:143
 msgid "Password hash"
 msgstr "Хэш пароля"
 
@@ -1918,7 +1937,7 @@ msgid "Checked on wordlist"
 msgstr "Проверен на словаре"
 
 #: app/models/credentials.py:100 app/models/issues.py:126
-#: app/models/networks.py:220 app/templates/issues/show.html:54
+#: app/models/networks.py:221 app/templates/issues/show.html:54
 #: app/templates/tasks/show.html:76
 msgid "Related services"
 msgstr "Связанные службы"
@@ -1941,7 +1960,7 @@ msgid "Add new credential"
 msgstr "Добавить новые учётные данные"
 
 #: app/models/credentials.py:121 app/models/issues.py:150
-#: app/models/networks.py:73 app/models/networks.py:301 app/models/networks.py:484
+#: app/models/networks.py:73 app/models/networks.py:302 app/models/networks.py:485
 #: app/models/notes.py:49 app/models/report_templates.py:27
 #: app/models/tasks.py:214
 msgid "Show object list"
@@ -1952,43 +1971,43 @@ msgid "Show created object list"
 msgstr "Просматривать список созданных объектов"
 
 #: app/models/credentials.py:121 app/models/issues.py:150
-#: app/models/networks.py:73 app/models/networks.py:301 app/models/networks.py:484
+#: app/models/networks.py:73 app/models/networks.py:302 app/models/networks.py:485
 #: app/models/notes.py:49 app/models/tasks.py:214
 msgid "Create new object"
 msgstr "Создавать новые объекты"
 
 #: app/models/credentials.py:121 app/models/issues.py:150
-#: app/models/networks.py:73 app/models/networks.py:301 app/models/networks.py:484
+#: app/models/networks.py:73 app/models/networks.py:302 app/models/networks.py:485
 #: app/models/projects.py:82 app/models/tasks.py:214
 msgid "Show object card"
 msgstr "Просматривать карточку объекта"
 
 #: app/models/credentials.py:122 app/models/issues.py:151
-#: app/models/networks.py:74 app/models/networks.py:302 app/models/networks.py:485
+#: app/models/networks.py:74 app/models/networks.py:303 app/models/networks.py:486
 #: app/models/notes.py:49 app/models/projects.py:82 app/models/tasks.py:215
 msgid "Edit and update object"
 msgstr "Редактировать и изменять объект"
 
 #: app/models/credentials.py:122 app/models/issues.py:151
-#: app/models/networks.py:74 app/models/networks.py:302 app/models/networks.py:485
+#: app/models/networks.py:74 app/models/networks.py:303 app/models/networks.py:486
 #: app/models/notes.py:50 app/models/projects.py:82 app/models/tasks.py:215
 msgid "Delete object"
 msgstr "Удалять объект"
 
 #: app/models/credentials.py:122 app/models/issues.py:151
-#: app/models/networks.py:74 app/models/networks.py:302 app/models/networks.py:485
+#: app/models/networks.py:74 app/models/networks.py:303 app/models/networks.py:486
 #: app/models/tasks.py:215
 msgid "Add comment to object"
 msgstr "Добавлять комментарии к объекту"
 
 #: app/models/credentials.py:123 app/models/issues.py:152
-#: app/models/networks.py:75 app/models/networks.py:303 app/models/networks.py:486
+#: app/models/networks.py:75 app/models/networks.py:304 app/models/networks.py:487
 #: app/models/tasks.py:216
 msgid "Show comment list of object"
 msgstr "Просматривать список комментариев к объекту"
 
 #: app/models/credentials.py:123 app/models/issues.py:152
-#: app/models/networks.py:75 app/models/networks.py:303 app/models/networks.py:486
+#: app/models/networks.py:75 app/models/networks.py:304 app/models/networks.py:487
 #: app/models/tasks.py:216
 msgid "Show object history"
 msgstr "Просматривать историю объекта"
@@ -1997,44 +2016,44 @@ msgstr "Просматривать историю объекта"
 msgid "Parent directory"
 msgstr "Родительская директория"
 
-#: app/models/files.py:30 app/models/users.py:104 app/models/wiki_pages.py:21
+#: app/models/files.py:36 app/models/users.py:106 app/models/wiki_pages.py:21
 #: app/models/wiki_pages.py:22
 msgid "Directory"
 msgstr "Директория"
 
-#: app/models/files.py:31
+#: app/models/files.py:37
 msgid "Directorys"
 msgstr "Директории"
 
-#: app/models/files.py:34
+#: app/models/files.py:40
 msgid "Show project files and folders"
 msgstr "Просматривать файлы и директории, связанные с проектом"
 
-#: app/models/files.py:34
+#: app/models/files.py:40
 msgid "Upload new project file"
 msgstr "Загружать новые файлы на проект"
 
-#: app/models/files.py:34
+#: app/models/files.py:40
 msgid "Download files and folders"
 msgstr "Скачивать файлы проекта"
 
-#: app/models/files.py:34
+#: app/models/files.py:40
 msgid "Delete files and folders"
 msgstr "Удалять файлы и директории"
 
-#: app/models/files.py:40
+#: app/models/files.py:46
 msgid "Extension"
 msgstr "Расширение"
 
-#: app/models/files.py:45 app/models/files.py:46
+#: app/models/files.py:51 app/models/files.py:52
 msgid "Refers to the directory"
 msgstr "Относится к директории"
 
-#: app/models/files.py:47
+#: app/models/files.py:53
 msgid "Data"
 msgstr "Данные"
 
-#: app/models/files.py:50
+#: app/models/files.py:56
 msgid "File"
 msgstr "Файл"
 
@@ -2042,7 +2061,7 @@ msgstr "Файл"
 msgid "Reaction"
 msgstr "Реакция"
 
-#: app/models/generic.py:32 app/models/generic.py:48 app/models/users.py:172
+#: app/models/generic.py:32 app/models/generic.py:48 app/models/users.py:174
 msgid "Reactions"
 msgstr "Реакции"
 
@@ -2245,7 +2264,7 @@ msgstr "Доказательства концепции"
 msgid "Fix"
 msgstr "Исправление"
 
-#: app/models/issues.py:114 app/models/networks.py:200 app/models/networks.py:419
+#: app/models/issues.py:114 app/models/networks.py:201 app/models/networks.py:420
 msgid "Technical information"
 msgstr "Техническая информация"
 
@@ -2257,13 +2276,13 @@ msgstr "Риски эксплуатации"
 msgid "Links to additional information"
 msgstr "Ссылки на дополнительную информацию"
 
-#: app/models/issues.py:120 app/models/issues.py:121 app/models/networks.py:201
-#: app/models/networks.py:202 app/models/tasks.py:136 app/models/tasks.py:137
+#: app/models/issues.py:120 app/models/issues.py:121 app/models/networks.py:202
+#: app/models/networks.py:203 app/models/tasks.py:136 app/models/tasks.py:137
 #: app/templates/admin/background_tasks_index.html:37
 msgid "Status"
 msgstr "Статус"
 
-#: app/models/issues.py:133 app/models/networks.py:449 app/models/tasks.py:164
+#: app/models/issues.py:133 app/models/networks.py:450 app/models/tasks.py:164
 #: app/templates/hosts/show.html:119 app/templates/issues/show.html:62
 #: app/templates/networks/show.html:83 app/templates/networks/show.html:88
 #: app/templates/services/show.html:78
@@ -2381,8 +2400,8 @@ msgid "Device models"
 msgstr "Модели устройств"
 
 #: app/models/networks.py:107 app/models/networks.py:136
-#: app/models/networks.py:137 app/models/networks.py:221
-#: app/models/networks.py:222
+#: app/models/networks.py:137 app/models/networks.py:222
+#: app/models/networks.py:223
 msgid "Device type"
 msgstr "Тип устройства"
 
@@ -2399,8 +2418,8 @@ msgid "Released models"
 msgstr "Выпущенные модели"
 
 #: app/models/networks.py:124 app/models/networks.py:138
-#: app/models/networks.py:139 app/models/networks.py:223
-#: app/models/networks.py:224
+#: app/models/networks.py:139 app/models/networks.py:224
+#: app/models/networks.py:225
 msgid "Device vendor"
 msgstr "Производитель устройства"
 
@@ -2412,8 +2431,8 @@ msgstr "Производители устройств"
 msgid "Add new device vendor"
 msgstr "Добавить нового производителя устройства"
 
-#: app/models/networks.py:146 app/models/networks.py:225
-#: app/models/networks.py:226
+#: app/models/networks.py:146 app/models/networks.py:226
+#: app/models/networks.py:227
 msgid "Device model"
 msgstr "Модель устройства"
 
@@ -2475,152 +2494,152 @@ msgstr "Статусы хостов"
 msgid "Add new host status"
 msgstr "Добавить новый статус хоста"
 
-#: app/models/networks.py:203
+#: app/models/networks.py:204
 msgid "The reason for the host status"
 msgstr "Причина статуса хоста"
 
-#: app/models/networks.py:210
+#: app/models/networks.py:211
 msgid "IP address"
 msgstr "IP-адрес"
 
-#: app/models/networks.py:211
+#: app/models/networks.py:212
 msgid "DNS-names"
 msgstr "DNS-имена"
 
-#: app/models/networks.py:212
+#: app/models/networks.py:213
 msgid "MAC-address"
 msgstr "MAC-адрес"
 
-#: app/models/networks.py:213 app/models/networks.py:214
+#: app/models/networks.py:214 app/models/networks.py:215
 msgid "MAC address vendor"
 msgstr "Производитель MAC-адреса"
 
-#: app/models/networks.py:215 app/models/networks.py:216
+#: app/models/networks.py:216 app/models/networks.py:217
 msgid "Operation system family"
 msgstr "Семейство операционной системы"
 
-#: app/models/networks.py:217
+#: app/models/networks.py:218
 msgid "Operation system generation"
 msgstr "Поколение операционной системы"
 
-#: app/models/networks.py:218 app/models/networks.py:219
+#: app/models/networks.py:219 app/models/networks.py:220
 msgid "Refers to Network"
 msgstr "Относится к сети"
 
-#: app/models/networks.py:228
+#: app/models/networks.py:229
 msgid "Another IP addresses"
 msgstr "Другой IP-адрес"
 
-#: app/models/networks.py:229
+#: app/models/networks.py:230
 msgid "Excluded from the study"
 msgstr "Исключён из исследования"
 
-#: app/models/networks.py:234
+#: app/models/networks.py:235
 #, python-format
 msgid "Host «%(ip_address)s»"
 msgstr "Конечное устройство «%(ip_address)s»"
 
-#: app/models/networks.py:236
+#: app/models/networks.py:237
 #, python-format
 msgid "Host «%(ip_address)s»: «%(title)s»"
 msgstr "Конечное устройство «%(ip_address)s»: «%(title)s»"
 
-#: app/models/networks.py:297 app/models/networks.py:434
-#: app/models/networks.py:435
+#: app/models/networks.py:298 app/models/networks.py:435
+#: app/models/networks.py:436
 msgid "Host"
 msgstr "Конечное устройство"
 
-#: app/models/networks.py:332 app/models/networks.py:344
-#: app/models/networks.py:432 app/models/networks.py:433
+#: app/models/networks.py:333 app/models/networks.py:345
+#: app/models/networks.py:433 app/models/networks.py:434
 msgid "Transport Layer Protocol"
 msgstr "Протокол транспортного уровня"
 
-#: app/models/networks.py:333
+#: app/models/networks.py:334
 msgid "Transport Layer Protocols"
 msgstr "Протоколы транспортного уровня"
 
-#: app/models/networks.py:334
+#: app/models/networks.py:335
 msgid "Add new Transport Layer Protocol"
 msgstr "Добавить новый протокол транспортного уровня"
 
-#: app/models/networks.py:342 app/models/networks.py:426
+#: app/models/networks.py:343 app/models/networks.py:427
 msgid "Port"
 msgstr "Порт"
 
-#: app/models/networks.py:343
+#: app/models/networks.py:344
 msgid "Transport layer protocol"
 msgstr "Протокол транспортного уровня"
 
-#: app/models/networks.py:345 app/models/networks.py:346
-#: app/models/networks.py:391 app/models/networks.py:427
-#: app/models/networks.py:428
+#: app/models/networks.py:346 app/models/networks.py:347
+#: app/models/networks.py:392 app/models/networks.py:428
+#: app/models/networks.py:429
 msgid "Application Layer Protocol"
 msgstr "Протокол прикладного уровня"
 
-#: app/models/networks.py:356
+#: app/models/networks.py:357
 msgid "Port with transport layer protocol"
 msgstr "Порт с протоколом транспортного уровня"
 
-#: app/models/networks.py:357
+#: app/models/networks.py:358
 msgid "Ports with transport layer protocol"
 msgstr "Порты с протоколами транспортного уровня"
 
-#: app/models/networks.py:380
+#: app/models/networks.py:381
 msgid "Default ports"
 msgstr "Порт по умолчанию"
 
-#: app/models/networks.py:381
+#: app/models/networks.py:382
 msgid "Nmap-comment"
 msgstr "Nmap-примечание"
 
-#: app/models/networks.py:392
+#: app/models/networks.py:393
 msgid "Application Layer Protocols"
 msgstr "Протокол прикладного уровня"
 
-#: app/models/networks.py:393
+#: app/models/networks.py:394
 msgid "Add new application Layer protocol"
 msgstr "Добавить новый протокол прикладного уровня"
 
-#: app/models/networks.py:407 app/models/networks.py:429
-#: app/models/networks.py:430
+#: app/models/networks.py:408 app/models/networks.py:430
+#: app/models/networks.py:431
 msgid "Port status"
 msgstr "Статус порта"
 
-#: app/models/networks.py:408
+#: app/models/networks.py:409
 msgid "Port statuses"
 msgstr "Статусы портов"
 
-#: app/models/networks.py:409
+#: app/models/networks.py:410
 msgid "Add new port status"
 msgstr "Добавить новый статус порта"
 
-#: app/models/networks.py:431
+#: app/models/networks.py:432
 msgid "The reason for the port status"
 msgstr "Причина статуса порта"
 
-#: app/models/networks.py:442 app/models/networks.py:443
+#: app/models/networks.py:443 app/models/networks.py:444
 msgid "http screenshot of the web interface"
 msgstr "http-скриншот веб-интерфейса"
 
-#: app/models/networks.py:444 app/models/networks.py:445
+#: app/models/networks.py:445 app/models/networks.py:446
 msgid "https screenshot of the web interface"
 msgstr "https-скриншот веб-интерфейса"
 
-#: app/models/networks.py:454
+#: app/models/networks.py:455
 #, python-format
 msgid "Service «%(ip_address)s:%(port)s»"
 msgstr "Служба «%(ip_address)s:%(port)s»"
 
-#: app/models/networks.py:455
+#: app/models/networks.py:456
 #, python-format
 msgid "Service «%(ip_address)s:%(port)s»: «%(title)s»"
 msgstr "Служба «%(ip_address)s:%(port)s»: «%(title)s»"
 
-#: app/models/networks.py:480
+#: app/models/networks.py:481
 msgid "Service"
 msgstr "Служба"
 
-#: app/models/networks.py:487
+#: app/models/networks.py:488
 msgid "Takes services screenshot"
 msgstr "Делать скриншоты сайта"
 
@@ -2723,7 +2742,7 @@ msgstr "Действия с объектами проекта"
 msgid "Project role"
 msgstr "Роль на проекте"
 
-#: app/models/projects.py:112 app/models/projects.py:113 app/models/users.py:228
+#: app/models/projects.py:112 app/models/projects.py:113 app/models/users.py:230
 msgid "User"
 msgstr "Пользователь"
 
@@ -2783,7 +2802,7 @@ msgstr "Статусы задач"
 msgid "Add task status"
 msgstr "Добавить новый статус задачи"
 
-#: app/models/tasks.py:66 app/models/users.py:31 app/models/users.py:106
+#: app/models/tasks.py:66 app/models/users.py:33 app/models/users.py:108
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -2952,180 +2971,180 @@ msgstr "Шаблон задачи"
 msgid "Project task templates"
 msgstr "Шаблоны задач"
 
-#: app/models/users.py:37 app/models/users.py:153 app/models/users.py:154
+#: app/models/users.py:39 app/models/users.py:155 app/models/users.py:156
 msgid "Position"
 msgstr "Должность"
 
-#: app/models/users.py:38
+#: app/models/users.py:40
 msgid "Positions"
 msgstr "Должности"
 
-#: app/models/users.py:39
+#: app/models/users.py:41
 msgid "Add new position"
 msgstr "Добавить новую должность"
 
-#: app/models/users.py:53 app/models/users.py:94
+#: app/models/users.py:55 app/models/users.py:96
 msgid "Programming languages"
 msgstr "Языки программирования"
 
-#: app/models/users.py:66
+#: app/models/users.py:68
 msgid "A class of programming languages"
 msgstr "Класс языка программирования"
 
-#: app/models/users.py:67
+#: app/models/users.py:69
 msgid "Classes of programming languages"
 msgstr "Классы языков программирования"
 
-#: app/models/users.py:68
+#: app/models/users.py:70
 msgid "Add a new class of programming languages"
 msgstr "Добавить новый класс языков программирования"
 
-#: app/models/users.py:77
+#: app/models/users.py:79
 msgid "Alias"
 msgstr "Алиас"
 
-#: app/models/users.py:77
+#: app/models/users.py:79
 msgid "A string used in the HTML code to denote a given language"
 msgstr "Строка, используемая в HTML для обозначения данного языка"
 
-#: app/models/users.py:78
+#: app/models/users.py:80
 msgid "Is the default language"
 msgstr "Язык приложения по умолчанию"
 
-#: app/models/users.py:79 app/models/users.py:80
+#: app/models/users.py:81 app/models/users.py:82
 msgid "Belongs to the class"
 msgstr "Относится к классу"
 
-#: app/models/users.py:93
+#: app/models/users.py:95
 msgid "Programming language"
 msgstr "Язык программирования"
 
-#: app/models/users.py:95
+#: app/models/users.py:97
 msgid "Add new programming language"
 msgstr "Добавить новый язык программирования"
 
-#: app/models/users.py:105
+#: app/models/users.py:107
 msgid "File Name"
 msgstr "Имя файла"
 
-#: app/models/users.py:115
+#: app/models/users.py:117
 msgid "The theme of the programming language"
 msgstr "Тема языка программирования"
 
-#: app/models/users.py:116
+#: app/models/users.py:118
 msgid "Themes of programming languages"
 msgstr "Темы языков программирования"
 
-#: app/models/users.py:117
+#: app/models/users.py:119
 msgid "Add a new programming languages theme"
 msgstr "Добавить новую тему языков программирования"
 
-#: app/models/users.py:142
+#: app/models/users.py:144
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: app/models/users.py:143
+#: app/models/users.py:145
 msgid "First Name"
 msgstr "Имя"
 
-#: app/models/users.py:144
+#: app/models/users.py:146
 msgid "Last Name"
 msgstr "Фамилия"
 
-#: app/models/users.py:145
+#: app/models/users.py:147
 msgid "Patronymic"
 msgstr "Отчество"
 
-#: app/models/users.py:146
+#: app/models/users.py:148
 msgid "Is an administrator"
 msgstr "Является администратором"
 
-#: app/models/users.py:147 app/models/users.py:148
+#: app/models/users.py:149 app/models/users.py:150
 msgid "Avatar"
 msgstr "Аватар"
 
-#: app/models/users.py:149 app/models/users.py:152
+#: app/models/users.py:151 app/models/users.py:154
 msgid "Immediate supervisor"
 msgstr "Непосредственный начальник"
 
-#: app/models/users.py:156 app/models/users.py:158
+#: app/models/users.py:158 app/models/users.py:160
 msgid "Programming language theme"
 msgstr "Тема языков программирования"
 
-#: app/models/users.py:162
+#: app/models/users.py:164
 msgid "Programming languages used"
 msgstr "Используемые языки программирования"
 
-#: app/models/users.py:163 app/models/users.py:164
+#: app/models/users.py:165 app/models/users.py:166
 msgid "Interface design theme"
 msgstr "Тема интерфейса"
 
-#: app/models/users.py:169
+#: app/models/users.py:171
 msgid "Member of the team"
 msgstr "Является членом команд"
 
-#: app/models/users.py:171
+#: app/models/users.py:173
 msgid "Added comments"
 msgstr "Оставленные комментарии"
 
-#: app/models/users.py:173
+#: app/models/users.py:175
 msgid "Token"
 msgstr "Токен"
 
-#: app/models/users.py:174
+#: app/models/users.py:176
 msgid "Token expiration"
 msgstr "Время жизни токена"
 
-#: app/models/users.py:175
+#: app/models/users.py:177
 msgid "Environment settings"
 msgstr "Настройки окружения"
 
-#: app/models/users.py:176 app/models/users.py:177
+#: app/models/users.py:178 app/models/users.py:179
 msgid "Preferred language"
 msgstr "Предпочитаемый язык"
 
-#: app/models/users.py:178
+#: app/models/users.py:180
 msgid "Roles on project"
 msgstr "Роли на проекте"
 
-#: app/models/users.py:263
+#: app/models/users.py:265
 msgid "Theme style"
 msgstr "Тема окружения"
 
-#: app/models/users.py:264
+#: app/models/users.py:266
 msgid "Theme styles"
 msgstr "Темы окружения"
 
-#: app/models/users.py:271
+#: app/models/users.py:273
 msgid "The sidebar is in a hidden state"
 msgstr "Боковая панель в свёрнутом состоянии"
 
-#: app/models/users.py:272
+#: app/models/users.py:274
 msgid "The order of comments"
 msgstr "Порядок следования кмментариев"
 
-#: app/models/users.py:272
+#: app/models/users.py:274
 msgid "True if direct and False otherwise"
 msgstr "True если прямой и False иначе"
 
-#: app/models/users.py:273
+#: app/models/users.py:275
 msgid ""
 "The indentation from the previous comment to respond to the message in pixels"
 msgstr "Отступ в отвечаемых комментариях в пикселях"
 
-#: app/models/users.py:283
+#: app/models/users.py:285
 msgid "User's Environment Settings"
 msgstr "Настройки окружения пользователя"
 
-#: app/models/users.py:284
+#: app/models/users.py:286
 msgid "User Environment Settings"
 msgstr "Настройки окружений пользователей"
 
-#: app/models/users.py:336
+#: app/models/users.py:345
 msgid "Team"
 msgstr "Команда"
 
-#: app/models/users.py:337
+#: app/models/users.py:346
 msgid "Teams"
 msgstr "Команды"
 
@@ -3226,7 +3245,7 @@ msgstr "Экспортировать в формате"
 
 #: app/templates/credentials/index.html:140
 #: app/templates/credentials/pentest-index.html:77
-#: app/templates/hosts/excluded-index.html:101
+#: app/templates/hosts/excluded-index.html:101 app/templates/hosts/index.html:310
 #: app/templates/networks/index.html:346 app/templates/services/index.html:201
 #: app/templates/services/index_group_by_port.html:186
 #: app/templates/tasks/index.html:89 app/templates/tasks/show.html:452
@@ -3287,6 +3306,14 @@ msgstr "Уязвимая среда"
 #: app/templates/hosts/excluded-index.html:9
 msgid "Hosts, that are excluded from the study"
 msgstr "Хосты, которые были исключены из исследования"
+
+#: app/templates/hosts/index.html:312
+msgid "Exclude"
+msgstr "Исключить"
+
+#: app/templates/hosts/index.html:314
+msgid "Copy IP address"
+msgstr "Копировать IP-адрес"
 
 #: app/templates/hosts/show.html:13
 msgid "(Title is missing)"

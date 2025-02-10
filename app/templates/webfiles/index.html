@@ -22,7 +22,7 @@
         group: 'main_group',
         capturebrowser: true,
         initpath: [
-            ['dir_{{ parent_dir.id }}', '{{ project.fulltitle }}'], // , { canmodify: false }
+            ['dir_{{ parent_dir.id }}', '{{ project.fulltitle|safe }}'], // , { canmodify: false }
         ],
 
         tools: {

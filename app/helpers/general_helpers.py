@@ -649,7 +649,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                 db.session.add(r)
                 db.session.commit()
                 logger.warning('Anonymous project role created')
-            
+            # All users have an preferred language
             users = db.session.scalars(sa.select(models.User)).all()
             for u in users:
                 if u.preferred_language is None:

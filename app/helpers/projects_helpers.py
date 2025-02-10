@@ -132,8 +132,12 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
                         an = attr_name[:len(attr_name) - 3:]
                         attr_cls = inspect(obj.__class__).relationships[an].entity.class_
                         old_id = attrs[attr_name].history.deleted[0]
+                        if old_id is None:
+                            old_id = 0
                         old_val = db.session.get(attr_cls, old_id)
                         new_id = attrs[attr_name].history.added[0]
+                        if new_id is None:
+                            new_id = 0
                         new_val = db.session.get(attr_cls, new_id)
                         if old_val and new_val:
                             changes['changes'].append({"action": "modify_paramether", "attrs": {'lazy_name': str(attr_label), "old_value": old_val.title, "new_value": new_val.title}})

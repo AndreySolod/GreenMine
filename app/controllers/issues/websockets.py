@@ -46,7 +46,7 @@ def edit_related_services(data):
                                                                           models.Network.project_id==issue.project_id))).all()
         updated_services = set(issue.services)
         updated_services = updated_services.union(set(services))
-        issue.services = services
+        issue.services = set(services)
         db.session.commit()
     except (ValueError, TypeError, KeyError):
         return None

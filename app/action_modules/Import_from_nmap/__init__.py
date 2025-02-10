@@ -11,11 +11,12 @@ import wtforms
 import wtforms.validators as validators
 import flask_wtf.file as wtfile
 from flask_babel import lazy_gettext as _l
+from .nmap_script_processing import NmapScriptProcessor
 
 
 def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True, add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
-               session=db.session):
+               session=db.session, locale: str='en'):
     ''' Parse nmap file and create host/service object in project.
         Paramethers:
         :param nmap_file_data: data of nmap file, representated as string;
@@ -125,6 +126,7 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             if ignore_closed_ports and state != 'open':
                 continue
             serv = create_service_if_not_exist(current_host, int(port.get('portid')), port.get('protocol'))
+            session.add(serv)
             if serv is None:
                 continue
             serv.created_by_id = current_user_id
@@ -155,6 +157,7 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                     serv.technical = f'<p>Extrainfo: {service_attr.get('extrainfo')}</p>'
             if port.find('script') is not None:
                 for script in port.iter('script'):
+                    technical = NmapScriptProcessor.process(script, session, project, serv, current_user_id, locale)
                     technical = f'\n<h5>Script data:</h5>\n<h6>{script.get('id')}</h6><p>{sanitizer.escape(script.get('output')).replace('\n', '<br />')}</p>'
                     if serv.technical is not None:
                         serv.technical += technical
@@ -165,10 +168,23 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             session.commit()
         if len(current_host.services) == 0 and ignore_host_without_open_ports_and_arp_response:
             session.delete(current_host)
+            del(current_host)
             session.commit()
             continue
+        elif len(current_host.services) == 0 and current_host.mac == '' and not ignore_host_without_open_ports_and_arp_response:
+            session.delete(current_host)
+            del(current_host)
+            session.commit()
         else:
             session.commit()
+        # processing host scripts
+        for hostscript in host.iter('hostscript'):
+            for script in hostscript.iter('script'):
+                technical = NmapScriptProcessor.process(script, session, project, current_host, current_user_id, locale)
+                if current_host.technical is None:
+                    current_host.technical = technical
+                else:
+                    current_host.technical += technical
         # processing operation systems
         if not process_operation_system:
             continue
@@ -196,11 +212,11 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
     return None
 
 
-def exploit(filled_form: dict, running_user: int, default_options: dict) -> None:
+def exploit(filled_form: dict, running_user: int, default_options: dict, locale: str='en') -> None:
     with so.sessionmaker(bind=db.engine)() as session:
         action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
                 filled_form["ignore_host_without_open_ports_and_arp_response"],
-                filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"], session=session)
+                filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"], session=session, locale=locale)
 
 
 class AdminOptionsForm(FlaskForm):

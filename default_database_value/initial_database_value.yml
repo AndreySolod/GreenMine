@@ -830,6 +830,8 @@ DeviceVendor:
         title: "Zebra"
     - sagemcom:
         title: "Sagemcom"
+    - nokia:
+        title: "Nokia"
     - moxa:
         title: "MOXA"
     - lg:
@@ -838,8 +840,6 @@ DeviceVendor:
         title: "Epson"
     - motorolla:
         title: "Motorolla"
-    - nokia:
-        title: "Nokia"
     - qemu:
         title: "QEMU"
     - ubiquiti:

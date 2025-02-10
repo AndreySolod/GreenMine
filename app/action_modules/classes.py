@@ -42,7 +42,7 @@ class ActionModule:
         ''' Causes the operation of this module for a given group of purposes '''
         self.exploit_single_target(session=session, running_user_id=running_user.id, **exploit_data, **self.default_options)
     
-    def run(self, filled_form: FlaskForm, running_user: models.User, form_files):
+    def run(self, filled_form: FlaskForm, running_user: models.User, form_files, locale: str='en'):
         ''' Causes the operation of this module for a given group of goals via a Celery task '''
         bt = self.exploit_task
         ff = {}
@@ -51,4 +51,4 @@ class ActionModule:
                 ff[name] = form_files[field.name].read()
             else:
                 ff[name] = field.data
-        bt.delay(ff, running_user.id, self.default_options)
+        bt.delay(ff, running_user.id, self.default_options, locale=locale)

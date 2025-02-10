@@ -1,7 +1,7 @@
 from app import socketio, db, sanitizer, logger
 from app.helpers.general_helpers import authenticated_only
 from app.helpers.projects_helpers import get_current_room
-from flask_socketio import emit, join_room
+from flask_socketio import emit, join_room, send
 from flask import url_for
 from app.helpers.roles import project_role_can_make_action
 from flask_login import current_user
@@ -247,13 +247,13 @@ def join_hosts_room(data):
     try:
         project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(data))).one()
     except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
-        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect hosts room {data}")
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect excluded hosts room {data}")
         return None
-    if not project_role_can_make_action(current_user, models.Network(), 'index', project=project):
-        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join hosts room #{data}, in which he has no rights to")
+    if not project_role_can_make_action(current_user, models.Host(), 'index', project=project):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join excluded hosts room #{data}, in which he has no rights to")
         return None
     room = data
-    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join hosts room #{data}")
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join excluded hosts room #{data}")
     join_room(room, namespace="/hosts-excluded")
 
 
@@ -271,7 +271,7 @@ def include_host_to_research(data):
         return None
     if not project_role_can_make_action(current_user, host, 'update'):
         return None
-    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request add host to reseqrch")
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request add host to research")
     host.excluded = False
     db.session.add(host)
     db.session.commit()
@@ -279,3 +279,56 @@ def include_host_to_research(data):
     excluded_hosts = [{'id': i.id, 'title': i.title, 'from_network': str(i.from_network.fulltitle), 'ip_address': str(i.ip_address),
                       'description': sanitizer.pure_text(i.description)} for i in all_excluded_hosts]
     emit("excluded hosts changed", {'hosts': excluded_hosts}, namespace="/hosts-excluded", to=current_room_name)
+
+
+@socketio.on('join_room', namespace="/hosts")
+@authenticated_only
+def join_hosts_room(data):
+    try:
+        project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(data))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect hosts room {data}")
+        return None
+    if not project_role_can_make_action(current_user, models.Host(), 'index', project=project):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join hosts room #{data}, in which he has no rights to")
+        return None
+    room = data
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join hosts room #{data}")
+    join_room(room, namespace="/hosts")
+
+
+@socketio.on('delete host', namespace='/hosts')
+@authenticated_only
+def delete_host(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    _, current_room_name = r
+    try:
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == int(data['host_id']))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, host, 'update'):
+        return None
+    db.session.delete(host)
+    db.session.commit()
+    emit('host list updated', namespace="/hosts", to=current_room_name)
+
+
+@socketio.on('exclude host', namespace='/hosts')
+@authenticated_only
+def exclude_host_from_research(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    _, current_room_name = r
+    try:
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == int(data['host_id']))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, host, 'update'):
+        return None
+    host.excluded = True
+    db.session.add(host)
+    db.session.commit()
+    emit('host list updated', namespace='/hosts', to=current_room_name)

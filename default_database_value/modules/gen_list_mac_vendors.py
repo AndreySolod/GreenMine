@@ -15,7 +15,7 @@ class ImportDefaultData:
                 mvd = cls()
                 mvd.title = line["Vendor Name"]
                 mvd.mac_prefix = line["Mac Prefix"].lower()
-                mvd.is_private = line["Private"] == 'false'
+                mvd.is_private = line["Private"] != 'false'
                 mvd.block_type = line["Block Type"]
                 db.session.add(mvd)
             db.session.commit()

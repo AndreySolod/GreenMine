@@ -31,7 +31,7 @@
                                         data-side-pagination="server"
                                         data-page-list="[10, 25, 50, 100, 500, All]"
                                         data-url="{{ url_for('networks.host_index_data', project_id=project.id) }}"
-                                        data-row-style="issueRowStyle"
+                                        data-row-style="hostsRowStyle"
                                         data-toolbar="#hosts-toolbar">
                 </table>
             </div>
@@ -44,19 +44,22 @@
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
         $(function() {
-            var CookieName = "HostsIndexPageSize";
             $('#hosts-table').bootstrapTable({
                 onPreBody: function(data) {
 
-                    var pageSizeCookie = Cookies.get(CookieName);
-                    if (pageSizeCookie != null) {
+                    var pageSizeData = localStorage.getItem("HostsIndexPageSize");
+                    
+                    if (pageSizeData != null) {
         
-                        var pageSizeInt = parseInt(pageSizeCookie);
+                        var pageSizeInt = parseInt(pageSizeData);
+                        if(isNaN(pageSizeInt)) {
+                            pageSizeInt = 500;
+                        }
                         this.pageSize = pageSizeInt;
                     }
                 },
                 onPageChange: function(pageNumber, pageSize) {
-                    Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                    localStorage.setItem("HostsIndexPageSize", pageSize)
                 },
                 filterControl: true,
                 disableUnusedSelectOptions: true,
@@ -215,32 +218,32 @@
                             pagination: true,
                             sidePagination: 'server',
                             url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
-                            rowStyle: issueRowStyle,
+                            rowStyle: (row, index) => { return {css: { "cursor": "pointer" }} },
                             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                             onClickRow: function(row, element, field) {
                                 location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
                             },
                             onPreBody: function(data) {
 
-                                var pageSizeCookie = Cookies.get("ServicesByHostIndexPageSize");
-                                if(isNaN(Number(pageSizeCookie))) {
-                                    pageSizeCookie = 10;
+                                var pageSizeData = localStorage.getItem("ServicesByHostIndexPageSize");
+                                if(isNaN(Number(pageSizeData))) {
+                                    pageSizeData = 500;
                                 };
-                                if (pageSizeCookie != null) {
+                                if (pageSizeData != null) {
                     
-                                    var pageSizeInt = parseInt(pageSizeCookie);
+                                    var pageSizeInt = parseInt(pageSizeData);
                                     this.pageSize = pageSizeInt;
                                 }
                             },
                             onPageChange: function(pageNumber, pageSize) {
-                                Cookies.set("ServicesByHostIndexPageSize", pageSize, { expires: 30, path: window.location.pathname });
+                                localStorage.setItem("ServicesByHostIndexPageSize", pageSize);
                             },
                           })
                     }
                 })
         })
-        function issueRowStyle(row, index) {
-            return { css: {"cursor": 'pointer' } }
+        function hostsRowStyle(row, index) {
+            return { classes: "with-context-menu-host", css: {"cursor": 'pointer' } }
         }
     </script>
     <script nonce="{{ csp_nonce() }}">
@@ -274,5 +277,43 @@
             })
             $('#hosts-table').bootstrapTable('togglePagination')
         }
+        const hostsSocket = io('/hosts');
+        hostsSocket.on('connect', function() {
+            hostsSocket.emit('join_room', "{{ project.id }}")
+        });
+        hostsSocket.on('host list updated', function() {
+            $('#hosts-table').bootstrapTable("refresh")
+        })
+        $(function () {
+            $.contextMenu({
+                selector: '.with-context-menu-host',
+                callback: function (key, options) {
+                    if (key === 'open') {
+                        window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", options.$trigger[0].children[1].textContent), '_blank');
+                    }
+                    else if(key === 'edit') {
+                        window.open("{{ url_for('networks.host_edit', host_id='__host_id') }}".replace('__host_id', options.$trigger[0].children[1].textContent), '_blank');
+                    }
+                    else if(key === 'exclude') {
+                        hostsSocket.emit('exclude host', { host_id: options.$trigger[0].children[1].textContent });
+                    }
+                    else if (key === 'delete') {
+                        if(confirm("{{ _('Are you sure you want to delete this host?') }}")) {
+                            hostsSocket.emit("delete host", {'host_id': options.$trigger[0].children[1].textContent});
+                        }
+                    }
+                    else if (key === 'copy_ip') {
+                        navigator.clipboard.writeText(options.$trigger[0].children[4].textContent)
+                    }
+                },
+                items: {
+                    "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
+                    "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                    "exclude": { name: "{{ _('Exclude') }}", icon: "exclude" },
+                    "delete": { name: '{{ _("Delete") }}', icon: 'delete' },
+                    "copy_ip": { name: '{{ _("Copy IP address") }}', icon: "copy" }
+                }
+            });
+        });
     </script>
 {% endblock %}

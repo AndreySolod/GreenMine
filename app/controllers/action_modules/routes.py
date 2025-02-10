@@ -1,4 +1,4 @@
-from flask import render_template, abort, redirect, url_for, flash, request, current_app
+from flask import render_template, abort, redirect, url_for, flash, request, g
 from flask_login import current_user, login_required
 from app.controllers.action_modules import bp
 from app.models import Project
@@ -42,7 +42,7 @@ def module_run(module_name):
     project_role_can_make_action_or_abort(current_user, AutomationModules(), 'create', project=project)
     form = module.run_form(project_id)
     if form.validate_on_submit():
-        module.run(form, current_user, request.files)
+        module.run(form, current_user, request.files, locale=g.locale)
         flash(_l("The module has been sent for execution"), 'success')
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' was startet a task '{module_name}'")
         return redirect(url_for('action_modules.action_modules_index', project_id=project_id))

@@ -184,6 +184,7 @@ class HostStatus(db.Model):
         verbose_name = _l("Host status")
         verbose_name_plural = _l("Host statuses")
         title_new = _l("Add new host status")
+        column_index = ['id', 'string_slug', 'title']
 
 
 class HostAnotherInterface(db.Model):

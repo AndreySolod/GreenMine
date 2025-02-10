@@ -147,6 +147,10 @@
   content: "\f05b";
   font-family: "FontAwesome";
 }
+.context-menu-icon-exclude:before {
+  content: "\e901";
+  font-family: "icomoon";
+}
 
 .context-menu-icon::before {
   position: absolute;

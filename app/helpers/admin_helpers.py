@@ -24,6 +24,16 @@ def register_status_object(*obj):
 
 def project_enumerated_object(obj):
     global enumerated_object_list
+    if not hasattr(obj, 'Meta'):
+        raise ValueError("Project enumerated object must have an 'Meta' attribute")
+    if not hasattr(obj.Meta, 'verbose_name'):
+        raise ValueError("Project enumerated object Meta must have an attribute 'verbose_name'")
+    if not hasattr(obj.Meta, "verbose_name_plural"):
+        raise ValueError("Project enumerated object Meta must have an 'verbose_name_plural' attribute")
+    if not hasattr(obj.Meta, 'title_new'):
+        raise ValueError("Project enumerated object Meta must have an attribute 'title_new'")
+    if not hasattr(obj.Meta, 'column_index') or not isinstance(obj.Meta.column_index, list):
+        raise ValueError("Project enumerated object Meta must have an attribute 'column_index' as instance of 'list' class")
     enumerated_object_list.append(obj)
     return obj
 
