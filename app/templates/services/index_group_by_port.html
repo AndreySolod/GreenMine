@@ -31,10 +31,6 @@
 {% block script %}
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
-    var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesGroupByPortIndexHideColumns"))); // -> Set('title')
-          if(hide_columns === null) {
-            hide_columns = new Set();
-          };
     $(function() {
         let services_toolbar_table = `<div id="services-toolbar">
                     <div class="dropdown">
@@ -49,19 +45,6 @@
                 </div>`;
         var service_transport_level_protocol_filters = JSON.parse('{{ filters["reversed_TransportLevelProtocol"]|escapejs }}');
         $('#services-table').bootstrapTable({
-            onPreBody: function(data) {
-                var pageSizeData = localStorage.getItem("ServiceByPortIndexPageSize");
-                if (pageSizeData != null) {
-                    var pageSizeInt = parseInt(pageSizeData);
-                    if(isNaN(pageSizeInt)) {
-                        pageSizeInt = 500;
-                    }
-                    this.pageSize = pageSizeInt;
-                }
-            },
-            onPageChange: function(pageNumber, pageSize) {
-                localStorage.setItem("ServiceByPortIndexPageSize", pageSize)
-            },
             filterControl: true,
                 disableUnusedSelectOptions: true,
                 columns: [
@@ -90,6 +73,9 @@
                 ],
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 showColumns: true,
+                cookie: true,
+                cookieIdTable: "ServicePortIndex",
+                cookieStorage: "localStorage",
                 detailView: true,
                 onExpandRow: function(index, row, $detail) {
                     var stt = services_toolbar_table.replace("__port_number", row.port_number).replace("__transport_level_protocol", row.transport_level_protocol);
@@ -102,7 +88,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('id')),
                         },
                         {
                             field: 'title',
@@ -110,7 +95,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('title')),
                         },
                         {
                             field: 'technical',
@@ -118,7 +102,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('technical')),
                         },
                         {
                             field: 'host.ip_address-input',
@@ -126,7 +109,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('host.ip_address-input')),
                         },
                         {
                             field: 'access_protocol.title-input',
@@ -134,7 +116,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('access_protocol.title-input')),
                         },
                         {
                             field: 'port_state',
@@ -143,7 +124,6 @@
                             align: 'center',
                             filterControl: 'select',
                             filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
-                            visible: !(hide_columns.has('port_state')),
                         },
                         {
                             field: 'port_state_reason',
@@ -151,7 +131,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('port_state_reason')),
                         }
                         ],
                         showColumns: true,
@@ -161,6 +140,9 @@
                         showExport: true,
                         showMultiSort: true,
                         filterControl: true,
+                        cookie: true,
+                        cookieIdTable: "ServiceByPortIndex",
+                        cookieStorage: "localStorage",
                         buttonsClass: 'primary',
                         pagination: true,
                         toolbar: '#services-toolbar',
@@ -170,17 +152,6 @@
                         icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                         onClickRow: function(row, element, field) {
                             location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
-                        },
-                        onColumnSwitch: function(field, checked) {
-                            var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesGroupByPortIndexHideColumns")));
-                            if(checked) {
-                                hide_columns.delete(field);
-                                localStorage.setItem("ServicesGroupByPortIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                            }
-                            else {
-                                hide_columns.add(field);
-                                localStorage.setItem("ServicesGroupByPortIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                            };
                         },
                     })
                 }

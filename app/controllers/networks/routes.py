@@ -393,7 +393,7 @@ def host_show(host_id):
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('ckeditor')
     context = {'host': host, 'filters': filters,
-               'dns_name_form': forms.NewHostDNSnameForm()}
+               'dns_name_form': forms.NewHostDNSnameForm(), 'edit_related_objects_form': forms.EditRelatedObjectsHostForm(host)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host #{host.id}")
     side_libraries.library_required('contextmenu')
     return render_template('hosts/show.html', **context, **ctx)

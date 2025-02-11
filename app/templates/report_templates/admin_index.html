@@ -11,7 +11,10 @@
             <div class="card-body">
                 <table class="table" id="report-templates-table" data-pagination="true" data-search="true"
                        data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true"
-                       data-filter-control="true" data-buttons-class="primary" data-show-pagination-switch="true">
+                       data-filter-control="true" data-buttons-class="primary" data-show-pagination-switch="true"
+                       data-cookie="true"
+                       data-cookie-id-table="ReportTemplatesIndex"
+                       data-cookie-storage="localStorage">
                        <thead>
                         <tr>
                             <th data-field="id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectReportTemplate.id.info['label'] }}</th>

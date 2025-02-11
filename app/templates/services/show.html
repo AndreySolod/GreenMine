@@ -136,7 +136,20 @@
                         <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedIssues" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related issues') }}"><i class="fa-solid fa-link"></i></button>
                         {% endif %}
                         </div>
-                        <table class="table" id="issues-table" data-toolbar="#issues-toolbar" data-pagination="true" data-page-size="5" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                        <table class="table" id="issues-table" data-toolbar="#issues-toolbar"
+                                                               data-pagination="true"
+                                                               data-page-size="5"
+                                                               data-search="true"
+                                                               data-show-columns="true"
+                                                               data-show-toggle="true"
+                                                               data-show-export="true"
+                                                               data-show-multi-sort="true"
+                                                               data-filter-control="true"
+                                                               data-buttons-class="primary"
+                                                               data-row-style="default_row_style"
+                                                               data-cookie="true"
+                                                               data-cookie-id-table="IssuesByServiceShow"
+                                                               data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
@@ -165,7 +178,15 @@
                         <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedCredentials" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related credentials') }}"><i class="fa-solid fa-link"></i></button>
                         {% endif %}
                         </div>
-                        <table class="table" id="credentials-table" data-toolbar="#credentials-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                        <table class="table" id="credentials-table" data-toolbar="#credentials-toolbar"
+                                            data-page-size="5" data-pagination="true"
+                                            data-search="true" data-show-columns="true"
+                                            data-show-toggle="true" data-show-export="true"
+                                            data-show-multi-sort="true" data-filter-control="true"
+                                            data-buttons-class="primary" data-row-style="default_row_style"
+                                            data-cookie="true"
+                                            data-cookie-id-table="CredentialByServiceShow"
+                                            data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.Credential.id.info["label"] }}</th>
@@ -196,7 +217,15 @@
                         <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedTasks" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related tasks') }}"><i class="fa-solid fa-link"></i></button>
                         {% endif %}
                         </div>
-                        <table class="table" id="tasks-table" data-toolbar="#tasks-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                        <table class="table" id="tasks-table" data-toolbar="#tasks-toolbar"
+                                            data-page-size="5" data-pagination="true"
+                                            data-search="true" data-show-columns="true"
+                                            data-show-toggle="true" data-show-export="true"
+                                            data-show-multi-sort="true" data-filter-control="true"
+                                            data-buttons-class="primary" data-row-style="default_row_style"
+                                            data-cookie="true"
+                                            data-cookie-id-table="ProjectTaskHasServiceShow"
+                                            data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>

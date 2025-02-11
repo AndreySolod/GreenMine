@@ -98,32 +98,16 @@
                             type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
                             {{ models.Host.dnsnames.info['label'] }}</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="interfaces-tab" data-bs-toggle="tab" data-bs-target="#interfaces"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-ethernet"></i>
+                            {{ models.Host.interfaces.info['label'] }}</button>
+                    </li>
                     {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=host.from_network.project) %}
                     <li class="nav-item" role="presentaion">
                         <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services"
                             type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Service.Meta.icon }}"></i>
                             {{ _("Available services") }}</button>
-                    </li>
-                    {% endif %}
-                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=host.from_network.project) %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues"
-                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Issue.Meta.icon }}"></i>
-                            {{ _("Related issues") }}</button>
-                    </li>
-                    {% endif %}
-                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=host.from_network.project) %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks"
-                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i>
-                            {{ _("Related tasks") }}</button>
-                    </li>
-                    {% endif %}
-                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=host.from_network.project) %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="credentials-tab" data-bs-toggle="tab" data-bs-target="#credentials"
-                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Credential.Meta.icon }}"></i>
-                            {{ _("Related credentials") }}</button>
                     </li>
                     {% endif %}
                 </ul>
@@ -159,6 +143,27 @@
                             </tbody>
                         </table>        
                     </div>
+                    <div class="tab-pane fade" id="interfaces" role="tabpanel" aria-labelledby="interfaces-tab">
+                        <div id="interfaces-toolbar">
+                            {% if roles.project_role_can_make_action(current_user, host, 'update') %}
+                            <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedInterfaces" data-toggle="tooltip" data-placement="top" title="{{ _('Specify another host as the interface of the current one') }}"><i class="fa-solid fa-link"></i></button>
+                            {% endif %}
+                        </div>
+                        <table class="table" id="interfaces-table" data-page-size="5" data-show-columns="true" data-show-toggle="true"
+                                data-buttons-class="primary" data-toolbar="#interfaces-toolbar">
+                            <tbody>
+                                {% for iface in host.interfaces %}
+                                <tr>
+                                    <td>{{ iface.id }}</td>
+                                    <td>{{ iface.ip_address }}</td>
+                                    <td>{{ sanitizer.pure_text(iface.title) }}</td>
+                                    <td>{{ sanitizer.pure_text(iface.description) }}</td>
+                                    <td>{{ sanitizer.pure_text(iface.technical) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                     {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=host.from_network.project) %}
                     <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
                         <div id="services-toolbar">
@@ -180,98 +185,6 @@
                                              data-buttons-class="primary"
                                              data-page-size="5"
                                              data-toolbar="#services-toolbar">
-                        </table>
-                    </div>
-                    {% endif %}
-                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=host.from_network.project) %}
-                    <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                        <table class="table" id="issues-table" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
-                            <thead>
-                                <tr>
-                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
-                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.title.info["label"] }}</th>
-                                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.description.info["label"] }}</th>
-                                    <th data-field="cvss" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.cvss.info["label"] }}</th>
-                                    <th data-field="cve" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.cve.info["label"] }}</th>
-                                    <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["IssueStatus"]|safe }}'>{{ models.Issue.status.info["label"] }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for issue in host.issues %}
-                                <tr style="cursor:pointer;">
-                                    <td>{{ issue.id }}</td>
-                                    <td>{{ issue.title|safe }}</td>
-                                    {% if issue.description != none %}
-                                    <td>{{ BeautifulSoup(issue.description, "lxml").text }}</td>
-                                    {% else %}
-                                    <td></td>
-                                    {% endif %}
-                                    <td>{{ issue.cvss }}</td>
-                                    {% if issue.cvss != none %}
-                                    <td>{{ issue.cve.title }}</td>
-                                    {% else %}
-                                    <td></td>
-                                    {% endif %}
-                                    <td>{{ issue.status.title }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endif %}
-                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=host.from_network.project) %}
-                    <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
-                        <table class="table" id="tasks-table" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
-                            <thead>
-                                <tr>
-                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>
-                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
-                                    <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.tracker.info["label"] }}</th>
-                                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.priority.info["label"] }}</th>
-                                    <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.state.info["label"] }}</th>
-                                    <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.assigned_to.info["label"] }}</th>
-                                    <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for task in host.tasks %}
-                                <tr>
-                                    <td>{{ task.id }}</td>
-                                    <td>{{ task.title|safe }}</td>
-                                    <td>{{ task.tracker.title }}</td>
-                                    <td>{{ task.priority.title }}</td>
-                                    <td>{{ task.state.title }}</td>
-                                    <td>{{ task.assigned_to.title }}</td>
-                                    <td>{{ task.readiness.title }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% endif %}
-                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=host.from_network.project) %}
-                    <div class="tab-pane fade" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
-                        <table class="table" id="credentials-table" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
-                            <thead>
-                                <tr>
-                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Credential.id.info["label"] }}</th>
-                                    <th data-field="login" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.login.info["label"] }}</th>
-                                    <th data-field="password" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password.info["label"] }}</th>
-                                    <th data-field="password_hash" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password_hash.info["label"] }}</th>
-                                    <th data-field="hash_type" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.hash_type.info["label"] }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for credential in host.credentials %}
-                                <tr>
-                                    <td>{{ credential.id }}</td>
-                                    <td>{{ credential.login|safe }}</td>
-                                    <td>{{ credential.password|safe }}</td>
-                                    <td>{{ credential.password_hash|safe }}</td>
-                                    <td>{{ credential.hash_type.title }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
                         </table>
                     </div>
                     {% endif %}
@@ -306,6 +219,143 @@
                 {% else %}
                 {{ host.technical }}
                 {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <ul class="nav nav-tabs" id="relatedObjectsTab" role="tablist">
+                    {% set has_first_tab = ' active' %}
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link{{ has_first_tab }}" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Issue.Meta.icon }}"></i>
+                            {{ _("Related issues") }}</button>
+                    </li>
+                    {% set has_first_tab = '' %}
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link{{ has_first_tab }}" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i>
+                            {{ _("Related tasks") }}</button>
+                    </li>
+                    {% set has_first_tab = '' %}
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=host.from_network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link{{ has_first_tab }}" id="credentials-tab" data-bs-toggle="tab" data-bs-target="#credentials"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.Credential.Meta.icon }}"></i>
+                            {{ _("Related credentials") }}</button>
+                    </li>
+                    {% set has_first_tab = '' %}
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="RelatedObjectsTabContent">
+                    {% set has_first_tab = ' show active' %}
+                    {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade{{ has_first_tab }}" id="issues" role="tabpanel" aria-labelledby="issues-tab">
+                        {% set has_first_tab = '' %}
+                        <table class="table" id="issues-table" data-page-size="5"
+                                             data-pagination="true" data-search="true"
+                                             data-show-columns="true" data-show-toggle="true"
+                                             data-show-export="true" data-show-multi-sort="true"
+                                             data-filter-control="true" data-buttons-class="primary"
+                                             data-cookie="true"
+                                             data-cookie-id-table="IssueHasHost" data-cookie-storage="localStorage">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.title.info["label"] }}</th>
+                                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.description.info["label"] }}</th>
+                                    <th data-field="cvss" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.cvss.info["label"] }}</th>
+                                    <th data-field="cve" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Issue.cve.info["label"] }}</th>
+                                    <th data-field="status" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["IssueStatus"]|safe }}'>{{ models.Issue.status.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for issue in host.issues %}
+                                <tr>
+                                    <td>{{ issue.id }}</td>
+                                    <td>{{ sanitizer.unescape(issue.title) }}</td>
+                                    <td>{{ sanitizer.pure_text(issue.description) }}</td>
+                                    <td>{{ issue.cvss }}</td>
+                                    <td>{{ getattr(issue.cve, 'title', '') }}</td>
+                                    <td>{{ issue.status.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade{{ has_first_tab }}" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                        {% set has_first_tab = '' %}
+                        <table class="table" id="tasks-table" data-page-size="5"
+                               data-pagination="true"data-search="true" data-show-columns="true"
+                               data-show-toggle="true" data-show-export="true" data-show-multi-sort="true"
+                               data-filter-control="true" data-buttons-class="primary" data-cookie="true"
+                               data-cookie-id-table="ProjectTaskHasHost" data-cookie-storage="localStorage">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
+                                    <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.tracker.info["label"] }}</th>
+                                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.priority.info["label"] }}</th>
+                                    <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.state.info["label"] }}</th>
+                                    <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTask.assigned_to.info["label"] }}</th>
+                                    <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in host.tasks %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.title|safe }}</td>
+                                    <td>{{ task.tracker.title }}</td>
+                                    <td>{{ task.priority.title }}</td>
+                                    <td>{{ task.state.title }}</td>
+                                    <td>{{ task.assigned_to.title }}</td>
+                                    <td>{{ task.readiness.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=host.from_network.project) %}
+                    <div class="tab-pane fade{{ has_first_tab }}" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+                        <table class="table" id="credentials-table" data-page-size="5" data-pagination="true" data-search="true"
+                               data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true"
+                               data-filter-control="true" data-buttons-class="primary"  data-cookie="true"
+                               data-cookie-id-table="CredentialHasHost" data-cookie-storage="localStorage">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Credential.id.info["label"] }}</th>
+                                    <th data-field="login" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.login.info["label"] }}</th>
+                                    <th data-field="password" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password.info["label"] }}</th>
+                                    <th data-field="password_hash" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.password_hash.info["label"] }}</th>
+                                    <th data-field="hash_type" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Credential.hash_type.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for credential in host.credentials %}
+                                <tr>
+                                    <td>{{ credential.id }}</td>
+                                    <td>{{ credential.login|safe }}</td>
+                                    <td>{{ credential.password|safe }}</td>
+                                    <td>{{ credential.password_hash|safe }}</td>
+                                    <td>{{ credential.hash_type.title }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -389,19 +439,97 @@
 </div>
 {% endif %}
 
+{# modal window to edit inerfaces #}
+{% if roles.project_role_can_make_action(current_user, host, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedInterfaces" tabindex="-1" aria-labelledby="modalEditRelatedinterfacesLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedInterfacesLabel">{{ _("Edit host interfaces") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects_form, edit_related_objects_form.interfaces) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="add-host-interfaces-button" class="btn btn-primary">{{ _("Add") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+
 {% endblock %}
 
 {% block script %}
     {{ super() }}
-    {{ load_bootstrap_table_js("issues-table", "issues.issue_show", "issue_id") }}
     {{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
     {{ load_bootstrap_table_js("credentials-table", "credentials.credential_show", "credential_id") }}
+    {{ load_bootstrap_table_js("issues-table", "issues.issue_show", "issue_id") }}
+    
     <script nonce="{{ csp_nonce() }}">
+
         $('#dns-table').bootstrapTable({
             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
         });
-    </script>
-    <script nonce="{{ csp_nonce() }}">
+        $("#interfaces-table").bootstrapTable({
+            columns: [
+            {
+                field: 'id',
+                title: "{{ models.Host.id.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input',
+            },
+            {
+                field: 'ip_address',
+                title: "{{ models.Host.ip_address.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input',
+            },
+            {
+                field: "title",
+                title: "{{ models.Host.title.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input',
+            },
+            {
+                field: 'description',
+                title: "{{ models.Host.description.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input',
+            },
+            {
+                field: 'technical',
+                title: "{{ models.Host.technical.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input',
+            }
+            ],
+            pagination: true,
+            filterControl: true,
+            showToggle: true,
+            showExport: true,
+            showMultiSort: true,
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            onClickRow: function(row, element, field) {
+                location = '{{ url_for("networks.host_show", host_id="__host_id") }}'.replace('__host_id', row.id)
+            },
+            cookie: true,
+            cookieIdTable: "InterfacesOnHost",
+            cookieStorage: "localStorage",
+            rowStyle: (row, index) => { return { css: { cursor: 'pointer' } } },
+        });
         $('#services-table').bootstrapTable({
             filterControl: true,
             disableUnusedSelectOptions: true,
@@ -411,35 +539,35 @@
                 title: '{{ models.Service.id.info["label"] }}',
                 sortable: true,
                 align: 'center',
-                filterControl: 'input'
+                filterControl: 'input',
             },
             {
                 field: 'title',
                 title: '{{ models.Service.title.info["label"] }}',
                 sortable: true,
                 align: 'center',
-                filterControl: 'input'
+                filterControl: 'input',
             },
             {
                 field: 'technical',
                 title: '{{ models.Service.technical.info["label"] }}',
                 sortable: true,
                 align: 'center',
-                filterControl: 'input'
+                filterControl: 'input',
             },
             {
                 field: 'port',
                 title: '{{ models.Service.port.info["label"] }}',
                 sortable: true,
                 align: 'center',
-                filterControl: 'input'
+                filterControl: 'input',
             },
             {
                 field: 'access_protocol.title-input',
                 title: '{{ models.Service.access_protocol.info["label"] }}',
                 sortable: true,
                 align: 'center',
-                filterControl: 'input'
+                filterControl: 'input',
             },
             ],
             showColumns: true,
@@ -452,18 +580,16 @@
             pagination: true,
             sidePagination: 'server',
             url: '{{ url_for("networks.service_to_host", host_id=host.id) }}',
-            rowStyle: serviceRowStyle,
             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
             onClickRow: function(row, element, field) {
                 location = '{{ url_for("networks.service_show", service_id="__service_id") }}'.replace('__service_id', row.id)
-            }
-        })
-    
-        function serviceRowStyle(row, index) {
-            return { css: {"cursor": 'pointer' } }
-        }
-    </script>
-    <script nonce="{{ csp_nonce() }}">
+            },
+            rowStyle: (row, index) => { return { css: { cursor: 'pointer' } } },
+            cookie: true,
+            cookieIdTable: "ServicesByHostShowPage",
+            cookieStorage: "localStorage",
+        });
+
         function dns_row_attributes(row, index) {
             return {'data-id': row.id};
         }
@@ -484,12 +610,23 @@
             let dns_type = document.getElementById('{{ dns_name_form.dns_type.id }}').value;
             hostSocket.emit('add dns name', {'title': dns_title, 'dns_type': dns_type});
             bootstrap.Modal.getInstance(document.getElementById('modalAddNewDNSname')).hide();
-        })
+        });
         hostSocket.on('edit dns names', function(data) {
             $(function() {
                 $('#dns-table').bootstrapTable('load', data.dns);
-            })
-        })
+            });
+        });
+        document.getElementById("add-host-interfaces-button").addEventListener('click', function() {
+            let new_interfaces = Array.from(document.getElementById("{{ edit_related_objects_form.interfaces.id }}").options) // Convert options to an array
+            .filter(option => option.selected)      // Filter selected options
+            .map(option => option.value);
+            hostSocket.emit('edit interfaces', {'interfaces': new_interfaces});
+            bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedInterfaces')).hide();
+        });
+        hostSocket.on("interfaces changed", function(data) {
+            $("#interfaces-table").bootstrapTable('load', data.interfaces);
+        });
+
 
         $(function() {
             $.contextMenu({

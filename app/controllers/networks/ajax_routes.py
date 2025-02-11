@@ -141,3 +141,29 @@ def services_by_port_data(port, transport_level_protocol):
                          .where(sa.and_(models.Network.project_id==project_id, models.Service.port == port, models.Service.transport_level_protocol_id == transport_level_protocol))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
+
+
+@bp.route('/hosts/get-select2-interfaces-data')
+@login_required
+def get_select2_hosts_interfaces_data():
+    try:
+        page = int(request.args.get('page'))
+    except TypeError:
+        page = 1
+    except ValueError:
+        abort(400)
+    try:
+        host_id = int(request.args.get('host_id'))
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == host_id)).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        abort(400)
+    project_role_can_make_action_or_abort(current_user, host, 'index')
+    query = request.args.get('term') if request.args.get('term') else ''
+    data = db.session.scalars(sa.select(models.Host).outerjoin(models.Host.from_network).where(sa.and_(models.Host.id != host.id, models.Network.project_id == host.from_network.project_id,
+                                                                                                  models.Host.ip_address.ilike("%" + query + "%")))
+                                                                                                  .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
+                                                                                                  .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
+    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request interfaces for host {host.id} via select2-data")
+    result = {'results': [{'id': i.id, 'text': str(i.ip_address)} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    return jsonify(result)

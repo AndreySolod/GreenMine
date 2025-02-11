@@ -16,7 +16,10 @@
                              data-side-pagination="server"
                              data-page-list="[10, 25, 50, 100, 500, All]"
                              data-url="{{ url_for('cves.cve_index_data') }}"
-                             data-row-style="cveRowStyle">
+                             data-row-style="cveRowStyle"
+                             data-cookie="true"
+                             data-cookie-id-table="CVEsIndex"
+                             data-cookie-storage="localStorage">
             <thead>
                 <tr>
                     <th data-field="id" data-sortable="true" data-align="center">#</th>

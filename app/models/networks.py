@@ -293,6 +293,11 @@ class Host(HasComment, db.Model, HasHistory):
                 continue
             i.interfaces.remove(interface)
         self.interfaces.remove(interface)
+    
+    def flush_interfaces(self):
+        self_ifaces = self.interfaces.copy()
+        for i in self_ifaces:
+            self.drop_interface(i)
 
     class Meta:
         verbose_name = _l("Host")

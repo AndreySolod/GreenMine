@@ -4,7 +4,12 @@
 {% block page_content %}
 <div class="row gutters">
     <div class="col-12">
-        <table class="table" id="objects-table" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+        <table class="table" id="objects-table" data-pagination="true" data-search="true"
+                             data-show-columns="true" data-show-toggle="true" data-show-export="true"
+                             data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary"
+                             data-cookie="true"
+                             data-cookie-id-table="AdminObjectIndex"
+                             data-cookie-storage="localStorage">
             <thead>
                 <tr>
                     <th data-field="class_name" data-sortable="true" data-align="center" data-filter-control="input">{{ _("The internal name of class") }}</th>
@@ -32,19 +37,6 @@
     $(function() {
         $('#objects-table').bootstrapTable({
                   icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-                  onPreBody: function(data) {
-                    var pageSizeData = localStorage.getItem("ObjectIndexPageSize");
-                    if (pageSizeData != null) {
-                        var pageSizeInt = parseInt(pageSizeData);
-                        if(isNaN(pageSizeInt)) {
-                            pageSizeInt = 500;
-                        }
-                        this.pageSize = pageSizeInt;
-                    }
-                },
-                onPageChange: function(pageNumber, pageSize) {
-                    localStorage.setItem("ObjectIndexPageSize", pageSize)
-                },
                   onClickRow: function(row, element, field) {
                     location = "{{ url_for('admin.object_type_index', object_type='__row_name') }}".replace("__row_name", row.class_name)
                   }

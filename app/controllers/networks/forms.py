@@ -3,11 +3,11 @@ import wtforms.validators as validators
 import ipaddress
 import flask_wtf.file as wtfile
 from app import db
-from app.controllers.forms import WysiwygField, FlaskForm, TreeSelectSingleField, Select2Field, TreeSelectMultipleField
+from app.controllers.forms import WysiwygField, FlaskForm, TreeSelectSingleField, Select2Field, TreeSelectMultipleField, Select2MultipleField
 from app.helpers.general_helpers import validates_port, validates_mac
 import app.models as models
 from flask_babel import lazy_gettext as _l
-from flask import g
+from flask import g, url_for
 import sqlalchemy as sa
 
 
@@ -211,3 +211,14 @@ class NewHostDNSnameForm(FlaskForm):
     dns_type = wtforms.StringField(_l("%(field_name)s:", field_name=models.HostDnsName.dns_type.info["label"]),
                                    id="NewHostDNStypeField", validators=[validators.Optional(),
                                             validators.Length(min=0, max=models.HostDnsName.dns_type.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.HostDnsName.dns_type.type.length))])
+
+
+class EditRelatedObjectsHostForm(FlaskForm):
+    def __init__(self, host: models.Host, *args, **kwargs):
+        super(EditRelatedObjectsHostForm, self).__init__(*args, **kwargs)
+        self.interfaces.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Host.id != host.id, models.Network.project_id == host.from_network.project_id)))]
+        self.interfaces.data = [str(i.id) for i in host.interfaces]
+        self.interfaces.locale = g.locale
+        self.interfaces.callback = url_for('networks.get_select2_hosts_interfaces_data', host_id=host.id)
+    interfaces = Select2MultipleField(models.Host, _l("%(field_name)s:", field_name=models.Host.interfaces.info["label"]), validators=[validators.Optional()],
+                                      id="editHostInterfaces", attr_title="treeselecttitle")

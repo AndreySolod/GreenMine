@@ -19,7 +19,10 @@
                 data-pagination="true"
                 data-side-pagination="server"
                 data-page-list="[10, 25, 50, 100, 500, All]"
-                data-row-style="hostsRowStyle">
+                data-row-style="hostsRowStyle"
+                data-cookie="true"
+                data-cookie-id-table="ExcludedHostsIndex"
+                data-cookie-storage="localStorage">
                 <tbody>
                     {% for host in hosts %}
                     <tr>
@@ -42,10 +45,6 @@
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
     $(function() {
-        var hide_columns_hosts = new Set(JSON.parse(localStorage.getItem("HostsExcludedIndexHideColumns")));
-          if(hide_columns_hosts === null) {
-            hide_columns_hosts = new Set();
-          };
         $('#hosts-table').bootstrapTable({
             columns: [
                 {
@@ -54,7 +53,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('id')),
                 },
                 {
                     field: 'title',
@@ -62,7 +60,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('title')),
                 },
                 {
                     field: 'from_network',
@@ -70,7 +67,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'select',
-                    visible: !(hide_columns_hosts.has('from_network')),
                 },
                 {
                     field: 'ip_address',
@@ -78,7 +74,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('ip_address')),
                 },
                 {
                     field: 'description',
@@ -86,33 +81,8 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('description')),
                 },
                 ],
-                onPreBody: function(data) {
-                    var pageSizeData = localStorage.getItem("HostsIndexPageSize");
-                    if (pageSizeData != null) {
-                        var pageSizeInt = parseInt(pageSizeData);
-                        if(isNaN(pageSizeInt)) {
-                            pageSizeInt = 500;
-                        }
-                        this.pageSize = pageSizeInt;
-                    }
-                },
-                onPageChange: function(pageNumber, pageSize) {
-                    localStorage.setItem("HostsIndexPageSize", pageSize)
-                },
-                onColumnSwitch: function(field, checked) {
-                    var hide_columns = new Set(JSON.parse(localStorage.getItem("HostsExcludedIndexHideColumns")));
-                    if(checked) {
-                        hide_columns.delete(field);
-                        localStorage.setItem("HostsExcludedIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    }
-                    else {
-                        hide_columns.add(field);
-                        localStorage.setItem("HostsExcludedIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    };
-                },
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 buttonsClass: 'primary',
                 exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],

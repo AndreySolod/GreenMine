@@ -125,7 +125,20 @@
             <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedServices" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related services') }}"><i class="fa-solid fa-link"></i></button>
             {% endif %}
             </div>
-            <table class="table" id="services-table" data-toolbar="#services-toolbar" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-button-class="primary" data-row-style="default_row_style">
+            <table class="table" id="services-table"
+                                 data-toolbar="#services-toolbar"
+                                 data-pagination="true"
+                                 data-search="true"
+                                 data-show-columns="true"
+                                 data-show-toggle="true"
+                                 data-show-export="true"
+                                 data-show-multi-sort="true"
+                                 data-filter-control="true"
+                                 data-button-class="primary"
+                                 data-row-style="default_row_style"
+                                 data-cookie="true"
+                                 data-cookie-id-table="ServiceByProjectTaskShow"
+                                 data-cookie-storage="localStorage">
               <thead>
                   <tr>
                       <th data-field="id" data-sortable="true" data-align="center">{{ models.Service.id.info["label"] }}</th>
@@ -160,7 +173,15 @@
             <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedIssues" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related issues') }}"><i class="fa-solid fa-link"></i></button>
             {% endif %}
             </div>
-            <table class="table" id="issues-table" data-pagination="true" data-toolbar="#issues-toolbar" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-button-class="primary" data-row-style="default_row_style">
+            <table class="table"  id="issues-table" data-pagination="true"
+                                  data-toolbar="#issues-toolbar"
+                                  data-search="true" data-show-columns="true"
+                                  data-show-toggle="true" data-show-export="true"
+                                  data-show-multi-sort="true" data-filter-control="true"
+                                  data-button-class="primary" data-row-style="default_row_style"
+                                  data-cookie="true"
+                                  data-cookie-id-table="IssuesByProjectTaskShow"
+                                  data-cookie-storage="localStorage">
               <thead>
                   <tr>
                       <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>

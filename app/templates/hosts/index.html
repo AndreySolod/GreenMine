@@ -32,7 +32,10 @@
                                         data-page-list="[10, 25, 50, 100, 500, All]"
                                         data-url="{{ url_for('networks.host_index_data', project_id=project.id) }}"
                                         data-row-style="hostsRowStyle"
-                                        data-toolbar="#hosts-toolbar">
+                                        data-toolbar="#hosts-toolbar"
+                                        data-cookie="true"
+                                        data-cookie-id-table="HostsIndex"
+                                        data-cookie-storage="localStorage">
                 </table>
             </div>
         </div>
@@ -43,39 +46,8 @@
 {% block script %}
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
-        var hide_columns_hosts = new Set(JSON.parse(localStorage.getItem("HostsIndexHideColumns"))); // -> Set('title')
-          if(hide_columns_hosts === null) {
-            hide_columns_hosts = new Set();
-          };
         $(function() {
             $('#hosts-table').bootstrapTable({
-                onPreBody: function(data) {
-
-                    var pageSizeData = localStorage.getItem("HostsIndexPageSize");
-                    
-                    if (pageSizeData != null) {
-        
-                        var pageSizeInt = parseInt(pageSizeData);
-                        if(isNaN(pageSizeInt)) {
-                            pageSizeInt = 500;
-                        }
-                        this.pageSize = pageSizeInt;
-                    }
-                },
-                onPageChange: function(pageNumber, pageSize) {
-                    localStorage.setItem("HostsIndexPageSize", pageSize)
-                },
-                onColumnSwitch: function(field, checked) {
-                    var hide_columns = new Set(JSON.parse(localStorage.getItem("HostsIndexHideColumns")));
-                    if(checked) {
-                        hide_columns.delete(field);
-                        localStorage.setItem("HostsIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    }
-                    else {
-                        hide_columns.add(field);
-                        localStorage.setItem("HostsIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    };
-                },
                 filterControl: true,
                 disableUnusedSelectOptions: true,
                 columns: [
@@ -85,7 +57,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('id')),
                 },
                 {
                     field: 'from_network',
@@ -94,7 +65,6 @@
                     align: 'center',
                     filterControl: 'select',
                     filterData: 'json:{{ filters["Network"]|escapejs }}',
-                    visible: !(hide_columns_hosts.has('from_network')),
                 },
                 {
                     field: 'title',
@@ -102,7 +72,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('title')),
                 },
                 {
                     field: 'description',
@@ -110,7 +79,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('description')),
                 },
                 {
                     field: 'ip_address',
@@ -118,7 +86,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('ip_address')),
                 },
                 {
                     field: 'mac',
@@ -126,7 +93,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('mac')),
                 },
                 {
                     field: 'operation_system_family',
@@ -135,7 +101,6 @@
                     align: 'center',
                     filterControl: 'select',
                     filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}',
-                    visible: !(hide_columns_hosts.has('operation_system_family')),
                 },
                 {
                     field: 'operation_system_gen',
@@ -143,7 +108,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('operation_system_gen')),
                 },
                 {
                     field: 'device_type',
@@ -152,7 +116,6 @@
                     align: 'center',
                     filterControl: 'select',
                     filterData: 'json:{{ filters["DeviceType"]|escapejs }}',
-                    visible: !(hide_columns_hosts.has('device_type')),
                 },
                 {
                     field: 'device_vendor',
@@ -161,7 +124,6 @@
                     align: 'center',
                     filterControl: 'select',
                     filterData: 'json:{{ filters["DeviceVendor"]|escapejs }}',
-                    visible: !(hide_columns_hosts.has('device_vendor')),
                 },
                 {
                     field: 'device_model.title-input',
@@ -169,7 +131,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns_hosts.has('device_model')),
                 }
                 ],
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
@@ -179,10 +140,6 @@
                         location = "{{ url_for('networks.host_show', **{'host_id': '__row_id'}) }}".replace("__row_id", row.id)
                     },
                     onExpandRow: function (index, row, $detail) {
-                        var hide_columns_services = new Set(JSON.parse(localStorage.getItem("ServicesByHostIndexHideColumns")));
-                        if(hide_columns_services === null) {
-                            hide_columns_services = new Set();
-                        };
                         $detail.html('<table></table>').find('table').bootstrapTable({
                             columns: [
                             {
@@ -191,7 +148,6 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'input',
-                                visible: !(hide_columns_services.has('id')),
                             },
                             {
                                 field: 'title',
@@ -199,7 +155,6 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'input',
-                                visible: !(hide_columns_services.has('title')),
                             },
                             {
                                 field: 'port',
@@ -207,7 +162,6 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'input',
-                                visible: !(hide_columns_services.has('port')),
                             },
                             {
                                 field: 'access_protocol.title-input',
@@ -215,7 +169,6 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'input',
-                                visible: !(hide_columns_services.has('access_protocol.title-input')),
                             },
                             {
                                 field: 'transport_level_protocol',
@@ -224,7 +177,6 @@
                                 align: 'center',
                                 filterControl: 'select',
                                 filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}',
-                                visible: !(hide_columns_services.has('transport_level_protocol')),
                             },
                             {
                                 field: 'port_state',
@@ -233,7 +185,6 @@
                                 align: 'center',
                                 filterControl: 'select',
                                 filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
-                                visible: !(hide_columns_services.has('port_state')),
                             },
                             {
                                 field: 'port_state_reason',
@@ -241,7 +192,6 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'input',
-                                visible: !(hide_columns_services.has('port_state_reason')),
                             }
                             ],
                             showColumns: true,
@@ -253,38 +203,15 @@
                             filterControl: true,
                             buttonsClass: 'primary',
                             pagination: true,
+                            cookie: true,
+                            cookieIdTable: "ServicesByHostIndex",
+                            cookieStorage: "localStorage",
                             sidePagination: 'server',
                             url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
                             rowStyle: (row, index) => { return {css: { "cursor": "pointer" }} },
                             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                             onClickRow: function(row, element, field) {
-                                location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
-                            },
-                            onPreBody: function(data) {
-
-                                var pageSizeData = localStorage.getItem("ServicesByHostIndexPageSize");
-                                if(isNaN(Number(pageSizeData))) {
-                                    pageSizeData = 500;
-                                };
-                                if (pageSizeData != null) {
-                    
-                                    var pageSizeInt = parseInt(pageSizeData);
-                                    this.pageSize = pageSizeInt;
-                                }
-                            },
-                            onPageChange: function(pageNumber, pageSize) {
-                                localStorage.setItem("ServicesByHostIndexPageSize", pageSize);
-                            },
-                            onColumnSwitch: function(field, checked) {
-                                var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesByHostIndexHideColumns")));
-                                if(checked) {
-                                    hide_columns.delete(field);
-                                    localStorage.setItem("ServicesByHostIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                                }
-                                else {
-                                    hide_columns.add(field);
-                                    localStorage.setItem("ServicesByHostIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                                };
+                                location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id);
                             },
                           })
                     }

@@ -116,7 +116,10 @@
                                              data-show-multi-sort="true" 
                                              data-buttons-class="primary"
                                              data-page-size="5"
-                                             data-toolbar="#hosts-toolbar">
+                                             data-toolbar="#hosts-toolbar"
+                                             data-cookie="true"
+                                             data-cookie-id-table="HostsByNetworkShow"
+                                             data-cookie-storage="localStorage">
                         </table>
                     </div>
                     {% endif %}
@@ -134,7 +137,10 @@
                                              data-show-export="true"
                                              data-show-multi-sort="true"
                                              data-filter-control="true"
-                                             data-buttons-class="primary">
+                                             data-buttons-class="primary"
+                                             data-cookie="true"
+                                             data-cookie-id-table="IssuesByNetworkShow"
+                                             data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.Issue.id.info["label"] }}</th>
@@ -171,7 +177,10 @@
                                              data-show-export="true"
                                              data-show-multi-sort="true"
                                              data-filter-control="true"
-                                             data-buttons-class="primary">
+                                             data-buttons-class="primary"
+                                             data-cookie="true"
+                                             data-cookie-id-table="TasksByNetworkShow"
+                                             data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>

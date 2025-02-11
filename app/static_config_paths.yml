@@ -46,6 +46,7 @@ libraries:
       - "js/bootstrap-table/extensions/export/libs/jsPDF/polyfills.umd.min.js"
       - "js/bootstrap-table/extensions/export/libs/pdfmake/pdfmake.min.js"
       - "js/bootstrap-table/extensions/export/tableExport.min.js"
+      - "js/bootstrap-table/extensions/cookie/bootstrap-table-cookie.min.js"
   notify:
     css:
       - "css/notifyjs/metro/notify-metro.css"

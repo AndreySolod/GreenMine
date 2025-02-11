@@ -15,7 +15,10 @@
                              data-pagination="true"
                              data-side-pagination="server"
                              data-page-list="[10, 25, 50, 100, 500, All]"
-                             data-url="{{ url_for('admin.object_type_index_data', object_type=object_type) }}">
+                             data-url="{{ url_for('admin.object_type_index_data', object_type=object_type) }}",
+                             data-cookie="true"
+                             data-cookie-id-table="AdminObjectTypeIndex{{ object_type }}"
+                             data-cookie-storage="localStorage">
             <thead>
                 <tr>
                     {% for attr_id, attr_name, attr_type, attr_data in attrs %}
@@ -46,19 +49,6 @@
         $('#objects-table').bootstrapTable({
                   icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                   rowStyle: { classes: "with-context-menu-object" },
-                  onPreBody: function(data) {
-                    var pageSizeData = localStorage.getItem("ObjectTypeIndexPageSize");
-                    if (pageSizeData != null) {
-                        var pageSizeInt = parseInt(pageSizeData);
-                        if(isNaN(pageSizeInt)) {
-                            pageSizeInt = 500;
-                        }
-                        this.pageSize = pageSizeInt;
-                    }
-                },
-                onPageChange: function(pageNumber, pageSize) {
-                    localStorage.setItem("ObjectTypeIndexPageSize", pageSize)
-                },
               });
       });
       $(function () {

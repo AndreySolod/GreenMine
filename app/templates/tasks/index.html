@@ -19,7 +19,10 @@
                                         data-show-pagination-switch="true"
                                         data-page-list="[10, 25, 50, 100, 500, All]"
                                         data-url="{{ url_for('tasks.projecttask_index_data', project_id=project.id) }}"
-                                        data-row-style="tasksRowStyle">
+                                        data-row-style="tasksRowStyle"
+                                        data-cookie="true"
+                                        data-cookie-id-table="ProjectTaskIndex"
+                                        data-cookie-storage="localStorage">
                 </table>
             </div>
         </div>
@@ -31,10 +34,6 @@
 {% block script %}
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
-        var hide_columns = new Set(JSON.parse(localStorage.getItem("ProjectTaskIndexHideColumns"))); // -> Set('title')
-          if(hide_columns === null) {
-            hide_columns = new Set();
-          };
         $(function() {
             $('#task-table').bootstrapTable({
                 columns: [
@@ -43,7 +42,6 @@
                     title: '#',
                     align: 'center',
                     sortable: true,
-                    visible: !(hide_columns.has('id')),
                 },
                 {
                     field: 'tracker',
@@ -52,7 +50,6 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["ProjectTaskTracker"]|escapejs }}',
-                    visible: !(hide_columns.has('tracker')),
                 },
                 {
                     field: 'title',
@@ -60,7 +57,6 @@
                     align: 'center',
                     sortable: true,
                     filterControl: 'input',
-                    visible: !(hide_columns.has('title')),
                 },
                 {
                     field: 'description',
@@ -68,7 +64,6 @@
                     align: 'center',
                     sortable: true,
                     filterControl: 'input',
-                    visible: !(hide_columns.has('description')),
                 },
                 {
                     field: 'priority',
@@ -77,7 +72,6 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["ProjectTaskPriority"]|escapejs }}',
-                    visible: !(hide_columns.has('priority')),
                 },
                 {
                     field: 'assigned_to',
@@ -86,7 +80,6 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["User"]|escapejs }}',
-                    visible: !(hide_columns.has('assigned_to')),
                 },
                 {
                     field: 'readiness',
@@ -94,7 +87,6 @@
                     align: 'center',
                     sortable: true,
                     filterControl: 'input',
-                    visible: !(hide_columns.has('readiness')),
                 },
                 {
                     field: 'state',
@@ -103,33 +95,8 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["TaskState"]|escapejs }}',
-                    visible: !(hide_columns.has('state')),
                 }
                 ],
-                onPreBody: function(data) {
-                    var pageSizeData = localStorage.getItem("ProjectTaskIndexPageSize");
-                    if (pageSizeData != null) {
-                        var pageSizeInt = parseInt(pageSizeData);
-                        if(isNaN(pageSizeInt)) {
-                            pageSizeInt = 500;
-                        }
-                        this.pageSize = pageSizeInt;
-                    }
-                },
-                onPageChange: function(pageNumber, pageSize) {
-                    localStorage.setItem("ProjectTaskIndexPageSize", pageSize)
-                },
-                onColumnSwitch: function(field, checked) {
-                    var hide_columns = new Set(JSON.parse(localStorage.getItem("ProjectTaskIndexHideColumns")));
-                    if(checked) {
-                        hide_columns.delete(field);
-                        localStorage.setItem("ProjectTaskIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    }
-                    else {
-                        hide_columns.add(field);
-                        localStorage.setItem("ProjectTaskIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    };
-                },
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 buttonsClass: 'primary',
                 exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],

@@ -198,6 +198,34 @@ def remove_dns_name_from_host(data):
          namespace='/host', to=current_room_name)
 
 
+@socketio.on('edit interfaces', namespace='/host')
+@authenticated_only
+def add_new_host_interface(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    current_room, _ = r
+    try:
+        host = db.session.scalars(sa.select(models.Host).where(models.Host.id == int(current_room))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        return None
+    if not project_role_can_make_action(current_user, host, 'update'):
+        return None
+    new_interfaces = db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(models.Host.id.in_(list(map(int, data['interfaces']))), models.Network.project_id==host.from_network.project_id)).all()
+    ifaces_ids = set(map(lambda x: x.id, host.interfaces))
+    ifaces_ids.update(set(map(lambda x: x.id, new_interfaces)))
+    ifaces_ids.add(host.id)
+    host.flush_interfaces()
+    for i in new_interfaces:
+        host.assign_interface(i)
+    db.session.commit()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related interfaces from host #{host.id}")
+    for i in ifaces_ids:
+        emit("interfaces changed", {"interfaces": [{"id": j.id, "title": j.title, "ip_address": str(j.ip_address), "description": sanitizer.pure_text(j.description),
+                                                    "technical": sanitizer.pure_text(j.technical)} for j in host.interfaces]}, namespace="/host", to=str(i))
+
+
+
 @socketio.on("join_room", namespace="/network")
 @authenticated_only
 def join_current_host_room(data):

@@ -16,7 +16,10 @@
                              data-pagination="true"
                              data-side-pagination="server"
                              data-page-list="[10, 25, 50, 100, 500, All]"
-                             data-url="{{ url_for('issues.exist_issue_data_index', project_id=project.id) }}">
+                             data-url="{{ url_for('issues.exist_issue_data_index', project_id=project.id) }}"
+                             data-cookie="true"
+                             data-cookie-id-table="IssuesExistIndex"
+                             data-cookie-storage="localStorage">
         </table>
     </div>
 </div>
@@ -25,10 +28,6 @@
 {% block script %}
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
-        var hide_columns = new Set(JSON.parse(localStorage.getItem("IssueExistIndexHideColumns"))); // -> Set('title')
-          if(hide_columns === null) {
-            hide_columns = new Set();
-          };
         $(function() {
           $('#issues-table').bootstrapTable('destroy').bootstrapTable({
                     filterControl: true,
@@ -41,7 +40,6 @@
                         sortable: true,
                         align: 'center',
                         filterControl: 'input',
-                        visible: true,
                     },
                     {
                         field:  "title",
@@ -49,7 +47,6 @@
                         filterControl: 'input',
                         sortable: true,
                         align: 'center',
-                        visible: !(hide_columns.has('title')),
                     },
                     {
                         field: 'description',
@@ -57,7 +54,6 @@
                         filterControl: 'input',
                         sortable: true,
                         align: 'center',
-                        visible: !(hide_columns.has('description')),
                     },
                     {
                         field: 'status.id-select',
@@ -66,7 +62,6 @@
                         filterData: 'json:{{ filters["IssueStatus"]|safe }}',
                         sortable: true,
                         align: 'center',
-                        visible: !(hide_columns.has('status.id-select')),
                     },
                     {
                         field: 'cvss',
@@ -74,7 +69,6 @@
                         filterControl: 'input',
                         sortable: true,
                         align: 'center',
-                        visible: !(hide_columns.has('cvss')),
                     },
                     {
                         field: 'cve',
@@ -82,33 +76,8 @@
                         filterControl: 'input',
                         sortable: true,
                         align: 'center',
-                        visible: !(hide_columns.has('title')),
                     }
                     ],
-                    onPreBody: function(data) {
-                        var pageSizeData = localStorage.getItem("IssueExistIndexPageSize");
-                        if (pageSizeData != null) {
-                            var pageSizeInt = parseInt(pageSizeData);
-                            if(isNaN(pageSizeInt)) {
-                                pageSizeInt = 500;
-                            }
-                            this.pageSize = pageSizeInt;
-                        }
-                    },
-                    onPageChange: function(pageNumber, pageSize) {
-                        localStorage.setItem("IssueExistIndexPageSize", pageSize)
-                    },
-                    onColumnSwitch: function(field, checked) {
-                        var hide_columns = new Set(JSON.parse(localStorage.getItem("IssueExistIndexHideColumns")));
-                        if(checked) {
-                            hide_columns.delete(field);
-                            localStorage.setItem("IssueExistIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                        }
-                        else {
-                            hide_columns.add(field);
-                            localStorage.setItem("IssueExistIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                        };
-                    },
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                     onClickRow: function(row, element, field) {
                           location = "{{ url_for('issues.issue_show', issue_id='__row_id') }}".replace("__row_id", row.id);

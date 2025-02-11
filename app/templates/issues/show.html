@@ -117,7 +117,19 @@
                         <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedServices" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related services') }}"><i class="fa-solid fa-link"></i></button>
                         {% endif %}
                         </div>
-                        <table class="table" id="services-table" data-toolbar="#services-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary">
+                        <table class="table" id="services-table" data-toolbar="#services-toolbar"
+                                             data-page-size="5"
+                                             data-pagination="true"
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true"
+                                             data-filter-control="true"
+                                             data-buttons-class="primary"
+                                             data-cookie="true"
+                                             data-cookie-id-table="ServicesByIssueShow"
+                                             data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.Service.id.info["label"] }}</th>
@@ -152,7 +164,20 @@
                         <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedTasks" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related tasks') }}"><i class="fa-solid fa-link"></i></button>
                         {% endif %}
                         </div>
-                        <table class="table" id="tasks-table" data-toolbar="#tasks-toolbar" data-page-size="5" data-pagination="true" data-search="true" data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true" data-filter-control="true" data-buttons-class="primary" data-row-style="default_row_style">
+                        <table class="table" id="tasks-table" data-toolbar="#tasks-toolbar"
+                                             data-page-size="5"
+                                             data-pagination="true"
+                                             data-search="true" 
+                                            data-show-columns="true"
+                                            data-show-toggle="true"
+                                            data-show-export="true"
+                                            data-show-multi-sort="true"
+                                            data-filter-control="true"
+                                            data-buttons-class="primary"
+                                            data-row-style="default_row_style"
+                                            data-cookie="true"
+                                            data-cookie-id-table="TasksByIssueShow"
+                                            data-cookie-storage="localStorage">
                             <thead>
                                 <tr>
                                     <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTask.id.info["label"] }}</th>

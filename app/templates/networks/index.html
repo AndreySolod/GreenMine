@@ -41,41 +41,16 @@
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
         $(function() {
-            var hide_columns = new Set(JSON.parse(localStorage.getItem("NetworkIndexHideColumns")));
-            if(hide_columns === null) {
-                hide_columns = new Set();
-            };
             $('#networks-table').bootstrapTable({
-                onPreBody: function(data) {
-                    var pageSizeData = localStorage.getItem("NetworkIndexPageSize");
-                    if (pageSizeData != null) {
-                        var pageSizeInt = parseInt(pageSizeData);
-                        if(isNaN(pageSizeInt)) {
-                            pageSizeInt = 500;
-                        }
-                        this.pageSize = pageSizeInt;
-                    }
-                },
-                onPageChange: function(pageNumber, pageSize) {
-                    localStorage.setItem("NetworkIndexPageSize", pageSize)
-                },
+                cookie: true,
+                cookieIdTable: "NetworkIndex",
+                cookieStorage: "localStorage",
                 onLoadSuccess: function(data) {
                     $('#networks-table > tbody > tr').mousedown(event => {
                         if(event.button === 1) {
                             window.open("{{ url_for('networks.network_show', network_id='__network_id') }}".replace("__network_id", $(event.currentTarget).parent().parent().bootstrapTable('getData')[$(event.currentTarget).data('index')].id), "_blank");
                         };
                      });
-                },
-                onColumnSwitch: function(field, checked) {
-                    var hide_columns = new Set(JSON.parse(localStorage.getItem("NetworkIndexHideColumns")));
-                    if(checked) {
-                        hide_columns.delete(field);
-                        localStorage.setItem("NetworkIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    }
-                    else {
-                        hide_columns.add(field);
-                        localStorage.setItem("NetworkIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                    };
                 },
                 rowStyle: (row, index) => {
                     return { classes: "with-context-menu-networks", css: {"cursor": 'pointer' } }
@@ -89,7 +64,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('id')),
                 },
                 {
                     field: 'title',
@@ -97,7 +71,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('title')),
                 },
                 {
                     field: 'description',
@@ -105,7 +78,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('description')),
                 },
                 {
                     field: 'ip_address',
@@ -113,7 +85,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('ip_address')),
                 },
                 {
                     field: 'internal_ip',
@@ -121,7 +92,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('internal_ip')),
                 },
                 {
                     field: 'asn',
@@ -129,7 +99,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('asn')),
                 },
                 {
                     field: 'connect_cmd',
@@ -137,7 +106,6 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
-                    visible: !(hide_columns.has('connect_cmd')),
                 }
                 ],
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
@@ -147,41 +115,16 @@
                     location = "{{ url_for('networks.network_show', network_id='__row_id') }}".replace("__row_id", row.id)
                 },
                 onExpandRow: function (index, row, $detail) {
-                    var hide_columns = new Set(JSON.parse(localStorage.getItem("HostByNetworkIndexHideColumns")));
-                    if(hide_columns === null) {
-                        hide_columns = new Set();
-                    };
                     $detail.html('<table class="hosts-table"></table>').find('table').bootstrapTable({
-                        onPreBody: function(data) {
-                            var pageSizeData = localStorage.getItem("HostByNetworkPageSize");
-                            if (pageSizeData != null) {
-                                var pageSizeInt = parseInt(pageSizeData);
-                                if(isNaN(pageSizeInt)) {
-                                    pageSizeInt = 500;
-                                }
-                                this.pageSize = pageSizeInt;
-                            }
-                        },
-                        onPageChange: function(pageNumber, pageSize) {
-                            localStorage.setItem("HostByNetworkPageSize", pageSize)
-                        },
+                        cookie: true,
+                        cookieIdTable: "HostByNetworkOnNetworkIndex",
+                        cookieStorage: "localStorage",
                         onLoadSuccess: function(data) {
                             $('.hosts-table > tbody > tr').mousedown(event => { 
                                 if(event.button === 1) {
                                     window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", event.currentTarget.children[1].innerHTML), "_blank");
                                 };
                              });
-                        },
-                        onColumnSwitch: function(field, checked) {
-                            var hide_columns = new Set(JSON.parse(localStorage.getItem("HostByNetworkIndexHideColumns")));
-                            if(checked) {
-                                hide_columns.delete(field);
-                                localStorage.setItem("HostByNetworkIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                            }
-                            else {
-                                hide_columns.add(field);
-                                localStorage.setItem("HostByNetworkIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                            };
                         },
                         columns: [
                         {
@@ -190,7 +133,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('id')),
                         },
                         {
                             field: 'title',
@@ -198,7 +140,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('title')),
                         },
                         {
                             field: 'description',
@@ -206,7 +147,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('description')),
                         },
                         {
                             field: 'ip_address',
@@ -214,7 +154,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('ip_address')),
                         },
                         {
                             field: 'mac',
@@ -222,7 +161,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('mac')),
                         },
                         {
                             field: 'operation_system_family',
@@ -231,7 +169,6 @@
                             align: 'center',
                             filterControl: 'select',
                             filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}',
-                            visible: !(hide_columns.has('operation_system_family')),
                         },
                         {
                             field: 'operation_system_gen',
@@ -239,7 +176,6 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'input',
-                            visible: !(hide_columns.has('operation_system_gen')),
                         },
                         {
                             field: 'device_type',
@@ -248,7 +184,6 @@
                             align: 'center',
                             filterControl: 'select',
                             filterData: 'json:{{ filters["DeviceType"]|escapejs }}',
-                            visible: !(hide_columns.has('device_type')),
                         },
                         {
                             field: 'device_vendor',
@@ -257,7 +192,6 @@
                             align: 'center', 
                             filterControl: 'select',
                             filterData: 'json:{{ filters["DeviceVendor"]|escapejs }}',
-                            visible: !(hide_columns.has('device_vendor')),
                         }
                         ],
                         showColumns: true,
@@ -279,35 +213,7 @@
                             },
                         detailView: true,
                         onExpandRow: function (index, row, $detail) {
-                            var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesByHostIndexHideColumns")));
-                            if(hide_columns === null) {
-                                hide_columns = new Set();
-                            };
                             $detail.html('<table></table>').find('table').bootstrapTable({
-                                onPreBody: function(data) {
-                                    var pageSizeData = localStorage.getItem("ServicesByHostIndexPageSize");
-                                    if (pageSizeData != null) {
-                                        var pageSizeInt = parseInt(pageSizeData);
-                                        if(isNaN(pageSizeInt)) {
-                                            pageSizeInt = 500;
-                                        }
-                                        this.pageSize = pageSizeInt;
-                                    }
-                                },
-                                onPageChange: function(pageNumber, pageSize) {
-                                    localStorage.setItem("ServicesByHostIndexPageSize", pageSize)
-                                },
-                                onColumnSwitch: function(field, checked) {
-                                    var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesByHostIndexHideColumns")));
-                                    if(checked) {
-                                        hide_columns.delete(field);
-                                        localStorage.setItem("ServicesByHostIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                                    }
-                                    else {
-                                        hide_columns.add(field);
-                                        localStorage.setItem("ServicesByHostIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
-                                    };
-                                },
                                 columns: [
                                 {
                                     field: 'id',
@@ -315,7 +221,6 @@
                                     sortable: true,
                                     align: 'center',
                                     filterControl: 'input',
-                                    visible: !(hide_columns.has('id')),
                                 },
                                 {
                                     field: 'title',
@@ -323,7 +228,6 @@
                                     sortable: true,
                                     align: 'center',
                                     filterControl: 'input',
-                                    visible: !(hide_columns.has('title')),
                                 },
                                 {
                                     field: 'port',
@@ -331,7 +235,6 @@
                                     sortable: true,
                                     align: 'center',
                                     filterControl: 'input',
-                                    visible: !(hide_columns.has('port')),
                                 },
                                 {
                                     field: 'access_protocol.title-input',
@@ -339,7 +242,6 @@
                                     sortable: true,
                                     align: 'center',
                                     filterControl: 'input',
-                                    visible: !(hide_columns.has('access_protocol.title-input')),
                                 },
                                 {
                                     field: 'transport_level_protocol',
@@ -348,7 +250,6 @@
                                     align: 'center',
                                     filterControl: 'select',
                                     filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}',
-                                    visible: !(hide_columns.has('transport_level_protocol')),
                                 },
                                 {
                                     field: 'port_state',
@@ -357,7 +258,6 @@
                                     align: 'center',
                                     filterControl: 'select',
                                     filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
-                                    visible: !(hide_columns.has('port_state')),
                                 },
                                 {
                                     field: 'port_state_reason',
@@ -365,7 +265,6 @@
                                     sortable: true,
                                     align: 'center',
                                     filterControl: 'input',
-                                    visible: !(hide_columns.has('port_state_reason')),
                                 }
                                 ],
                                 showColumns: true,
@@ -377,6 +276,9 @@
                                 buttonsClass: 'primary',
                                 pagination: true,
                                 sidePagination: 'server',
+                                cookie: true,
+                                cookieIdTable: "ServiceByHostNetworkIndex",
+                                cookieStorage: "localStorage",
                                 url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
                                 rowStyle: (row, index) => {
                                     return { css: {"cursor": 'pointer' } }
