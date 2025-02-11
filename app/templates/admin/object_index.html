@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
 
 {% block page_content %}
 <div class="row gutters">
@@ -30,18 +31,20 @@
     <script nonce="{{ csp_nonce() }}">
     $(function() {
         $('#objects-table').bootstrapTable({
-                  icons: {"columns": "fa-solid fa-list-ul",
-                          "fullscreen": "fa-solid fa-arrows-up-down-left-right",
-                          "detailOpen": "fa-solid fa-plus",
-                          "detailClose": "fa-solid fa-minus",
-                          "paginationSwitchDown": "fa-solid fa-square-caret-down",
-                          "paginationSwitchUp": "fa-solid fa-square-caret-up",
-                          "toggleOff": "fa-solid fa-toggle-off",
-                          "toggleOn": "fa-solid fa-toggle-on",
-                          "export": "fa-solid fa-file-export",
-                          "sort": "fa-solid fa-sort",
-                          "plus": "fa-solid fa-plus",
-                          "minus": "fa-solid fa-minus"},
+                  icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                  onPreBody: function(data) {
+                    var pageSizeData = localStorage.getItem("ObjectIndexPageSize");
+                    if (pageSizeData != null) {
+                        var pageSizeInt = parseInt(pageSizeData);
+                        if(isNaN(pageSizeInt)) {
+                            pageSizeInt = 500;
+                        }
+                        this.pageSize = pageSizeInt;
+                    }
+                },
+                onPageChange: function(pageNumber, pageSize) {
+                    localStorage.setItem("ObjectIndexPageSize", pageSize)
+                },
                   onClickRow: function(row, element, field) {
                     location = "{{ url_for('admin.object_type_index', object_type='__row_name') }}".replace("__row_name", row.class_name)
                   }

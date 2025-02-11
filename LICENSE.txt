@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2021 Invuls / Pentest projects
+Copyright (c) 2025 NekiyUser / GreenMine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,3 +22,5 @@ SOFTWARE.
 
 Installed plugins:
 - Material-Kanban-Board (https://github.com/McRange/Material-Kanban-Board): MIT
+- JQuery-contextMenu (https://github.com/swisnl/jQuery-contextMenu): MIT
+- bootstrap-table (https://github.com/wenzhixin/bootstrap-table): MIT

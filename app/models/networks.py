@@ -176,7 +176,7 @@ class HostDnsName(db.Model):
 
 @project_enumerated_object
 class HostStatus(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
     string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
 

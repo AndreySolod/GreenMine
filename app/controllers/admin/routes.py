@@ -168,6 +168,7 @@ def object_type_index(object_type):
                 attr_field_types.append(None)
                 attr_field_values.append(None)
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
     return render_template('admin/object_type_index.html', **ctx,
                            attrs=list(zip(attr_name, attr_titles, attr_field_types, attr_field_values)),
                            object_type=object_type)

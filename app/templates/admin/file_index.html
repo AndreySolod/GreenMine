@@ -57,12 +57,12 @@ $.contextMenu({
     selector: '.with-context-menu',
     callback: function(key, options) {
         if(key === 'download'){
-            document.getElementById('file_download_iframe').src = "{{ url_for('files.download_file', file_id='__file_id') }}".replace('__file_id', options.$trigger[0].children[0].textContent);
+            document.getElementById('file_download_iframe').src = "{{ url_for('files.download_file', file_id='__file_id') }}".replace('__file_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id);
         }
         else if(key === 'delete') {
             let headers = new Headers();
             headers.append('X-CSRFToken', '{{ csrf_token() }}');
-            fetch("{{ url_for('admin.files_delete', file_id='__file_id') }}".replace('__file_id', options.$trigger[0].children[0].textContent), {
+            fetch("{{ url_for('admin.files_delete', file_id='__file_id') }}".replace('__file_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), {
                 method: 'DELETE',
                 headers: headers,
             }).then(response => { if (response.ok) { return response.json() } else { alert("Невозможно удалить указанный файл. Попробуйте перезагрузить страницу") } })

@@ -43,6 +43,10 @@
 {% block script %}
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
+        var hide_columns_hosts = new Set(JSON.parse(localStorage.getItem("HostsIndexHideColumns"))); // -> Set('title')
+          if(hide_columns_hosts === null) {
+            hide_columns_hosts = new Set();
+          };
         $(function() {
             $('#hosts-table').bootstrapTable({
                 onPreBody: function(data) {
@@ -61,6 +65,17 @@
                 onPageChange: function(pageNumber, pageSize) {
                     localStorage.setItem("HostsIndexPageSize", pageSize)
                 },
+                onColumnSwitch: function(field, checked) {
+                    var hide_columns = new Set(JSON.parse(localStorage.getItem("HostsIndexHideColumns")));
+                    if(checked) {
+                        hide_columns.delete(field);
+                        localStorage.setItem("HostsIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                    }
+                    else {
+                        hide_columns.add(field);
+                        localStorage.setItem("HostsIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                    };
+                },
                 filterControl: true,
                 disableUnusedSelectOptions: true,
                 columns: [
@@ -69,7 +84,8 @@
                     title: "#",
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('id')),
                 },
                 {
                     field: 'from_network',
@@ -77,35 +93,40 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'select',
-                    filterData: 'json:{{ filters["Network"]|escapejs }}'
+                    filterData: 'json:{{ filters["Network"]|escapejs }}',
+                    visible: !(hide_columns_hosts.has('from_network')),
                 },
                 {
                     field: 'title',
                     title: '{{ models.Host.title.info["label"] }}',
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('title')),
                 },
                 {
                     field: 'description',
                     title: '{{ models.Host.description.info["label"] }}',
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('description')),
                 },
                 {
                     field: 'ip_address',
                     title: '{{ models.Host.ip_address.info["label"] }}',
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('ip_address')),
                 },
                 {
                     field: 'mac',
                     title: '{{ models.Host.mac.info["label"] }}',
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('mac')),
                 },
                 {
                     field: 'operation_system_family',
@@ -113,14 +134,16 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'select',
-                    filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}'
+                    filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}',
+                    visible: !(hide_columns_hosts.has('operation_system_family')),
                 },
                 {
                     field: 'operation_system_gen',
                     title: '{{ models.Host.operation_system_gen.info["label"] }}',
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('operation_system_gen')),
                 },
                 {
                     field: 'device_type',
@@ -128,7 +151,8 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'select',
-                    filterData: 'json:{{ filters["DeviceType"]|escapejs }}'
+                    filterData: 'json:{{ filters["DeviceType"]|escapejs }}',
+                    visible: !(hide_columns_hosts.has('device_type')),
                 },
                 {
                     field: 'device_vendor',
@@ -136,14 +160,16 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'select',
-                    filterData: 'json:{{ filters["DeviceVendor"]|escapejs }}'
+                    filterData: 'json:{{ filters["DeviceVendor"]|escapejs }}',
+                    visible: !(hide_columns_hosts.has('device_vendor')),
                 },
                 {
                     field: 'device_model.title-input',
                     title: '{{ models.Host.device_model.info["label"] }}',
                     sortable: true,
                     align: 'center',
-                    filterControl: 'input'
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('device_model')),
                 }
                 ],
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
@@ -153,6 +179,10 @@
                         location = "{{ url_for('networks.host_show', **{'host_id': '__row_id'}) }}".replace("__row_id", row.id)
                     },
                     onExpandRow: function (index, row, $detail) {
+                        var hide_columns_services = new Set(JSON.parse(localStorage.getItem("ServicesByHostIndexHideColumns")));
+                        if(hide_columns_services === null) {
+                            hide_columns_services = new Set();
+                        };
                         $detail.html('<table></table>').find('table').bootstrapTable({
                             columns: [
                             {
@@ -160,28 +190,32 @@
                                 title: '#',
                                 sortable: true,
                                 align: 'center',
-                                filterControl: 'input'
+                                filterControl: 'input',
+                                visible: !(hide_columns_services.has('id')),
                             },
                             {
                                 field: 'title',
                                 title: '{{ models.Service.title.info["label"] }}',
                                 sortable: true,
                                 align: 'center',
-                                filterControl: 'input'
+                                filterControl: 'input',
+                                visible: !(hide_columns_services.has('title')),
                             },
                             {
                                 field: 'port',
                                 title: '{{ models.Service.port.info["label"] }}',
                                 sortable: true,
                                 align: 'center',
-                                filterControl: 'input'
+                                filterControl: 'input',
+                                visible: !(hide_columns_services.has('port')),
                             },
                             {
                                 field: 'access_protocol.title-input',
                                 title: '{{ models.Service.access_protocol.info["label"] }}',
                                 sortable: true,
                                 align: 'center',
-                                filterControl: 'input'
+                                filterControl: 'input',
+                                visible: !(hide_columns_services.has('access_protocol.title-input')),
                             },
                             {
                                 field: 'transport_level_protocol',
@@ -189,7 +223,8 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'select',
-                                filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}'
+                                filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}',
+                                visible: !(hide_columns_services.has('transport_level_protocol')),
                             },
                             {
                                 field: 'port_state',
@@ -197,14 +232,16 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'select',
-                                filterData: 'json:{{ filters["ServicePortState"]|escapejs }}'
+                                filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
+                                visible: !(hide_columns_services.has('port_state')),
                             },
                             {
                                 field: 'port_state_reason',
                                 title: "{{ models.Service.port_state_reason.info['label'] }}",
                                 sortable: true,
                                 align: 'center',
-                                filterControl: 'input'
+                                filterControl: 'input',
+                                visible: !(hide_columns_services.has('port_state_reason')),
                             }
                             ],
                             showColumns: true,
@@ -237,6 +274,17 @@
                             },
                             onPageChange: function(pageNumber, pageSize) {
                                 localStorage.setItem("ServicesByHostIndexPageSize", pageSize);
+                            },
+                            onColumnSwitch: function(field, checked) {
+                                var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesByHostIndexHideColumns")));
+                                if(checked) {
+                                    hide_columns.delete(field);
+                                    localStorage.setItem("ServicesByHostIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                                }
+                                else {
+                                    hide_columns.add(field);
+                                    localStorage.setItem("ServicesByHostIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                                };
                             },
                           })
                     }
@@ -289,21 +337,21 @@
                 selector: '.with-context-menu-host',
                 callback: function (key, options) {
                     if (key === 'open') {
-                        window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", options.$trigger[0].children[1].textContent), '_blank');
+                        window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank');
                     }
                     else if(key === 'edit') {
-                        window.open("{{ url_for('networks.host_edit', host_id='__host_id') }}".replace('__host_id', options.$trigger[0].children[1].textContent), '_blank');
+                        window.open("{{ url_for('networks.host_edit', host_id='__host_id') }}".replace('__host_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank');
                     }
                     else if(key === 'exclude') {
-                        hostsSocket.emit('exclude host', { host_id: options.$trigger[0].children[1].textContent });
+                        hostsSocket.emit('exclude host', { host_id: options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id });
                     }
                     else if (key === 'delete') {
                         if(confirm("{{ _('Are you sure you want to delete this host?') }}")) {
-                            hostsSocket.emit("delete host", {'host_id': options.$trigger[0].children[1].textContent});
+                            hostsSocket.emit("delete host", {'host_id': options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id});
                         }
                     }
                     else if (key === 'copy_ip') {
-                        navigator.clipboard.writeText(options.$trigger[0].children[4].textContent)
+                        navigator.clipboard.writeText(options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].ip_address)
                     }
                 },
                 items: {

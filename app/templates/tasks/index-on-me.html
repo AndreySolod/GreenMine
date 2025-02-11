@@ -20,18 +20,6 @@
                                         data-show-pagination-switch="true"
                                         data-url="{{ url_for('tasks.projecttask_index_on_me_data', project_id=project.id) }}"
                                         data-row-style="issueRowStyle">
-                    <thead>
-                        <tr>
-                            <th data-field="id" data-sortable="true" data-align="center">#</th>
-                            <th data-field="tracker" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProjectTaskTracker"]|safe }}'>{{ models.ProjectTask.tracker.info['label'] }}</th>
-                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.title.info["label"] }}</th>
-                            <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.description.info["label"] }}</th>
-                            <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["ProjectTaskPriority"]|safe }}'>{{ models.ProjectTask.priority.info["label"] }}</th>
-                            <th data-field="assigned_to" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["User"]|safe }}'>{{ models.ProjectTask.assigned_to.info["label"] }}</th>
-                            <th data-field="readiness" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTask.readiness.info["label"] }}</th>
-                            <th data-field="state" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["TaskState"]|safe }}'>{{ models.ProjectTask.state.info["label"] }}</th>
-                        </tr>
-                    </thead>
                 </table>
             </div>
         </div>
@@ -44,22 +32,94 @@
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
         $(function() {
-            var CookieName = "ProjectTaskIndexPageSize";
+            var hide_columns = new Set(JSON.parse(localStorage.getItem("ProjectTaskIndexHideColumns"))); // -> Set('title')
+            if(hide_columns === null) {
+                hide_columns = new Set();
+            };
             $('#task-table').bootstrapTable({
+                columns: [
+                {
+                    field: 'id',
+                    title: '#',
+                    align: 'center',
+                    sortable: true,
+                    visible: !(hide_columns.has('id')),
+                },
+                {
+                    field: 'tracker',
+                    title: "{{ models.ProjectTask.tracker.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["ProjectTaskTracker"]|escapejs }}',
+                    visible: !(hide_columns.has('tracker')),
+                },
+                {
+                    field: 'title',
+                    title: '{{ models.ProjectTask.title.info["label"] }}',
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input',
+                    visible: !(hide_columns.has('title')),
+                },
+                {
+                    field: 'description',
+                    title: '{{ models.ProjectTask.description.info["label"] }}',
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input',
+                    visible: !(hide_columns.has('description')),
+                },
+                {
+                    field: 'priority',
+                    title: '{{ models.ProjectTask.priority.info["label"] }}',
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["ProjectTaskPriority"]|escapejs }}',
+                    visible: !(hide_columns.has('priority')),
+                },
+                {
+                    field: 'readiness',
+                    title: "{{ models.ProjectTask.readiness.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input',
+                    visible: !(hide_columns.has('readiness')),
+                },
+                {
+                    field: 'state',
+                    title: "{{ models.ProjectTask.state.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["TaskState"]|escapejs }}',
+                    visible: !(hide_columns.has('state')),
+                }
+                ],
                 onPreBody: function(data) {
-
-                    var pageSizeCookie = Cookies.get(CookieName);
-                    if(isNaN(Number(pageSizeCookie))) {
-                        pageSizeCookie = 10;
-                    };
-                    if (pageSizeCookie != null) {
-        
-                        var pageSizeInt = parseInt(pageSizeCookie);
+                    var pageSizeData = localStorage.getItem("ProjectTaskIndexPageSize");
+                    if (pageSizeData != null) {
+                        var pageSizeInt = parseInt(pageSizeData);
+                        if(isNaN(pageSizeInt)) {
+                            pageSizeInt = 500;
+                        }
                         this.pageSize = pageSizeInt;
                     }
                 },
                 onPageChange: function(pageNumber, pageSize) {
-                    Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                    localStorage.setItem("ProjectTaskIndexPageSize", pageSize)
+                },
+                onColumnSwitch: function(field, checked) {
+                    var hide_columns = new Set(JSON.parse(localStorage.getItem("ProjectTaskIndexHideColumns")));
+                    if(checked) {
+                        hide_columns.delete(field);
+                        localStorage.setItem("ProjectTaskIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                    }
+                    else {
+                        hide_columns.add(field);
+                        localStorage.setItem("ProjectTaskIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                    };
                 },
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 buttonsClass: 'primary',

@@ -62,7 +62,3 @@ libraries:
     js:
       - "js/jquery.contextMenu.js"
       - "js/jquery.ui.position.min.js"
-  js_cookie:
-    css:
-    js:
-      - "npm/node_modules/js-cookie/dist/js.cookie.min.js"

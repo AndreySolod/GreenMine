@@ -496,10 +496,7 @@
                 selector: '.with-context-menu-dnsnames',
                 callback: function(key, options) {
                     if(key === 'copy') {
-                        navigator.clipboard.writeText(options.$trigger[0].children[0].textContent)
-                        .then(() => {
-                            // Success!
-                        })
+                        navigator.clipboard.writeText(options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].title);
                     }
                     else if (key === 'delete') {
                       let dns_id = options.$trigger[0].getAttribute('data-id');

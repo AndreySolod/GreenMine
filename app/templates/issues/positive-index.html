@@ -1,5 +1,5 @@
 {% extends 'layout/base.html' %}
-{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
 
 
 {% block page_content %}
@@ -16,8 +16,7 @@
                              data-pagination="true"
                              data-side-pagination="server"
                              data-page-list="[10, 25, 50, 100, 500, All]"
-                             data-url="{{ url_for('issues.positive_issue_data_index', project_id=project.id) }}"
-                             data-row-style="issueRowStyle">
+                             data-url="{{ url_for('issues.positive_issue_data_index', project_id=project.id) }}">
         </table>
     </div>
 </div>
@@ -27,6 +26,10 @@
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
         $(function() {
+            var hide_columns = new Set(JSON.parse(localStorage.getItem("IssuePositiveIndexHideColumns"))); // -> Set('title')
+            if(hide_columns === null) {
+                hide_columns = new Set();
+            };
           $('#issues-table').bootstrapTable('destroy').bootstrapTable({
                     filterControl: true,
                     disableUnusedSelectOptions: true,
@@ -37,7 +40,8 @@
                         title: "#",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: true,
                     },
                     {
                         field:  "title",
@@ -45,13 +49,15 @@
                         filterControl: 'input',
                         sortable: true,
                         align: 'center',
+                        visible: !(hide_columns.has('title')),
                     },
                     {
                         field: 'description',
                         title: '{{ Issue.description.info["label"] }}',
                         filterControl: 'input',
                         sortable: true,
-                        align: 'center'
+                        align: 'center',
+                        visible: !(hide_columns.has('description')),
                     },
                     {
                         field: 'status.id-select',
@@ -59,42 +65,56 @@
                         filterControl: 'select',
                         filterData: 'json:{{ filters["IssueStatus"]|safe }}',
                         sortable: true,
-                        align: 'center'
+                        align: 'center',
+                        visible: !(hide_columns.has('status.id-select')),
                     },
                     {
                         field: 'cvss',
                         title: '{{ Issue.cvss.info["label"] }}',
                         filterControl: 'input',
                         sortable: true,
-                        align: 'center'
+                        align: 'center',
+                        visible: !(hide_columns.has('cvss')),
                     },
                     {
                         field: 'cve',
                         title: '{{ Issue.cve.info["label"] }}',
                         filterControl: 'input',
                         sortable: true,
-                        align: 'center'
+                        align: 'center',
+                        visible: !(hide_columns.has('cve')),
                     }
                     ],
-                    icons: {"columns": "fa-solid fa-list-ul",
-                            "fullscreen": "fa-solid fa-arrows-up-down-left-right",
-                            "detailOpen": "fa-solid fa-plus",
-                            "detailClose": "fa-solid fa-minus",
-                            "paginationSwitchDown": "fa-solid fa-square-caret-down",
-                            "paginationSwitchUp": "fa-solid fa-square-caret-up",
-                            "toggleOff": "fa-solid fa-toggle-off",
-                            "toggleOn": "fa-solid fa-toggle-on",
-                            "export": "fa-solid fa-file-export",
-                            "sort": "fa-solid fa-sort",
-                            "plus": "fa-solid fa-plus",
-                            "minus": "fa-solid fa-minus"},
+                    onPreBody: function(data) {
+                        var pageSizeData = localStorage.getItem("IssuePositiveIndexPageSize");
+                        if (pageSizeData != null) {
+                            var pageSizeInt = parseInt(pageSizeData);
+                            if(isNaN(pageSizeInt)) {
+                                pageSizeInt = 500;
+                            }
+                            this.pageSize = pageSizeInt;
+                        }
+                    },
+                    onPageChange: function(pageNumber, pageSize) {
+                        localStorage.setItem("IssuePositiveIndexPageSize", pageSize)
+                    },
+                    onColumnSwitch: function(field, checked) {
+                        var hide_columns = new Set(JSON.parse(localStorage.getItem("IssuePositiveIndexHideColumns")));
+                        if(checked) {
+                            hide_columns.delete(field);
+                            localStorage.setItem("IssuePositiveIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                        }
+                        else {
+                            hide_columns.add(field);
+                            localStorage.setItem("IssuePositiveIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                        };
+                    },
+                    icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                     onClickRow: function(row, element, field) {
                           location = "{{ url_for('issues.issue_show', issue_id='__row_id') }}".replace("__row_id", row.id);
-                    }
+                    },
+                    rowStyle: (row, index) => {return { css: { cursor: 'pointer' } }},
                 })
         });
-        function issueRowStyle(row, index) {
-            return { css: {"cursor": 'pointer' } }
-        }
       </script>
 {% endblock %}

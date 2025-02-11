@@ -20,15 +20,6 @@
                 data-side-pagination="server"
                 data-page-list="[10, 25, 50, 100, 500, All]"
                 data-row-style="hostsRowStyle">
-                <thead>
-                    <tr>
-                        <th data-field="id" data-sortable="true" data-align="center">{{ models.Host.id.info["label"] }}</th>
-                        <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.title.info['label'] }}</th>
-                        <th data-field="from_network" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Host.from_network.info['label'] }}</th>
-                        <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.ip_address.info['label'] }}</th>
-                        <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.description.info['label'] }}</th>
-                    </tr>
-                </thead>
                 <tbody>
                     {% for host in hosts %}
                     <tr>
@@ -51,22 +42,76 @@
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
     $(function() {
-        var CookieName = "HostsIndexPageSize";
+        var hide_columns_hosts = new Set(JSON.parse(localStorage.getItem("HostsExcludedIndexHideColumns")));
+          if(hide_columns_hosts === null) {
+            hide_columns_hosts = new Set();
+          };
         $('#hosts-table').bootstrapTable({
+            columns: [
+                {
+                    field: "id",
+                    title: "#",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('id')),
+                },
+                {
+                    field: 'title',
+                    title: '{{ models.Host.title.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('title')),
+                },
+                {
+                    field: 'from_network',
+                    title: '{{ models.Host.from_network.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'select',
+                    visible: !(hide_columns_hosts.has('from_network')),
+                },
+                {
+                    field: 'ip_address',
+                    title: '{{ models.Host.ip_address.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('ip_address')),
+                },
+                {
+                    field: 'description',
+                    title: '{{ models.Host.description.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input',
+                    visible: !(hide_columns_hosts.has('description')),
+                },
+                ],
                 onPreBody: function(data) {
-
-                    var pageSizeCookie = Cookies.get(CookieName);
-                    if(isNaN(Number(pageSizeCookie))) {
-                        pageSizeCookie = 10;
-                    };
-                    if (pageSizeCookie != null) {
-        
-                        var pageSizeInt = parseInt(pageSizeCookie);
+                    var pageSizeData = localStorage.getItem("HostsIndexPageSize");
+                    if (pageSizeData != null) {
+                        var pageSizeInt = parseInt(pageSizeData);
+                        if(isNaN(pageSizeInt)) {
+                            pageSizeInt = 500;
+                        }
                         this.pageSize = pageSizeInt;
                     }
                 },
                 onPageChange: function(pageNumber, pageSize) {
-                    Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                    localStorage.setItem("HostsIndexPageSize", pageSize)
+                },
+                onColumnSwitch: function(field, checked) {
+                    var hide_columns = new Set(JSON.parse(localStorage.getItem("HostsExcludedIndexHideColumns")));
+                    if(checked) {
+                        hide_columns.delete(field);
+                        localStorage.setItem("HostsExcludedIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                    }
+                    else {
+                        hide_columns.add(field);
+                        localStorage.setItem("HostsExcludedIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                    };
                 },
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 buttonsClass: 'primary',
@@ -88,13 +133,13 @@
             selector: '.with-context-menu-hosts',
             callback: function (key, options) {
                 if (key === 'open') {
-                    window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", options.$trigger[0].children[0].textContent), '_blank').focus();
+                    window.open("{{ url_for('networks.host_show', host_id='__host_id') }}".replace("__host_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus();
                 }
                 else if(key === 'edit') {
-                    window.open("{{ url_for('networks.host_edit', host_id='__host_id') }}".replace('__host_id', options.$trigger[0].children[0].textContent), '_blank').focus();
+                    window.open("{{ url_for('networks.host_edit', host_id='__host_id') }}".replace('__host_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus();
                 }
                 else if (key === 'include') {
-                    hostsSocket.emit('include to research', {host_id: options.$trigger[0].children[0].textContent});
+                    hostsSocket.emit('include to research', {host_id: options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id});
                 };
             },
             items: {

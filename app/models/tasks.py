@@ -53,6 +53,7 @@ class TaskState(db.Model):
         verbose_name = _l("Task status")
         verbose_name_plural = _l("Task statuses")
         title_new = _l("Add task status")
+        description = _l("Used to mark the current stage of the task.")
         column_index = ['id', 'string_slug', 'title', 'color', 'description']
 
 
@@ -72,6 +73,7 @@ class ProjectTaskPriority(db.Model):
         verbose_name = _l("Task priority")
         verbose_name_plural = _l("Task priorities")
         title_new = _l("Add new task priority")
+        description = _l("It is used to simplify filtering by issue")
         column_index = ['id', 'string_slug', 'title', 'description', 'color', 'is_default']
 
 
@@ -85,6 +87,7 @@ class ProjectTaskTracker(db.Model):
         verbose_name = _l("Task tracker")
         verbose_name_plural = _l("Task trackers")
         title_new = _l("Add new task tracker")
+        description = _l("It is used to simplify filtering by issue")
         column_index = ['id', 'string_slug', 'title']
 
 

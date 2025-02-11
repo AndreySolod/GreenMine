@@ -47,7 +47,10 @@
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
         $(function() {
-        var CookieName = "ServicesIndexPageSize";
+        var hide_columns = new Set(JSON.parse(localStorage.getItem("ServiceIndexHideColumns"))); // -> Set('title')
+          if(hide_columns === null) {
+            hide_columns = new Set();
+          };
           $('#service-table').bootstrapTable({
                     filterControl: true,
                     disableUnusedSelectOptions: true,
@@ -58,35 +61,40 @@
                         title: "{{ models.Service.id.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('id')),
                     },
                     {
                         field: 'title',
                         title: "{{ models.Service.title.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('title')),
                     },
                     {
                         field: 'host.ip_address-input',
                         title: "{{ models.Service.host.entity.class_.ip_address.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('host.ip_address-input')),
                     },
                     {
                         field: 'port',
                         title: "{{ models.Service.port.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('port')),
                     },
                     {
                         field: 'access_protocol.title-input',
                         title: "{{ models.Service.access_protocol.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('access_protocol.title-input')),
                     },
                     {
                         field: 'transport_level_protocol',
@@ -94,14 +102,16 @@
                         sortable: true,
                         align: 'center',
                         filterControl: 'select',
-                        filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}'
+                        filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}',
+                        visible: !(hide_columns.has('transport_level_protocol')),
                     },
                     {
                         field: 'technical',
                         title: "{{ models.Service.technical.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('technical')),
                     },
                     {
                         field: 'port_state',
@@ -109,14 +119,16 @@
                         sortable: true,
                         align: 'center',
                         filterControl: 'select',
-                        filterData: 'json:{{ filters["ServicePortState"]|escapejs }}'
+                        filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
+                        visible: !(hide_columns.has('port_state')),
                     },
                     {
                         field: 'port_state_reason',
                         title: "{{ models.Service.port_state_reason.info['label'] }}",
                         sortable: true,
                         align: 'center',
-                        filterControl: 'input'
+                        filterControl: 'input',
+                        visible: !(hide_columns.has('port_state_reason')),
                     }
                     ],
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
@@ -124,29 +136,33 @@
                         location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id);
                     },
                     onPreBody: function(data) {
-
-                        var pageSizeCookie = Cookies.get(CookieName);
-                        if(isNaN(Number(pageSizeCookie))) {
-                            pageSizeCookie = 10;
-                        };
-                        if (pageSizeCookie != null) {
-            
-                            var pageSizeInt = parseInt(pageSizeCookie);
+                        var pageSizeData = localStorage.getItem("ServicesIndexPageSize");
+                        if (pageSizeData != null) {
+                            var pageSizeInt = parseInt(pageSizeData);
+                            if(isNaN(pageSizeInt)) {
+                                pageSizeInt = 500;
+                            }
                             this.pageSize = pageSizeInt;
                         }
                     },
                     onPageChange: function(pageNumber, pageSize) {
-                        Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                        localStorage.setItem("ServicesIndexPageSize", pageSize)
                     },
+                    onColumnSwitch: function(field, checked) {
+                        var hide_columns = new Set(JSON.parse(localStorage.getItem("ServiceIndexHideColumns")));
+                        if(checked) {
+                            hide_columns.delete(field);
+                            localStorage.setItem("ServiceIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                        }
+                        else {
+                            hide_columns.add(field);
+                            localStorage.setItem("ServiceIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                        };
+                    },
+                    rowStyle: (row, index) => {return { classes: "with-context-menu-service", css: { cursor: 'pointer' } }},
                 })
-        })
-      </script>
-      <script nonce="{{ csp_nonce() }}">
-        function serviceRowStyle(row, index) {
-            return { classes: "with-context-menu-service", css: {"cursor": 'pointer' } }
-        }
-      </script>
-      <script nonce="{{ csp_nonce() }}">
+        });
+
         function find_position(id_name) {
             let obj = document.getElementById('service-table').rows[0].cells
             for(let i = 0; i < obj.length; i++) {
@@ -154,7 +170,7 @@
                     return i
                 }
             }
-        }
+        };
         function special_export(export_type) {
             let ignore_columns = [];
             let ip_position = find_position('host.ip_address-input');
@@ -191,10 +207,10 @@
                 selector: '.with-context-menu-service',
                 callback: function (key, options) {
                     if (key === 'open') {
-                        window.open("{{ url_for('networks.service_show', service_id='__service_id') }}".replace("__service_id", options.$trigger[0].children[0].textContent), '_blank')
+                        window.open("{{ url_for('networks.service_show', service_id='__service_id') }}".replace("__service_id", $('#service-table').bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank')
                     }
                     else if(key === 'edit') {
-                        window.open("{{ url_for('networks.service_edit', service_id='__service_id') }}".replace('__service_id', options.$trigger[0].children[0].textContent), '_blank').focus()
+                        window.open("{{ url_for('networks.service_edit', service_id='__service_id') }}".replace('__service_id', $('#service-table').bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus()
                     }
                 },
                 items: {

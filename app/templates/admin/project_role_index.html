@@ -57,12 +57,12 @@ $(function() {
         },
         callback: function(key, options) {
             if(key === 'edit') {
-                window.location.href = "{{ url_for('admin.project_role_edit', role_id='__role_id') }}".replace('__role_id', options.$trigger[0].children[0].textContent)
+                window.location.href = "{{ url_for('admin.project_role_edit', role_id='__role_id') }}".replace('__role_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id)
             }
             else if(key === 'delete') {
                 if(confirm("{{ _('Are you sure you want to delete this role?') }}")) {
                     let f = document.getElementById('{{ form_id }}');
-                    f.action = "{{ url_for('admin.project_role_delete', role_id='__role_id') }}".replace('__role_id', options.$trigger[0].children[0].textContent);
+                    f.action = "{{ url_for('admin.project_role_delete', role_id='__role_id') }}".replace('__role_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id);
                     f.submit();
                 }
             }

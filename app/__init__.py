@@ -56,7 +56,7 @@ automation_modules = AutomationModules()
 babel = Babel()
 csp = CSPManager()
 sanitizer = TextSanitizerManager()
-side_libraries = SideLibraries(libraries_file=Path(__file__).parent / "static_config_paths.yml", always_required_libraries=['notify', 'socketio', 'js_cookie'])
+side_libraries = SideLibraries(libraries_file=Path(__file__).parent / "static_config_paths.yml", always_required_libraries=['notify', 'socketio'])
 
 class FlaskGreenMine(Flask):
     def setting_custom_attributes_for_application(self):

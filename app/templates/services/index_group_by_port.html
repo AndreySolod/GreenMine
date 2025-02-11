@@ -31,7 +31,10 @@
 {% block script %}
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
-    
+    var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesGroupByPortIndexHideColumns"))); // -> Set('title')
+          if(hide_columns === null) {
+            hide_columns = new Set();
+          };
     $(function() {
         let services_toolbar_table = `<div id="services-toolbar">
                     <div class="dropdown">
@@ -45,22 +48,19 @@
                     </div>
                 </div>`;
         var service_transport_level_protocol_filters = JSON.parse('{{ filters["reversed_TransportLevelProtocol"]|escapejs }}');
-        var CookieName = "ServiceByPortIndexPageSize";
         $('#services-table').bootstrapTable({
             onPreBody: function(data) {
-
-                var pageSizeCookie = Cookies.get(CookieName);
-                if(isNaN(Number(pageSizeCookie))) {
-                    pageSizeCookie = 10;
-                };
-                if (pageSizeCookie != null) {
-    
-                    var pageSizeInt = parseInt(pageSizeCookie);
+                var pageSizeData = localStorage.getItem("ServiceByPortIndexPageSize");
+                if (pageSizeData != null) {
+                    var pageSizeInt = parseInt(pageSizeData);
+                    if(isNaN(pageSizeInt)) {
+                        pageSizeInt = 500;
+                    }
                     this.pageSize = pageSizeInt;
                 }
             },
             onPageChange: function(pageNumber, pageSize) {
-                Cookies.set(CookieName, pageSize, { expires: 30, path: window.location.pathname });
+                localStorage.setItem("ServiceByPortIndexPageSize", pageSize)
             },
             filterControl: true,
                 disableUnusedSelectOptions: true,
@@ -92,8 +92,8 @@
                 showColumns: true,
                 detailView: true,
                 onExpandRow: function(index, row, $detail) {
-                    var stt = services_toolbar_table.replace("__port_number", row.port_number).replace("__transport_level_protocol", row.transport_level_protocol)
-                    var table_id = `service-table-${row.port_number}-${row.transport_level_protocol}`
+                    var stt = services_toolbar_table.replace("__port_number", row.port_number).replace("__transport_level_protocol", row.transport_level_protocol);
+                    var table_id = `service-table-${row.port_number}-${row.transport_level_protocol}`;
                     $detail.html(`<table id="${table_id}"></table>` + stt).find('table').bootstrapTable({
                         columns: [
                         {
@@ -101,35 +101,40 @@
                             title: "{{ models.Service.id.info['label'] }}",
                             sortable: true,
                             align: 'center',
-                            filterControl: 'input'
+                            filterControl: 'input',
+                            visible: !(hide_columns.has('id')),
                         },
                         {
                             field: 'title',
                             title: "{{ models.Service.title.info['label'] }}",
                             sortable: true,
                             align: 'center',
-                            filterControl: 'input'
+                            filterControl: 'input',
+                            visible: !(hide_columns.has('title')),
                         },
                         {
                             field: 'technical',
                             title: "{{ models.Service.technical.info['label'] }}",
                             sortable: true,
                             align: 'center',
-                            filterControl: 'input'
+                            filterControl: 'input',
+                            visible: !(hide_columns.has('technical')),
                         },
                         {
                             field: 'host.ip_address-input',
                             title: "{{ models.Service.host.entity.class_.ip_address.info['label'] }}",
                             sortable: true,
                             align: 'center',
-                            filterControl: 'input'
+                            filterControl: 'input',
+                            visible: !(hide_columns.has('host.ip_address-input')),
                         },
                         {
                             field: 'access_protocol.title-input',
                             title: "{{ models.Service.access_protocol.info['label'] }}",
                             sortable: true,
                             align: 'center',
-                            filterControl: 'input'
+                            filterControl: 'input',
+                            visible: !(hide_columns.has('access_protocol.title-input')),
                         },
                         {
                             field: 'port_state',
@@ -137,14 +142,16 @@
                             sortable: true,
                             align: 'center',
                             filterControl: 'select',
-                            filterData: 'json:{{ filters["ServicePortState"]|escapejs }}'
+                            filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
+                            visible: !(hide_columns.has('port_state')),
                         },
                         {
                             field: 'port_state_reason',
                             title: "{{ models.Service.port_state_reason.info['label'] }}",
                             sortable: true,
                             align: 'center',
-                            filterControl: 'input'
+                            filterControl: 'input',
+                            visible: !(hide_columns.has('port_state_reason')),
                         }
                         ],
                         showColumns: true,
@@ -163,7 +170,18 @@
                         icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                         onClickRow: function(row, element, field) {
                             location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
-                        }
+                        },
+                        onColumnSwitch: function(field, checked) {
+                            var hide_columns = new Set(JSON.parse(localStorage.getItem("ServicesGroupByPortIndexHideColumns")));
+                            if(checked) {
+                                hide_columns.delete(field);
+                                localStorage.setItem("ServicesGroupByPortIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                            }
+                            else {
+                                hide_columns.add(field);
+                                localStorage.setItem("ServicesGroupByPortIndexHideColumns", JSON.stringify(Array.from(hide_columns)));
+                            };
+                        },
                     })
                 }
         })
@@ -176,10 +194,10 @@
             selector: '.with-context-menu-service',
             callback: function (key, options) {
                 if (key === 'open') {
-                    window.open("{{ url_for('networks.service_show', service_id='__service_id') }}".replace("__service_id", options.$trigger[0].children[0].textContent), '_blank')
+                    window.open("{{ url_for('networks.service_show', service_id='__service_id') }}".replace("__service_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank')
                 }
                 else if(key === 'edit') {
-                    window.open("{{ url_for('networks.service_edit', service_id='__service_id') }}".replace('__service_id', options.$trigger[0].children[0].textContent), '_blank').focus()
+                    window.open("{{ url_for('networks.service_edit', service_id='__service_id') }}".replace('__service_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus()
                 }
             },
             items: {

@@ -68,6 +68,7 @@ class ProgrammingLanguageClass(db.Model):
         verbose_name = _l("A class of programming languages")
         verbose_name_plural = _l("Classes of programming languages")
         title_new = _l("Add a new class of programming languages")
+        description = _l("It is used to group programming languages")
         column_index = ['id', 'string_slug', 'title', 'programming_languages']
 
 
@@ -95,6 +96,7 @@ class ProgrammingLanguage(db.Model):
         verbose_name = _l("Programming language")
         verbose_name_plural = _l("Programming languages")
         title_new = _l("Add new programming language")
+        description = _l("It is used to indicate to CKEditor the need to mark a block of code with the appropriate language for further coloring of the code")
         column_index = ['id', 'string_slug', 'title', 'alias', 'is_default', 'language_class.title-select']
 
 
