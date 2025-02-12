@@ -92,12 +92,7 @@ class DefaultSidebar:
         se3 = SidebarElement(_l("State objects"), url_for('admin.status_index'), "fa-solid fa-satellite", address in ['status_type_transits', 'status_index'], sels3)
         sel41 = SidebarElementSublink(_l("All issue templates"), url_for('admin.issue_template_index'), address=='issue_template_index')
         sel42 = SidebarElementSublink(_l("Add new issue template"), url_for('admin.issue_template_new'), address=='issue_template_new')
-        if obj.__class__.__name__ == 'IssueTemplate':
-            sel43 = SidebarElementSublink(_l("Issue template #%(templ_id)s", templ_id=obj.id), url_for('admin.issue_template_show', template_id=obj.id), address=="issue_template_show")
-            sel44 = SidebarElementSublink(_l("Edit issue template #%(templ_id)s", templ_id=obj.id), url_for('admin.issue_template_edit', template_id=obj.id), address=='issue_template_edit')
-            se4 = SidebarElement(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), models.IssueTemplate.Meta.icon, address.startswith('issue_template'), [sel41, sel42, sel43, sel44])
-        else:
-            se4 = SidebarElement(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), models.IssueTemplate.Meta.icon, address.startswith('issue_template'), [sel41, sel42])
+        se4 = SidebarElement(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), models.IssueTemplate.Meta.icon, address.startswith('issue_template'), [sel41, sel42])
         sel51 = SidebarElementSublink(_l("All files"), url_for('admin.admin_file_index'), address=="admin_file_index")
         se5 = SidebarElement(models.FileData.Meta.verbose_name_plural, url_for('admin.admin_file_index'), models.FileData.Meta.icon, address=='admin_file_index')
         sel61 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), address=='background_tasks_index')
@@ -109,13 +104,7 @@ class DefaultSidebar:
         se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address in ['project_role_index', 'project_role_new', 'project_role_edit', 'project_role_permissions'], [sel71, sel72, sel73])
         sel81 = SidebarElementSublink(_l("All project task templates"), url_for('admin.task_template_index'), address=='task_template_index')
         sel82 = SidebarElementSublink(_l("Add new project task template"), url_for('admin.task_template_new'), address=='task_template_new')
-        if obj.__class__.__name__ == 'ProjectTaskTemplate':
-            sel83 = SidebarElementSublink(_l("Project task template #%(templ_id)s", templ_id=obj.id), url_for('admin.task_template_show', template_id=obj.id), address=="task_template_show")
-            sel84 = SidebarElementSublink(_l("Edit project task template #%(templ_id)s", templ_id=obj.id), url_for('admin.task_template_edit', template_id=obj.id), address=='task_template_edit')
-            se8 = SidebarElement(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), models.ProjectTaskTemplate.Meta.icon, address.startswith('task_template'), [sel81, sel82, sel83, sel84])
-        else:
-            se8 = SidebarElement(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), models.ProjectTaskTemplate.Meta.icon, address.startswith('task_template'), [sel81, sel82])
-        
+        se8 = SidebarElement(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), models.ProjectTaskTemplate.Meta.icon, address.startswith('task_template'), [sel81, sel82])
         sel91 = SidebarElementSublink(_l("All report templates"), url_for('admin.report_templates_index'), address=='report_templates_index')
         sel92 = SidebarElementSublink(_l("Add new report template"), url_for('admin.report_templates_new'), address=='report_templates_new')
         se9 = SidebarElement(models.ProjectReportTemplate.Meta.verbose_name_plural, url_for('admin.report_templates_index'), models.ProjectReportTemplate.Meta.icon, address.startswith('report_templates'), [sel91, sel92])

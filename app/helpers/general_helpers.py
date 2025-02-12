@@ -29,6 +29,7 @@ import importlib
 import logging
 from flask_babel import lazy_gettext as _l
 from flask_migrate import upgrade
+from pathlib import Path
 
 
 def validates_ip(address: str, error_msg: str = _l("Incorrect IP-address"), error_type: Exception = ValueError) -> str:
@@ -655,6 +656,24 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                 if u.preferred_language is None:
                     u.preferred_language = db.session.scalars(sa.select(ApplicationLanguage).where(ApplicationLanguage.string_slug == 'auto')).one()
         
+        def create_issue_templates():
+            ''' Check if all issue templates are exist in database, and if not exist - create them '''
+            from app.models import IssueTemplate
+            root = Path(app.root_path).parent / 'default_database_value'
+            init_db_val_file = root / 'issue_templates.yml'
+            with open(init_db_val_file, 'r') as f:
+                read_data = yaml.load(f, Loader=yaml.FullLoader)
+            for template_slug, template_attrs in read_data.items():
+                templ = db.session.scalars(sa.select(IssueTemplate).where(IssueTemplate.string_slug == template_slug)).first()
+                if templ is None:
+                    logger.warning(f'Issue template "{template_slug}" is missing. Created one')
+                    templ = IssueTemplate(string_slug=template_slug)
+                    for attr_name, attr_value in template_attrs.items():
+                        setattr(templ, attr_name, attr_value)
+                    db.session.add(templ)
+                    db.session.commit()
+
+        
         #Application languages
         try:
             auto_language = db.session.scalars(sa.select(ApplicationLanguage).where(ApplicationLanguage.string_slug == 'auto')).one()
@@ -704,3 +723,5 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             logger.error("Database instance is not exist. Try call 'FLASK_APP=GreenMine flask db upgrade' in the command line")
             sys.exit(1)
         
+        # issue templates
+        create_issue_templates()

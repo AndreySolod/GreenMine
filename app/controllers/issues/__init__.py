@@ -36,13 +36,6 @@ def sidebar(current_object, act: str, **kwargs) -> SidebarElement:
     if project_role_can_make_action(current_user, Issue(), 'create', project=proj):
         sel2 = SidebarElementSublink(_l("Add new issue"), url_for('issues.issue_new', project_id=proj.id), con=='Issue' and act=='new')
         sels.append(sel2)
-    if con == 'Issue' and act not in ['index', 'positive-index', 'exist-index', 'new']:
-        if project_role_can_make_action(current_user, current_object, 'show'):
-            sel3 = SidebarElementSublink(current_object.fulltitle, url_for('issues.issue_show', issue_id=current_object.id), act=='show')
-            sels.append(sel3)
-        if project_role_can_make_action(current_user, current_object, 'update'):
-            sel4 = SidebarElementSublink(_l("Edit issue #%(issue_id)s", issue_id=current_object.id), url_for('issues.issue_edit', issue_id=current_object.id), act=='edit')
-            sels.append(sel4)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Issues"), url_for('issues.issue_index', project_id=proj.id), Issue.Meta.icon_index, con=='Issue', sels)

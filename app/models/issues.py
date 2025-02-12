@@ -102,6 +102,7 @@ class IssueHasTask(db.Model):
 class Issue(HasComment, db.Model, HasHistory):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
     archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
+    by_template_slug: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Created by template")}) # Used for create issue from nmap scripts
     created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={"label": _l("Created at")})
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys="Issue.created_by_id", info={'label': _l("Created by")}) # type: ignore
@@ -171,6 +172,16 @@ class IssueTemplate(db.Model):
     issue_cvss: so.Mapped[Optional[float]] = so.mapped_column(info={'label': _l('Issue CVSS')})
     issue_cve_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CriticalVulnerability.id, ondelete='SET NULL'), info={'label': _l('Issue CVE')})
     issue_cve: so.Mapped['CriticalVulnerability'] = so.relationship(lazy='joined', info={'label': _l('Issue CVE')})
+
+    def create_issue_by_template(self) -> Issue:
+        issue = Issue(title = self.issue_title, description=self.issue_description, fix=self.issue_fix)
+        issue.technical = self.issue_technical
+        issue.riscs = self.issue_riscs
+        issue.references = self.issue_references
+        issue.cvss = self.issue_cvss
+        issue.cve_id = self.issue_cve_id
+        issue.by_template_slug = self.string_slug
+        return issue
 
     class Meta:
         verbose_name = _l('Issue template')

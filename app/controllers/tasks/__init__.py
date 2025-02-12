@@ -38,13 +38,6 @@ def sidebar(current_object, act: str, **kwargs) -> Optional[SidebarElement]:
     if project_role_can_make_action(current_user, ProjectTask(), 'create', project=proj):
         sel23 = SidebarElementSublink(_l("Add new task"), url_for('tasks.projecttask_new', project_id=proj.id), con=='ProjectTask' and act=='new')
         sels.append(sel23)
-    if con == 'ProjectTask' and act not in ['index', 'index_on_me', 'new', 'kanban-board']:
-        if project_role_can_make_action(current_user, current_object, 'show'):
-            sel24 = SidebarElementSublink(_l("Task #%(task_id)s", task_id=current_object.id), url_for('tasks.projecttask_show', projecttask_id=current_object.id), act=='show')
-            sels.append(sel24)
-        if project_role_can_make_action(current_user, current_object, 'update'):
-            sel25 = SidebarElementSublink(_l("Edit task #%(task_id)s", task_id=current_object.id), url_for('tasks.projecttask_edit', projecttask_id=current_object.id), act=='edit')
-            sels.append(sel25)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Tasks"), url_for('tasks.projecttask_index', project_id=proj.id), ProjectTask.Meta.icon_index, con=='ProjectTask', sels)

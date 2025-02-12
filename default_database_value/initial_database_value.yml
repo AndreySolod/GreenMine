@@ -17,6 +17,18 @@ User:
             - haskell
         is_administrator: true
         _function__set_password: "admin"
+    - worker:
+        login: "worker"
+        first_name: "Worker"
+        last_name: "GreenMine"
+        middle_name: "Black-Skin"
+        email: "worker@localhost.com"
+        manager: admin
+        is_administrator: false
+        position: worker
+        programming_language_theme: tomorrow-night-bright
+        _function__set_password: "worker"
+
 
 UserPosition:
     - admin:
@@ -498,11 +510,11 @@ ProjectTaskPriority:
         color: "rgba(176, 0, 0, 0.35)"
     - emergency:
         title: "Срочный"
-        description: "1"
+        description: "Возможна эксплуатация уязвимости злоумышленниками"
         color: "rgba(176, 0, 0, 0.5)"
     - immediate:
         title: "Немедленный"
-        description: "2"
+        description: "Данная уязвимость уже активно эксплуатируется злоумышленниками"
         color: "rgba(176, 0, 0, 0.8)"
 
 ProjectTaskTracker:
@@ -657,7 +669,7 @@ IssueStatus:
         color: "#7FFFD4"
     - confirmed:
         title: "Подтверждена"
-        description: "Присутствие проблемы подтверждено"
+        description: "Проблема действительно присутствует"
         color: "#FF4500"
     - notconfirmed:
         title: "Не подтверждена"

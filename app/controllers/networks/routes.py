@@ -117,7 +117,7 @@ def host_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'title', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
+    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'title', 'technical', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
                          'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)

@@ -14,6 +14,10 @@
                             <td>{{ models.IssueTemplate.title.info["label"] }}:</td>
                             <td>{{ template.title|safe }}</td>
                         </tr>
+                        <tr>
+                            <td>{{ models.IssueTemplate.string_slug.info["label"] }}:</td>
+                            <td>{{ template.string_slug }}</td>
+                        </tr>
                     </tbody>
                 </table>
                 <h5>{{ models.IssueTemplate.description.info["label"] }}:</h5>

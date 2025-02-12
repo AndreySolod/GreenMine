@@ -22,6 +22,7 @@ class IssueTemplateForm(FlaskForm):
         super(IssueTemplateForm, self).__init__(*args, **kwargs)
         self.issue_cve_id.choices = [('0', '')] + session.execute(db.select(CriticalVulnerability.id, CriticalVulnerability.title)).all()
     title = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=IssueTemplate.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(IssueTemplate.title.type.length)))])
+    string_slug = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.string_slug.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=IssueTemplate.string_slug.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(IssueTemplate.string_slug.type.length)))])
     description = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.description.info["label"]), validators=[validators.Optional()])
     issue_title = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.issue_title.info["label"]), validators=required_validators(Issue.title))
     issue_description = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.issue_description.info["label"]), validators=required_validators(Issue.description))

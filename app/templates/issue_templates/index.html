@@ -31,13 +31,13 @@
                 {% for template in templates %}
                 <tr style="cursor:pointer">
                     <td>{{ template.id }}</td>
-                    <td>{{ template.title }}</td>
-                    <td>{{ BeautifulSoup(template.description, "lxml").text }}</td>
-                    <td>{{ template.issue_title }}</td>
-                    <td>{{ BeautifulSoup(template.issue_description, "lxml").text }}</td>
-                    <td>{{ BeautifulSoup(template.issue_fix, "lxml").text }}</td>
-                    <td>{{ BeautifulSoup(template.issue_technical, "lxml").text }}</td>
-                    <td>{{ BeautifulSoup(template.issue_riscs, "lxml").text }}</td>
+                    <td>{{ template.title|safe }}</td>
+                    <td>{{ sanitizer.pure_text(template.description) }}</td>
+                    <td>{{ template.issue_title|safe }}</td>
+                    <td>{{ sanitizer.pure_text(template.issue_description) }}</td>
+                    <td>{{ sanitizer.pure_text(template.issue_fix) }}</td>
+                    <td>{{ sanitizer.pure_text(template.issue_technical) }}</td>
+                    <td>{{ sanitizer.pure_text(template.issue_riscs) }}</td>
                     {% if template.issue_cvss != none %}
                     <td>{{ template.issue_cvss }}</td>
                     {% else %}

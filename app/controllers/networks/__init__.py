@@ -33,13 +33,6 @@ def sidebar_network(current_object, act: str, **kwargs) -> Optional[SidebarEleme
     if project_role_can_make_action(current_user, Network(), 'create', project=proj):
         sel32 = SidebarElementSublink(_l("Add new network"), url_for('networks.network_new', project_id=proj.id), con=="Network" and act=='new')
         sels.append(sel32)
-    if con == "Network" and act not in ['index', 'new']:
-        if project_role_can_make_action(current_user, current_object, 'show'):
-            sel33 = SidebarElementSublink(current_object.fulltitle, url_for('networks.network_show', network_id=current_object.id), act=='show')
-            sels.append(sel33)
-        if project_role_can_make_action(current_user, current_object, 'update'):
-            sel34 = SidebarElementSublink(_l("Edit %(title)s", title=current_object.fulltitle), url_for('networks.network_edit', network_id=current_object.id), act=='edit')
-            sels.append(sel34)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Networks"), url_for('networks.network_index', project_id=proj.id), Network.Meta.icon_index, con=='Network', sels)
@@ -62,13 +55,6 @@ def sidebar_host(current_object, act: str, **kwargs) -> Optional[SidebarElement]
     if project_role_can_make_action(current_user, Host(), 'create', project=proj):
         sel42 = SidebarElementSublink(_l("Add new host"), url_for('networks.host_new', project_id=proj.id), con=='Host' and act=='new')
         sels.append(sel42)
-    if con == "Host" and act not in ['index', 'excluded-index', 'new']:
-        if project_role_can_make_action(current_user, current_object, 'show'):
-            sel43 = SidebarElementSublink(current_object.fulltitle, url_for('networks.host_show', host_id=current_object.id), act=='show')
-            sels.append(sel43)
-        if project_role_can_make_action(current_user, current_object, 'update'):
-            sel44 = SidebarElementSublink(_l("Edit %(title)s", title=current_object.fulltitle), url_for('networks.host_edit', host_id=current_object.id), act=='edit')
-            sels.append(sel44)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Hosts"), url_for('networks.host_index', project_id=proj.id), Host.Meta.icon_index, con=='Host', sels)
@@ -91,13 +77,6 @@ def sidebar_service(current_object, act: str, **kwargs) -> Optional[SidebarEleme
     if project_role_can_make_action(current_user, Service(), 'create', project=proj):
         sel52 = SidebarElementSublink(_l("Add new service"), url_for('networks.service_new', project_id=proj.id), con=='Service' and act=='new')
         sels.append(sel52)
-    if con == 'Service' and act not in ['index', 'index_by_port', 'new']:
-        if project_role_can_make_action(current_user, current_object, 'show'):
-            sel53 = SidebarElementSublink(current_object.fulltitle, url_for('networks.service_show', service_id=current_object.id), act=='show')
-            sels.append(sel53)
-        if project_role_can_make_action(current_user, current_object, 'update'):
-            sel54 = SidebarElementSublink(_l("Edit %(title)s", title=current_object.fulltitle), url_for('networks.service_edit', service_id=current_object.id), act=='edit')
-            sels.append(sel54)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Services"), url_for('networks.service_index', project_id=proj.id), Service.Meta.icon_index, con=='Service', sels)

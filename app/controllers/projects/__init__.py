@@ -26,9 +26,6 @@ def sidebar(current_object, act: str, **kwargs):
         proj = current_object.project
     sel1 = SidebarElementSublink(_l("Main information"), url_for('projects.project_show', project_id=proj.id), con=='Project' and act=='show')
     sels = [sel1]
-    if project_role_can_make_action(current_user, proj, 'update'):
-        sel2 = SidebarElementSublink(_l("Edit project"), url_for('projects.project_edit', project_id=proj.id), con=='Project' and act=='edit')
-        sels.append(sel2)
     return [SidebarElement("Страница проекта", url_for('projects.project_show', project_id=proj.id), "fa fa-home", con=='Project', sels)]
 
 

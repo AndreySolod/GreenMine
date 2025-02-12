@@ -115,6 +115,7 @@ class FileHasTask(db.Model):
 class ProjectTask(HasComment, db.Model, HasHistory):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
     archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    by_template_slug: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Created by template")}) # Used for create task from nmap scripts
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Theme")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description"), 'help_text': _l("Detailed description - what exactly needs to be done")})
     created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at"), 'help_text': _l("The date and time the task was created. It is filled in automatically")})

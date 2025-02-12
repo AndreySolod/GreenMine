@@ -34,13 +34,6 @@ def sidebar(current_object, act: str, **kwargs) -> SidebarElement:
     if project_role_can_make_action(current_user, Credential(), 'create', project=proj):
         sel_add_creds = SidebarElementSublink(_l("Add new credentials"), url_for('credentials.credential_new', project_id=proj.id), con=='Credential' and act=='new')
         sels.append(sel_add_creds)
-    if con == 'Credential' and act not in ['index', 'new', 'pentest-index']:
-        if project_role_can_make_action(current_user, current_object, 'show'):
-            sel_creds_show = SidebarElementSublink(current_object.fulltitle, url_for('credentials.credential_show', credential_id=current_object.id), act=='show')
-            sels.append(sel_creds_show)
-        if project_role_can_make_action(current_user, current_object, 'update'):
-            sel_creds_edit = SidebarElementSublink(_l('Edit %(title)s' ,title=current_object.fulltitle), url_for('credentials.credential_edit', credential_id=current_object.id), act=='edit')
-            sels.append(sel_creds_edit)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Credentials"), url_for('credentials.credential_index', project_id=proj.id), Credential.Meta.icon_index, con=='Credential',

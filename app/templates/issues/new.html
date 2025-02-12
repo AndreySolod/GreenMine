@@ -11,7 +11,7 @@
                     <select id="issue-pattern" name="issue-pattern">
                         <option value="0"></option>
                         {% for template in patterns %}
-                        <option value="{{ template.id }}">{{ template.title }}</option>
+                        <option value="{{ template.id }}">{{ template.title|safe }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -19,6 +19,7 @@
             <div class="card-body">
                 <form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
+                    {{ form.by_template_slug(style="display: none") }}
                     <div class="row">
                         <div class="col-lg-6 col-md-12">
                             {{ form_element(form, form.title) }}
@@ -70,15 +71,26 @@
                 "url": "{{ url_for('issues.issue_data_by_template', template_id='__template_id') }}".replace("__template_id", e.target.value)
             }).done(function (response) {
                 $('#{{ form.title.id }}')[0].value = response.title;
-                CKEDITOR_LIST['{{ form.description.id }}'].setData(response.description);
-                CKEDITOR_LIST['{{ form.fix.id }}'].setData(response.fix);
-                CKEDITOR_LIST['{{ form.technical.id }}'].setData(response.technical)
-                CKEDITOR_LIST['{{ form.riscs.id }}'].setData(response.riscs)
-                CKEDITOR_LIST['{{ form.references.id }}'].setData(response.references)
-                $('#{{ form.cvss.id }}')[0].value = response.cvss
-                $('#{{ form.cve_id.id }}')[0].value = response.cve_id
+                if(response.description !== null) {
+                    CKEDITOR_LIST['{{ form.description.id }}'].setData(response.description);
+                };
+                if(response.fix !== null) {
+                    CKEDITOR_LIST['{{ form.fix.id }}'].setData(response.fix);
+                };
+                if(response.technical !== null) {
+                    CKEDITOR_LIST['{{ form.technical.id }}'].setData(response.technical);
+                };
+                if(response.riscs !== null) {
+                    CKEDITOR_LIST['{{ form.riscs.id }}'].setData(response.riscs);
+                };
+                if(response.references !== null) {
+                    CKEDITOR_LIST['{{ form.references.id }}'].setData(response.references);
+                };
+                $('#{{ form.cvss.id }}')[0].value = response.cvss;
+                $('#{{ form.cve_id.id }}')[0].value = response.cve_id;
+                $('#{{ form.by_template_slug.id }}')[0].value = response.slug;
             }).fail(function (error) {
-                alert("{{ _('Something went wrong. Try to reload page') }}")
+                alert("{{ _('Something went wrong. Try to reload page') }}");
             })
         }
     })

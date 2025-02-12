@@ -158,22 +158,19 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             if port.find('script') is not None:
                 for script in port.iter('script'):
                     technical = NmapScriptProcessor.process(script, session, project, serv, current_user_id, locale)
-                    technical = f'\n<h5>Script data:</h5>\n<h6>{script.get('id')}</h6><p>{sanitizer.escape(script.get('output')).replace('\n', '<br />')}</p>'
-                    if serv.technical is not None:
+                    if serv.technical is not None and technical not in serv.technical:
                         serv.technical += technical
-                    else:
+                    elif serv.technical is None:
                         serv.technical = technical
             serv.technical = sanitizer.escape(serv.technical)
             session.add(serv)
             session.commit()
         if len(current_host.services) == 0 and ignore_host_without_open_ports_and_arp_response:
             session.delete(current_host)
-            del(current_host)
             session.commit()
             continue
         elif len(current_host.services) == 0 and current_host.mac == '' and not ignore_host_without_open_ports_and_arp_response:
             session.delete(current_host)
-            del(current_host)
             session.commit()
         else:
             session.commit()
@@ -183,7 +180,7 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                 technical = NmapScriptProcessor.process(script, session, project, current_host, current_user_id, locale)
                 if current_host.technical is None:
                     current_host.technical = technical
-                else:
+                elif technical not in current_host.technical:
                     current_host.technical += technical
         # processing operation systems
         if not process_operation_system:
