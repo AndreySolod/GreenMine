@@ -75,7 +75,7 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
         elem = elem.text
         message = 'Message signing enabled but not required'
         if elem.strip() == message:
-            issue = session.scalars(sa.select(models.Issue).where(models.Issue.by_template_slug == 'nmap_script_smb2_security_mode')).first()
+            issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.by_template_slug == 'nmap_script_smb2_security_mode', models.Issue.project_id == project.id))).first()
             if issue is None:
                 issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
                 if issue_status is None:
