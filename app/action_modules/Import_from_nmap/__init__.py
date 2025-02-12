@@ -158,11 +158,11 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             if port.find('script') is not None:
                 for script in port.iter('script'):
                     technical = NmapScriptProcessor.process(script, session, project, serv, current_user_id, locale)
-                    if serv.technical is not None and technical not in serv.technical:
-                        serv.technical += technical
-                    elif serv.technical is None:
+                    if serv.technical is None and technical != '':
                         serv.technical = technical
-            serv.technical = sanitizer.escape(serv.technical)
+                    elif serv.technical is not None and technical not in serv.technical:
+                        serv.technical += technical
+            serv.technical = sanitizer.sanitize(serv.technical)
             session.add(serv)
             session.commit()
         if len(current_host.services) == 0 and ignore_host_without_open_ports_and_arp_response:
