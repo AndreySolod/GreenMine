@@ -703,8 +703,12 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                 global_settings.default_language = auto_language
                 db.session.commit()
             global_settings = db.session.scalars(sa.select(GlobalSettings)).one()
+            lang = global_settings.default_language
             db.session.expunge(global_settings)
+            db.session.expunge(lang)
             app.config["GlobalSettings"] = global_settings
+            app.config["GlobalSettings"].default_language = lang
+            
         except exc.NoResultFound:
             logger.warning("Instance of Global Settings is not exist. Getting default instance")
             create_global_settings()
