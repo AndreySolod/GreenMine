@@ -70,8 +70,13 @@ class CheckWordlist(db.Model):
 
 
 class CredentialByService(db.Model):
-    credential_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('credential.id'), primary_key=True)
-    service_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('service.id'), primary_key=True)
+    credential_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('credential.id', ondelete='CASCADE'), primary_key=True)
+    service_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('service.id', ondelete='CASCADE'), primary_key=True)
+
+
+class CredentialByReceivedHost(db.Model):
+    credential_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('credential.id', ondelete='CASCADE'), primary_key=True)
+    host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), primary_key=True)
 
 
 @project_object_with_permissions
@@ -87,18 +92,21 @@ class Credential(HasComment, db.Model, HasHistory):
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l('Updated by')})
     updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Credential.updated_by_id", info={'label': _l('Updated by')}) # type: ignore
     login: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l('Login')})
-    description: so.Mapped[str] = so.mapped_column(info={'label': _l('Additional information')})
-    password_hash: so.Mapped[str] = so.mapped_column(info={'label': _l('Password hash')})
+    description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Additional information')})
+    password_hash: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Password hash')})
     hash_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HashType.id, ondelete='SET NULL'), info={'label': _l('Hash type')})
     hash_type: so.Mapped['HashType'] = so.relationship(lazy='select', info={'label': _l('Hash type')})
     check_wordlist_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CheckWordlist.id, ondelete='SET NULL'),
                                                                    info={'label': _l("Checked on wordlist")})
     check_wordlist: so.Mapped['CheckWordlist'] = so.relationship(lazy='select', info={'label': _l("Checked on wordlist")})
-    password: so.Mapped[str] = so.mapped_column(sa.String(70), info={'label': _l('Password')})
+    password: so.Mapped[Optional[str]] = so.mapped_column(sa.String(70), info={'label': _l('Password')})
     services: so.Mapped[List["Service"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin=id==CredentialByService.credential_id, # type: ignore
                                                            secondaryjoin='CredentialByService.service_id==Service.id', back_populates='credentials',
                                                            lazy='select', info={'label': _l("Related services")})
     is_pentest_credentials: so.Mapped[bool] = so.mapped_column(default=False, index=True, info={'label': _l("Only for pentest")})
+    received_from: so.Mapped[Set["Host"]] = so.relationship(secondary=CredentialByReceivedHost.__table__, primaryjoin=id==CredentialByReceivedHost.credential_id, # type: ignore
+                                                             secondaryjoin="CredentialByReceivedHost.host_id==Host.id", lazy='select',
+                                                             info={'label': _l("Comprometation source"), 'help_text': _l("An source host in which a credential were be founded")})
 
     @property
     def fulltitle(self):

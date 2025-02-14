@@ -434,7 +434,7 @@ class Service(HasComment, db.Model, HasHistory):
     access_protocol: so.Mapped["AccessProtocol"] = so.relationship(lazy='joined', info={'label': _l("Application Layer Protocol")})
     port_state_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ServicePortState.id, ondelete='SET NULL'), info={'label': _l("Port status")})
     port_state: so.Mapped["ServicePortState"] = so.relationship(lazy='joined', info={'label': _l("Port status")})
-    port_state_reason: so.Mapped[str] = so.mapped_column(info={'label': _l("The reason for the port status")})
+    port_state_reason: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("The reason for the port status")})
     transport_level_protocol_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ServiceTransportLevelProtocol.id, ondelete='SET NULL'), info={'label': _l("Transport Layer Protocol")})
     transport_level_protocol: so.Mapped["ServiceTransportLevelProtocol"] = so.relationship(lazy='joined', info={'label': _l("Transport Layer Protocol")})
     host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Host.id, ondelete='CASCADE'), info={'label': _l("Host")})

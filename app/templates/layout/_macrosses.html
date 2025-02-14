@@ -19,13 +19,14 @@
 
 {% macro form_label(element, class_name) %}
 {% if element.description %}
-{{ element.label(class=class_name, data_toggle="tooltip", data_placement="top", data_bs_title=element.description) }}
+{{ element.label(class=class_name, data_toggle="tooltip", data_placement="top", data_bs_title=element.description|escapejs) }}
 {% else %}
 {{ element.label(class=class_name) }}
 {% endif %}
 {% endmacro %}
 
 {% macro form_element(form, element, spec_class='auto', inline=False, subdivide=3) %}
+  {# process labels #}
   {% if not inline %}
     {% if element.__class__.__name__ == 'BooleanField' %}
     {{ form_label(element, "form-check-label") }}
@@ -43,6 +44,7 @@
     </div>
   <div class="col-sm-{{ 12 - subdivide }}">
   {% endif %}
+  {# process elements #}
   {% if spec_class != 'auto' %}
     {% if element.errors|length == 0 and not form.errors|length == 0 %}
       {{ element(class=spec_class + " is-valid") }}
@@ -71,6 +73,7 @@
   </div>
   </div>
   {% endif %}
+  {# process element errors #}
   {% if element.errors|length == 0 and not form.errors|length == 0 %}
     <div class="valid-feedback">
       {{ _("All right") }}

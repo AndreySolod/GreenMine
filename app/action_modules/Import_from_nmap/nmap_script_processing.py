@@ -60,8 +60,10 @@ class NmapScriptNbnsInterfaces(NmapScriptProcessor):
                         obj_with_script.host.assign_interface(new_host)
                         session.add(new_host)
                         session.commit()
-                if len(ifaces_data) > 0:
+                if len(ifaces_data) > 0 and obj_with_script.host.technical is not None:
                     obj_with_script.host.technical += "<p>Interfaces:<br>" + "; ".join(ifaces_data) + "</p>"
+                elif len(ifaces_data) > 0:
+                    obj_with_script.host.technical = "<p>Interfaces:<br>" + "; ".join(ifaces_data) + "</p>"
 
 class NmapScriptMessageSigning(NmapScriptProcessor):
     script_id = 'smb2-security-mode'

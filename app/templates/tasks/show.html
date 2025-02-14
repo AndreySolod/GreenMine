@@ -73,14 +73,14 @@
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services"
                 type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Service.Meta.icon }}"></i>
-                {{ _("Related services") }}</button>
+                {{ models.ProjectTask.services.info["label"] }}</button>
           </li>
           {% endif %}
           {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=task.project) %}
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues"
                 type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Issue.Meta.icon }}"></i>
-                {{ _("Related issues") }}</button>
+                {{ models.ProjectTask.issues.info["label"] }}</button>
           </li>
           {% endif %}
         </ul>

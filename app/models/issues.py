@@ -4,6 +4,7 @@ from app.helpers.admin_helpers import project_enumerated_object, project_object_
 from typing import List, Optional, Set
 import datetime
 from .generic import HasComment, HasHistory
+from .datatypes import LimitedLengthString
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -109,7 +110,7 @@ class Issue(HasComment, db.Model, HasHistory):
     updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l("Updated by")})
     updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Issue.updated_by_id", info={'label': _l("Updated by")}) # type: ignore
-    title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
+    title: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     fix: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Fix")})
     technical: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Technical information")})
@@ -161,9 +162,9 @@ class IssueTemplate(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
     archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
     string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l('Slug')})
-    title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l('Template title')})
+    title: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l('Template title')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Template Description')})
-    issue_title: so.Mapped[str] = so.mapped_column(sa.String(Issue.title.type.length), info={'label': _l('Issue Title')})
+    issue_title: so.Mapped[str] = so.mapped_column(LimitedLengthString(Issue.title.type.length), info={'label': _l('Issue Title')})
     issue_description: so.Mapped[str] = so.mapped_column(info={'label': _l('Issue Description')})
     issue_fix: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Issue fix')})
     issue_technical: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Technical information about issue")})

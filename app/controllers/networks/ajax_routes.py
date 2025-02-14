@@ -74,6 +74,36 @@ def get_select2_service_data():
     return jsonify(result)
 
 
+@bp.route('/hosts/get-select2-data')
+@login_required
+def get_select2_host_data():
+    try:
+        page = int(request.args.get('page'))
+    except TypeError:
+        page = 1
+    except ValueError:
+        abort(400)
+    try:
+        project_id = int(request.args.get('project_id'))
+        project = db.session.scalars(sa.select(models.Project).where(models.Project.id == project_id)).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        abort(400)
+    project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
+    query = request.args.get('term') if request.args.get('term') else ''
+    data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
+                                                                                                  models.Network.project_id == project_id))
+                                                    .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
+                                                    .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
+    for i in data:
+        if i.title is None:
+            print(i)
+    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host on project #{project_id} via select2-data")
+    print('i.title:', data[0].title, data[0].treeselecttitle, type(data[0].title))
+    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    return jsonify(result)
+
+
 @bp.route('/services/index-by-all-services-port-data')
 @login_required
 def all_services_port_data():

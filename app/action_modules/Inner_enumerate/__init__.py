@@ -2,6 +2,7 @@ import wtforms
 from wtforms import validators
 import app.models as models
 import sqlalchemy as sa
+import sqlalchemy.orm as so
 from sqlalchemy.orm.session import Session
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -14,8 +15,9 @@ from flask_babel import lazy_gettext as _l
 logger = logging.getLogger('Module_Inner_enumerate')
 
 
-def action_run(target: models.Service, running_user_id: int, protocol: str, window_size: str, timeout: str, implicity_wait: str, session: Session=db.session) -> bool:
+def action_run(target: models.Service, running_user_id: int, protocol: str, window_size: str, timeout: str, implicity_wait: str, session: Session) -> bool:
     ''' Gets a screenshot of the web service and saves it to the database '''
+    print('take screenshot of:', target.ip_address, target.port)
     chrome_options = Options()
     chrome_options.add_argument('--headless=new')
     chrome_options.add_argument(f'--window-size={window_size}') # 1920,2500
@@ -25,25 +27,31 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
     driver.implicitly_wait(int(implicity_wait))
     driver.get(f"{protocol}://{target.host.ip_address}:{target.port}")
     png_data = driver.get_screenshot_as_png()
-    fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
-    session.add(fd)
     if (protocol == 'http'):
         if target.screenshot_http is not None:
             session.delete(target.screenshot_http)
+            session.commit()
+        fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
+        session.add(fd)
         target.screenshot_http = fd
     else:
         if target.screenshot_https is not None:
             session.delete(target.screenshot_https)
+            session.commit()
+        fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
+        session.add(fd)
         target.screenshot_https = fd
     attr = "screenshot_" + protocol
     session.add(target)
+    print('commit of add target and fd')
     session.commit()
+    print('session committed')
 
 
 def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str='en') -> None:
     ''' Retrieves screenshots from the web services specified in the completed filled_form form and saves them to the database '''
     logger.info(f"Running module <Inner enumerate> by ID: {running_user_id}")
-    with db.sessionmaker(db.engine, autoflush = False)() as session:
+    with so.sessionmaker(bind=db.engine)() as session:
         for i in filled_form["targets"]:
             service = session.scalars(sa.select(models.Service).where(models.Service.id == i)).one()
             if filled_form["check_proto"]:
@@ -102,7 +110,9 @@ class AdminOptionsForm(FlaskForm):
 class ModuleInitForm(FlaskForm):
     def __init__(self, project_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.targets.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Service).join(models.Service.host).join(models.Host.from_network).where(models.Network.project_id==project_id))]
+        self.targets.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Service).join(models.Service.host)
+                                                                           .join(models.Host.from_network).join(models.Service.access_protocol).where(sa.and_(models.Network.project_id==project_id,
+                                                                                                                                                              models.AccessProtocol.string_slug.ilike("http%"))))]
     targets = TreeSelectMultipleField(_l("Target verification range:"), validators=[validators.Optional()])
     check_proto = wtforms.BooleanField(_l("Check proto - use only http/https:"), default=True)
     submit = wtforms.SubmitField(_l("Run"))

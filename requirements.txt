@@ -28,3 +28,4 @@ pybluemonday
 docxtpl
 packaging
 gostcrypto
+git+https://gitverse.ru/NekiyUser/CVE-2022-1026
