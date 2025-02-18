@@ -280,11 +280,11 @@
                                 {% for issue in host.issues %}
                                 <tr>
                                     <td>{{ issue.id }}</td>
-                                    <td>{{ sanitizer.unescape(issue.title) }}</td>
-                                    <td>{{ sanitizer.pure_text(issue.description) }}</td>
+                                    <td>{{ sanitizer.unescape(issue.title)|default("", True) }}</td>
+                                    <td>{{ sanitizer.pure_text(issue.description)|default("", True) }}</td>
                                     <td>{{ issue.cvss }}</td>
                                     <td>{{ getattr(issue.cve, 'title', '') }}</td>
-                                    <td>{{ issue.status.title }}</td>
+                                    <td>{{ issue.status.title|default("", True) }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -314,12 +314,12 @@
                                 {% for task in host.tasks %}
                                 <tr>
                                     <td>{{ task.id }}</td>
-                                    <td>{{ task.title|safe }}</td>
-                                    <td>{{ task.tracker.title }}</td>
-                                    <td>{{ task.priority.title }}</td>
-                                    <td>{{ task.state.title }}</td>
-                                    <td>{{ task.assigned_to.title }}</td>
-                                    <td>{{ task.readiness.title }}</td>
+                                    <td>{{ task.title|safe|default("", True) }}</td>
+                                    <td>{{ task.tracker.title|default("", True) }}</td>
+                                    <td>{{ task.priority.title|default("", True) }}</td>
+                                    <td>{{ task.state.title|default("", True) }}</td>
+                                    <td>{{ task.assigned_to.title|default("", True) }}</td>
+                                    <td>{{ task.readiness.title|default("", True) }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -345,10 +345,10 @@
                                 {% for credential in host.credentials %}
                                 <tr>
                                     <td>{{ credential.id }}</td>
-                                    <td>{{ credential.login|safe }}</td>
-                                    <td>{{ credential.password|safe }}</td>
-                                    <td>{{ credential.password_hash|safe }}</td>
-                                    <td>{{ credential.hash_type.title }}</td>
+                                    <td>{{ credential.login|safe|default("", True) }}</td>
+                                    <td>{{ credential.password|safe|default("", True) }}</td>
+                                    <td>{{ credential.password_hash|safe|default("", True) }}</td>
+                                    <td>{{ credential.hash_type.title|default("", True) }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

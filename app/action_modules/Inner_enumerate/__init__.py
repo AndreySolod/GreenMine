@@ -16,8 +16,8 @@ logger = logging.getLogger('Module_Inner_enumerate')
 
 
 def action_run(target: models.Service, running_user_id: int, protocol: str, window_size: str, timeout: str, implicity_wait: str, session: Session) -> bool:
-    ''' Gets a screenshot of the web service and saves it to the database '''
-    print('take screenshot of:', target.ip_address, target.port)
+    ''' Gets a screenshot of the web service and added him to session '''
+    print(f'take screenshot of: {target.host.ip_address}:{target.port}')
     chrome_options = Options()
     chrome_options.add_argument('--headless=new')
     chrome_options.add_argument(f'--window-size={window_size}') # 1920,2500
@@ -43,45 +43,42 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
         target.screenshot_https = fd
     attr = "screenshot_" + protocol
     session.add(target)
-    print('commit of add target and fd')
-    session.commit()
-    print('session committed')
 
 
-def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str='en') -> None:
+def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str, project_id: int) -> None:
     ''' Retrieves screenshots from the web services specified in the completed filled_form form and saves them to the database '''
     logger.info(f"Running module <Inner enumerate> by ID: {running_user_id}")
     with so.sessionmaker(bind=db.engine)() as session:
         for i in filled_form["targets"]:
-            service = session.scalars(sa.select(models.Service).where(models.Service.id == i)).one()
-            if filled_form["check_proto"]:
-                if service.access_protocol.string_slug in ('http', 'https'):
-                    # clean old screenshots from database
-                    attr = "screenshot_" + service.access_protocol.string_slug
-                    if getattr(service, attr) is not None:
-                        session.delete(getattr(service, attr))
-                        session.commit()
-                    # Taking screenshot
-                    try:
-                        action_run(target=service, running_user_id=running_user_id, protocol=service.access_protocol.string_slug,
-                                window_size=default_options["window_size"], timeout=default_options["timeout"], implicity_wait=default_options["implicity_wait"],
-                                session=session)
-                    except WebDriverException:
-                        continue
-            else:
-                for protocol in ('http', 'https'):
-                    # clean old screenshots from database
-                    attr = "screenshot_" + protocol
-                    if getattr(service, attr) is not None:
-                        session.delete(getattr(service, attr))
-                        session.commit()
-                    # Taking screenshot
-                    try:
-                        action_run(target=service, running_user_id=running_user_id, protocol=protocol,
-                                window_size=default_options["window_size"], timeout=default_options["timeout"], implicity_wait=default_options["implicity_wait"],
-                                session=session)
-                    except WebDriverException:
-                        continue
+            services = session.scalars(sa.select(models.Service).where(models.Service.host_id == i)).all()
+            for service in services:
+                if filled_form["check_proto"]:
+                    if service.access_protocol is not None and service.access_protocol.string_slug in ('http', 'https'):
+                        # clean old screenshots from database
+                        attr = "screenshot_" + service.access_protocol.string_slug
+                        if getattr(service, attr) is not None:
+                            session.delete(getattr(service, attr))
+                        # Taking screenshot
+                        try:
+                            action_run(target=service, running_user_id=running_user_id, protocol=service.access_protocol.string_slug,
+                                    window_size=default_options["window_size"], timeout=default_options["timeout"], implicity_wait=default_options["implicity_wait"],
+                                    session=session)
+                        except WebDriverException:
+                            continue
+                else:
+                    for protocol in ('http', 'https'):
+                        # clean old screenshots from database
+                        attr = "screenshot_" + protocol
+                        if getattr(service, attr) is not None:
+                            session.delete(getattr(service, attr))
+                        # Taking screenshot
+                        try:
+                            action_run(target=service, running_user_id=running_user_id, protocol=protocol,
+                                    window_size=default_options["window_size"], timeout=default_options["timeout"], implicity_wait=default_options["implicity_wait"],
+                                    session=session)
+                        except WebDriverException:
+                            continue
+        session.commit()
 
 
 class AdminOptionsForm(FlaskForm):
@@ -110,9 +107,9 @@ class AdminOptionsForm(FlaskForm):
 class ModuleInitForm(FlaskForm):
     def __init__(self, project_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.targets.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Service).join(models.Service.host)
-                                                                           .join(models.Host.from_network).join(models.Service.access_protocol).where(sa.and_(models.Network.project_id==project_id,
-                                                                                                                                                              models.AccessProtocol.string_slug.ilike("http%"))))]
+        self.targets.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host)
+                                                                           .join(models.Host.from_network)
+                                                                           .where(models.Network.project_id==project_id))]
     targets = TreeSelectMultipleField(_l("Target verification range:"), validators=[validators.Optional()])
     check_proto = wtforms.BooleanField(_l("Check proto - use only http/https:"), default=True)
     submit = wtforms.SubmitField(_l("Run"))

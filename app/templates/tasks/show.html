@@ -154,12 +154,12 @@
                   {% for service in task.services %}
                   <tr style="cursor:pointer">
                       <td>{{ service.id }}</td>
-                      <td>{{ service.title|safe }}</td>
-                      <td>{{ service.host.ip_address }}</td>
-                      <td>{{ service.port }}</td>
-                      <td>{{ service.transport_level_protocol.title }}</td>
-                      <td>{{ service.access_protocol.title }}</td>
-                      <td>{{ service.technical|safe }}</td>
+                      <td>{{ service.title|safe|default("", True) }}</td>
+                      <td>{{ service.host.ip_address|default("", True) }}</td>
+                      <td>{{ service.port|default("", True) }}</td>
+                      <td>{{ service.transport_level_protocol.title|default("", True) }}</td>
+                      <td>{{ service.access_protocol.title|default("", True) }}</td>
+                      <td>{{ sanitizer.pure_text(service.technical) }}</td>
                   </tr>
                   {% endfor %}
               </tbody>
@@ -194,9 +194,9 @@
                   {% for issue in task.issues %}
                   <tr style="cursor:pointer">
                       <td>{{ issue.id }}</td>
-                      <td>{{ issue.title|safe }}</td>
-                      <td>{{ BeautifulSoup(issue.description, 'lxml').text }}</td>
-                      <td>{{ issue.status.title }}</td>
+                      <td>{{ issue.title|safe|default("", True) }}</td>
+                      <td>{{ sanitizer.pure_text(issue.description) }}</td>
+                      <td>{{ issue.status.title|default("", True) }}</td>
                   </tr>
                   {% endfor %}
               </tbody>

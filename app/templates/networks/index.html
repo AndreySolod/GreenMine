@@ -298,15 +298,25 @@
                 selector: '.with-context-menu-networks',
                 callback: function (key, options) {
                     if (key === 'open') {
-                        window.open("{{ url_for('networks.network_show', network_id='__network_id') }}".replace("__network_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank')
+                        window.open("{{ url_for('networks.network_show', network_id='__network_id') }}".replace("__network_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank');
                     }
                     else if(key === 'edit') {
-                        window.open("{{ url_for('networks.network_edit', network_id='__network_id') }}".replace('__network_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus()
+                        window.open("{{ url_for('networks.network_edit', network_id='__network_id') }}".replace('__network_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus();
+                    }
+                    else if(key === 'delete') {
+                        if(confirm("{{ _('Are you sure you want to delete this network?') }}")) {
+                            window.open("{{ url_for('networks.network_delete', network_id='__network_id') }}".replace('__network_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus();
+                        }
+                    }
+                    else if(key === 'copy_ip') {
+                        navigator.clipboard.writeText(options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].ip_address)
                     }
                 },
                 items: {
                     "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
                     "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                    "copy_ip": { name: '{{ _("Copy IP Address") }}', icon: 'copy' },
+                    "delete": { name: '{{ _("Delete") }}', icon: "delete" }
                 }
             });
         });

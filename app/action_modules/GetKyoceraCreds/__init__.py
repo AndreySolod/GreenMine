@@ -129,12 +129,12 @@ def action_run(target_id: Union[str, int], running_user_id: int, domain_search: 
             to_ports = session.scalars(sa.select(models.Service).join(models.Service.host).join(models.Host.from_network)
                                     .where(sa.and_(models.Network.project_id == target.from_network.project_id, models.Service.port == c.port,
                                                     models.Host.ip_address == now_destination))).all()
-            cred.services = to_ports
+            cred.services = set(to_ports)
             session.add(cred)
             session.commit()
 
 
-def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str='en'):
+def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str, project_id: int):
     ''' Take an credentials from Kyocera printer targets and save all of them in database '''
     with so.sessionmaker(bind=db.engine)() as session:
         for target in filled_form["targets"]:

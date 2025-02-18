@@ -2,13 +2,14 @@ from app import db
 from app.controllers.webfiles import bp
 import app.models as models
 import sqlalchemy as sa
+from flask import request
 from flask import abort, render_template, make_response
 
 
 @bp.route("/webdav/<int:project_id>/<path:pathname>", methods=["GET"]) # /webdav/1/root/ - this is a root directory
 def get_path_content(project_id: int, pathname: str):
     project = db.get_or_404(models.Project, project_id)
-    path = pathname.split('/')
+    path = pathname.split('/')[1::]
     root_dir = project.file_directories[0]
     current_dir = root_dir
     for p_number, p in enumerate(path):
@@ -41,10 +42,66 @@ def get_path_content(project_id: int, pathname: str):
 @bp.route("/webdav/<int:project_id>/<path:pathname>", methods=['PROPFIND'])
 def propfind_path_content(project_id: int, pathname: str):
     # First request of all webdav client is propfind
-    pass
+    path = pathname.split("/")[1::]
+    ''' Запрос: <?xml version="1.0" encoding="utf-8" ?>
+    <D:propfind xmlns:D="DAV:">
+    <D:prop><D:creationdate/>
+    <D:getcontentlength/>
+    <D:displayname/>
+    <D:source/>
+    <D:getcontentlanguage/>
+    <D:getcontenttype/>
+    <D:getlastmodified/>
+    <D:getetag/>
+    <D:supportedlock/>
+    <D:lockdiscovery/>
+    <D:resourcetype/>
+    <D:quota-available-bytes/>
+    <D:quota-used-bytes/>
+    </D:prop>
+    </D:propfind>
+    Ответ:
+    <?xml version="1.0" encoding="utf-8" ?>
+  <D:multistatus xmlns:D="DAV:">
+    <D:response>
+      <D:href>http://www.foo.bar/file</D:href>
+      <D:propstat>
+        <D:prop xmlns:R="http://www.foo.bar/boxschema/">
+          <R:bigbox>
+            <R:BoxType>Box type A</R:BoxType>
+          </R:bigbox>
+          <R:author>
+            <R:Name>J.J. Johnson</R:Name>
+          </R:author>
+        </D:prop>
+        <D:status>HTTP/1.1 200 OK</D:status>
+      </D:propstat>
+      <D:propstat>
+        <D:prop>
+          <R:DingALing/>
+          <R:Random/>
+        </D:prop>
+        <D:status>HTTP/1.1 403 Forbidden</D:status>
+        <D:responsedescription>
+          The user does not have access to the DingALing property.
+        </D:responsedescription>
+      </D:propstat>
+    </D:response>
+    <D:responsedescription>
+      There has been an access violation error.
+    </D:responsedescription>
+  </D:multistatus>
+  
+  https://citforum.ru/internet/webservers/webdav/'''
+    print('pathname:', pathname)
+    print(request.headers)
+    print(request.args)
+    print(request.data)
+    return ''
 
 
-@bp.route("/webdav/<int:project_id>/<path:pathname>")
+
+@bp.route("/webdav/<int:project_id>/<path:pathname>", methods=["PUT"])
 def put_file_to_dir(project_id: int, pathname: str):
     project = db.get_or_404(models.Project, project_id)
     pass

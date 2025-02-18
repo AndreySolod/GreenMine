@@ -384,3 +384,10 @@ def issue_template_delete(template_id):
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete issue template #{template_id}: '{t}'")
     flash(_l("Issue template successfully deleted"), 'success')
     return redirect(url_for('admin.issue_template_index'))
+
+
+@bp.route('/templates/object-template-list')
+def object_template_list():
+    ctx = DefaultEnvironment('object_template_list')()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request object template list")
+    return render_template('admin/object_template_list.html', **ctx)

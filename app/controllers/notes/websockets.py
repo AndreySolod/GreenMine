@@ -68,7 +68,6 @@ def socketio_create_note(data):
         if not project_role_can_make_action(current_user, models.Note(), 'create', project=project):
             return None
         importance = db.session.scalars(sa.select(models.NoteImportance).where(models.NoteImportance.id == int(data['importance_id']))).one()
-        print('importance finding')
         note = models.Note(title=sanitizer.escape(data['title'], models.Note.title.type.length), description=sanitizer.sanitize(data['description']), importance=importance, project=project, created_by=current_user)
         db.session.add(note)
         db.session.commit()

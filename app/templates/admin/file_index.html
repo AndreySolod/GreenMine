@@ -27,7 +27,7 @@
                     <tr>
                         <th data-field="id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.id.info["label"] }}</th>
                         <th data-field="created_at" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.created_at.info["label"] }}</th>
-                        <th data-field="created_by_id" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["users"]|safe }}'>{{ models.FileData.created_by.info["label"] }}</th>
+                        <th data-field="created_by" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["users"]|safe }}'>{{ models.FileData.created_by.info["label"] }}</th>
                         <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.title.info["label"] }}</th>
                         <th data-field="extension" data-sortable="true" data-align="center" data-filter-control="select" data-filter-data='json:{{ filters["extensions"]|safe }}'>{{ models.FileData.extension.info["label"] }}</th>
                         <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.FileData.description.info["label"] }}</th>

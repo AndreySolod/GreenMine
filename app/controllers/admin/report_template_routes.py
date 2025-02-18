@@ -14,15 +14,15 @@ from app import logger
 
 
 @bp.route('/report_templates/index')
-def report_templates_index():
+def report_template_index():
     templates = db.session.scalars(sa.select(models.ProjectReportTemplate)).all()
-    ctx = DefaultEnvironment('report_templates_index')()
+    ctx = DefaultEnvironment('report_template_index')()
     side_libraries.library_required('bootstrap_table')
     return render_template('report_templates/admin_index.html', **ctx, templates=templates)
 
 
 @bp.route('/report_templates/new', methods=['GET', 'POST'])
-def report_templates_new():
+def report_template_new():
     form = forms.ReportTemplateCreateForm()
     if form.validate_on_submit():
         templ = models.ProjectReportTemplate()
@@ -37,28 +37,28 @@ def report_templates_new():
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create a new report template #{templ.id}: '{templ.title}'")
         flash(_l("New report template successfully created!"), 'success')
-        return redirect(url_for('admin.report_templates_show', template_id=templ.id))
+        return redirect(url_for('admin.report_template_show', template_id=templ.id))
     elif request.method == 'GET':
         form.load_default_data(db.session, models.ProjectReportTemplate)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('report_templates_new')()
+    ctx = DefaultEnvironment('report_template_new')()
     return render_template('report_templates/admin_new.html', **ctx, form=form)
 
 
 @bp.route('/report_templates/<template_id>/show')
-def report_templates_show(template_id: str):
+def report_template_show(template_id: str):
     try:
         template_id = int(template_id)
         template = db.session.scalars(sa.select(models.ProjectReportTemplate).where(models.ProjectReportTemplate.id == template_id)).one()
     except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
         abort(400)
-    ctx = DefaultEnvironment('report_templates_show', template)()
+    ctx = DefaultEnvironment('report_template_show', template)()
     context = {'template': template}
     return render_template('report_templates/admin_show.html', **ctx, **context)
 
 
 @bp.route('/report_templates/<template_id>/edit', methods=['GET', 'POST'])
-def report_templates_edit(template_id: str):
+def report_template_edit(template_id: str):
     try:
         template_id = int(template_id)
     except (ValueError, TypeError):
@@ -78,16 +78,16 @@ def report_templates_edit(template_id: str):
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' update report template #{templ.id}: '{templ.title}'")
         flash(_l("Report template #%(templ_id)s successfully updated!", templ_id=templ.id), 'success')
-        return redirect(url_for('admin.report_templates_show', template_id=templ.id))
+        return redirect(url_for('admin.report_template_show', template_id=templ.id))
     elif request.method == 'GET':
         form.load_exist_value(templ)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('report_templates_edit', templ)()
+    ctx = DefaultEnvironment('report_template_edit', templ)()
     return render_template('report_templates/admin_edit.html', **ctx, form=form)
 
 
 @bp.route('/report_templates/<template_id>/delete', methods=['POST', 'DELETE'])
-def report_templates_delete(template_id: str):
+def report_template_delete(template_id: str):
     try:
         template_id = int(template_id)
     except (ValueError, TypeError):
@@ -98,4 +98,4 @@ def report_templates_delete(template_id: str):
     db.session.commit()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete report template #{templ.id}")
     flash(_l("Report templates #%(templ_id)s successfully deleted!", templ_id=template_id), 'success')
-    return redirect(url_for('admin.report_templates_index'))
+    return redirect(url_for('admin.report_template_index'))

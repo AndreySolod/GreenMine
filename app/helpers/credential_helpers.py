@@ -1,13 +1,15 @@
 import re
 from app import db
-from app.models import HashPrototype
+import app.models as models
+from typing import List, Dict, Optional
+import sqlalchemy as sa
 
 
 class NameThatHash:
     def __init__(self):
-        self.prototypes = db.session.scalars(db.select(HashPrototype)).all()
+        self.prototypes = db.session.scalars(sa.select(models.HashPrototype)).all()
 
-    def identify(self, chash: str):
+    def identify(self, chash: str) -> List[models.HashType]:
         output = []
         chash = chash.strip()
         for proto in self.prototypes:

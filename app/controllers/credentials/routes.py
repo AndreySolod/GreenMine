@@ -1,13 +1,15 @@
-from app import db, side_libraries, logger
+from app import db, side_libraries, logger, automation_modules
 from app.controllers.credentials import bp
 from flask_login import login_required, current_user
-from flask import request, render_template, url_for, redirect, flash, abort, jsonify
+from flask import request, render_template, url_for, redirect, flash, abort, jsonify, g
 from app.models import Credential, Project
+import app.models as models
 from app.helpers.general_helpers import get_or_404
 from app.helpers.projects_helpers import get_default_environment
 from app.helpers.credential_helpers import NameThatHash
 import app.controllers.credentials.forms as forms
 from flask_babel import lazy_gettext as _l
+import sqlalchemy as sa
 from app.helpers.roles import project_role_can_make_action, project_role_can_make_action_or_abort
 
 
@@ -21,7 +23,7 @@ def credential_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Credential(), 'index', project=project)
-    creds = db.session.scalars(db.select(Credential).where(db.and_(Credential.project_id == project_id, Credential.archived == False, Credential.is_pentest_credentials == False))).all()
+    creds = db.session.scalars(sa.select(Credential).where(sa.and_(Credential.project_id == project_id, Credential.archived == False, Credential.is_pentest_credentials == False))).all()
     ctx = get_default_environment(Credential(project=project), 'index')
     side_libraries.library_required('bootstrap_table')
     context = {'credentials': creds, 'project': project}
@@ -40,7 +42,7 @@ def pentest_credential_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Credential(), 'pentest_index', project=project)
-    creds = db.session.scalars(db.select(Credential).where(db.and_(Credential.project_id == project_id, Credential.archived == False, Credential.is_pentest_credentials == True))).all()
+    creds = db.session.scalars(sa.select(Credential).where(sa.and_(Credential.project_id == project_id, Credential.archived == False, Credential.is_pentest_credentials == True))).all()
     ctx = get_default_environment(Credential(project=project), 'pentest-index')
     context = {'credentials': creds}
     side_libraries.library_required('bootstrap_table')
@@ -139,9 +141,12 @@ def credential_delete(credential_id):
     return redirect(url_for('credentials.credential_index', project_id=project_id))
 
 
-@bp.route('/gethashtype/<hash_value>')
+@bp.route('/gethashtype/')
 @login_required
-def get_hash_type(hash_value):
+def get_hash_type():
+    hash_value = request.args.get('value')
+    if hash_value is None:
+        abort(404)
     hashes_list = NameThatHash().identify(hash_value)
     hashes_list.sort(key=lambda x: x.is_popular, reverse=True)
     if len(hashes_list) == 0:
@@ -149,3 +154,46 @@ def get_hash_type(hash_value):
     fst = hashes_list[0]
     jhl = [i.to_send_dict() for i in hashes_list]
     return jsonify({'default_hash': fst.id, 'title': fst.title, 'anothers': jhl[1::]})
+
+
+@bp.route("/multiple_import", methods=["GET", "POST"])
+@login_required
+def multiple_import_credentials():
+    try:
+        project_id = int(request.args.get("project_id"))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to multiple import credentials with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(Project, project_id)
+    project_role_can_make_action_or_abort(current_user, Credential(), 'create', project=project)
+    form = automation_modules.get('MultipleImportCredentials').run_form(project_id)
+    if form.validate_on_submit():
+        automation_modules.get('MultipleImportCredentials').run(form, current_user, request.files, locale=g.locale, project_id=project_id)
+        flash(_l("The credential import module has been successfully launched"), 'success')
+        return redirect(url_for('credentials.credential_index', project_id=project_id))
+    patterns = db.session.scalars(sa.select(models.CredentialImportTemplate)).all()
+    ctx = get_default_environment(Credential(project=project), 'multiple_import')
+    context = {'form': form, 'project': project, 'patterns': patterns}
+    return render_template('credentials/multiple_import.html', **ctx, **context)
+
+
+@bp.route("/multiple-import-credentials-template/<template_id>/data", methods=["GET"])
+@login_required
+def get_multiple_import_credentials_template_data(template_id):
+    try:
+        template_id = int(template_id)
+    except (ValueError, TypeError):
+        abort(400)
+    templ = db.get_or_404(models.CredentialImportTemplate, template_id)
+    res = {'login_position': templ.login_column_number,
+                    'password_position': templ.password_column_number,
+                    'password_hash_position': templ.password_hash_column_number,
+                    'description_position': templ.description_column_number,
+                    'static_login': templ.static_login,
+                    'static_password_hash': templ.static_password_hash,
+                    'static_hash_type_id': templ.static_hash_type_id,
+                    'static_check_wordlist': templ.static_check_wordlist_id,
+                    'static_description': templ.static_description}
+    if templ.static_hash_type != None:
+        res['static_hash_type_title'] = templ.static_hash_type.title
+    return jsonify(res)

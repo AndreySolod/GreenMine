@@ -14,6 +14,7 @@ from sqlalchemy.orm.session import Session as SessionBase
 from flask_babel import lazy_gettext as _l
 from flask import url_for
 from bs4 import BeautifulSoup
+from .networks import Network, Host, Service
 
 
 @project_object_with_permissions
@@ -33,6 +34,7 @@ class Project(db.Model):
     leader_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Manager"), 'description': _l("The person responsible for this project")})
     leader: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys=[leader_id], info={'label': _l("Manager"), 'description': _l("The person responsible for this project")}) # type: ignore
     tasks: so.Mapped[List["ProjectTask"]] = so.relationship(back_populates="project", cascade="all, delete-orphan", info={'label': _l("Tasks"), 'description': _l("Tasks performed within the framework of the project")}) # type: ignore
+    networks: so.Mapped[List[Network]] = so.relationship(lazy='select', back_populates='project', info={'label': _l("Networks")}, cascade='all,delete-orphan')
     participants: so.Mapped[List["UserRoleHasProject"]] = so.relationship(back_populates="project", lazy='select', cascade='all, delete-orphan', order_by="UserRoleHasProject.role_id", info={'label': _l("Participants")})
 
     @validates("end_at")
@@ -73,6 +75,14 @@ class Project(db.Model):
         for keys, values in intermediate.items():
             gps[keys] = ', '.join(map(lambda x: '<a href="' + url_for('users.user_show', user_id=x.id) + '">' + BeautifulSoup(x.title, "lxml").text + '</a>', values))
         return gps
+    
+    @property
+    def hosts(self):
+        return db.session.scalars(sa.select(Host).join(Host.from_network, isouter=True).where(Network.project_id == self.id)).all()
+    
+    @property
+    def services(self):
+        return db.session.scalars(sa.select(Service).join(Service.host, isouter=True).join(Host.from_network, isouter=True).where(Network.project_id == self.id)).all()
 
     class Meta:
         verbose_name = _l("Project")

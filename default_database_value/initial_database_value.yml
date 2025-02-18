@@ -510,11 +510,11 @@ ProjectTaskPriority:
         color: "rgba(176, 0, 0, 0.35)"
     - emergency:
         title: "Срочный"
-        description: "Возможна эксплуатация уязвимости злоумышленниками"
+        description: "1"
         color: "rgba(176, 0, 0, 0.5)"
     - immediate:
         title: "Немедленный"
-        description: "Данная уязвимость уже активно эксплуатируется злоумышленниками"
+        description: "2"
         color: "rgba(176, 0, 0, 0.8)"
 
 ProjectTaskTracker:

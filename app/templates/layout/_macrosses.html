@@ -34,8 +34,8 @@
     {{ form_label(element, 'form-label') }}
     {% endif %}
   {% else %}
-  <div class="row align-items-center">
-    <div class="col-sm-{{ subdivide|string }}">
+  <div class="row align-items-center gy-5">
+    <div class="col-sm-{{ subdivide|string }} p-2">
       {% if element.__class__.__name__ == 'BooleanField' %}
         {{ form_label(element, "form-check-label") }}
       {% else %}
@@ -80,10 +80,7 @@
     </div>
   {% elif element.errors|length != 0 %}
     <div class="invalid-feedback">
-      {% for e in element.errors %}
-      {{ e }};
-      {% endfor %}
-      {#{{ "; ".join(element.errors) }} {# element.errors may contains a lazy string, we must convert this to string directly #}
+      {{ "; ".join(element.errors|map('string')) }}
     </div>
   {% endif %}
 {% endmacro %}

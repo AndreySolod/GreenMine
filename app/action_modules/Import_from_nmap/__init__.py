@@ -92,7 +92,6 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                     new_host.from_network = network
                     new_host.created_by_id = current_user_id
                     session.add(new_host)
-                    session.commit()
     # Processing pure hosts and ports
     for host in nmap_etree.iter('host'):
         ip_addr = None
@@ -109,17 +108,6 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
         current_host.mac = mac_addr
         current_host.created_by_id = current_user_id
         current_host.from_network = current_network
-        session.add(current_host)
-        session.commit()
-        # processing hostnames
-        for hostname in host.find('hostnames'):
-            try_dns = session.scalars(sa.select(models.HostDnsName).where(sa.and_(models.HostDnsName.title==hostname.get('name'), models.HostDnsName.dns_type==hostname.get('type'), models.HostDnsName.to_host_id == current_host.id))).first()
-            if try_dns is not None:
-                continue
-            dns = models.HostDnsName(title=sanitizer.escape(hostname.get('name'), models.HostDnsName.title.type.length), dns_type=sanitizer.escape(hostname.get('type'), models.HostDnsName.dns_type.type.length))
-            dns.to_host = current_host
-            session.add(dns)
-            session.commit()
         # processing ports
         for port in host.iter('port'):
             state = port.find('state').get('state').strip()
@@ -164,16 +152,18 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                         serv.technical += technical
             serv.technical = sanitizer.sanitize(serv.technical)
             session.add(serv)
-            session.commit()
-        if len(current_host.services) == 0 and ignore_host_without_open_ports_and_arp_response:
-            session.delete(current_host)
-            session.commit()
-            continue
-        elif len(current_host.services) == 0 and current_host.mac == '' and not ignore_host_without_open_ports_and_arp_response:
-            session.delete(current_host)
-            session.commit()
+        if len(current_host.services) != 0 or len(current_host.services) == 0 and not ignore_host_without_open_ports_and_arp_response:
+            session.add(current_host)
         else:
-            session.commit()
+            continue
+        # processing hostnames
+        for hostname in host.find('hostnames'):
+            try_dns = session.scalars(sa.select(models.HostDnsName).where(sa.and_(models.HostDnsName.title==hostname.get('name'), models.HostDnsName.dns_type==hostname.get('type'), models.HostDnsName.to_host_id == current_host.id))).first()
+            if try_dns is not None:
+                continue
+            dns = models.HostDnsName(title=sanitizer.escape(hostname.get('name'), models.HostDnsName.title.type.length), dns_type=sanitizer.escape(hostname.get('type'), models.HostDnsName.dns_type.type.length))
+            dns.to_host = current_host
+            session.add(dns)
         # processing host scripts
         for hostscript in host.iter('hostscript'):
             for script in hostscript.iter('script'):
@@ -205,11 +195,11 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                 if osfamily is not None:
                     current_host.operation_system_family = osfamily
             current_host.operation_system_gen = osclass.get('osgen')
-            session.commit()
+    session.commit()
     return None
 
 
-def exploit(filled_form: dict, running_user: int, default_options: dict, locale: str='en') -> None:
+def exploit(filled_form: dict, running_user: int, default_options: dict, locale: str, project_id: int) -> None:
     with so.sessionmaker(bind=db.engine)() as session:
         action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
                 filled_form["ignore_host_without_open_ports_and_arp_response"],

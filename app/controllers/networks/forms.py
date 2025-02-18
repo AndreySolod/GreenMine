@@ -133,7 +133,7 @@ class ServiceForm(FlaskForm):
         #self.access_protocol_id.choices = [("0", "")] + [(str(i.id), i.title) for i in db.session.scalars(sa.select(AccessProtocol))]
         self.port_state_id.choices = [("0", "")] + [(str(i[0]), i[1]) for i in db.session.execute(sa.select(models.ServicePortState.id, models.ServicePortState.title))]
         self.transport_level_protocol_id.choices = [("0", "")] + [(str(i[0]), i[1]) for i in db.session.execute(sa.select(models.ServiceTransportLevelProtocol.id, models.ServiceTransportLevelProtocol.title))]
-        self.host_id.choices = [('0', '')] + [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).select_from(models.Project).join(models.Project.networks).join(models.Network.to_hosts).where(models.Project.id==project_id))]
+        self.host_id.choices = [('0', '')] + [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(models.Network.project_id == project_id))]
         self.issues.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Issue).where(models.Issue.project_id == project_id))]
         self.credentials.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Credential).where(models.Credential.project_id == project_id))]
         self.tasks.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.ProjectTask).where(models.ProjectTask.project_id == project_id))]
@@ -216,7 +216,7 @@ class NewHostDNSnameForm(FlaskForm):
 class EditRelatedObjectsHostForm(FlaskForm):
     def __init__(self, host: models.Host, *args, **kwargs):
         super(EditRelatedObjectsHostForm, self).__init__(*args, **kwargs)
-        self.interfaces.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Host.id != host.id, models.Network.project_id == host.from_network.project_id)))]
+        self.interfaces.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(models.Host.id != host.id, models.Network.project_id == host.from_network.project_id)))]
         self.interfaces.data = [str(i.id) for i in host.interfaces]
         self.interfaces.locale = g.locale
         self.interfaces.callback = url_for('networks.get_select2_hosts_interfaces_data', host_id=host.id)

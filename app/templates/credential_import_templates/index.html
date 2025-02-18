@@ -1,0 +1,65 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <table class="table" id="import-credential-template-table" data-pagination="true"
+                                                                    data-show-column="true"
+                                                                    data-show-toggle="true"
+                                                                    data-show-export="true"
+                                                                    data-show-multi-sort="true"
+                                                                    data-filter-control="true"
+                                                                    data-buttons-class="primary"
+                                                                    data-row-style="defaultRowStyle"
+                                                                    data-cookie="true"
+                                                                    data-cookie-id-table="CredentialExportTemplateIndex"
+                                                                    data-cookie-storage="localStorage">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true" data-align="center">{{ models.CredentialImportTemplate.id.info["label"] }}</th>
+                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.title.info['label'] }}</th>
+                            <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.description.info['label'] }}</th>
+                            <th data-field="login_column_number" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.login_column_number.info['label'] }}</th>
+                            <th data-field="password_hash_column_number" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.password_hash_column_number.info["label"] }}</th>
+                            <th data-field="description_column_number" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.description_column_number.info["label"] }}</th>
+                            <th data-field="password_column_number" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.password_column_number.info['label'] }}</th>
+                            <th data-field="static_hash_type_id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.static_hash_type_id.info['label'] }}</th>
+                            <th data-field="static_check_wordlist_id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.static_check_wordlist_id.info['label'] }}</th>
+                            <th data-field="static_description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.CredentialImportTemplate.static_description.info['label'] }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for template in templates %}
+                        <tr>
+                            <td>{{ template.id }}</td>
+                            <td>{{ template.title|default("", True) }}</td>
+                            <td>{{ sanitizer.pure_text(template.description)|default("", True) }}</td>
+                            <td>{{ template.login_column_number|suppress_none }}</td>
+                            <td>{{ template.password_hash_column_number|suppress_none }}</td>
+                            <td>{{ template.description_column_number|suppress_none }}</td>
+                            <td>{{ template.password_column_number|suppress_none }}</td>
+                            <td>{{ template.static_hash_type_id.title|suppress_none }}</td>
+                            <td>{{ template.static_check_wordlist_id.title|default("", True) }}</td>
+                            <td>{{ template.static_description|default("", True) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+{{ load_bootstrap_table_js('import-credential-template-table', 'admin.credential_template_show', 'template_id') }}
+<script nonce="{{ csp_nonce() }}">
+    function defaultRowStyle(row, index) {
+        return { css: {"cursor": 'pointer' } };
+    };
+</script>
+{% endblock %}

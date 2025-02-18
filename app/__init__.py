@@ -24,6 +24,7 @@ from multiprocessing import Process
 import atexit
 import werkzeug
 from pathlib import Path
+from typing import Optional
 import logging
 logger = logging.getLogger("GreenMine")
 error_logger = logging.getLogger("GreenMine internal errors")
@@ -144,6 +145,11 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     @app.template_filter('as_style')
     def add_template_filter_as_style_attrs(attrs: dict) -> Markup:
         return as_style(attrs)
+    @app.template_filter('suppress_none')
+    def add_template_filter_suppressnone(string: Optional[str]) -> str:
+        if string is None:
+            return ""
+        return string
 
     # blueprints
     from app.controllers import bp as extensions_bp

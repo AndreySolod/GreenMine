@@ -31,14 +31,28 @@
     <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
         <a class="card admin-index-element h-100" href="{{ url_for('admin.issue_template_index') }}">
             <div class="card-body">
-                <div><i class="{{ models.IssueTemplate.Meta.icon }}"></i></div><div><h5>{{ _("Issue templates") }}</h5></div>
+                <div><i class="{{ models.IssueTemplate.Meta.icon }}"></i></div><div><h5>{{ models.IssueTemplate.Meta.verbose_name_plural }}</h5></div>
             </div>
         </a>
     </div>
     <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
         <a class="card admin-index-element h-100" href="{{ url_for('admin.task_template_index') }}">
             <div class="card-body">
-                <div><i class="{{ models.ProjectTaskTemplate.Meta.icon }}"></i></div><div><h5>{{ _("Task templates") }}</h5></div>
+                <div><i class="{{ models.ProjectTaskTemplate.Meta.icon }}"></i></div><div><h5>{{ models.ProjectTaskTemplate.Meta.verbose_name_plural }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.credential_template_index') }}">
+            <div class="card-body">
+                <div><i class="{{ models.CredentialImportTemplate.Meta.icon }}"></i></div><div><h5>{{ models.CredentialImportTemplate.Meta.verbose_name_plural }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.report_template_index') }}">
+            <div class="card-body">
+                <div><i class="{{ models.ProjectReportTemplate.Meta.icon }}"></i></div><div><h5>{{ models.ProjectReportTemplate.Meta.verbose_name_plural }}</h5></div>
             </div>
         </a>
     </div>
@@ -60,6 +74,13 @@
         <a class="card admin-index-element h-100" href="{{ url_for('admin.project_role_permissions') }}">
             <div class="card-body">
                 <div><i class="fa-solid fa-person-walking-arrow-loop-left"></i></div><div><h5>{{ _("Edit permissions for roles") }}</h5></div>
+            </div>
+        </a>
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-3 d-flex align-items-center justify-content-center">
+        <a class="card admin-index-element h-100" href="{{ url_for('admin.background_tasks_index') }}">
+            <div class="card-body">
+                <div><i class="fa-solid fa-bars-progress"></i></div><div><h5>{{ _("Background tasks") }}</h5></div>
             </div>
         </a>
     </div>

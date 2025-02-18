@@ -1,4 +1,4 @@
-from app import socketio, db, sanitizer, logger
+from app import socketio, db, sanitizer, logger, automation_modules
 from app.helpers.general_helpers import authenticated_only
 from app.helpers.projects_helpers import get_current_room
 from flask_socketio import emit, join_room, send
@@ -8,7 +8,7 @@ from flask_login import current_user
 import app.models as models
 import sqlalchemy as sa
 import sqlalchemy.exc as exc
-from bs4 import BeautifulSoup
+from selenium.common.exceptions import WebDriverException
 
 
 @socketio.on("join_room", namespace="/service")
@@ -135,6 +135,40 @@ def relate_issue_to_service(data):
             new_services.append(ns)
         emit('change related services', {'rows': new_services},
             namespace='/task', to=str(task.id))
+
+
+@socketio.on('take screenshot', namespace='/service')
+@authenticated_only
+def take_service_sreenshot(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    service_id, current_room_name = r
+    try:
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == int(service_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        return None
+    if not project_role_can_make_action(current_user, service, 'update'):
+        return None
+    proto = data['proto']
+    if proto is None:
+        return None
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request take service screenshot on service #{service_id}")
+    emit('take screenshot received', {'by_user:': current_user.title, 'proto': proto}, namespace="/service", to=current_room_name)
+    screenshoter = automation_modules.get("HardwareInventory")
+    exploit_data = {"protocol": proto, "target": service}
+    try:
+        screenshoter.run_by_single_target(session=db.session, running_user=current_user, exploit_data=exploit_data)
+        db.session.commit()
+    except WebDriverException:
+        pass
+    db.session.refresh(service)
+    attr = "screenshot_" + proto + "_id"
+    file_id = getattr(service, attr)
+    if file_id:
+        emit("screenshot taked", {'address': url_for('files.download_file', file_id=file_id), 'proto': proto}, namespace="/service", to=current_room_name)
+    else:
+        emit("screenshot taked", {'address': None, 'proto': proto}, namespace="/service", to=current_room_name)
 
 
 @socketio.on("join_room", namespace="/host")

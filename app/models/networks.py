@@ -38,7 +38,7 @@ class Network(HasComment, db.Model, HasHistory):
     connect_cmd: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("The connection command")})
     to_hosts: so.Mapped[List["Host"]] = so.relationship(back_populates="from_network", foreign_keys="Host.from_network_id", cascade="all, delete-orphan", info={'label': _l("Avaliable connection to host"), 'help_text': _l("Connection to the following host is avaliable from this subnet")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l("Project")})
-    project: so.Mapped["Project"] = so.relationship(lazy='select', backref=so.backref("networks", cascade='all, delete-orphan'), info={'label': _l("Project")}) # type: ignore
+    project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates='networks', info={'label': _l("Project")}) # type: ignore
 
     @property
     def fulltitle(self):
@@ -462,6 +462,8 @@ class Service(HasComment, db.Model, HasHistory):
 
     @property
     def treeselecttitle(self):
+        if self.transport_level_protocol is not None:
+            return f"{str(self.host.ip_address)}:{self.port}/{self.transport_level_protocol.title}"
         return f"{str(self.host.ip_address)}:{self.port}"
 
     @property

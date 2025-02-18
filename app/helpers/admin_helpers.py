@@ -90,9 +90,12 @@ class DefaultSidebar:
             nsel = SidebarElementSublink(e.Meta.verbose_name_plural, url_for('admin.status_type_transits', object_type=e.__name__), address=='status_type_transits' and obj.__name__==e.__name__)
             sels3.append(nsel)
         se3 = SidebarElement(_l("State objects"), url_for('admin.status_index'), "fa-solid fa-satellite", address in ['status_type_transits', 'status_index'], sels3)
-        sel41 = SidebarElementSublink(_l("All issue templates"), url_for('admin.issue_template_index'), address=='issue_template_index')
-        sel42 = SidebarElementSublink(_l("Add new issue template"), url_for('admin.issue_template_new'), address=='issue_template_new')
-        se4 = SidebarElement(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), models.IssueTemplate.Meta.icon, address.startswith('issue_template'), [sel41, sel42])
+        sel41 = SidebarElementSublink(_l("Object with templates"), url_for('admin.object_template_list'), address=='object_template_list')
+        sel42 = SidebarElementSublink(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), address=='issue_template_index')
+        sel43 = SidebarElementSublink(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), address=='task_template_index')
+        sel44 = SidebarElementSublink(models.CredentialImportTemplate.Meta.verbose_name_plural, url_for('admin.credential_template_index'), address=='credential_template_index')
+        sel45 = SidebarElementSublink(models.ProjectReportTemplate.Meta.verbose_name_plural, url_for('admin.report_template_index'), address=='report_template_index')
+        se4 = SidebarElement(_l("Templates"), url_for('admin.issue_template_index'), "fa-solid fa-gopuram", '_template_' in address, [sel41, sel42, sel43, sel44, sel45])
         sel51 = SidebarElementSublink(_l("All files"), url_for('admin.admin_file_index'), address=="admin_file_index")
         se5 = SidebarElement(models.FileData.Meta.verbose_name_plural, url_for('admin.admin_file_index'), models.FileData.Meta.icon, address=='admin_file_index')
         sel61 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), address=='background_tasks_index')
@@ -102,13 +105,7 @@ class DefaultSidebar:
         sel72 = SidebarElementSublink(_l("Add new project role"), url_for('admin.project_role_new'), address=='project_role_new')
         sel73 = SidebarElementSublink(_l("Edit role permissions"), url_for('admin.project_role_permissions'), address=='project_role_permissions')
         se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address in ['project_role_index', 'project_role_new', 'project_role_edit', 'project_role_permissions'], [sel71, sel72, sel73])
-        sel81 = SidebarElementSublink(_l("All project task templates"), url_for('admin.task_template_index'), address=='task_template_index')
-        sel82 = SidebarElementSublink(_l("Add new project task template"), url_for('admin.task_template_new'), address=='task_template_new')
-        se8 = SidebarElement(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), models.ProjectTaskTemplate.Meta.icon, address.startswith('task_template'), [sel81, sel82])
-        sel91 = SidebarElementSublink(_l("All report templates"), url_for('admin.report_templates_index'), address=='report_templates_index')
-        sel92 = SidebarElementSublink(_l("Add new report template"), url_for('admin.report_templates_new'), address=='report_templates_new')
-        se9 = SidebarElement(models.ProjectReportTemplate.Meta.verbose_name_plural, url_for('admin.report_templates_index'), models.ProjectReportTemplate.Meta.icon, address.startswith('report_templates'), [sel91, sel92])
-        self.se = [se1, se2, se3, se4, se8, se5, se6, se7, se9]
+        self.se = [se1, se2, se3, se4, se5, se6, se7]
 
     def __call__(self):
         return self.se
@@ -195,20 +192,38 @@ class DefaultEnvironment:
             case 'task_template_edit':
                 title = _l("Edit task template #%(templ_id)s", templ_id=obj.id)
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
-            case 'report_templates_index':
+            case 'report_template_index':
                 title = models.ProjectReportTemplate.Meta.verbose_name_plural
-                act1 = CurrentObjectAction(_l("Add new report template"), "fa-solid fa-square-plus", url_for('admin.report_templates_new'))
+                act1 = CurrentObjectAction(_l("Add new report template"), "fa-solid fa-square-plus", url_for('admin.report_template_new'))
                 current_object = CurrentObjectInfo(title, models.ProjectReportTemplate.Meta.icon, subtitle=_l("Report templates is a Jinja2 templater file, in which one paramether is passed - current project"), actions=[act1])
-            case 'report_templates_new':
+            case 'report_template_new':
                 title = _l("Add new project report template")
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=_l("Report templates is a Jinja2 templater file, in which one paramether is passed - current project"))
-            case 'report_templates_show':
+            case 'object_template_list':
+                title = _l("List of all template for objects")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-gopuram", subtitle=_l("Templates help you create different types of objects faster."))
+            case 'report_template_show':
                 title = _l("Report template #%(templ_id)s", templ_id=obj.id)
-                act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('admin.report_templates_edit', template_id=obj.id))
-                act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('admin.report_templates_delete', template_id=obj.id), confirm=_l("Are you sure you want to delete this template?"), btn_class='btn-danger', method='DELETE')
+                act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('admin.report_template_edit', template_id=obj.id))
+                act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('admin.report_template_delete', template_id=obj.id), confirm=_l("Are you sure you want to delete this template?"), btn_class='btn-danger', method='DELETE')
                 current_object = CurrentObjectInfo(_l("Report template #%(templ_id)s: «%(title)s»", templ_id=obj.id, title=obj.title), models.ProjectReportTemplate.Meta.icon, actions=[act1, act2])
-            case 'report_templates_edit':
+            case 'report_template_edit':
                 title = _l("Edit report template #%(templ_id)s", templ_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case 'credential_template_index':
+                title = _l("Template of credentials multiple import")
+                act1 = CurrentObjectAction(_l("Add new template"), "fa-solid fa-square-plus", url_for('admin.credential_template_new'))
+                current_object = CurrentObjectInfo(title, models.CredentialImportTemplate.Meta.icon, subtitle=_l("Templates that help and simplify the import of credential output from various collection systems"), actions=[act1])
+            case 'credential_template_new':
+                title = _l("Add new credential import template")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle="The parameters are inserted into the credentials import form")
+            case 'credential_template_show':
+                title = _l("Credential import template #%(templ_id)s", templ_id=obj.id)
+                act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('admin.credential_template_edit', template_id=obj.id))
+                act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for("admin.credential_template_delete", template_id=obj.id), confirm=_l("Are you sure you want to delete this template?"), btn_class='btn-danger', method='DELETE')
+                current_object = CurrentObjectInfo(title, models.CredentialImportTemplate.Meta.icon, subtitle=_l("A template that allows you to quickly fill in the fields for importing credentials."), actions=[act1, act2])
+            case 'credential_template_edit':
+                title = _l("Edit credential import template #%(templ_id)s", templ_id=obj.id)
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
 
         sidebar_data = DefaultSidebar(address, obj)()

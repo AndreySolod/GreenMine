@@ -5,6 +5,7 @@ from app.helpers.admin_helpers import DefaultEnvironment
 from flask import render_template
 import app.models as models
 import sqlalchemy.exc as exc
+from flask_babel import lazy_pgettext, lazy_gettext as _l
 
 
 @bp.route('/background-tasks/index')
@@ -21,8 +22,8 @@ def background_tasks_index():
                 try:
                     running_user = db.session.execute(db.select(models.User.title).where(models.User.id == t['args'][1])).one()[0]
                 except (exc.MultipleResultsFound, exc.NoResultFound):
-                    running_user = 'Удалённый пользователь'
-                all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': 'Активная', 'running_user': running_user})
+                    running_user = _l("Deleted user")
+                all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': lazy_pgettext("she", "Active"), 'running_user': running_user})
     scheduled_tasks = inspect_tasks.scheduled()
     if scheduled_tasks is not None:
         for worker_name, tasks in scheduled_tasks.items():
@@ -33,8 +34,8 @@ def background_tasks_index():
                 try:
                     running_user = db.session.execute(db.select(models.User.title).where(models.User.id == t['args'][1])).one()[0]
                 except (exc.MultipleResultsFound, exc.NoResultFound):
-                    running_user = 'Удалённый пользователь'
-                all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': 'Запланирована', 'running_user': running_user,
+                    running_user = _l("Deleted user")
+                all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': lazy_pgettext("she", "Planned"), 'running_user': running_user,
                                             'eta': t['eta']})
     reserved_tasks = inspect_tasks.reserved()
     if reserved_tasks is not None:
@@ -46,8 +47,8 @@ def background_tasks_index():
                 try:
                     running_user = db.session.execute(db.select(models.User.title).where(models.User.id == t['args'][1])).one()[0]
                 except (exc.MultipleResultsFound, exc.NoResultFound):
-                    running_user = 'Удалённый пользователь'
-                all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': 'Зарезервирована', 'running_user': running_user})
+                    running_user = _l("Deleted user")
+                all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': lazy_pgettext("she", "Reserver"), 'running_user': running_user})
     ctx = DefaultEnvironment('background_tasks_index')()
 
     side_libraries.library_required('bootstrap_table')

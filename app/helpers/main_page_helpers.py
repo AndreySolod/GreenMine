@@ -1,4 +1,5 @@
 from app import db
+import app.models as models
 from flask import url_for, current_app
 from flask_login import current_user
 from .general_helpers import SidebarElement, SidebarElementSublink
@@ -28,9 +29,14 @@ class DefaultSidebar:
             sel61 = SidebarElementSublink(_l("The Admin Panel"), url_for('admin.index'), obj=='admin')
             sel62 = SidebarElementSublink(_l("Enumeration objects"), url_for('admin.object_index'), obj=='admin')
             sel63 = SidebarElementSublink(_l("State objects"), url_for('admin.status_index'), obj=='admin')
-            sel64 = SidebarElementSublink(_l("Templates"), url_for('admin.issue_template_index'), obj=='admin')
-            sel65 = SidebarElementSublink(_l("Project roles"), url_for('admin.project_role_index'), obj=='admin')
-            se6 = SidebarElement(_l("Admin"), url_for('admin.index'), "fa-solid fa-gears", obj=='admin', [sel61, sel62, sel63, sel64, sel65])
+            sel64 = SidebarElementSublink(models.IssueTemplate.Meta.verbose_name_plural, url_for('admin.issue_template_index'), obj=='admin')
+            sel65 = SidebarElementSublink(models.ProjectTaskTemplate.Meta.verbose_name_plural, url_for('admin.task_template_index'), obj=='admin')
+            sel66 = SidebarElementSublink(models.CredentialImportTemplate.Meta.verbose_name_plural, url_for('admin.credential_template_index'), obj=='admin')
+            sel67 = SidebarElementSublink(models.ProjectReportTemplate.Meta.verbose_name_plural, url_for('admin.report_template_index'), obj=='admin')
+            sel68 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), obj=='admin')
+            sel69 = SidebarElementSublink(_l("Project roles"), url_for('admin.project_role_index'), obj=='admin')
+            sel610 = SidebarElementSublink(models.FileData.Meta.verbose_name_plural, url_for('admin.admin_file_index'), obj=='admin')
+            se6 = SidebarElement(_l("Admin"), url_for('admin.index'), "fa-solid fa-gears", obj=='admin', [sel61, sel62, sel63, sel64, sel65, sel66, sel67, sel68, sel69,sel610])
             self.se.append(se6)
 
     def __call__(self):

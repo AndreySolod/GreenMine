@@ -44,7 +44,7 @@ def edit_related_services(data):
                                                                           models.Network.project_id==credential.project_id))).all()
         updated_services = set(credential.services)
         updated_services = updated_services.union(set(now_services))
-        credential.services = now_services
+        credential.services = set(now_services)
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related servicees on credential #{credential.id}")
     except (ValueError, TypeError, KeyError):

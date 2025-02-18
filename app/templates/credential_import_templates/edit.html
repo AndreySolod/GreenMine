@@ -1,0 +1,49 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{ _("Template paramethers") }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form_element(form, form.title) }}
+                            {{ form_element(form, form.string_slug) }}
+                            {{ form_element(form, form.description) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>{{ _("Parameters of the processed data") }}</h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form_element(form, form.login_column_number, inline=True) }}
+                            {{ form_element(form, form.password_hash_column_number, inline=True) }}
+                            {{ form_element(form, form.description_column_number, inline=True) }}
+                            {{ form_element(form, form.password_column_number, inline=True) }}
+                            {{ form_element(form, form.static_login, inline=True) }}
+                            {{ form_element(form, form.static_password_hash, inline=True) }}
+                            {{ form_element(form, form.static_hash_type_id, inline=True) }}
+                            {{ form_element(form, form.static_check_wordlist_id, inline=True) }}
+                            {{ form_element(form, form.static_description, inline=True) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

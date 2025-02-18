@@ -390,6 +390,7 @@ def bootstrap_table_argument_parsing(request: Request) -> Tuple[str, str, str, O
 
 
 def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=None):
+    #db.engine.echo = True
     ''' Выполняет поиск заданных объектов типа obj, получая параметры поиска из запроса (request). Возвращает 2 sql-запроса: на получение всех объектов, соответствующих заданным параметрам, а также на получение количества таких объектов. Для получения соответствующих объектов, нужно вызвать session.scalars(sql).all() '''
     # Собираем аргументы
     search, sort, order, offset, limit, filter_data, multi_sort = bootstrap_table_argument_parsing(request)
@@ -437,8 +438,8 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
             where_search.append(sa.cast(now_attr, sa.String).ilike('%' + search + '%'))
     # Добавим условия join'ов:
     for j in list_joins:
-        sql = sql.outerjoin(j)
-        sql_count = sql_count.outerjoin(j)
+        sql = sql.join(j, isouter=True)
+        sql_count = sql_count.join(j, isouter=True)
     # Теперь обрабатываем where - фильтры. Они заключаются в db.and_
     where_filter = []
     for a, val_a in filter_data.items():
@@ -496,9 +497,6 @@ def get_bootstrap_table_json_data(request, additional_params):
     print_params = additional_params.get('print_params') # Параметры отображения заданной строки на экране (такие как раскраска в цвета и т.п.).
     sql, sql_count = find_data_by_request_params(obj, request, column_index=column_index)
     sql = db.session.scalars(additional_params["base_select"](sql)).all() # base_select - это условия, дополнительно накладываемые на sql-запрос (помимо параметров запроса)
-    # Здесь будет проблема с alias'ами - это когда sqlalchemy возвращает sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) ambiguous column name: user.id
-    # В этом случае нужно использовать db.session.scalars(sa.select(Project).join(Project.created_by.of_type(a1)).outerjoin(Project.updated_by.of_type(a2))).all()
-    # По идее, проблема уже исправлена в db.aliased, но оставляю это здесь на всякий случай
     # Теперь сохраняем данные в json и возвращаем их:
     lst = []
     for i in sql:
@@ -532,9 +530,12 @@ def get_bootstrap_table_json_data(request, additional_params):
                 elif col.split('-')[1] == 'select':
                     # В этом случае вместо последнего атрибута берём атрибут 'title'
                     for attr in path[:len(path) - 1:]:
-                        current_object = getattr(current_object, attr)
-                    current_object = current_object.title
-                now_attr[col] = str(current_object)
+                        current_object = getattr(current_object, attr, None)
+                    current_object = getattr(current_object, 'title', None)
+                if current_object is not None:
+                    now_attr[col] = str(current_object)
+                #else:
+                #    now_attr[col] = '-'
         if print_params is not None:
             for col, called_func in print_params:
                 now_attr[col] = called_func(i)

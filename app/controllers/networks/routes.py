@@ -1,6 +1,6 @@
 import json
 import sqlalchemy as sa
-from app import db, automation_modules, side_libraries, logger
+from app import db, side_libraries, logger
 from app.controllers.networks import bp
 from werkzeug.utils import secure_filename
 from flask import request, redirect, url_for, render_template, flash, abort, jsonify, send_file
@@ -9,7 +9,6 @@ import app.models as models
 from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.networks.forms as forms
-from selenium.common.exceptions import WebDriverException
 from flask_babel import lazy_gettext as _l
 from io import BytesIO
 from app.helpers.roles import project_role_can_make_action, project_role_can_make_action_or_abort
@@ -97,7 +96,7 @@ def network_new():
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new newtork {network.id}")
         flash(_l("Network #%(network_id)s has been successfully added", network_id=network.id), 'success')
         if form.submit_and_add_new.data:
-            return redirect(url_for('networks.host_new', **request.args))
+            return redirect(url_for('networks.network_new', **request.args))
         if project_role_can_make_action(current_user, network, 'show'):
             return redirect(url_for('networks.network_show', network_id=network.id))
         return redirect(url_for('networks.network_index', project_id=project_id))
@@ -225,7 +224,7 @@ def service_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'host.ip_address-input', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason', 'technical'],
+    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'host.ip_address-input', 'host.device_type.id-select', 'host.device_vendor.id-select', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason', 'technical'],
                          'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network).where(models.Network.project_id==project_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
@@ -244,7 +243,10 @@ def service_index():
     ctx = get_default_environment(models.Service(), 'index', proj=project)
     transport_level_protocols = {i: t for i, t in db.session.execute(sa.select(models.ServiceTransportLevelProtocol.id, models.ServiceTransportLevelProtocol.title))}
     port_states = {i: t for i, t in db.session.execute(sa.select(models.ServicePortState.id, models.ServicePortState.title))}
-    filters = {'ServiceTransportLevelProtocol': json.dumps(transport_level_protocols), 'ServicePortState': json.dumps(port_states)}
+    device_types = {i: t for i, t in db.session.execute(sa.select(models.DeviceType.id, models.DeviceType.title))}
+    device_vendors = {i: t for i, t in db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title))}
+    filters = {'ServiceTransportLevelProtocol': json.dumps(transport_level_protocols), 'ServicePortState': json.dumps(port_states),
+               'DeviceType': json.dumps(device_types), "DeviceVendor": json.dumps(device_vendors)}
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
     context = {'filters': filters, 'project': project}
@@ -363,9 +365,14 @@ def network_edit(network_id):
     return render_template('networks/edit.html', form=form, **ctx)
 
 
-@bp.route("/networks/<int:network_id>/delete", methods=["POST"])
+@bp.route("/networks/<network_id>/delete", methods=["POST"])
 @login_required
 def network_delete(network_id):
+    try:
+        network_id = int(network_id)
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request network delete with non-integer network_id {network_id}")
+        abort(400)
     network = get_or_404(db.session, models.Network, network_id)
     project_role_can_make_action_or_abort(current_user, network, 'delete')
     project_id = network.project_id
@@ -552,35 +559,6 @@ def get_default_access_proto(port, transport_proto):
         abort(404)
 
 
-@bp.route("/service/take_screenshot", methods=["POST"])
-@login_required
-def take_service_screenshot():
-    try:
-        service_id = int(request.form.get('service_id'))
-        proto = request.form.get("proto")
-    except (ValueError, TypeError):
-        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request take service screenshot with non-integer service_id {service_id}")
-        abort(400)
-    if proto is None:
-        abort(400)
-    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request take service screenshot on service #{service_id}")
-    screenshoter = automation_modules.get("HardwareInventory")
-    service = get_or_404(db.session, models.Service, service_id)
-    project_role_can_make_action_or_abort(current_user, service, 'take_screenshot')
-    exploit_data = {"protocol": proto, "target": service}
-    try:
-        screenshoter.run_by_single_target(session=db.session, running_user=current_user, exploit_data=exploit_data)
-    except WebDriverException:
-        pass
-    db.session.refresh(service)
-    attr = "screenshot_" + proto + "_id"
-    file_id = getattr(service, attr)
-    if file_id:
-        return jsonify({'address': url_for("files.download_file", file_id=file_id)})
-    else:
-        return jsonify({"address": None})
-
-
 @bp.route('/networks/generate-all-included-ip')
 @login_required
 def generate_all_included_ip_addresses():
@@ -602,7 +580,6 @@ def generate_all_included_ip_addresses():
             if i in excluded_ips:
                 continue
             ip_list.add(str(i))
-    for i in ip_list:
-        send_data.write(i.encode())
+    send_data.write("\n".join(list(ip_list)).encode())
     send_data.seek(0)
     return send_file(send_data, 'text/plain', True, 'ip_list.txt')

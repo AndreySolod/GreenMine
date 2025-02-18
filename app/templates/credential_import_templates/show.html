@@ -1,0 +1,78 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Template paramethers") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.title.info['label'] }}:</td>
+                            <td>{{ template.title }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.string_slug.info['label'] }}:</td>
+                            <td>{{ template.string_slug }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4>{{ models.CredentialImportTemplate.description.info['label'] }}:</h4>
+                {{ template.description|safe }}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ _("Parameters inserted into the processing template") }}</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tbody>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.login_column_number.info['label'] }}:</td>
+                            <td>{{ template.login_column_number|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.password_hash_column_number.info['label'] }}:</td>
+                            <td>{{ template.password_hash_column_number|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.description_column_number.info['label'] }}:</td>
+                            <td>{{ template.description_column_number|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.password_column_number.info['label'] }}:</td>
+                            <td>{{ template.password_column_number|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.static_login.info['label'] }}:</td>
+                            <td>{{ template.static_login|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.static_password_hash.info['label'] }}:</td>
+                            <td>{{ template.static_password_hash|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.static_hash_type_id.info['label'] }}:</td>
+                            <td>{{ template.static_hash_type_id.title|default("") }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.static_check_wordlist_id.info['label'] }}:</td>
+                            <td>{{ template.static_check_wordlist_id.title|default("") }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.CredentialImportTemplate.static_description.info['label'] }}:</td>
+                            <td>{{ template.static_description|suppress_none }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

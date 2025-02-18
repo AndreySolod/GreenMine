@@ -26,7 +26,7 @@ class DevelopmentConfig:
     CELERY_TASK_IGNORE_RESULT = False if os.environ.get("CELERY_TASK_IGNORE_RESULT") == 'False' else True
     CSP_ENABLED = False if os.environ.get("CSP_ENABLED") else True
     try:
-        CELERY_WORKERS_COUNT = int(os.environ.get('CELERY_WORKERS_COUNT') or 1)
+        CELERY_WORKERS_COUNT = int(os.environ.get('CELERY_WORKERS_COUNT') or 0)
     except (ValueError, TypeError):
         CELERY_WORKERS_COUNT = 1
     CELERY_WORKERS_CONCURRENCY_COUNT = int(os.environ.get("CELERY_WORKERS_CONCURRENCY_COUNT") or 4)

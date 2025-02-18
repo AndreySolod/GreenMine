@@ -100,7 +100,7 @@ class Credential(HasComment, db.Model, HasHistory):
                                                                    info={'label': _l("Checked on wordlist")})
     check_wordlist: so.Mapped['CheckWordlist'] = so.relationship(lazy='select', info={'label': _l("Checked on wordlist")})
     password: so.Mapped[Optional[str]] = so.mapped_column(sa.String(70), info={'label': _l('Password')})
-    services: so.Mapped[List["Service"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin=id==CredentialByService.credential_id, # type: ignore
+    services: so.Mapped[Set["Service"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin=id==CredentialByService.credential_id, # type: ignore
                                                            secondaryjoin='CredentialByService.service_id==Service.id', back_populates='credentials',
                                                            lazy='select', info={'label': _l("Related services")})
     is_pentest_credentials: so.Mapped[bool] = so.mapped_column(default=False, index=True, info={'label': _l("Only for pentest")})
@@ -129,3 +129,26 @@ class Credential(HasComment, db.Model, HasHistory):
         project_permission_actions = {'index': _l("Show object list"), 'pentest_index': _l("Show created object list"), 'create': _l("Create new object"), 'show': _l("Show object card"),
                                       'update': _l("Edit and update object"), 'delete': _l("Delete object"), 'add_comment': _l("Add comment to object"),
                                       'show_comments': _l("Show comment list of object"), 'show_history': _l("Show object history")}
+
+
+class CredentialImportTemplate(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    string_slug: so.Mapped[str] = so.mapped_column(LimitedLengthString(80), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l("Title")})
+    description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Template description")})
+    login_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Login column number")})
+    password_hash_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Password hash column number")})
+    description_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Additional description column number")})
+    password_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Password column number")})
+    static_login: so.Mapped[Optional[str]] = so.mapped_column(sa.String(Credential.login.type.length), info={'label': _l("Static login")})
+    static_password_hash: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Static password hash")})
+    static_hash_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HashType.id, ondelete='CASCADE'), info={'label': _l("Static hash type")})
+    static_hash_type: so.Mapped[HashType] = so.relationship(lazy='select', info={'label': _l("Static hash type")})
+    static_check_wordlist_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CheckWordlist.id, ondelete='CASCADE'), info={'label': _l("Static check wordlist")})
+    static_check_wordlist: so.Mapped[CheckWordlist] = so.relationship(lazy='select', info={'label': _l("Static check wordlist")})
+    static_description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Static description")})
+    
+    class Meta:
+        verbose_name = _l("Credential import template")
+        verbose_name_plural = _l("Credential import templates")
+        icon = 'fa-brands fa-keycdn'

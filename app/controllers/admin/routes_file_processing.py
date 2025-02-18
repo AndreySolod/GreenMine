@@ -27,7 +27,7 @@ def admin_file_index():
 
 @bp.route('/files/index-data')
 def files_index_data():
-    additional_params = {'obj': models.FileData, 'column_index': ['id', 'title', 'extension', 'description', 'created_at', 'created_by_id'],
+    additional_params = {'obj': models.FileData, 'column_index': ['id', 'title', 'extension', 'description', 'created_at', 'created_by'],
                          'base_select': lambda x: x}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' get all file list")
     return get_bootstrap_table_json_data(request, additional_params)

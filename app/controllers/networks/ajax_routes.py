@@ -42,7 +42,7 @@ def service_to_host(host_id):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
     additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'technical', 'port', 'access_protocol'],
-                         'base_select': lambda x: x.join(models.Service.host).where(models.Host.id == host_id)}
+                         'base_select': lambda x: x.join(models.Service.host, isouter=True).where(models.Host.id == host_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request services from host #{host_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -63,9 +63,9 @@ def get_select2_service_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     query = request.args.get('term') if request.args.get('term') else ''
-    data = db.session.scalars(sa.select(models.Service).join(models.Service.host).join(models.Host.from_network)
+    data = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True).join(models.Service.transport_level_protocol, isouter=True)
                               .where(sa.and_(models.Network.project_id==project_id,
-                                             (sa.cast(models.Host.ip_address, sa.String) + ':' + sa.cast(models.Service.port, sa.String()) + " " + models.Service.title).ilike('%' + query + '%')))
+                                             (sa.cast(models.Host.ip_address, sa.String) + ':' + sa.cast(models.Service.port, sa.String) + "/" + sa.func.ifnull(models.ServiceTransportLevelProtocol.title, "") + " " + sa.func.ifnull(models.Service.title, "")).ilike('%' + query + '%')))
                                              .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
                               .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
     more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
@@ -90,16 +90,12 @@ def get_select2_host_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     query = request.args.get('term') if request.args.get('term') else ''
-    data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
+    data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
                                                                                                   models.Network.project_id == project_id))
                                                     .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
                                                     .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
-    for i in data:
-        if i.title is None:
-            print(i)
     more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host on project #{project_id} via select2-data")
-    print('i.title:', data[0].title, data[0].treeselecttitle, type(data[0].title))
     result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
     return jsonify(result)
 

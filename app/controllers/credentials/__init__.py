@@ -33,7 +33,9 @@ def sidebar(current_object, act: str, **kwargs) -> SidebarElement:
         sels.append(sel_pentest_creds)
     if project_role_can_make_action(current_user, Credential(), 'create', project=proj):
         sel_add_creds = SidebarElementSublink(_l("Add new credentials"), url_for('credentials.credential_new', project_id=proj.id), con=='Credential' and act=='new')
+        sel_add_multiple = SidebarElementSublink(_l("Add multiple credentials"), url_for('credentials.multiple_import_credentials', project_id=proj.id), con=='Credential' and act=='multiple_import')
         sels.append(sel_add_creds)
+        sels.append(sel_add_multiple)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Credentials"), url_for('credentials.credential_index', project_id=proj.id), Credential.Meta.icon_index, con=='Credential',
@@ -67,6 +69,9 @@ def environment(obj, action, **kwargs):
     elif action == 'new':
         title = _l("Add new credentials")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=obj.project.fulltitle)
+    elif action == 'multiple_import':
+        title = _l("Multiple import credentials")
+        current_object = CurrentObjectInfo(title, "fa-solid fa-upload", subtitle=_l("Multiple add new credentials or update if they exist in database"))
     elif action == 'edit':
         title = _l("Edit credentials")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)

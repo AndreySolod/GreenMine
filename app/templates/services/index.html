@@ -77,6 +77,22 @@
                         filterControl: 'input',
                     },
                     {
+                        field: 'host.device_type.id-select',
+                        title: "{{ models.Host.device_type.info['label'] }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'select',
+                        filterData: 'json:{{ filters["DeviceType"]|escapejs }}'
+                    },
+                    {
+                        field: 'host.device_vendor.id-select',
+                        title: "{{ models.Host.device_vendor.info['label'] }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'select',
+                        filterData: 'json:{{ filters["DeviceVendor"]|escapejs }}'
+                    },
+                    {
                         field: 'port',
                         title: "{{ models.Service.port.info['label'] }}",
                         sortable: true,

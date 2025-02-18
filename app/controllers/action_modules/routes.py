@@ -21,7 +21,11 @@ def action_modules_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, AutomationModules(), 'index', project=project)
-    modules = automation_modules.action_modules
+    ms = automation_modules.action_modules
+    modules = []
+    for m in ms:
+        if hasattr(m, 'show_on_exploit_list') and m.show_on_exploit_list or not hasattr(m, 'show_on_exploit_list'):
+            modules.append(m)
     ctx = get_default_environment(automation_modules, 'index', proj=project)
     side_libraries.library_required('bootstrap_table')
     context = {'action_modules': modules, 'project': project}
@@ -42,7 +46,7 @@ def module_run(module_name):
     project_role_can_make_action_or_abort(current_user, AutomationModules(), 'create', project=project)
     form = module.run_form(project_id)
     if form.validate_on_submit():
-        module.run(form, current_user, request.files, locale=g.locale)
+        module.run(form, current_user, request.files, locale=g.locale, project_id=project_id)
         flash(_l("The module has been sent for execution"), 'success')
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' was startet a task '{module_name}'")
         return redirect(url_for('action_modules.action_modules_index', project_id=project_id))
