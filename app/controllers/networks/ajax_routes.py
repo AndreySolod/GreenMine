@@ -64,7 +64,7 @@ def get_select2_service_data():
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     query = request.args.get('term') if request.args.get('term') else ''
     data = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True).join(models.Service.transport_level_protocol, isouter=True)
-                              .where(sa.and_(models.Network.project_id==project_id,
+                              .where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False,
                                              (sa.cast(models.Host.ip_address, sa.String) + ':' + sa.cast(models.Service.port, sa.String) + "/" + sa.func.ifnull(models.ServiceTransportLevelProtocol.title, "") + " " + sa.func.ifnull(models.Service.title, "")).ilike('%' + query + '%')))
                                              .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
                               .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
@@ -91,7 +91,8 @@ def get_select2_host_data():
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     query = request.args.get('term') if request.args.get('term') else ''
     data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
-                                                                                                  models.Network.project_id == project_id))
+                                                                                                  models.Network.project_id == project_id,
+                                                                                                  models.Host.excluded == False))
                                                     .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
                                                     .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
     more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
@@ -112,13 +113,13 @@ def all_services_port_data():
     search, sort, order, offset, limit, filter_data, _ = bootstrap_table_argument_parsing(request)
     sql_total = sa.select(sa.func.count(models.Service.port.distinct()))
     sql = sa.select(models.Service.port, models.ServiceTransportLevelProtocol.title, models.AccessProtocol.title)
-    sql = sql.outerjoin(models.Service.host).outerjoin(models.Host.from_network).where(models.Network.project_id == project_id).outerjoin(
+    sql = sql.outerjoin(models.Service.host).outerjoin(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id, models.Host.excluded == False)).outerjoin(
         models.Service.transport_level_protocol).outerjoin(models.DefaultPortAndTransportProto,
-        db.and_(models.Service.port == models.DefaultPortAndTransportProto.port, models.Service.transport_level_protocol_id == models.DefaultPortAndTransportProto.transport_level_protocol_id)
+        sa.and_(models.Service.port == models.DefaultPortAndTransportProto.port, models.Service.transport_level_protocol_id == models.DefaultPortAndTransportProto.transport_level_protocol_id)
                                                           ).outerjoin(models.DefaultPortAndTransportProto.access_protocol)
-    sql_total = sql_total.outerjoin(models.Service.host).outerjoin(models.Host.from_network).where(models.Network.project_id == project_id).outerjoin(
+    sql_total = sql_total.outerjoin(models.Service.host).outerjoin(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id, models.Host.excluded == False)).outerjoin(
         models.Service.transport_level_protocol).outerjoin(models.DefaultPortAndTransportProto, 
-        db.and_(models.Service.port == models.DefaultPortAndTransportProto.port, models.Service.transport_level_protocol_id == models.DefaultPortAndTransportProto.transport_level_protocol_id)
+        sa.and_(models.Service.port == models.DefaultPortAndTransportProto.port, models.Service.transport_level_protocol_id == models.DefaultPortAndTransportProto.transport_level_protocol_id)
                                                           ).outerjoin(models.DefaultPortAndTransportProto.access_protocol)
     where_search = [sa.cast(models.Service.port, sa.String).ilike('%' + search + '%'),
                     sa.cast(models.ServiceTransportLevelProtocol.title, sa.String).ilike('%' + search + '%'),
@@ -164,7 +165,8 @@ def services_by_port_data(port, transport_level_protocol):
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
     additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'host.ip_address-input', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason'],
                          'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network)
-                         .where(sa.and_(models.Network.project_id==project_id, models.Service.port == port, models.Service.transport_level_protocol_id == transport_level_protocol))}
+                         .where(sa.and_(models.Network.project_id==project_id, models.Service.port == port, models.Service.transport_level_protocol_id == transport_level_protocol,
+                                        models.Host.excluded == False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -186,6 +188,7 @@ def get_select2_hosts_interfaces_data():
     project_role_can_make_action_or_abort(current_user, host, 'index')
     query = request.args.get('term') if request.args.get('term') else ''
     data = db.session.scalars(sa.select(models.Host).outerjoin(models.Host.from_network).where(sa.and_(models.Host.id != host.id, models.Network.project_id == host.from_network.project_id,
+                                                                                                       models.Host.excluded == False,
                                                                                                   models.Host.ip_address.ilike("%" + query + "%")))
                                                                                                   .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
                                                                                                   .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
