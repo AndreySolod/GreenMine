@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-18 22:06+1000\n"
-"PO-Revision-Date: 2025-02-18 22:11+1000\n"
+"POT-Creation-Date: 2025-02-26 18:05+0300\n"
+"PO-Revision-Date: 2025-02-26 18:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -70,9 +70,9 @@ msgstr ""
 #: app/action_modules/GetKyoceraCreds/__init__.py:145
 #: app/action_modules/GetKyoceraCreds/__init__.py:158
 #: app/action_modules/Import_from_nmap/__init__.py:217
-#: app/action_modules/Inner_enumerate/__init__.py:85
 #: app/action_modules/Inner_enumerate/__init__.py:86
 #: app/action_modules/Inner_enumerate/__init__.py:87
+#: app/action_modules/Inner_enumerate/__init__.py:88
 #: app/controllers/admin/credential_templates_forms.py:15
 #: app/controllers/admin/credential_templates_forms.py:16
 #: app/controllers/admin/forms.py:28
@@ -88,7 +88,7 @@ msgstr ""
 #: app/controllers/cves/forms.py:18 app/controllers/cves/forms.py:26
 #: app/controllers/issues/forms.py:22 app/controllers/networks/forms.py:19
 #: app/controllers/networks/forms.py:147 app/controllers/networks/forms.py:153
-#: app/controllers/networks/forms.py:209 app/controllers/notes/forms.py:14
+#: app/controllers/networks/forms.py:215 app/controllers/notes/forms.py:14
 #: app/controllers/notes/forms.py:27 app/controllers/projects/forms.py:18
 #: app/controllers/projects/forms.py:21 app/controllers/projects/forms.py:23
 #: app/controllers/projects/forms.py:25 app/controllers/projects/forms.py:27
@@ -106,12 +106,12 @@ msgid "This field is mandatory!"
 msgstr "Это поле является обязательным!"
 
 #: app/action_modules/GetKyoceraCreds/__init__.py:149
-#: app/action_modules/Inner_enumerate/__init__.py:104
+#: app/action_modules/Inner_enumerate/__init__.py:105
 msgid "The page load timeout must be greater than 0!"
 msgstr "Время ожидания загрузки страницы должно быть больше 0!"
 
 #: app/action_modules/GetKyoceraCreds/__init__.py:157
-#: app/action_modules/Inner_enumerate/__init__.py:113
+#: app/action_modules/Inner_enumerate/__init__.py:114
 msgid "Target verification range:"
 msgstr "Целевой диапазон сканирования:"
 
@@ -126,7 +126,7 @@ msgstr ""
 "Домен для поиска DNS-имён, если учётные данные для SMB заданы через NetBIOS"
 
 #: app/action_modules/GetKyoceraCreds/__init__.py:159
-#: app/action_modules/Inner_enumerate/__init__.py:115
+#: app/action_modules/Inner_enumerate/__init__.py:116
 msgid "Run"
 msgstr "Запустить"
 
@@ -186,19 +186,19 @@ msgstr "Импорт из Nmap"
 msgid "Imports the data of the scan results with the Nmap scanner"
 msgstr "Импортирует данные результатов сканирования через сканер Nmap"
 
-#: app/action_modules/Inner_enumerate/__init__.py:85
+#: app/action_modules/Inner_enumerate/__init__.py:86
 msgid "Dimensions of the created image (in pixels):"
 msgstr "Размеры создаваемого изображения (в пикселях):"
 
-#: app/action_modules/Inner_enumerate/__init__.py:86
+#: app/action_modules/Inner_enumerate/__init__.py:87
 msgid "Page loading timeout:"
 msgstr "Время ожидания загрузки страницы:"
 
-#: app/action_modules/Inner_enumerate/__init__.py:87
+#: app/action_modules/Inner_enumerate/__init__.py:88
 msgid "Page loading wait:"
 msgstr "Время ожидания загрузки страницы:"
 
-#: app/action_modules/Inner_enumerate/__init__.py:88
+#: app/action_modules/Inner_enumerate/__init__.py:89
 #: app/controllers/admin/credential_templates_forms.py:34
 #: app/controllers/admin/forms.py:77 app/controllers/admin/forms.py:133
 #: app/controllers/admin/issue_template_forms.py:42
@@ -209,46 +209,46 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/credentials/forms.py:44 app/controllers/cves/forms.py:48
 #: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:47
 #: app/controllers/networks/forms.py:54 app/controllers/networks/forms.py:119
-#: app/controllers/networks/forms.py:185 app/controllers/notes/forms.py:31
+#: app/controllers/networks/forms.py:191 app/controllers/notes/forms.py:31
 #: app/controllers/projects/forms.py:40 app/controllers/projects/forms.py:83
 #: app/controllers/tasks/forms.py:73 app/controllers/users/forms.py:71
 #: app/controllers/wiki_pages/forms.py:33 app/controllers/wiki_pages/forms.py:54
 #: app/templates/credentials/show.html:260 app/templates/issues/show.html:303
-#: app/templates/issues/show.html:328 app/templates/services/show.html:362
-#: app/templates/services/show.html:387 app/templates/services/show.html:412
+#: app/templates/issues/show.html:328 app/templates/services/show.html:375
+#: app/templates/services/show.html:400 app/templates/services/show.html:425
 #: app/templates/tasks/show.html:399 app/templates/tasks/show.html:423
 #: app/templates/tasks/show.html:448
 msgid "Save"
 msgstr "Сохранить"
 
-#: app/action_modules/Inner_enumerate/__init__.py:93
+#: app/action_modules/Inner_enumerate/__init__.py:94
 msgid ""
 "The dimensions of the created image should be set in the form of 'Width, Height'"
 msgstr "Размеры создаваемого изображения должны задаваться в виде 'Ширина,Высота'"
 
-#: app/action_modules/Inner_enumerate/__init__.py:98
+#: app/action_modules/Inner_enumerate/__init__.py:99
 msgid ""
 "The dimensions of the created image must be set as a positive number of pixels"
 msgstr ""
 "Размеры создаваемого изображения должны задаваться в виде положительного "
 "количества пикселей"
 
-#: app/action_modules/Inner_enumerate/__init__.py:100
+#: app/action_modules/Inner_enumerate/__init__.py:101
 msgid ""
 "The dimensions of the created image must be set in pixels. Example: '1920.2500'"
 msgstr ""
 "Размеры создаваемого изображения должны задаваться в пикселях. Пример: "
 "'1920,2500'"
 
-#: app/action_modules/Inner_enumerate/__init__.py:114
+#: app/action_modules/Inner_enumerate/__init__.py:115
 msgid "Check proto - use only http/https:"
 msgstr "Проверять протокол сервиса - использовать только http/https:"
 
-#: app/action_modules/Inner_enumerate/__init__.py:119
+#: app/action_modules/Inner_enumerate/__init__.py:120
 msgid "Inventory Manager"
 msgstr "Инвентаризатор"
 
-#: app/action_modules/Inner_enumerate/__init__.py:120
+#: app/action_modules/Inner_enumerate/__init__.py:121
 msgid ""
 "For a given address, if the http/https protocol is used, it receives a "
 "screenshot of the site and returns it in binary form"
@@ -413,11 +413,15 @@ msgstr "Статический пароль:"
 #: app/controllers/networks/forms.py:149 app/controllers/networks/forms.py:150
 #: app/controllers/networks/forms.py:152 app/controllers/networks/forms.py:154
 #: app/controllers/networks/forms.py:155 app/controllers/networks/forms.py:157
-#: app/controllers/networks/forms.py:159 app/controllers/networks/forms.py:160
-#: app/controllers/networks/forms.py:161 app/controllers/networks/forms.py:202
-#: app/controllers/networks/forms.py:203 app/controllers/networks/forms.py:204
-#: app/controllers/networks/forms.py:208 app/controllers/networks/forms.py:211
-#: app/controllers/networks/forms.py:223 app/controllers/notes/forms.py:13
+#: app/controllers/networks/forms.py:160 app/controllers/networks/forms.py:162
+#: app/controllers/networks/forms.py:165 app/controllers/networks/forms.py:166
+#: app/controllers/networks/forms.py:167 app/controllers/networks/forms.py:208
+#: app/controllers/networks/forms.py:209 app/controllers/networks/forms.py:210
+#: app/controllers/networks/forms.py:214 app/controllers/networks/forms.py:217
+#: app/controllers/networks/forms.py:229 app/controllers/networks/forms.py:245
+#: app/controllers/networks/forms.py:248 app/controllers/networks/forms.py:250
+#: app/controllers/networks/forms.py:252 app/controllers/networks/forms.py:254
+#: app/controllers/networks/forms.py:257 app/controllers/notes/forms.py:13
 #: app/controllers/notes/forms.py:16 app/controllers/notes/forms.py:17
 #: app/controllers/notes/forms.py:26 app/controllers/notes/forms.py:29
 #: app/controllers/notes/forms.py:30 app/controllers/projects/forms.py:17
@@ -556,9 +560,11 @@ msgstr "Шаблон импорта учётных данных успешно �
 #: app/controllers/credentials/forms.py:27 app/controllers/credentials/forms.py:32
 #: app/controllers/cves/forms.py:19 app/controllers/cves/forms.py:22
 #: app/controllers/issues/forms.py:23 app/controllers/networks/forms.py:20
-#: app/controllers/networks/forms.py:27 app/controllers/networks/forms.py:75
-#: app/controllers/networks/forms.py:84 app/controllers/networks/forms.py:143
-#: app/controllers/networks/forms.py:210 app/controllers/networks/forms.py:213
+#: app/controllers/networks/forms.py:27 app/controllers/networks/forms.py:74
+#: app/controllers/networks/forms.py:83 app/controllers/networks/forms.py:142
+#: app/controllers/networks/forms.py:158 app/controllers/networks/forms.py:163
+#: app/controllers/networks/forms.py:216 app/controllers/networks/forms.py:219
+#: app/controllers/networks/forms.py:246 app/controllers/networks/forms.py:255
 #: app/controllers/notes/forms.py:15 app/controllers/notes/forms.py:28
 #: app/controllers/projects/forms.py:19 app/controllers/tasks/forms.py:35
 #: app/controllers/users/forms.py:33 app/controllers/users/forms.py:36
@@ -578,7 +584,7 @@ msgstr "Это поле не может быть больше %(length)s сим�
 #: app/controllers/credentials/forms.py:39 app/controllers/cves/forms.py:44
 #: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:42
 #: app/controllers/networks/forms.py:46 app/controllers/networks/forms.py:111
-#: app/controllers/networks/forms.py:178 app/controllers/notes/forms.py:18
+#: app/controllers/networks/forms.py:184 app/controllers/notes/forms.py:18
 #: app/controllers/projects/forms.py:28 app/controllers/tasks/forms.py:62
 #: app/controllers/users/forms.py:62 app/controllers/wiki_pages/forms.py:29
 #: app/controllers/wiki_pages/forms.py:50
@@ -752,9 +758,9 @@ msgid "«%(login)s» login credentials"
 msgstr "Учётные данные для логина «%(login)s»"
 
 #: app/controllers/credentials/__init__.py:63
-#: app/controllers/issues/__init__.py:70 app/controllers/networks/__init__.py:98
-#: app/controllers/networks/__init__.py:137
-#: app/controllers/networks/__init__.py:182
+#: app/controllers/issues/__init__.py:70 app/controllers/networks/__init__.py:101
+#: app/controllers/networks/__init__.py:140
+#: app/controllers/networks/__init__.py:185
 #: app/controllers/projects/__init__.py:38 app/controllers/tasks/__init__.py:70
 #: app/controllers/users/routes.py:32 app/helpers/admin_helpers.py:151
 #: app/helpers/admin_helpers.py:189 app/helpers/admin_helpers.py:207
@@ -771,9 +777,9 @@ msgid "Edit"
 msgstr "Редактировать"
 
 #: app/controllers/credentials/__init__.py:66
-#: app/controllers/issues/__init__.py:73 app/controllers/networks/__init__.py:101
-#: app/controllers/networks/__init__.py:145
-#: app/controllers/networks/__init__.py:185
+#: app/controllers/issues/__init__.py:73 app/controllers/networks/__init__.py:104
+#: app/controllers/networks/__init__.py:148
+#: app/controllers/networks/__init__.py:188
 #: app/controllers/projects/__init__.py:44 app/controllers/tasks/__init__.py:73
 #: app/controllers/users/routes.py:34 app/helpers/admin_helpers.py:152
 #: app/helpers/admin_helpers.py:190 app/helpers/admin_helpers.py:208
@@ -791,9 +797,9 @@ msgid "Are you sure you want to delete these credentials?"
 msgstr "Вы действительно уверены в том, что хотите удалить данные учётные данные?"
 
 #: app/controllers/credentials/__init__.py:68
-#: app/controllers/issues/__init__.py:75 app/controllers/networks/__init__.py:103
-#: app/controllers/networks/__init__.py:147
-#: app/controllers/networks/__init__.py:187
+#: app/controllers/issues/__init__.py:75 app/controllers/networks/__init__.py:106
+#: app/controllers/networks/__init__.py:150
+#: app/controllers/networks/__init__.py:190
 #: app/controllers/projects/__init__.py:46 app/controllers/tasks/__init__.py:75
 #, python-format
 msgid "Created by <a href=\"%(link)s\">%(created_by)s</a> %(date)s"
@@ -839,7 +845,6 @@ msgid "Credential #%(cred_id)s has been successfully deleted"
 msgstr "Учётные данные #%(cred_id)s успешно удалены"
 
 #: app/controllers/credentials/routes.py:172
-#, python-format
 msgid "The credential import module has been successfully launched"
 msgstr "Модуль импорта учётных данных успешно запущен"
 
@@ -942,13 +947,13 @@ msgstr "Проблема #%(issue_id)s успешно изменена"
 msgid "Issue #%(issue_id)s has been successfully deleted"
 msgstr "Проблема #%(issue_id)s успешно удалена"
 
-#: app/controllers/networks/__init__.py:31 app/controllers/networks/__init__.py:88
-#: app/controllers/networks/__init__.py:93
+#: app/controllers/networks/__init__.py:31 app/controllers/networks/__init__.py:91
+#: app/controllers/networks/__init__.py:96
 msgid "All networks"
 msgstr "Все сети"
 
-#: app/controllers/networks/__init__.py:34 app/controllers/networks/__init__.py:91
-#: app/controllers/networks/__init__.py:105
+#: app/controllers/networks/__init__.py:34 app/controllers/networks/__init__.py:94
+#: app/controllers/networks/__init__.py:108
 msgid "Add new network"
 msgstr "Добавить новую сеть"
 
@@ -958,20 +963,20 @@ msgid "Networks"
 msgstr "Сети"
 
 #: app/controllers/networks/__init__.py:51
-#: app/controllers/networks/__init__.py:120
-#: app/controllers/networks/__init__.py:125 app/templates/hosts/index.html:9
+#: app/controllers/networks/__init__.py:123
+#: app/controllers/networks/__init__.py:128 app/templates/hosts/index.html:9
 msgid "All hosts"
 msgstr "Все конечные устройства"
 
 #: app/controllers/networks/__init__.py:52
-#: app/controllers/networks/__init__.py:127
-#: app/controllers/networks/__init__.py:132
+#: app/controllers/networks/__init__.py:130
+#: app/controllers/networks/__init__.py:135
 msgid "Excluded hosts"
 msgstr "Исключённые конечные устройства"
 
 #: app/controllers/networks/__init__.py:56
-#: app/controllers/networks/__init__.py:123
-#: app/controllers/networks/__init__.py:149
+#: app/controllers/networks/__init__.py:126
+#: app/controllers/networks/__init__.py:152
 msgid "Add new host"
 msgstr "Добавить новое конечное устройство"
 
@@ -988,80 +993,95 @@ msgid "Services by port"
 msgstr "Службы по портам"
 
 #: app/controllers/networks/__init__.py:78
-#: app/controllers/networks/__init__.py:167
-#: app/controllers/networks/__init__.py:174
-#: app/controllers/networks/__init__.py:189 app/templates/hosts/show.html:171
+#: app/controllers/networks/__init__.py:170
+#: app/controllers/networks/__init__.py:177
+#: app/controllers/networks/__init__.py:192 app/templates/hosts/show.html:171
 msgid "Add new service"
 msgstr "Добавить новую службу"
 
-#: app/controllers/networks/__init__.py:82 app/models/networks.py:489
+#: app/controllers/networks/__init__.py:81
+#: app/controllers/networks/__init__.py:198
+msgid "Inventory of services"
+msgstr "Инвентаризация служб"
+
+#: app/controllers/networks/__init__.py:85 app/models/networks.py:492
 msgid "Services"
 msgstr "Службы"
 
-#: app/controllers/networks/__init__.py:95
+#: app/controllers/networks/__init__.py:98
 #, python-format
 msgid "Network «%(ip_addr)s»"
 msgstr "Сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:101 app/templates/networks/index.html:307
+#: app/controllers/networks/__init__.py:104 app/templates/networks/index.html:307
 msgid "Are you sure you want to delete this network?"
 msgstr "Вы уверены в том, что хотите удалить эту сеть?"
 
-#: app/controllers/networks/__init__.py:108
+#: app/controllers/networks/__init__.py:111
 #, python-format
 msgid "Edit network «%(ip_addr)s»"
 msgstr "Редактировать сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:130
+#: app/controllers/networks/__init__.py:133
 msgid "Add new excluded host"
 msgstr "Добавить новое исключённое конечное устройство"
 
-#: app/controllers/networks/__init__.py:134
+#: app/controllers/networks/__init__.py:137
 #, python-format
 msgid "Host «%(ip_addr)s»"
 msgstr "Конечное устройство «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:140
+#: app/controllers/networks/__init__.py:143
 #: app/templates/hosts/excluded-index.html:118
 msgid "Include to research"
 msgstr "Включить в исследование"
 
-#: app/controllers/networks/__init__.py:142
+#: app/controllers/networks/__init__.py:145
 msgid "Exclude from research"
 msgstr "Исключить из исследования"
 
-#: app/controllers/networks/__init__.py:145 app/templates/hosts/index.html:282
+#: app/controllers/networks/__init__.py:148 app/templates/hosts/index.html:282
 msgid "Are you sure you want to delete this host?"
 msgstr "Вы уверены в том, что хотите удалить это конечное устройство?"
 
-#: app/controllers/networks/__init__.py:152
+#: app/controllers/networks/__init__.py:155
 #, python-format
 msgid "Edit host «%(ip_addr)s»"
 msgstr "Редактировать конечное устройство «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:164
-#: app/controllers/networks/__init__.py:169 app/templates/services/index.html:9
+#: app/controllers/networks/__init__.py:167
+#: app/controllers/networks/__init__.py:172 app/templates/services/index.html:9
 msgid "All services"
 msgstr "Все службы"
 
-#: app/controllers/networks/__init__.py:171
-#: app/controllers/networks/__init__.py:176
+#: app/controllers/networks/__init__.py:174
+#: app/controllers/networks/__init__.py:179
 msgid "Services, splitted by ports"
 msgstr "Службы, разбитые по портам"
 
-#: app/controllers/networks/__init__.py:179
+#: app/controllers/networks/__init__.py:182
 #, python-format
 msgid "Service «%(ip_addr)s:%(port)s»"
 msgstr "Служба «%(ip_addr)s:%(port)s»"
 
-#: app/controllers/networks/__init__.py:185
+#: app/controllers/networks/__init__.py:188
 msgid "Are you sure you want to delete this service?"
 msgstr "Вы уверены в том, что хотите удалить эту службу?"
 
-#: app/controllers/networks/__init__.py:192
+#: app/controllers/networks/__init__.py:195
 #, python-format
 msgid "Edit service «%(ip_addr)s:%(port)s»"
 msgstr "Редактировать службу «%(ip_addr)s:%(port)s»"
+
+#: app/controllers/networks/__init__.py:199
+#, python-format
+msgid "Inventory of services on project #%(project_id)s"
+msgstr "Инвентаризация служб на проекте #%(project_id)s"
+
+#: app/controllers/networks/__init__.py:199
+msgid "A page that allows you to quickly fill in basic data for hosts/services"
+msgstr ""
+"Страница, позволяющая быстро заполнить основные данные конечных устройств/служб"
 
 #: app/controllers/networks/forms.py:34 app/controllers/networks/forms.py:42
 msgid "Specify the correct IP address with a mask"
@@ -1084,14 +1104,34 @@ msgstr "Конечное устройство с указанным IP-адре�
 msgid "The reason why such a condition is installed on board"
 msgstr "Причина, по которой порт установлен в это состояние"
 
-#: app/controllers/networks/forms.py:156 app/controllers/networks/forms.py:158
+#: app/controllers/networks/forms.py:156 app/controllers/networks/forms.py:161
 #: app/controllers/users/forms.py:42
 msgid "Only images!"
 msgstr "Только изображения!"
 
-#: app/controllers/networks/forms.py:165
+#: app/controllers/networks/forms.py:171
 msgid "Specify the host for this port"
 msgstr "Укажите конечное устройство для данного порта"
+
+#: app/controllers/networks/forms.py:245
+msgid "Host title"
+msgstr "Заголовок конечного устройства"
+
+#: app/controllers/networks/forms.py:248
+msgid "Host description"
+msgstr "Описание конечного устройства"
+
+#: app/controllers/networks/forms.py:254
+msgid "Service title"
+msgstr "Заголовок службы"
+
+#: app/controllers/networks/forms.py:257
+msgid "Service description"
+msgstr "Описание службы"
+
+#: app/controllers/networks/forms.py:259
+msgid "Update"
+msgstr "Обновить"
 
 #: app/controllers/networks/routes.py:97
 #, python-format
@@ -2210,7 +2250,7 @@ msgid "Add new credential"
 msgstr "Добавить новые учётные данные"
 
 #: app/models/credentials.py:129 app/models/issues.py:152
-#: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:492
+#: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:495
 #: app/models/notes.py:49 app/models/report_templates.py:27
 #: app/models/tasks.py:218
 msgid "Show object list"
@@ -2221,43 +2261,43 @@ msgid "Show created object list"
 msgstr "Просматривать список созданных объектов"
 
 #: app/models/credentials.py:129 app/models/issues.py:152
-#: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:492
+#: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:495
 #: app/models/notes.py:49 app/models/tasks.py:218
 msgid "Create new object"
 msgstr "Создавать новые объекты"
 
 #: app/models/credentials.py:129 app/models/issues.py:152
-#: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:492
+#: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:495
 #: app/models/projects.py:92 app/models/tasks.py:218
 msgid "Show object card"
 msgstr "Просматривать карточку объекта"
 
 #: app/models/credentials.py:130 app/models/issues.py:153
-#: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:493
+#: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:496
 #: app/models/notes.py:49 app/models/projects.py:92 app/models/tasks.py:219
 msgid "Edit and update object"
 msgstr "Редактировать и изменять объект"
 
 #: app/models/credentials.py:130 app/models/issues.py:153
-#: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:493
+#: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:496
 #: app/models/notes.py:50 app/models/projects.py:92 app/models/tasks.py:219
 msgid "Delete object"
 msgstr "Удалять объект"
 
 #: app/models/credentials.py:130 app/models/issues.py:153
-#: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:493
+#: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:496
 #: app/models/tasks.py:219
 msgid "Add comment to object"
 msgstr "Добавлять комментарии к объекту"
 
 #: app/models/credentials.py:131 app/models/issues.py:154
-#: app/models/networks.py:75 app/models/networks.py:309 app/models/networks.py:494
+#: app/models/networks.py:75 app/models/networks.py:309 app/models/networks.py:497
 #: app/models/tasks.py:220
 msgid "Show comment list of object"
 msgstr "Просматривать список комментариев к объекту"
 
 #: app/models/credentials.py:131 app/models/issues.py:154
-#: app/models/networks.py:75 app/models/networks.py:309 app/models/networks.py:494
+#: app/models/networks.py:75 app/models/networks.py:309 app/models/networks.py:497
 #: app/models/tasks.py:220
 msgid "Show object history"
 msgstr "Просматривать историю объекта"
@@ -2373,7 +2413,7 @@ msgstr "Ответ на"
 
 #: app/models/generic.py:68 app/templates/credentials/show.html:198
 #: app/templates/cves/show.html:111 app/templates/hosts/show.html:372
-#: app/templates/issues/show.html:239 app/templates/services/show.html:300
+#: app/templates/issues/show.html:239 app/templates/services/show.html:313
 #: app/templates/tasks/show.html:340
 msgid "Comments"
 msgstr "Примечания"
@@ -2584,7 +2624,7 @@ msgstr "Ссылки на дополнительную информацию"
 msgid "Status"
 msgstr "Статус"
 
-#: app/models/issues.py:135 app/models/networks.py:455 app/models/tasks.py:168
+#: app/models/issues.py:135 app/models/networks.py:457 app/models/tasks.py:168
 #: app/templates/hosts/show.html:242 app/templates/issues/show.html:62
 #: app/templates/networks/show.html:83 app/templates/networks/show.html:88
 #: app/templates/services/show.html:78
@@ -2923,25 +2963,37 @@ msgstr "Причина статуса порта"
 msgid "http screenshot of the web interface"
 msgstr "http-скриншот веб-интерфейса"
 
-#: app/models/networks.py:450 app/models/networks.py:451
+#: app/models/networks.py:450
+msgid "Title of http site"
+msgstr "Заголовок HTTP-сайта"
+
+#: app/models/networks.py:451 app/models/networks.py:452
 msgid "https screenshot of the web interface"
 msgstr "https-скриншот веб-интерфейса"
 
-#: app/models/networks.py:460
+#: app/models/networks.py:453
+msgid "Title of https site"
+msgstr "Заголовок HTTPS-сайта"
+
+#: app/models/networks.py:458
+msgid "Has been inventoried"
+msgstr "Был инвентаризирован"
+
+#: app/models/networks.py:463
 #, python-format
 msgid "Service «%(ip_address)s:%(port)s»"
 msgstr "Служба «%(ip_address)s:%(port)s»"
 
-#: app/models/networks.py:461
+#: app/models/networks.py:464
 #, python-format
 msgid "Service «%(ip_address)s:%(port)s»: «%(title)s»"
 msgstr "Служба «%(ip_address)s:%(port)s»: «%(title)s»"
 
-#: app/models/networks.py:488
+#: app/models/networks.py:491
 msgid "Service"
 msgstr "Служба"
 
-#: app/models/networks.py:495
+#: app/models/networks.py:498
 msgid "Takes services screenshot"
 msgstr "Делать скриншоты сайта"
 
@@ -3425,44 +3477,44 @@ msgstr "Предпочитаемый язык"
 msgid "Roles on project"
 msgstr "Роли на проекте"
 
-#: app/models/users.py:267
+#: app/models/users.py:268
 msgid "Theme style"
 msgstr "Тема окружения"
 
-#: app/models/users.py:268
+#: app/models/users.py:269
 msgid "Theme styles"
 msgstr "Темы окружения"
 
-#: app/models/users.py:275
+#: app/models/users.py:276
 msgid "The sidebar is in a hidden state"
 msgstr "Боковая панель в свёрнутом состоянии"
 
-#: app/models/users.py:276
+#: app/models/users.py:277
 msgid "The order of comments"
 msgstr "Порядок следования кмментариев"
 
-#: app/models/users.py:276
+#: app/models/users.py:277
 msgid "True if direct and False otherwise"
 msgstr "True если прямой и False иначе"
 
-#: app/models/users.py:277
+#: app/models/users.py:278
 msgid ""
 "The indentation from the previous comment to respond to the message in pixels"
 msgstr "Отступ в отвечаемых комментариях в пикселях"
 
-#: app/models/users.py:287
+#: app/models/users.py:288
 msgid "User's Environment Settings"
 msgstr "Настройки окружения пользователя"
 
-#: app/models/users.py:288
+#: app/models/users.py:289
 msgid "User Environment Settings"
 msgstr "Настройки окружений пользователей"
 
-#: app/models/users.py:347
+#: app/models/users.py:348
 msgid "Team"
 msgstr "Команда"
 
-#: app/models/users.py:348
+#: app/models/users.py:349
 msgid "Teams"
 msgstr "Команды"
 
@@ -3688,8 +3740,8 @@ msgstr "Редактировать связанные службы"
 #: app/templates/cves/show.html:117 app/templates/hosts/show.html:380
 #: app/templates/hosts/show.html:386 app/templates/issues/show.html:248
 #: app/templates/issues/show.html:255 app/templates/networks/show.html:233
-#: app/templates/networks/show.html:239 app/templates/services/show.html:308
-#: app/templates/services/show.html:314 app/templates/tasks/show.html:348
+#: app/templates/networks/show.html:239 app/templates/services/show.html:321
+#: app/templates/services/show.html:327 app/templates/tasks/show.html:348
 #: app/templates/tasks/show.html:352
 msgid "History of property changes"
 msgstr "История изменения свойств"
@@ -3697,8 +3749,8 @@ msgstr "История изменения свойств"
 #: app/templates/credentials/show.html:250 app/templates/hosts/show.html:424
 #: app/templates/hosts/show.html:450 app/templates/issues/show.html:293
 #: app/templates/issues/show.html:318 app/templates/notes/index.html:126
-#: app/templates/services/show.html:352 app/templates/services/show.html:377
-#: app/templates/services/show.html:402 app/templates/tasks/show.html:389
+#: app/templates/services/show.html:365 app/templates/services/show.html:390
+#: app/templates/services/show.html:415 app/templates/tasks/show.html:389
 #: app/templates/tasks/show.html:413 app/templates/tasks/show.html:438
 #: app/templates/users/show.html:101
 #: app/templates/wiki_pages/wikipage_show.html:40
@@ -3743,7 +3795,7 @@ msgid "Specify another host as the interface of the current one"
 msgstr "Указать другой хост как интерфейс к текущему"
 
 #: app/templates/hosts/show.html:205 app/templates/issues/show.html:223
-#: app/templates/tasks/show.html:218
+#: app/templates/services/inventory.html:60 app/templates/tasks/show.html:218
 msgctxt "other"
 msgid "(Missing)"
 msgstr "(Отсутствует)"
@@ -3751,6 +3803,8 @@ msgstr "(Отсутствует)"
 #: app/templates/hosts/show.html:218 app/templates/issues/show.html:88
 #: app/templates/issues/show.html:98 app/templates/layout/_macrosses.html:311
 #: app/templates/layout/_macrosses.html:337
+#: app/templates/services/inventory.html:50
+#: app/templates/services/inventory.html:56
 msgctxt "woman"
 msgid "(Missing)"
 msgstr "(Отсутствует)"
@@ -3787,8 +3841,8 @@ msgstr "Параметры создаваемой проблемы"
 #: app/templates/issue_templates/show.html:79
 #: app/templates/issue_templates/show.html:85
 #: app/templates/issue_templates/show.html:91 app/templates/services/show.html:12
-#: app/templates/services/show.html:111 app/templates/services/show.html:127
-#: app/templates/services/show.html:270 app/templates/services/show.html:285
+#: app/templates/services/show.html:118 app/templates/services/show.html:140
+#: app/templates/services/show.html:283 app/templates/services/show.html:298
 #: app/templates/task_templates/show.html:21
 #: app/templates/task_templates/show.html:57
 msgid "(Missing)"
@@ -3809,7 +3863,7 @@ msgid "Additional info"
 msgstr "Дополнительная информация"
 
 #: app/templates/issues/show.html:164 app/templates/issues/show.html:292
-#: app/templates/services/show.html:217 app/templates/services/show.html:351
+#: app/templates/services/show.html:230 app/templates/services/show.html:364
 #: app/templates/tasks/show.html:388
 msgid "Edit related tasks"
 msgstr "Редактировать связанные задачи"
@@ -3836,35 +3890,35 @@ msgstr "Добавить комментарий"
 msgid "Welcome to PCF"
 msgstr "Добро пожаловать в PCF"
 
-#: app/templates/layout/base.html:262
+#: app/templates/layout/base.html:264
 msgid "Paragraph"
 msgstr "Параграф"
 
-#: app/templates/layout/base.html:263
+#: app/templates/layout/base.html:265
 msgid "Header 1"
 msgstr "Заголовок 1"
 
-#: app/templates/layout/base.html:264
+#: app/templates/layout/base.html:266
 msgid "Header 2"
 msgstr "Заголовок 2"
 
-#: app/templates/layout/base.html:265
+#: app/templates/layout/base.html:267
 msgid "Header 3"
 msgstr "Заголовок 3"
 
-#: app/templates/layout/base.html:266
+#: app/templates/layout/base.html:268
 msgid "Header 4"
 msgstr "Заголовок 4"
 
-#: app/templates/layout/base.html:267
+#: app/templates/layout/base.html:269
 msgid "Header 5"
 msgstr "Заголовок 5"
 
-#: app/templates/layout/base.html:268
+#: app/templates/layout/base.html:270
 msgid "Header 6"
 msgstr "Заголовок 6"
 
-#: app/templates/layout/base.html:275
+#: app/templates/layout/base.html:277
 msgid "Enter text here"
 msgstr "Введите текст здесь"
 
@@ -3950,39 +4004,79 @@ msgstr "Протокол транспортного уровня"
 msgid "Default access protocol"
 msgstr "Протокол прикладного уровня по умолчанию"
 
+#: app/templates/services/inventory.html:16
+#: app/templates/services/inventory.html:27
+msgid "Unable to load an image"
+msgstr "Невозможно загрузить изображение"
+
+#: app/templates/services/inventory.html:18
+msgid "Screenshot http"
+msgstr "HTTP-скриншот"
+
+#: app/templates/services/inventory.html:18
+#: app/templates/services/inventory.html:29
+msgid "The screenshot is missing"
+msgstr "Скриншот отсутствует"
+
+#: app/templates/services/inventory.html:29
+msgid "Screenshot https"
+msgstr "HTTPS-скриншот"
+
+#: app/templates/services/inventory.html:38
+msgid "Previous"
+msgstr "Предыдущий"
+
+#: app/templates/services/inventory.html:42
+msgid "Next"
+msgstr "Следующий"
+
+#: app/templates/services/inventory.html:46
+msgid "Host technical information"
+msgstr "Техническая информация конечного устройства"
+
+#: app/templates/services/inventory.html:52
+msgid "Service technical information"
+msgstr "Техническая информация службы"
+
+#: app/templates/services/inventory.html:63 app/templates/services/show.html:488
+#: app/templates/tasks/show.html:30 app/templates/tasks/show.html:39
+msgctxt "man"
+msgid "(Missing)"
+msgstr "(Отсутствует)"
+
 #: app/templates/services/show.html:58
 msgid "Site screenshot"
 msgstr "Скриншот сайта"
 
-#: app/templates/services/show.html:103 app/templates/services/show.html:120
+#: app/templates/services/show.html:103 app/templates/services/show.html:125
 msgid "Take screenshot"
 msgstr "Сделать скриншот"
 
-#: app/templates/services/show.html:109 app/templates/services/show.html:125
+#: app/templates/services/show.html:116 app/templates/services/show.html:138
 msgid "Error when content loading"
 msgstr "Ошибка при загрузке данных"
 
-#: app/templates/services/show.html:136 app/templates/services/show.html:401
+#: app/templates/services/show.html:149 app/templates/services/show.html:414
 #: app/templates/tasks/show.html:173 app/templates/tasks/show.html:437
 msgid "Edit related issues"
 msgstr "Редактировать связанные проблемы"
 
-#: app/templates/services/show.html:178 app/templates/services/show.html:376
+#: app/templates/services/show.html:191 app/templates/services/show.html:389
 msgid "Edit related credentials"
 msgstr "Редактировать связанные учётные данные"
 
-#: app/templates/services/show.html:434
+#: app/templates/services/show.html:447
 msgid ""
 "User __username__ request to take screenshot on protocol \"__proto_name__\""
 msgstr ""
 "Пользователь __username__ запросил создание скриншота с протокола "
 "\"__proto_name__\""
 
-#: app/templates/services/show.html:454 app/templates/webfiles/index.html:139
+#: app/templates/services/show.html:470 app/templates/webfiles/index.html:139
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: app/templates/services/show.html:464
+#: app/templates/services/show.html:480
 msgid "Cannot load a screenshot"
 msgstr "Невозможно загрузить скриншот"
 
@@ -4006,11 +4100,6 @@ msgstr "Отсутствуют данные для отображения"
 #: app/templates/tasks/kanban_board.html:34
 msgid "Cannot connect to server. Try to refresh page"
 msgstr "Невозможно подключиться к серверу. Попробуйте обновить страницу"
-
-#: app/templates/tasks/show.html:30 app/templates/tasks/show.html:39
-msgctxt "man"
-msgid "(Missing)"
-msgstr "(Отсутствует)"
 
 #: app/templates/tasks/show.html:70
 msgid "Additional parameters"

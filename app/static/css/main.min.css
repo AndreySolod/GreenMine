@@ -231,7 +231,7 @@ ul li {
 }
 
 .bg-dark {
-    background-color: var(--secondary-main-color) !important
+    background-color: var(--dark-color) !important
 }
 
 .text-primary {

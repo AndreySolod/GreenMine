@@ -447,12 +447,15 @@ class Service(HasComment, db.Model, HasHistory):
     credentials: so.Mapped[List["Credential"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin='Service.id==CredentialByService.service_id', secondaryjoin='CredentialByService.credential_id==Credential.id', back_populates='services', lazy='select', info={'label': _l("Credentials")})
     screenshot_http_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='SET NULL'), info={'label': _l('http screenshot of the web interface')})
     screenshot_http: so.Mapped["FileData"] = so.relationship(lazy='select', info={'label': _l("http screenshot of the web interface")}, foreign_keys=[screenshot_http_id]) # type: ignore
+    http_title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(80), info={'label': _l("Title of http site")})
     screenshot_https_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete="SET NULL"), info={'label': _l("https screenshot of the web interface")})
     screenshot_https: so.Mapped["FileData"] = so.relationship(lazy='select', info={'label': _l("https screenshot of the web interface")}, foreign_keys=[screenshot_https_id]) # type: ignore
+    https_title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(80), info={'label': _l("Title of https site")})
     tasks: so.Mapped[List["ProjectTask"]] = so.relationship(secondary='service_has_task',
                                                             primaryjoin='Service.id==ServiceHasTask.service_id',
                                                             secondaryjoin='ServiceHasTask.task_id==ProjectTask.id',
                                                             back_populates='services', info={'label': _l("Related tasks")})
+    has_been_inventoried: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.sql.expression.false(), info={'label': _l("Has been inventoried")})
 
     @property
     def fulltitle(self):

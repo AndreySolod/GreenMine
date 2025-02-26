@@ -252,6 +252,7 @@ class UserThemeStyle(db.Model):
     color_chats_other_message: so.Mapped[str] = so.mapped_column(sa.String(40))
     color_chats_other_message_text: so.Mapped[str] = so.mapped_column(sa.String(40))
     bs_card_color: so.Mapped[str] = so.mapped_column(sa.String(40))
+    dark_color: so.Mapped[str] = so.mapped_column(sa.String(40))
     fixed_sidebar: so.Mapped[bool] = so.mapped_column(default=False)
     sidebar_position_left: so.Mapped[bool] = so.mapped_column(default=True)
     

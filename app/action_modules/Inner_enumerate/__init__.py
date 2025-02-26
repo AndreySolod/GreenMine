@@ -17,7 +17,6 @@ logger = logging.getLogger('Module_Inner_enumerate')
 
 def action_run(target: models.Service, running_user_id: int, protocol: str, window_size: str, timeout: str, implicity_wait: str, session: Session) -> bool:
     ''' Gets a screenshot of the web service and added him to session '''
-    print(f'take screenshot of: {target.host.ip_address}:{target.port}')
     chrome_options = Options()
     chrome_options.add_argument('--headless=new')
     chrome_options.add_argument(f'--window-size={window_size}') # 1920,2500
@@ -34,6 +33,7 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
         fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
         session.add(fd)
         target.screenshot_http = fd
+        target.http_title = driver.title
     else:
         if target.screenshot_https is not None:
             session.delete(target.screenshot_https)
@@ -41,6 +41,7 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
         fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
         session.add(fd)
         target.screenshot_https = fd
+        target.https_title = driver.title
     attr = "screenshot_" + protocol
     session.add(target)
 

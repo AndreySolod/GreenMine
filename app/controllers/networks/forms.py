@@ -71,8 +71,8 @@ class HostForm(FlaskForm):
         self.device_vendor_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title)).all()
         self.device_model_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceModel.id, models.DeviceModel.title)).all()
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.title.info["label"]),
-                                validators=[validators.Optional(),
-                                            validators.Length(min=0, max=models.Host.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.title.type.length))])
+                                validators=[validators.Length(min=0, max=models.Host.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.title.type.length)),
+                                            validators.Optional()])
     description = WysiwygField(_l("%(field_name)s:", field_name=models.Host.description.info["label"]), validators=[validators.Optional()])
     from_network_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.from_network_id.info["label"]), validators=[validators.DataRequired()])
     ip_address = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ip_address.info["label"]), validators=[validators.DataRequired()])
@@ -80,8 +80,8 @@ class HostForm(FlaskForm):
     operation_system_family_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.operation_system_family_id.info["label"]),
                                                      validators=[validators.Optional()])
     operation_system_gen = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.operation_system_gen.info["label"]),
-                                               validators=[validators.Optional(),
-                                                           validators.Length(min=0, max=models.Host.operation_system_gen.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.operation_system_gen.type.length))])
+                                               validators=[validators.Length(min=0, max=models.Host.operation_system_gen.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.operation_system_gen.type.length)),
+                                                           validators.Optional()])
     device_type_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.device_type_id.info["label"]),
                                          validators=[validators.Optional()])
     device_vendor_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.device_vendor_id.info["label"]),
@@ -139,8 +139,8 @@ class ServiceForm(FlaskForm):
         self.tasks.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.ProjectTask).where(models.ProjectTask.project_id == project_id))]
         #self.access_protocol_id.locale = g.locale
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Service.title.info["label"]),
-                                validators=[validators.Optional(),
-                                            validators.Length(min=0, max=models.Service.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.title.type.length))])
+                                validators=[validators.Length(min=0, max=models.Service.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.title.type.length)),
+                                            validators.Optional()])
     description = WysiwygField(_l("%(field_name)s:", field_name=models.Service.description.info["label"]),
                                 validators=[validators.Optional()])
     port = wtforms.IntegerField(_l("%(field_name)s:", field_name=models.Service.port.info["label"]),
@@ -154,8 +154,14 @@ class ServiceForm(FlaskForm):
     host_id = TreeSelectSingleField(_l("%(field_name)s:", field_name=models.Service.host_id.info["label"]))
     temp_screenshot_http = wtforms.FileField(_l("%(field_name)s:", field_name=models.Service.screenshot_http.info["label"]),
                                              validators=[wtfile.FileAllowed(['jpg', 'jpeg', 'png'], _l("Only images!"))])
+    http_title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Service.http_title.info["label"]),
+                                validators=[validators.Length(min=0, max=models.Service.http_title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.http_title.type.length)),
+                                            validators.Optional()])
     temp_screenshot_https = wtforms.FileField(_l("%(field_name)s:", field_name=models.Service.screenshot_https.info["label"]),
                                               validators=[wtfile.FileAllowed(['jpg', 'jpeg', 'png'], _l("Only images!"))])
+    https_title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Service.https_title.info["label"]),
+                                validators=[validators.Length(min=0, max=models.Service.https_title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.https_title.type.length)),
+                                            validators.Optional()])
     issues = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.issues.info["label"]), validators=[validators.Optional()])
     credentials = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.credentials.info["label"]), validators=[validators.Optional()])
     tasks = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.tasks.info["label"]), validators=[validators.Optional()])
@@ -222,3 +228,32 @@ class EditRelatedObjectsHostForm(FlaskForm):
         self.interfaces.callback = url_for('networks.get_select2_hosts_interfaces_data', host_id=host.id)
     interfaces = Select2MultipleField(models.Host, _l("%(field_name)s:", field_name=models.Host.interfaces.info["label"]), validators=[validators.Optional()],
                                       id="editHostInterfaces", attr_title="treeselecttitle")
+
+
+class InventoryForm(FlaskForm):
+    def __init__(self, service, *args, **kwargs):
+        super(InventoryForm, self).__init__(*args, **kwargs)
+        self.host_device_type.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceType.id, models.DeviceType.title).order_by(models.DeviceType.title.asc())).all()
+        self.host_device_vendor.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title).order_by(models.DeviceVendor.title.asc())).all()
+        if service is not None:
+            self.host_title.data = service.host.title
+            self.host_description.data = service.host.description
+            self.service_title.data = service.title
+            self.service_description.data = service.description
+            self.host_device_type.data = str(service.host.device_type_id)
+            self.host_device_vendor.data = str(service.host.device_vendor_id)
+    host_title = wtforms.StringField(_l("%(field_name)s:", field_name=_l("Host title")),
+                                validators=[validators.Length(min=0, max=models.Host.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.title.type.length)),
+                                            validators.Optional()])
+    host_description = WysiwygField(_l("%(field_name)s:", field_name=_l("Host description")),
+                                validators=[validators.Optional()])
+    host_device_type = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.device_type_id.info["label"]),
+                                         validators=[validators.Optional()])
+    host_device_vendor = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.device_vendor_id.info["label"]),
+                                           validators=[validators.Optional()])
+    service_title = wtforms.StringField(_l("%(field_name)s:", field_name=_l("Service title")),
+                                validators=[validators.Length(min=0, max=models.Service.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.title.type.length)),
+                                            validators.Optional()])
+    service_description = WysiwygField(_l("%(field_name)s:", field_name=_l("Service description")),
+                                validators=[validators.Optional()])
+    submit = wtforms.SubmitField(_l("Update"))

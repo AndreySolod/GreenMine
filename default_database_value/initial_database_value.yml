@@ -56,6 +56,7 @@ UserThemeStyle:
         color_chats_other_message: "#e6ecf3"
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
+        dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: true
     - classic_blue:
@@ -75,6 +76,7 @@ UserThemeStyle:
         color_chats_other_message: "#e6ecf3"
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
+        dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: true
     - right_green:
@@ -94,6 +96,7 @@ UserThemeStyle:
         color_chats_other_message: "#e6ecf3"
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
+        dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: false
     - right_blue:
@@ -113,6 +116,7 @@ UserThemeStyle:
         color_chats_other_message: "#e6ecf3"
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
+        dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: false
     - fixed_green_left:
@@ -132,6 +136,7 @@ UserThemeStyle:
         color_chats_other_message: "#e6ecf3"
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
+        dark_color: "#777"
         fixed_sidebar: true
         sidebar_position_left: true
     - fixed_green_right:
@@ -150,6 +155,7 @@ UserThemeStyle:
         color_chats_other_message: "#e6ecf3"
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
+        dark_color: "#777"
         fixed_sidebar: true
         sidebar_position_left: false
 

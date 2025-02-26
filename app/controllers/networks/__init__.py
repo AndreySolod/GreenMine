@@ -77,6 +77,9 @@ def sidebar_service(current_object, act: str, **kwargs) -> Optional[SidebarEleme
     if project_role_can_make_action(current_user, Service(), 'create', project=proj):
         sel52 = SidebarElementSublink(_l("Add new service"), url_for('networks.service_new', project_id=proj.id), con=='Service' and act=='new')
         sels.append(sel52)
+    if project_role_can_make_action(current_user, Service(), 'update', project=proj):
+        sel53 = SidebarElementSublink(_l("Inventory of services"), url_for('networks.services_inventory', project_id=proj.id), con=='Service' and act=='inventory')
+        sels.append(sel53)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Services"), url_for('networks.service_index', project_id=proj.id), Service.Meta.icon_index, con=='Service', sels)
@@ -191,6 +194,9 @@ def environment_service(obj, action, **kwargs):
     elif action == 'edit':
         title = _l("Edit service «%(ip_addr)s:%(port)s»", ip_addr=str(obj.host.ip_address), port=str(obj.port))
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=proj.fulltitle)
+    elif action == 'inventory':
+        title = _l("Inventory of services")
+        current_object = CurrentObjectInfo(_l("Inventory of services on project #%(project_id)s", project_id=proj.id), "fa-solid fa-boxes-stacked", subtitle=_l("A page that allows you to quickly fill in basic data for hosts/services"))
     return {'title': title, 'current_object': current_object}
 
 

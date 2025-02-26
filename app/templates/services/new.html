@@ -48,7 +48,9 @@
     <div class="col-lg-6 col-md-12">
         <div class="card">
             <div class="card-body">
+                {{ form_element(form, form.http_title, inline=True) }}
                 {{ form_element(form, form.temp_screenshot_http, inline=True) }}
+                {{ form_element(form, form.https_title, inline=True) }}
                 {{ form_element(form, form.temp_screenshot_https, inline=True) }}
                 {{ form_element(form, form.issues) }}
                 {{ form_element(form, form.credentials) }}

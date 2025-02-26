@@ -580,6 +580,26 @@ def generate_all_included_ip_addresses():
             if i in excluded_ips:
                 continue
             ip_list.add(str(i))
-    send_data.write("\n".join(list(ip_list)).encode())
+    send_data.write(("\n".join(sorted(list(ip_list)))).encode())
     send_data.seek(0)
     return send_file(send_data, 'text/plain', True, 'ip_list.txt')
+
+
+@bp.route('/services/inventory')
+@login_required
+def services_inventory():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host inventory with non-integer project_id: {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(models.Project, project_id)
+    serv = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True)
+                              .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project.id,
+                                             sa.or_(models.Service.screenshot_http_id != None, models.Service.screenshot_https_id != None)))).first()
+    if serv is not None:
+        project_role_can_make_action_or_abort(current_user, serv, 'update')
+        project_role_can_make_action_or_abort(current_user, serv.host, 'update')
+    ctx = get_default_environment(serv, 'inventory')
+    context = {'service': serv, 'form': forms.InventoryForm(serv), 'project': project, 'ckeditor_height': '100px'}
+    return render_template('/services/inventory.html', **ctx, **context)

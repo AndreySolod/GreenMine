@@ -1,0 +1,148 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-6">
+        {% if service != none %}
+        <div class="carousel slide" id="screenshot-carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#screenshot-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="{{ models.Service.screenshot_http.info['label'] }}"></button>
+                <button type="button" data-bs-target="#screenshot-carousel" data-bs-slide-to="1" aria-label="{{ models.Service.screenshot_https.info['label'] }}"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active" id="service-screenshot-http-carousel-item">
+                    {% if service.screenshot_http_id != none %}
+                    <img id="service-screenshot-http" src="{{ url_for('files.download_file', file_id=service.screenshot_http_id) }}" class="d-block w-100" alt="{{ _('Unable to load an image') }}">
+                    {% else %}
+                    <svg id="service-screenshot-http" class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{{ _('Screenshot http') }}" preserveAspectRatio="xMidYMid slice" focusable="false"><title>{{ _("The screenshot is missing") }}</title><rect width="100%" height="100%" fill="{{ current_user.theme_style.dark_color }}"></rect><text x="50%" y="50%" fill="#555" dy=".3em">{{ _("The screenshot is missing") }}</text></svg>
+                    {% endif %}
+                    <div class="carousel-caption d-none d-md-block bg-dark">
+                        <h5>{{ models.Service.screenshot_http.info['label'] }}</h5>
+                        <p id="service-http-title">{{ service.http_title|suppress_none }}</p>
+                    </div>
+                </div>
+                <div class="carousel-item" id="service-screenshot-https-carousel-item">
+                    {% if service.screenshot_https_id != none %}
+                    <img id="service-screenshot-https" src="{{ url_for('files.download_file', file_id=service.screenshot_https_id) }}" class="d-block w-100" alt="{{ _('Unable to load an image') }}">
+                    {% else %}
+                    <svg id="service-screenshot-https" class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="800" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{{ _('Screenshot https') }}" preserveAspectRatio="xMidYMid slice" focusable="false"><title>{{ _("The screenshot is missing") }}</title><rect width="100%" height="100%" fill="{{ current_user.theme_style.dark_color }}"></rect><text x="50%" y="50%" fill="#555" dy=".3em">{{ _("The screenshot is missing") }}</text></svg>
+                    {% endif %}
+                    <div class="carousel-caption d-none d-md-block bg-dark">
+                        <h5>{{ models.Service.screenshot_https.info['label'] }}</h5>
+                        <p id="service-https-title">{{ service.https_title|suppress_none }}</p>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#screenshot-carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
+                    <span class="visually-hidden">{{ _("Previous") }}</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#screenshot-carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+                    <span class="visually-hidden">{{ _("Next") }}</span>
+                  </button>
+            </div>
+        </div>
+        <h5>{{ _("Host technical information") }}:</h5>
+        {% if service.host.technical != '' and service.host.technical != none %}
+        {{ service.host.technical|suppress_none|safe }}
+        {% else %}
+        <p class="text-center text-muted">{{ pgettext("woman", "(Missing)") }}</p>
+        {% endif %}
+        <h5>{{ _("Service technical information") }}:</h5>
+        {% if service.technical != none and service.technical != '' %}
+        {{ service.technical|suppress_none|safe }}
+        {% else %}
+        <p class="text-center text-muted">{{ pgettext("woman", "(Missing)") }}</p>
+        {% endif %}
+    </div>
+    {% else %}
+    <p class="text-center text-muted">{{ pgettext("other", "(Missing)") }}</p>
+    {% endif %}
+    <div class="col-6">
+        <h5 id="inventory-object-title" data-service-id="{{ service.id }}">{{ service.fulltitle }}</h5>
+        {{ form_element(form, form.host_title, inline=True) }}
+        {{ form_element(form, form.host_description) }}
+        {{ form_element(form, form.host_device_type, inline=True) }}
+        {{ form_element(form, form.host_device_vendor, inline=True) }}
+        {{ form_element(form, form.service_title, inline=True) }}
+        {{ form_element(form, form.service_description) }}
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class='btn btn-primary') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    const inventorySocket = io('/service-inventory');
+    inventorySocket.on('connect', function () {
+        inventorySocket.emit('join_room', '{{ project.id }}')
+    });
+    document.getElementById('{{ form.submit.id }}').addEventListener('click', function() {
+        let inventory_object_title = document.getElementById('inventory-object-title');
+        let service_title = document.getElementById('{{ form.service_title.id }}');
+        let service_description = CKEDITOR_LIST["{{ form.service_description.id }}"];
+        let host_title = document.getElementById('{{ form.host_title.id }}');
+        let host_description = CKEDITOR_LIST["{{ form.host_description.id }}"];
+        let host_device_type = document.getElementById("{{ form.host_device_type.id }}");
+        let host_device_vendor = document.getElementById('{{ form.host_device_vendor.id }}');
+        inventorySocket.emit('update data', {'service_id': inventory_object_title.getAttribute('data-service-id'), 'service_title': service_title.value,
+                                             'service_description': service_description.getData(), 'host_title': host_title.value, 'host_description': host_description.getData(),
+                                             'device_type_id': host_device_type.value, 'device_vendor_id': host_device_vendor.value},
+                            function(data) {
+            inventory_object_title.setAttribute('data-service-id', data.service_id);
+            inventory_object_title.innerHTML = data.obj_title;
+            service_title.value = data.service_title;
+            service_description.setData(data.service_description);
+            host_title.value = data.host_title;
+            host_description.setData(data.host_description);
+            host_device_type.value = data.host_device_type;
+            host_device_vendor.value = data.host_device_vendor;
+            let screenshot_http = document.getElementById('service-screenshot-http');
+            osh = screenshot_http;
+            let svg_no_image = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            setMultipleAttributes(svg_no_image, {'class': "bd-placeholder-img bd-placeholder-img-lg d-block w-100", 'width': '800', 'height': '500', 'role': 'img',
+                                                 'aria-label': "{{ _('Screenshot http') }}", 'focusable': false});
+            svg_no_image.setAttributeNS(null, 'preserveAspectRatio', 'xMidYMid slice');
+            svg_no_image.innerHTML = `<title>{{ _("The screenshot is missing") }}</title><rect width="100%" height="100%" fill="{{ current_user.theme_style.dark_color }}"></rect><text x="50%" y="50%" fill="#555" dy=".3em">{{ _("The screenshot is missing") }}</text>`;
+            let new_screenshot_http;
+            if(data.screenshot_http === null) {
+                console.log('http is null!')
+                new_screenshot_http = svg_no_image.cloneNode(true);
+                new_screenshot_http.setAttribute('id', 'service-screenshot-http');
+                nsh = new_screenshot_http;
+            }
+            else {
+                new_screenshot_http = document.createElement('img');
+                setMultipleAttributes(new_screenshot_http, {'id': 'service-screenshot-http', 'src': data.screenshot_http, 'class': 'd-block w-100', 'alt': "{{ _('Unable to load an image') }}"});
+            };
+            document.getElementById('service-screenshot-http-carousel-item').insertBefore(new_screenshot_http, screenshot_http);
+            document.getElementById('service-http-title').innerHTML = data.http_title;
+            screenshot_http.remove();
+            let screenshot_https = document.getElementById('service-screenshot-https');
+            oshs = screenshot_https;
+            let new_screenshot_https;
+            if(data.screenshot_https === null) {
+                console.log('https is null ')
+                new_screenshot_https = svg_no_image.cloneNode(true);
+                console.log(new_screenshot_https);
+                new_screenshot_https.setAttribute('id', 'service-screenshot-https');
+                nshs = new_screenshot_https;
+            }
+            else {
+                new_screenshot_https = document.createElement('img');
+                setMultipleAttributes(new_screenshot_https, {'id': 'service-screenshot-https', 'src': data.screenshot_https, 'class': 'd-block w-100', 'alt': "{{ _('Unable to load an image') }}"});
+            };
+            document.getElementById('service-screenshot-https-carousel-item').insertBefore(new_screenshot_https, screenshot_https);
+            console.log(new_screenshot_https);
+            screenshot_https.remove();
+            document.getElementById('service-https-title').innerHTML = data.https_title;
+        });
+    });
+</script>
+{% endblock %}

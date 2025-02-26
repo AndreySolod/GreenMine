@@ -154,7 +154,7 @@ def take_service_sreenshot(data):
     if proto is None:
         return None
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request take service screenshot on service #{service_id}")
-    emit('take screenshot received', {'by_user:': current_user.title, 'proto': proto}, namespace="/service", to=current_room_name)
+    emit('take screenshot received', {'by_user': current_user.title, 'proto': proto}, namespace="/service", to=current_room_name)
     screenshoter = automation_modules.get("HardwareInventory")
     exploit_data = {"protocol": proto, "target": service}
     try:
@@ -166,9 +166,10 @@ def take_service_sreenshot(data):
     attr = "screenshot_" + proto + "_id"
     file_id = getattr(service, attr)
     if file_id:
-        emit("screenshot taked", {'address': url_for('files.download_file', file_id=file_id), 'proto': proto}, namespace="/service", to=current_room_name)
+        screenshot_title = getattr(service, proto + 'title', '')
+        emit("screenshot taked", {'address': url_for('files.download_file', file_id=file_id), 'proto': proto, 'screenshot_title': screenshot_title}, namespace="/service", to=current_room_name)
     else:
-        emit("screenshot taked", {'address': None, 'proto': proto}, namespace="/service", to=current_room_name)
+        emit("screenshot taked", {'address': None, 'proto': proto, 'screenshot_title': ''}, namespace="/service", to=current_room_name)
 
 
 @socketio.on("join_room", namespace="/host")
@@ -394,3 +395,62 @@ def exclude_host_from_research(data):
     db.session.add(host)
     db.session.commit()
     emit('host list updated', namespace='/hosts', to=current_room_name)
+
+
+@socketio.on('join_room', namespace="/service-inventory")
+@authenticated_only
+def join_service_inventory_room(data):
+    try:
+        project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(data))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError) as e:
+        logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join incorrect service-inventory room {data}")
+        return None
+    if not project_role_can_make_action(current_user, models.Service(), 'update', project=project) or not project_role_can_make_action(current_user, models.Host(), 'update', project=project):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join service-inventory room #{data}, in which he has no rights to")
+        return None
+    room = data
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' join service-inventory room #{data}")
+    join_room(room, namespace="/service-inventory")
+
+
+@socketio.on('update data', namespace="/service-inventory")
+@authenticated_only
+def update_inventory_data(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    project_id, current_room_name = r
+    try:
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == data['service_id'])).one()
+        device_type = db.session.scalars(sa.select(models.DeviceType).where(models.DeviceType.id == int(data['device_type_id']))).first()
+        device_vendor = db.session.scalars(sa.select(models.DeviceVendor).where(models.DeviceVendor.id == int(data['device_vendor_id']))).first()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError, KeyError):
+        return None
+    if not project_role_can_make_action(current_user, service.host, 'update') or not project_role_can_make_action(current_user, service, 'update'):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to update service and host via service-inventory on project #{project_id}, in which he has no rights to")
+    service.title = sanitizer.escape(data['service_title'])
+    service.description = sanitizer.sanitize(data['service_description'])
+    service.host.title = sanitizer.escape(data['host_title'])
+    service.host.description = sanitizer.sanitize(data['host_description'])
+    service.device_type = device_type
+    service.device_vendor = device_vendor
+    service.has_been_inventoried = True
+    db.session.commit()
+    ns = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True)
+                            .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project_id,
+                                           sa.or_(models.Service.screenshot_http_id != None, models.Service.screenshot_https_id != None)))).first()
+    ret_data = {'service_id': ns.id, 'service_title': ns.title or '', 'service_description': ns.description or '', 'host_title': ns.host.title or '', 'host_description': ns.host.description or '',
+                'host_device_type': str(ns.host.device_type_id), 'host_device_vendor': str(ns.host.device_vendor_id), 'obj_title': str(ns.fulltitle)}
+    if ns.screenshot_http_id is not None:
+        ret_data['screenshot_http'] = url_for('files.download_file', file_id=ns.screenshot_http_id)
+        ret_data['http_title'] = ns.http_title
+    else:
+        ret_data['screenshot_http'] = None
+        ret_data['http_title'] = ''
+    if ns.screenshot_https_id is not None:
+        ret_data['screenshot_https'] = url_for('files.download_file', file_id=ns.screenshot_https_id)
+        ret_data['https_title'] = ns.https_title
+    else:
+        ret_data['screenshot_https'] = None
+        ret_data['https_title'] = ''
+    return ret_data
