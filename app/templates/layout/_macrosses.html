@@ -34,7 +34,7 @@
     {{ form_label(element, 'form-label') }}
     {% endif %}
   {% else %}
-  <div class="row align-items-center gy-5">
+  <div class="row align-items-center">
     <div class="col-sm-{{ subdivide|string }} p-2">
       {% if element.__class__.__name__ == 'BooleanField' %}
         {{ form_label(element, "form-check-label") }}

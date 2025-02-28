@@ -24,8 +24,12 @@ def sidebar(current_object, act: str, **kwargs):
         proj = kwargs["proj"]
     else:
         proj = current_object.project
+    sels = []
     sel1 = SidebarElementSublink(_l("Main information"), url_for('projects.project_show', project_id=proj.id), con=='Project' and act=='show')
-    sels = [sel1]
+    sels.append(sel1)
+    if project_role_can_make_action(current_user, proj, 'show_charts'):
+        sel2 = SidebarElementSublink(_l("View status charts"), url_for('projects.project_diagrams', project_id=proj.id), con=='Project' and act == 'project_diagrams')
+        sels.append(sel2)
     return [SidebarElement("Страница проекта", url_for('projects.project_show', project_id=proj.id), "fa fa-home", con=='Project', sels)]
 
 
@@ -50,6 +54,9 @@ def environment(obj, action, **kwargs):
     elif action == 'edit':
         title = _l("Edit project #%(project_id)s", project_id=obj.id)
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+    elif action == 'project_diagrams':
+        title = _l("Status charts")
+        current_object = CurrentObjectInfo(title, "fa-solid fa-chart-pie", subtitle=_l("Summary statistics for the project #%(project_id)s", project_id=obj.id))
     return {'title': title, 'current_object': current_object}
 
 register_environment(EnvironmentObjectAttrs('Project', sidebar, environment), None)

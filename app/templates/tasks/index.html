@@ -108,7 +108,7 @@
     </script>
     <script nonce="{{ csp_nonce() }}">
         function tasksRowStyle(row, index) {
-            return { classes: "with-context-menu-task", css: {"cursor": 'pointer', 'background-color': row.background_color} }
+            return { classes: "with-context-menu-task", css: {"cursor": 'pointer', 'background-color': row.background_color + " !important"} }
         }
         $(function () {
             $.contextMenu({

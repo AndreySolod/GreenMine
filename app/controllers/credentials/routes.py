@@ -100,6 +100,7 @@ def credential_show(credential_id):
     context = {'credential': cred,
                'edit_related_services': forms.EditRelatedServicesForm(cred)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request credential #{cred.id}")
+    side_libraries.library_required('contextmenu')
     return render_template('credentials/show.html', **context, **ctx)
 
 

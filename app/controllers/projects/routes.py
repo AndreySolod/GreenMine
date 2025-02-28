@@ -1,4 +1,4 @@
-from app import db, logger
+from app import db, logger, side_libraries
 from app.controllers.projects import bp
 from flask import request, redirect, url_for, render_template, flash, abort
 from flask_login import login_required, current_user
@@ -7,9 +7,10 @@ from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, 
 from app.helpers.projects_helpers import get_default_environment
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
 from .forms import ProjectForm, EditProjectForm, get_project_role_user_form
-from flask_babel import lazy_gettext as _l
+from flask_babel import lazy_gettext as _l, pgettext
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy as sa
+import json
 
 
 @bp.route("/index")
@@ -117,3 +118,94 @@ def project_archive(project_id: int):
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' archive project #{project_id}")
     flash(_l("Project #%(project_id)s successfully archived", project_id=project_id), 'success')
     return redirect(url_for('projects.project_index'))
+
+
+@bp.route("/<int:project_id>/diagrams")
+@login_required
+def project_diagrams(project_id: int):
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, project, 'show_charts')
+    top_operation_systems = db.session.execute(sa.select(models.OperationSystemFamily.title, sa.func.count())
+                                              .select_from(models.OperationSystemFamily).join(models.Host.operation_system_family, isouter=True)
+                                              .join(models.Host.from_network, isouter=True)
+                                              .where(models.Network.project_id == project_id)
+                                              .group_by(models.OperationSystemFamily.id)
+                                              .order_by(models.OperationSystemFamily.title)
+                                              .limit(10)).all()
+    top_ports = db.session.execute(sa.select(sa.cast(models.Service.port, sa.String) + "/" + sa.cast(models.ServiceTransportLevelProtocol.title, sa.String), sa.func.count())
+                                   .select_from(models.Service)
+                                   .join(models.Service.host, isouter=True)
+                                   .join(models.Host.from_network, isouter=True)
+                                   .join(models.Service.transport_level_protocol, isouter=True)
+                                   .where(models.Network.project_id == project_id)
+                                   .group_by(models.Service.port, models.ServiceTransportLevelProtocol.title)
+                                   .order_by(sa.func.count().desc())
+                                   .limit(10)).all()
+    only_clear_password = db.session.scalars(sa.select(sa.func.count())
+                                        .select_from(models.Credential)
+                                        .where(sa.and_(models.Credential.password != '', models.Credential.password != None,
+                                                       sa.or_(models.Credential.password_hash == '', models.Credential.password_hash == None),
+                                                       models.Credential.is_pentest_credentials == False,
+                                                       models.Credential.project_id == project_id))).one()
+    password_and_hash = db.session.scalars(sa.select(sa.func.count())
+                                           .select_from(models.Credential)
+                                           .where(sa.and_(models.Credential.password != '', models.Credential.password != None,
+                                                          models.Credential.password_hash != '', models.Credential.password_hash != None,
+                                                          models.Credential.is_pentest_credentials == False,
+                                                          models.Credential.project_id == project_id))).one()
+    only_clear_hash = db.session.scalars(sa.select(sa.func.count())
+                                         .select_from(models.Credential)
+                                         .where(sa.and_(sa.or_(models.Credential.password == '', models.Credential.password == None),
+                                                        models.Credential.password_hash != '', models.Credential.password_hash != None,
+                                                        models.Credential.is_pentest_credentials == False,
+                                                        models.Credential.project_id == project_id))).one()
+    info_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
+                                     .where(sa.and_(models.Issue.cvss < 2.0, models.Issue.project_id == project_id))).one()
+    low_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
+                                    .where(sa.and_(models.Issue.cvss >= 2.0, models.Issue.cvss < 5.0, models.Issue.project_id == project_id))).one()
+    medium_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
+                                       .where(sa.and_(models.Issue.cvss >= 5.0, models.Issue.cvss < 8.0, models.Issue.project_id == project_id))).one()
+    high_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
+                                     .where(sa.and_(models.Issue.cvss >= 8.0, models.Issue.cvss < 9.5, models.Issue.project_id == project_id))).one()
+    critical_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
+                                         .where(sa.and_(models.Issue.cvss >= 9.5, models.Issue.project_id == project_id))).one()
+    tasks_by_status = db.session.execute(sa.select(models.TaskState.title, models.TaskState.color, sa.func.count())
+                                         .select_from(models.TaskState)
+                                         .join(models.ProjectTask.state, isouter=True)
+                                         .where(models.ProjectTask.project_id == project_id)
+                                         .group_by(models.TaskState.title, models.TaskState.color)).all()
+    otbs = tasks_by_status.copy()
+    tasks_by_status = []
+    for i in otbs:
+        i = list(i)
+        if i[1] == '' or i[1] == None:
+            i[1] = '#00bfff'
+        tasks_by_status.append(i)
+    tasks_by_priority = db.session.execute(sa.select(models.ProjectTaskPriority.title, models.ProjectTaskPriority.color, sa.func.count())
+                                         .select_from(models.ProjectTaskPriority)
+                                         .join(models.ProjectTask.priority, isouter=True)
+                                         .where(models.ProjectTask.project_id == project_id)
+                                         .group_by(models.ProjectTaskPriority.title, models.ProjectTaskPriority.color)).all()
+    otbp = tasks_by_priority.copy()
+    tasks_by_priority = []
+    for i in otbp:
+        i = list(i)
+        if i[1] == '' or i[1] == None:
+            i[1] = '#00bfff'
+        tasks_by_priority.append(i)
+    ctx = get_default_environment(project, 'project_diagrams')
+    context = {'project': project,
+               'top_operation_systems_labels': json.dumps(list(map(lambda x: x[0] if x[0] != None else pgettext("woman", "Missing"), top_operation_systems))),
+               'top_operation_systems_dataset': json.dumps(list(map(lambda x: x[1], top_operation_systems))),
+               "top_ports_labels": json.dumps(list(map(lambda x: str(x[0]), top_ports))),
+               "top_ports_dataset": json.dumps(list(map(lambda x: x[1], top_ports))),
+               "issues_dataset": json.dumps([info_issues, low_issues, medium_issues, high_issues, critical_issues]),
+               "passwords_dataset": json.dumps([only_clear_password, password_and_hash, only_clear_hash]),
+               "tasks_by_priority_labels": json.dumps(list(map(lambda x: x[0] if x[0] is not None else pgettext("man", "Missing"), tasks_by_priority))),
+               "tasks_by_priority_colors": json.dumps(list(map(lambda x: x[1], tasks_by_priority))),
+               "tasks_by_priority_dataset": json.dumps(list(map(lambda x: x[2], tasks_by_priority))),
+               "tasks_by_status_labels": json.dumps(list(map(lambda x: x[0] if x[0] is not None else pgettext("man", "Missing"), tasks_by_status))),
+               "tasks_by_status_colors": json.dumps(list(map(lambda x: x[1], tasks_by_status))),
+               "tasks_by_status_dataset": json.dumps(list(map(lambda x: x[2], tasks_by_status)))}
+    side_libraries.library_required('chartjs')
+    return render_template('projects/diagrams.html', **ctx, **context)

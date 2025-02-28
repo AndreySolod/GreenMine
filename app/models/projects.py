@@ -90,7 +90,7 @@ class Project(db.Model):
         icon = 'fa fa-home'
         icon_index = 'fa-solid fa-list-check'
         project_permission_actions = {'show': _l("Show object card"), 'update': _l("Edit and update object"), 'delete': _l("Delete object"),
-                                      'edit_participants': _l("Edit participants of project"), "archive": _l("Archive project")}
+                                      'edit_participants': _l("Edit participants of project"), "archive": _l("Archive project"), 'show_charts': _l("View status charts")}
 
 
 @event.listens_for(SessionBase, 'before_commit')

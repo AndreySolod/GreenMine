@@ -63,3 +63,7 @@ libraries:
     js:
       - "js/jquery.contextMenu.js"
       - "js/jquery.ui.position.min.js"
+  chartjs:
+    css:
+    js:
+      - "js/chart.umd.min.js"

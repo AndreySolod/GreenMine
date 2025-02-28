@@ -1,0 +1,187 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("Tasks by status") }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="tasks-by-status-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>{{ _("Tasks by priority") }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="tasks-by-priority-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>{{ _("Found passwords") }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="found-passwords-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>{{ _("Issues by severity") }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="issues-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>{{ _("Open ports") }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="open-ports-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>{{ _("Operation systems") }}</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="operation-systems-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    const stringToColour = (str) => {
+        let hash = 0;
+        str.split('').forEach(char => {
+          hash = char.charCodeAt(0) + ((hash << 5) - hash);
+        })
+        let colour = '#';
+        for (let i = 0; i < 3; i++) {
+          let value = (hash >> (i * 8)) & 0xff;
+          colour += value.toString(16).padStart(2, '0');
+        }
+        return colour;
+    };
+    var operation_systems_chart = new Chart(document.getElementById('operation-systems-chart'), {
+        type: 'pie',
+        data: {
+            labels: JSON.parse("{{ top_operation_systems_labels|escapejs }}"),
+            datasets: [
+                {
+                    label: "{{ _('Quantity') }}",
+                    backgroundColor: JSON.parse("{{ top_operation_systems_labels|escapejs }}").map(stringToColour),
+                    data: JSON.parse("{{ top_operation_systems_dataset|escapejs }}")
+                }
+            ],
+        },
+        options: {
+            legend: { display: true },
+            title: { display: false }
+        },
+    });
+    var open_ports_chart = new Chart(document.getElementById('open-ports-chart'), {
+        type: 'bar',
+        data: {
+            labels: JSON.parse("{{ top_ports_labels|escapejs }}"),
+            datasets: [
+            {
+                label: "{{ _('Quantity') }}",
+                data: JSON.parse("{{ top_ports_dataset|escapejs }}")
+            }
+            ]
+        },
+        options: {
+            legend: { display: true },
+            title: { display: false },
+        }
+    });
+    var issues_chart = new Chart(document.getElementById('issues-chart'), {
+        type: 'pie',
+        data: {
+            labels: ["{{ pgettext('she', 'Information') }}", "{{ pgettext('she', 'Low') }}", "{{ pgettext('she', 'Medium') }}", "{{ pgettext('she', 'High') }}", "{{ pgettext('she', 'Critical') }}"],
+            datasets: [
+            {
+                label: "{{ _('Quantity') }}",
+                backgroundColor: ["#00bfff", "#00b300", "#fefe22", "#ffa812", "#9b2d30"],
+                data: JSON.parse("{{ issues_dataset|escapejs }}"),
+            }
+            ]
+        },
+        options: {
+            legend: { display: true },
+            title: { display: false }
+        }
+    });
+    var found_passwords_chart = new Chart(document.getElementById('found-passwords-canvas'), {
+        type: 'pie',
+        data: {
+            labels: ["{{ _('Cleartext passwords') }}", "{{ _('Password & hash') }}", "{{ _('Hash only') }}"],
+            datasets: [
+                {
+                    label: "{{ _('Quantity') }}",
+                    backgroundColor: ["{{ _('Cleartext passwords') }}", "{{ _('Password & hash') }}", "{{ _('Hash only') }}"].map(stringToColour),
+                    data: JSON.parse("{{ passwords_dataset|escapejs }}")
+                }
+            ]
+        },
+        options: {
+            legend: { display: true },
+            title: { display: false }
+        }
+    });
+    var tasks_by_priority_chart = new Chart(document.getElementById('tasks-by-priority-canvas'), {
+        type: "pie",
+        data: {
+            labels: JSON.parse("{{ tasks_by_priority_labels|escapejs }}"),
+            datasets: [
+            {
+                label: "{{ _('Quantity') }}",
+                backgroundColor: JSON.parse("{{ tasks_by_priority_colors|escapejs }}"),
+                data: JSON.parse("{{ tasks_by_priority_dataset|escapejs }}")
+            }
+            ]
+        },
+        options: {
+            legend: { display: true },
+            title: { display: false }
+        }
+    });
+    var tasks_by_status_chart = new Chart(document.getElementById('tasks-by-status-canvas'), {
+        type: 'pie',
+        data: {
+            labels: JSON.parse("{{ tasks_by_status_labels|escapejs }}"),
+            datasets: [
+            {
+                label: "{{ _('Quantity') }}",
+                backgroundColor: JSON.parse("{{ tasks_by_status_colors|escapejs }}"),
+                data: JSON.parse("{{ tasks_by_status_dataset|escapejs }}"),
+            }
+            ]
+        },
+        options: {
+            legend: { display: true },
+            title: { display: false }
+        }
+    })
+</script>
+{% endblock %}
