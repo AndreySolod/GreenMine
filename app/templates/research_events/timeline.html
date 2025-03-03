@@ -1,0 +1,63 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("Events timeline") }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if event_list|length == 0 %}
+                        <p class="text-center text-muted">{{ pgettext('woman', "(Missing)") }}</p>
+                    {% else %}
+                    <div class="timeline">
+                        
+                        {% for event in event_list %}
+                        {% set timeline_position = 'left' %}
+                        {% set timeline_time_style = 'timeline-red-team-time' %}
+                        {% if event[1] == 1 %}
+                            {% set timeline_position = 'right' %}
+                            {% set timeline_time_style = 'timeline-blue-team-time' %}
+                        {% endif %}
+                        <div class="timeline-row timeline-{{ timeline_position }}">
+                            <div class="{{ timeline_time_style }} timeline-time">
+                                {{ moment(event[0].timestamp).format("HH:mm:ss") }}<small>{{ moment(event[0].timestamp).format("LL") }}</small>
+                            </div>
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <h4>{{ event[0].title }}</h4>
+                                {{ event[0].description|suppress_none|safe }}
+                                <table class="table-borderless w-50">
+                                    <tbody>
+                                        <tr>
+                                            <td>{{ models.PentestResearchEvent.source_host.info['label'] }}:</td>
+                                            <td>{{ event[0].source_host.fulltitle|default(pgettext('man', "(Missing)"), True) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{{ models.PentestResearchEvent.target_host.info['label'] }}:</td>
+                                            <td>{{ event[0].target_host.fulltitle|default(pgettext('man', "(Missing)"), True) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="">
+                                    {% if event[1] == 0 %}
+                                    <span class="badge badge-warning">{{ event[0].prevented.title }}</span>
+                                    <span class="badge badge-warning">{{ event[0].detected.title }}</span>
+                                    {% endif %}
+                                    {% if event.mitre_attack_technique != none %}
+                                    <span class="badge badge-danger">{{ event[0].mitre_attack_technique.title }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

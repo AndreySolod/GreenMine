@@ -1,0 +1,44 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <form action="" method="POST" class="needs-validation">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                {{ form.hidden_tag() }}
+                <div class="card">
+                    <div class="card-header">
+                        {{ form_element(form, form.title, inline=True) }}
+                    </div>
+                    <div class="card-body">
+                        {{ form_element(form, form.timestamp, inline=True) }}
+                        {{ form_element(form, form.description) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ _("Event main parameters") }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_element(form, form.source_host_id, inline=True) }}
+                        {{ form_element(form, form.source_user, inline=True) }}
+                        {{ form_element(form, form.source_process, inline=True) }}
+                        {{ form_element(form, form.target_host_id, inline=True) }}
+                        {{ form_element(form, form.target_user, inline=True) }}
+                        {{ form_element(form, form.target_process, inline=True) }}
+                        {{ form_element(form, form.mitre_attack_technique_id, inline=True) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class='btn btn-primary') }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

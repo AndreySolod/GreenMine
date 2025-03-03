@@ -57,3 +57,10 @@ class TextSanitizerManager:
         if text is None:
             return ''
         return BeautifulSoup(text, 'lxml').text
+    
+    def markup(self, text: Optional[str]) -> str:
+        ''' returned text, that marked as "HTML Safe" and can insert into template without any escapes or cleaned.
+        :param text: Optional text for mark as Markupsafe. If None - returned Markup text of empty string. '''
+        if text is None:
+            return Markup("")
+        return Markup(text)

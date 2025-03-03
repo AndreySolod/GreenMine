@@ -87,7 +87,7 @@ def positive_issue_index():
     try:
         project_id = int(request.args.get('project_id'))
     except (ValueError, TypeError):
-        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request create issue with non-integer project_id {request.args.get('project_id')}")
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request positive index issue with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project=project)
@@ -105,7 +105,7 @@ def positive_issue_data_index():
     try:
         project_id = int(request.args.get('project_id'))
     except (ValueError, TypeError):
-        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request create issue with non-integer project_id {request.args.get('project_id')}")
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request positive index data issue with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     aliased = so.aliased(IssueStatus)

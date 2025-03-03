@@ -253,6 +253,12 @@ class UserThemeStyle(db.Model):
     color_chats_other_message_text: so.Mapped[str] = so.mapped_column(sa.String(40))
     bs_card_color: so.Mapped[str] = so.mapped_column(sa.String(40))
     dark_color: so.Mapped[str] = so.mapped_column(sa.String(40))
+    timeline_time_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#8796af")
+    timeline_line_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#000")
+    timeline_red_team_background_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="rgb(138, 2, 2)")
+    timeline_red_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#fff")
+    timeline_blue_team_background_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="rgb(0, 0, 138)")
+    timeline_blue_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#fff")
     fixed_sidebar: so.Mapped[bool] = so.mapped_column(default=False)
     sidebar_position_left: so.Mapped[bool] = so.mapped_column(default=True)
     

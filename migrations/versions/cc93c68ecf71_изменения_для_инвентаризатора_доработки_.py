@@ -22,7 +22,7 @@ def upgrade():
     with op.batch_alter_table('service', schema=None) as batch_op:
         batch_op.add_column(sa.Column('http_title', sa.String(length=80), nullable=True))
         batch_op.add_column(sa.Column('https_title', sa.String(length=80), nullable=True))
-        batch_op.add_column(sa.Column('has_been_inventoried', sa.Boolean(), server_default=sa.text('0'), nullable=False))
+        batch_op.add_column(sa.Column('has_been_inventoried', sa.Boolean(), server_default=sa.false(), nullable=False))
 
     with op.batch_alter_table('user_theme_style', schema=None) as batch_op:
         batch_op.add_column(sa.Column('dark_color', sa.String(length=40), server_default="#777", nullable=False))

@@ -15,15 +15,15 @@
                             <td>{{ models.Issue.status.info['label'] }}:</td>
                             {% set now_style = {"background-color": issue.status.color, "color": get_complementary_color(issue.status.color), "border-radius": "16px", "padding-left": "6px", "padding-right": "6px", "padding-top": "2px", "padding-bottom": "2px"} %}
                             <td><span {{ now_style|as_style }}>{{
-                                    issue.status.title }}</span></td>
+                                    issue.status.title|suppress_none }}</span></td>
                         </tr>
                         <tr>
                             <td>{{ models.Issue.cvss.info['label'] }}:</td>
-                            <td>{{ issue.cvss|safe }}</td>
+                            <td>{{ issue.cvss|suppress_none|safe }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Issue.cve.info['label'] }}:</td>
-                            <td>{{ issue.cve.title|safe }}</td>
+                            <td>{{ issue.cve.title|suppress_none|safe }}</td>
                         </tr>
                         {% if issue.cve != none %}
                         <tr>
@@ -145,12 +145,12 @@
                                 {% for service in issue.services %}
                                 <tr style="cursor:pointer">
                                     <td>{{ service.id }}</td>
-                                    <td>{{ service.title|safe|default("", True) }}</td>
-                                    <td>{{ service.host.ip_address|default("", True) }}</td>
-                                    <td>{{ service.port|default("", True) }}</td>
-                                    <td>{{ service.transport_level_protocol.title|default("", True) }}</td>
-                                    <td>{{ service.access_protocol.title|default("", True) }}</td>
-                                    <td>{{ service.technical|safe|default("", True) }}</td>
+                                    <td>{{ service.title|suppress_none|safe }}</td>
+                                    <td>{{ service.host.ip_address|suppress_none }}</td>
+                                    <td>{{ service.port|suppress_none }}</td>
+                                    <td>{{ service.transport_level_protocol.title|suppress_none }}</td>
+                                    <td>{{ service.access_protocol.title|suppress_none }}</td>
+                                    <td>{{ service.technical|suppress_none|safe }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -193,12 +193,12 @@
                                 {% for task in issue.tasks_by_issue %}
                                 <tr style="cursor:pointer">
                                     <td>{{ task.id }}</td>
-                                    <td>{{ task.title|safe|default("", True) }}</td>
-                                    <td>{{ task.tracker.title|default("", True) }}</td>
-                                    <td>{{ task.priority.title|default("", True) }}</td>
-                                    <td>{{ task.state.title|default("", True) }}</td>
-                                    <td>{{ task.assigned_to.title|default("", True) }}</td>
-                                    <td>{{ task.readiness.title|default("", True) }}</td>
+                                    <td>{{ task.title|suppress_none|safe }}</td>
+                                    <td>{{ task.tracker.title|suppress_none }}</td>
+                                    <td>{{ task.priority.title|suppress_none }}</td>
+                                    <td>{{ task.state.title|suppress_none }}</td>
+                                    <td>{{ task.assigned_to.title|suppress_none }}</td>
+                                    <td>{{ task.readiness|suppress_none }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -28,7 +28,7 @@ def sidebar(current_object, act: str, **kwargs):
     sel1 = SidebarElementSublink(_l("Main information"), url_for('projects.project_show', project_id=proj.id), con=='Project' and act=='show')
     sels.append(sel1)
     if project_role_can_make_action(current_user, proj, 'show_charts'):
-        sel2 = SidebarElementSublink(_l("View status charts"), url_for('projects.project_diagrams', project_id=proj.id), con=='Project' and act == 'project_diagrams')
+        sel2 = SidebarElementSublink(_l("Status charts"), url_for('projects.project_diagrams', project_id=proj.id), con=='Project' and act == 'project_diagrams')
         sels.append(sel2)
     return [SidebarElement("Страница проекта", url_for('projects.project_show', project_id=proj.id), "fa fa-home", con=='Project', sels)]
 

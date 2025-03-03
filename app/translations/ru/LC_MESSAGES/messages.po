@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-28 14:15+0300\n"
-"PO-Revision-Date: 2025-02-28 14:16+0300\n"
+"POT-Creation-Date: 2025-03-03 13:04+0300\n"
+"PO-Revision-Date: 2025-03-03 13:04+0300\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "To perform this action, you need to log in"
 msgstr "Для выполнения этого действия необходимо авторизоваться"
 
-#: app/__init__.py:238
+#: app/__init__.py:240
 #, python-format
 msgid ""
 "Internal server error. Please report on GitLens about this issue (log file in "
@@ -92,7 +92,12 @@ msgstr ""
 #: app/controllers/notes/forms.py:27 app/controllers/projects/forms.py:18
 #: app/controllers/projects/forms.py:21 app/controllers/projects/forms.py:23
 #: app/controllers/projects/forms.py:25 app/controllers/projects/forms.py:27
-#: app/controllers/projects/forms.py:36 app/controllers/tasks/forms.py:34
+#: app/controllers/projects/forms.py:36
+#: app/controllers/research_events/forms.py:30
+#: app/controllers/research_events/forms.py:32
+#: app/controllers/research_events/forms.py:51
+#: app/controllers/research_events/forms.py:81
+#: app/controllers/research_events/forms.py:83 app/controllers/tasks/forms.py:34
 #: app/controllers/tasks/forms.py:37 app/controllers/tasks/forms.py:40
 #: app/controllers/tasks/forms.py:42 app/controllers/users/forms.py:11
 #: app/controllers/users/forms.py:12 app/controllers/users/forms.py:18
@@ -211,13 +216,14 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/networks/forms.py:54 app/controllers/networks/forms.py:119
 #: app/controllers/networks/forms.py:191 app/controllers/notes/forms.py:31
 #: app/controllers/projects/forms.py:40 app/controllers/projects/forms.py:83
-#: app/controllers/tasks/forms.py:73 app/controllers/users/forms.py:71
-#: app/controllers/wiki_pages/forms.py:33 app/controllers/wiki_pages/forms.py:54
-#: app/templates/credentials/show.html:262 app/templates/issues/show.html:303
-#: app/templates/issues/show.html:328 app/templates/services/show.html:375
-#: app/templates/services/show.html:400 app/templates/services/show.html:425
-#: app/templates/tasks/show.html:399 app/templates/tasks/show.html:423
-#: app/templates/tasks/show.html:448
+#: app/controllers/research_events/forms.py:65
+#: app/controllers/research_events/forms.py:107 app/controllers/tasks/forms.py:73
+#: app/controllers/users/forms.py:71 app/controllers/wiki_pages/forms.py:33
+#: app/controllers/wiki_pages/forms.py:54 app/templates/credentials/show.html:262
+#: app/templates/issues/show.html:303 app/templates/issues/show.html:328
+#: app/templates/services/show.html:375 app/templates/services/show.html:400
+#: app/templates/services/show.html:425 app/templates/tasks/show.html:399
+#: app/templates/tasks/show.html:423 app/templates/tasks/show.html:448
 msgid "Save"
 msgstr "Сохранить"
 
@@ -427,7 +433,31 @@ msgstr "Статический пароль:"
 #: app/controllers/notes/forms.py:30 app/controllers/projects/forms.py:17
 #: app/controllers/projects/forms.py:20 app/controllers/projects/forms.py:22
 #: app/controllers/projects/forms.py:24 app/controllers/projects/forms.py:26
-#: app/controllers/projects/forms.py:52 app/controllers/tasks/forms.py:33
+#: app/controllers/projects/forms.py:52
+#: app/controllers/research_events/forms.py:29
+#: app/controllers/research_events/forms.py:32
+#: app/controllers/research_events/forms.py:33
+#: app/controllers/research_events/forms.py:37
+#: app/controllers/research_events/forms.py:39
+#: app/controllers/research_events/forms.py:41
+#: app/controllers/research_events/forms.py:45
+#: app/controllers/research_events/forms.py:47
+#: app/controllers/research_events/forms.py:49
+#: app/controllers/research_events/forms.py:53
+#: app/controllers/research_events/forms.py:54
+#: app/controllers/research_events/forms.py:55
+#: app/controllers/research_events/forms.py:56
+#: app/controllers/research_events/forms.py:57
+#: app/controllers/research_events/forms.py:80
+#: app/controllers/research_events/forms.py:83
+#: app/controllers/research_events/forms.py:84
+#: app/controllers/research_events/forms.py:87
+#: app/controllers/research_events/forms.py:89
+#: app/controllers/research_events/forms.py:91
+#: app/controllers/research_events/forms.py:94
+#: app/controllers/research_events/forms.py:96
+#: app/controllers/research_events/forms.py:98
+#: app/controllers/research_events/forms.py:99 app/controllers/tasks/forms.py:33
 #: app/controllers/tasks/forms.py:36 app/controllers/tasks/forms.py:39
 #: app/controllers/tasks/forms.py:41 app/controllers/tasks/forms.py:44
 #: app/controllers/tasks/forms.py:46 app/controllers/tasks/forms.py:47
@@ -506,12 +536,12 @@ msgstr ""
 "Создает или обновляет учетные данные из переданного файла, разделяя их в "
 "соответствии с указанным разделителем"
 
-#: app/controllers/forms.py:387
+#: app/controllers/forms.py:394
 msgid "Select an option"
 msgstr "Выберите опцию"
 
-#: app/controllers/forms.py:418 app/controllers/forms.py:443
-#: app/controllers/forms.py:445 app/helpers/projects_helpers.py:223
+#: app/controllers/forms.py:426 app/controllers/forms.py:451
+#: app/controllers/forms.py:453 app/helpers/projects_helpers.py:223
 #: app/helpers/projects_helpers.py:225 app/helpers/projects_helpers.py:232
 #: app/helpers/projects_helpers.py:234
 msgid "Not a valid choice."
@@ -566,7 +596,17 @@ msgstr "Шаблон импорта учётных данных успешно �
 #: app/controllers/networks/forms.py:216 app/controllers/networks/forms.py:219
 #: app/controllers/networks/forms.py:246 app/controllers/networks/forms.py:255
 #: app/controllers/notes/forms.py:15 app/controllers/notes/forms.py:28
-#: app/controllers/projects/forms.py:19 app/controllers/tasks/forms.py:35
+#: app/controllers/projects/forms.py:19
+#: app/controllers/research_events/forms.py:31
+#: app/controllers/research_events/forms.py:38
+#: app/controllers/research_events/forms.py:40
+#: app/controllers/research_events/forms.py:46
+#: app/controllers/research_events/forms.py:48
+#: app/controllers/research_events/forms.py:82
+#: app/controllers/research_events/forms.py:88
+#: app/controllers/research_events/forms.py:90
+#: app/controllers/research_events/forms.py:95
+#: app/controllers/research_events/forms.py:97 app/controllers/tasks/forms.py:35
 #: app/controllers/users/forms.py:33 app/controllers/users/forms.py:36
 #: app/controllers/users/forms.py:38 app/controllers/users/forms.py:58
 #: app/controllers/wiki_pages/forms.py:20 app/controllers/wiki_pages/forms.py:23
@@ -585,7 +625,9 @@ msgstr "Это поле не может быть больше %(length)s сим�
 #: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:42
 #: app/controllers/networks/forms.py:46 app/controllers/networks/forms.py:111
 #: app/controllers/networks/forms.py:184 app/controllers/notes/forms.py:18
-#: app/controllers/projects/forms.py:28 app/controllers/tasks/forms.py:62
+#: app/controllers/projects/forms.py:28
+#: app/controllers/research_events/forms.py:61
+#: app/controllers/research_events/forms.py:103 app/controllers/tasks/forms.py:62
 #: app/controllers/users/forms.py:62 app/controllers/wiki_pages/forms.py:29
 #: app/controllers/wiki_pages/forms.py:50
 msgid "Create"
@@ -666,7 +708,7 @@ msgstr "Шаблон проблем успешно удалён"
 #: app/controllers/admin/routes_background_tasks.py:25
 #: app/controllers/admin/routes_background_tasks.py:37
 #: app/controllers/admin/routes_background_tasks.py:50
-#: app/templates/layout/_macrosses.html:116
+#: app/templates/layout/_macrosses.html:122
 msgid "Deleted user"
 msgstr "Удалённый пользователь"
 
@@ -707,66 +749,68 @@ msgstr "Шаблон задачи успешно удалён"
 msgid "Project chat"
 msgstr "Чат проекта"
 
-#: app/controllers/credentials/__init__.py:29
+#: app/controllers/credentials/__init__.py:30
 msgid "User credentials"
 msgstr "Учётные данные пользователей"
 
-#: app/controllers/credentials/__init__.py:32
+#: app/controllers/credentials/__init__.py:33
 msgid "Credentials of the researchers"
 msgstr "Учётные данные исследователей"
 
-#: app/controllers/credentials/__init__.py:35
-#: app/controllers/credentials/__init__.py:51
-#: app/controllers/credentials/__init__.py:57
-#: app/controllers/credentials/__init__.py:70
+#: app/controllers/credentials/__init__.py:36
+#: app/controllers/credentials/__init__.py:52
+#: app/controllers/credentials/__init__.py:58
+#: app/controllers/credentials/__init__.py:71
 msgid "Add new credentials"
 msgstr "Добавить новые учётные данные"
 
-#: app/controllers/credentials/__init__.py:36
+#: app/controllers/credentials/__init__.py:37
 msgid "Add multiple credentials"
 msgstr "Импортировать учётные данные"
 
-#: app/controllers/credentials/__init__.py:41
-#: app/controllers/credentials/__init__.py:53 app/models/credentials.py:125
+#: app/controllers/credentials/__init__.py:42
+#: app/controllers/credentials/__init__.py:54 app/models/credentials.py:125
 #: app/models/networks.py:447
 msgid "Credentials"
 msgstr "Учётные данные"
 
-#: app/controllers/credentials/__init__.py:49
+#: app/controllers/credentials/__init__.py:50
 #: app/templates/credentials/index.html:13
 msgid "All credentials"
 msgstr "Все учётные данные"
 
-#: app/controllers/credentials/__init__.py:53
+#: app/controllers/credentials/__init__.py:54
 msgid "Credentials that were found within the framework of this project"
 msgstr "Задачи, выполняемые в рамках данного проекта"
 
-#: app/controllers/credentials/__init__.py:55
-#: app/controllers/credentials/__init__.py:59
+#: app/controllers/credentials/__init__.py:56
+#: app/controllers/credentials/__init__.py:60
 msgid "Researcher credentials"
 msgstr "Учётные данные исследователей"
 
-#: app/controllers/credentials/__init__.py:59
+#: app/controllers/credentials/__init__.py:60
 msgid ""
 "The credentials that were added by the researchers within the framework of this "
 "project"
 msgstr "Задачи, выполняемые в рамках данного проекта"
 
-#: app/controllers/credentials/__init__.py:61
+#: app/controllers/credentials/__init__.py:62
 #, python-format
 msgid "«%(login)s» login credentials"
 msgstr "Учётные данные для логина «%(login)s»"
 
-#: app/controllers/credentials/__init__.py:63
+#: app/controllers/credentials/__init__.py:64
 #: app/controllers/issues/__init__.py:70 app/controllers/networks/__init__.py:101
 #: app/controllers/networks/__init__.py:140
 #: app/controllers/networks/__init__.py:185
-#: app/controllers/projects/__init__.py:42 app/controllers/tasks/__init__.py:70
-#: app/controllers/users/routes.py:32 app/helpers/admin_helpers.py:151
-#: app/helpers/admin_helpers.py:189 app/helpers/admin_helpers.py:207
-#: app/helpers/admin_helpers.py:222 app/helpers/main_page_helpers.py:70
-#: app/helpers/main_page_helpers.py:89 app/helpers/users_helpers.py:52
-#: app/templates/admin/object_type_index.html:69
+#: app/controllers/projects/__init__.py:42
+#: app/controllers/research_events/__init__.py:68
+#: app/controllers/research_events/__init__.py:94
+#: app/controllers/tasks/__init__.py:70 app/controllers/users/routes.py:32
+#: app/helpers/admin_helpers.py:151 app/helpers/admin_helpers.py:189
+#: app/helpers/admin_helpers.py:207 app/helpers/admin_helpers.py:222
+#: app/helpers/main_page_helpers.py:70 app/helpers/main_page_helpers.py:89
+#: app/helpers/users_helpers.py:52 app/templates/admin/object_type_index.html:69
 #: app/templates/admin/project_role_index.html:58
 #: app/templates/credentials/index.html:156
 #: app/templates/hosts/excluded-index.html:117 app/templates/hosts/index.html:292
@@ -776,15 +820,17 @@ msgstr "Учётные данные для логина «%(login)s»"
 msgid "Edit"
 msgstr "Редактировать"
 
-#: app/controllers/credentials/__init__.py:66
+#: app/controllers/credentials/__init__.py:67
 #: app/controllers/issues/__init__.py:73 app/controllers/networks/__init__.py:104
 #: app/controllers/networks/__init__.py:148
 #: app/controllers/networks/__init__.py:188
-#: app/controllers/projects/__init__.py:48 app/controllers/tasks/__init__.py:73
-#: app/controllers/users/routes.py:34 app/helpers/admin_helpers.py:152
-#: app/helpers/admin_helpers.py:190 app/helpers/admin_helpers.py:208
-#: app/helpers/admin_helpers.py:223 app/helpers/main_page_helpers.py:71
-#: app/helpers/main_page_helpers.py:90
+#: app/controllers/projects/__init__.py:48
+#: app/controllers/research_events/__init__.py:71
+#: app/controllers/research_events/__init__.py:97
+#: app/controllers/tasks/__init__.py:73 app/controllers/users/routes.py:34
+#: app/helpers/admin_helpers.py:152 app/helpers/admin_helpers.py:190
+#: app/helpers/admin_helpers.py:208 app/helpers/admin_helpers.py:223
+#: app/helpers/main_page_helpers.py:71 app/helpers/main_page_helpers.py:90
 #: app/templates/admin/object_type_index.html:70
 #: app/templates/admin/project_role_index.html:59
 #: app/templates/hosts/index.html:294 app/templates/networks/index.html:319
@@ -792,30 +838,33 @@ msgstr "Редактировать"
 msgid "Delete"
 msgstr "Удалить"
 
-#: app/controllers/credentials/__init__.py:66
+#: app/controllers/credentials/__init__.py:67
 msgid "Are you sure you want to delete these credentials?"
 msgstr "Вы действительно уверены в том, что хотите удалить данные учётные данные?"
 
-#: app/controllers/credentials/__init__.py:68
+#: app/controllers/credentials/__init__.py:69
 #: app/controllers/issues/__init__.py:75 app/controllers/networks/__init__.py:106
 #: app/controllers/networks/__init__.py:150
 #: app/controllers/networks/__init__.py:190
-#: app/controllers/projects/__init__.py:50 app/controllers/tasks/__init__.py:75
+#: app/controllers/projects/__init__.py:50
+#: app/controllers/research_events/__init__.py:73
+#: app/controllers/research_events/__init__.py:99
+#: app/controllers/tasks/__init__.py:75
 #, python-format
 msgid "Created by <a href=\"%(link)s\">%(created_by)s</a> %(date)s"
 msgstr "Создал(а) <a href=\"%(link)s\">%(created_by)s</a> %(date)s"
 
-#: app/controllers/credentials/__init__.py:73
+#: app/controllers/credentials/__init__.py:74
 msgid "Multiple import credentials"
 msgstr "Множественный импорт учётных данных"
 
-#: app/controllers/credentials/__init__.py:74
+#: app/controllers/credentials/__init__.py:75
 msgid "Multiple add new credentials or update if they exist in database"
 msgstr ""
 "Множественное добавление учётных данных, или обновление - если они присутствуют "
 "в базе данных"
 
-#: app/controllers/credentials/__init__.py:76
+#: app/controllers/credentials/__init__.py:77
 msgid "Edit credentials"
 msgstr "Редактировать учётные данные"
 
@@ -834,17 +883,17 @@ msgstr "Создать и добавить ещё"
 msgid "Credential for «%(login)s» has been successfully added"
 msgstr "Учётные данные для «%(login)s» успешно добавлены"
 
-#: app/controllers/credentials/routes.py:122
+#: app/controllers/credentials/routes.py:123
 #, python-format
 msgid "Credential #%(cred_id)s successfully changed"
 msgstr "Учётные данные #%(cred_id)s успешно изменены"
 
-#: app/controllers/credentials/routes.py:136
+#: app/controllers/credentials/routes.py:137
 #, python-format
 msgid "Credential #%(cred_id)s has been successfully deleted"
 msgstr "Учётные данные #%(cred_id)s успешно удалены"
 
-#: app/controllers/credentials/routes.py:172
+#: app/controllers/credentials/routes.py:173
 msgid "The credential import module has been successfully launched"
 msgstr "Модуль импорта учётных данных успешно запущен"
 
@@ -869,7 +918,7 @@ msgid "Critical vulnerability has been successvully deleted"
 msgstr "Критическая уязвимость успешно удалена"
 
 #: app/controllers/generics/websockets.py:170
-#: app/templates/layout/_macrosses.html:309
+#: app/templates/layout/_macrosses.html:315
 msgid "Removed user"
 msgstr "Удалённый пользователь"
 
@@ -1211,9 +1260,9 @@ msgstr "Заметка успешно удалена"
 msgid "Main information"
 msgstr "Основная информация"
 
-#: app/controllers/projects/__init__.py:31 app/models/projects.py:93
-msgid "View status charts"
-msgstr "Просматривать диаграммы состояния"
+#: app/controllers/projects/__init__.py:31 app/controllers/projects/__init__.py:58
+msgid "Status charts"
+msgstr "Диаграммы состояния"
 
 #: app/controllers/projects/__init__.py:39
 #, python-format
@@ -1243,10 +1292,6 @@ msgstr "Добавить новый проект"
 #, python-format
 msgid "Edit project #%(project_id)s"
 msgstr "Редактировать проект #%(project_id)s"
-
-#: app/controllers/projects/__init__.py:58
-msgid "Status charts"
-msgstr "Диаграммы состояния"
 
 #: app/controllers/projects/__init__.py:59
 #, python-format
@@ -1302,6 +1347,122 @@ msgstr "Все шаблоны отчётов"
 #: app/controllers/reports/__init__.py:31 app/models/report_templates.py:25
 msgid "Report templates"
 msgstr "Шаблоны отчётов"
+
+#: app/controllers/research_events/__init__.py:36
+msgid "Add new researcher event"
+msgstr "Добавить новое событие исследования"
+
+#: app/controllers/research_events/__init__.py:42
+msgid "Add new detection event"
+msgstr "Добавить новое событие обнаружения"
+
+#: app/controllers/research_events/__init__.py:45
+#: app/controllers/research_events/__init__.py:78
+#: app/templates/research_events/timeline.html:9
+msgid "Events timeline"
+msgstr "Временная шкала событий"
+
+#: app/controllers/research_events/__init__.py:49
+#: app/controllers/research_events/__init__.py:57 app/models/pentest_events.py:126
+msgid "Research events"
+msgstr "События исследования"
+
+#: app/controllers/research_events/__init__.py:59
+#: app/controllers/research_events/__init__.py:85
+msgid "Create new event"
+msgstr "Создать новое событие"
+
+#: app/controllers/research_events/__init__.py:61
+msgid "Events generated by researchers and which can be detected"
+msgstr "События, созданные исследователями, которые могут быть обнаружены"
+
+#: app/controllers/research_events/__init__.py:63
+msgid "Add new research event"
+msgstr "Добавить новое событие исследования"
+
+#: app/controllers/research_events/__init__.py:66
+#, python-format
+msgid "Research event #%(event_id)s"
+msgstr "Событие исследования #%(event_id)s"
+
+#: app/controllers/research_events/__init__.py:71
+#: app/controllers/research_events/__init__.py:97
+msgid "Are you sure you want to delete these event?"
+msgstr "Вы действительно уверены в том, что хотите удалить это событие?"
+
+#: app/controllers/research_events/__init__.py:73
+#, python-format
+msgid "Event %(event_title)s"
+msgstr "Событие %(event_title)s"
+
+#: app/controllers/research_events/__init__.py:75
+#, python-format
+msgid "Edit research event #%(event_id)s"
+msgstr "Редактировать событие исследования #%(event_id)s"
+
+#: app/controllers/research_events/__init__.py:79
+msgid "Comparison between research events and exposure detection events"
+msgstr ""
+"Сопоставление между событиями исследования и событиями обнаружения воздействия"
+
+#: app/controllers/research_events/__init__.py:83
+msgid "Organization detection events"
+msgstr "События обнаружения организацией"
+
+#: app/controllers/research_events/__init__.py:87
+msgid ""
+"Events created in the organization, indicating the impact of researchers on "
+"resources"
+msgstr ""
+"События, обнаруженные организацией, свидетельствующие о влиянии исследователей "
+"на подконтрольные ресурсы"
+
+#: app/controllers/research_events/__init__.py:89
+msgid "Add new organization detection event"
+msgstr "Добавить новое событие обнаружения организацией"
+
+#: app/controllers/research_events/__init__.py:92
+#, python-format
+msgid "Organization detection event #%(event_id)s"
+msgstr "Событие обнаружения организацией #%(event_id)s"
+
+#: app/controllers/research_events/__init__.py:99
+#, python-format
+msgid "Organization detection event %(event_id)s"
+msgstr "Событие обнаружения организацией #%(event_id)s"
+
+#: app/controllers/research_events/__init__.py:101
+#, python-format
+msgid "Edit organization detection event event #%(event_id)s"
+msgstr "Редактировать событие обнаружения организацией #%(event_id)s"
+
+#: app/controllers/research_events/routes.py:46
+msgid "New research event successfully added!"
+msgstr "Новое событие исследования успешно добавлено!"
+
+#: app/controllers/research_events/routes.py:87
+#, python-format
+msgid "Research event #%(event_id)s successfully updated!"
+msgstr "Событие исследования #%(event_id)s успешно обновлено!"
+
+#: app/controllers/research_events/routes.py:111
+#, python-format
+msgid "Research event #%(event_id)s successfully deleted!"
+msgstr "Событие исследования #%(event_id)s успешно удалено!"
+
+#: app/controllers/research_events/routes.py:148
+msgid "New detection event successfully added!"
+msgstr "Событие обнаружения успешно добавлено!"
+
+#: app/controllers/research_events/routes.py:189
+#, python-format
+msgid "Detection event #%(event_id)s successfully updated!"
+msgstr "Событие обнаружения #%(event_id)s успешно обновлено!"
+
+#: app/controllers/research_events/routes.py:213
+#, python-format
+msgid "Organization detection event #%(event_id)s successfully deleted!"
+msgstr "Событие обнаружения организацией #%(event_id)s успешно удалено!"
 
 #: app/controllers/tasks/__init__.py:30 app/controllers/tasks/__init__.py:49
 #: app/controllers/tasks/__init__.py:54
@@ -1841,7 +2002,7 @@ msgstr "IP-адрес некорректен"
 msgid "Incorrect MAC-addres"
 msgstr "MAC-адрес некорректен"
 
-#: app/helpers/general_helpers.py:650
+#: app/helpers/general_helpers.py:646
 msgid "Anonymous"
 msgstr "Анонимная"
 
@@ -1992,8 +2153,8 @@ msgid "Reply to comment"
 msgstr "Ответить"
 
 #: app/helpers/projects_helpers.py:334 app/templates/issues/show.html:78
-#: app/templates/issues/show.html:108 app/templates/layout/_macrosses.html:133
-#: app/templates/layout/_macrosses.html:260 app/templates/notes/index.html:23
+#: app/templates/issues/show.html:108 app/templates/layout/_macrosses.html:139
+#: app/templates/layout/_macrosses.html:266 app/templates/notes/index.html:23
 #: app/templates/notes/index.html:72 app/templates/projects/index.html:49
 #: app/templates/projects/index.html:82 app/templates/projects/index.html:111
 #: app/templates/projects/show.html:50
@@ -2002,7 +2163,7 @@ msgctxt "they"
 msgid "(Missing)"
 msgstr "(Отсутствуют)"
 
-#: app/helpers/users_helpers.py:53 app/templates/layout/_macrosses.html:150
+#: app/helpers/users_helpers.py:53 app/templates/layout/_macrosses.html:156
 msgid "Profile"
 msgstr "Профиль"
 
@@ -2010,6 +2171,7 @@ msgstr "Профиль"
 #: app/models/files.py:48 app/models/generic.py:37 app/models/generic.py:197
 #: app/models/issues.py:49 app/models/issues.py:107 app/models/networks.py:29
 #: app/models/networks.py:205 app/models/networks.py:426 app/models/notes.py:31
+#: app/models/pentest_events.py:95 app/models/pentest_events.py:137
 #: app/models/projects.py:26 app/models/tasks.py:121 app/models/users.py:141
 #: app/models/wiki_pages.py:12 app/models/wiki_pages.py:43
 msgid "Created at"
@@ -2025,6 +2187,8 @@ msgstr "Добавил(а)"
 #: app/models/credentials.py:87 app/models/files.py:26 app/models/files.py:27
 #: app/models/issues.py:129 app/models/issues.py:130 app/models/networks.py:40
 #: app/models/networks.py:41 app/models/notes.py:41 app/models/notes.py:42
+#: app/models/pentest_events.py:121 app/models/pentest_events.py:122
+#: app/models/pentest_events.py:155 app/models/pentest_events.py:156
 #: app/models/projects.py:88 app/models/projects.py:124 app/models/projects.py:125
 #: app/models/tasks.py:138 app/models/tasks.py:139
 msgid "Project"
@@ -2063,7 +2227,10 @@ msgstr "Добавлять новые сообщения"
 #: app/models/networks.py:179 app/models/networks.py:330
 #: app/models/networks.py:346 app/models/networks.py:383
 #: app/models/networks.py:405 app/models/networks.py:421 app/models/notes.py:14
-#: app/models/notes.py:29 app/models/projects.py:22
+#: app/models/notes.py:29 app/models/pentest_events.py:15
+#: app/models/pentest_events.py:32 app/models/pentest_events.py:49
+#: app/models/pentest_events.py:69 app/models/pentest_events.py:94
+#: app/models/pentest_events.py:135 app/models/projects.py:22
 #: app/models/report_templates.py:17 app/models/tasks.py:34 app/models/tasks.py:62
 #: app/models/tasks.py:82 app/models/tasks.py:116 app/models/users.py:30
 #: app/models/users.py:52 app/models/users.py:77 app/models/users.py:105
@@ -2106,10 +2273,13 @@ msgstr "Архивный"
 #: app/models/networks.py:81 app/models/networks.py:97 app/models/networks.py:116
 #: app/models/networks.py:133 app/models/networks.py:180
 #: app/models/networks.py:331 app/models/networks.py:384
-#: app/models/networks.py:406 app/models/notes.py:15 app/models/projects.py:108
-#: app/models/tasks.py:35 app/models/tasks.py:63 app/models/tasks.py:83
-#: app/models/tasks.py:361 app/models/users.py:32 app/models/users.py:53
-#: app/models/users.py:79 app/models/users.py:107 app/models/users.py:142
+#: app/models/networks.py:406 app/models/notes.py:15
+#: app/models/pentest_events.py:16 app/models/pentest_events.py:33
+#: app/models/pentest_events.py:50 app/models/pentest_events.py:70
+#: app/models/projects.py:108 app/models/tasks.py:35 app/models/tasks.py:63
+#: app/models/tasks.py:83 app/models/tasks.py:361 app/models/users.py:32
+#: app/models/users.py:53 app/models/users.py:79 app/models/users.py:107
+#: app/models/users.py:142
 msgid "Slug"
 msgstr "Слаг"
 
@@ -2123,11 +2293,15 @@ msgstr "Слаг"
 #: app/models/networks.py:199 app/models/networks.py:332
 #: app/models/networks.py:347 app/models/networks.py:385
 #: app/models/networks.py:407 app/models/networks.py:423 app/models/notes.py:16
-#: app/models/notes.py:37 app/models/projects.py:23 app/models/projects.py:109
-#: app/models/report_templates.py:18 app/models/tasks.py:36 app/models/tasks.py:64
-#: app/models/tasks.py:84 app/models/users.py:31 app/models/users.py:54
-#: app/models/users.py:78 app/models/users.py:106 app/models/wiki_pages.py:18
-#: app/models/wiki_pages.py:49 app/templates/action_modules/index.html:24
+#: app/models/notes.py:37 app/models/pentest_events.py:17
+#: app/models/pentest_events.py:34 app/models/pentest_events.py:51
+#: app/models/pentest_events.py:71 app/models/pentest_events.py:101
+#: app/models/pentest_events.py:136 app/models/projects.py:23
+#: app/models/projects.py:109 app/models/report_templates.py:18
+#: app/models/tasks.py:36 app/models/tasks.py:64 app/models/tasks.py:84
+#: app/models/users.py:31 app/models/users.py:54 app/models/users.py:78
+#: app/models/users.py:106 app/models/wiki_pages.py:18 app/models/wiki_pages.py:49
+#: app/templates/action_modules/index.html:24
 #: app/templates/admin/background_tasks_index.html:35
 #: app/templates/wiki_pages/index.html:99 app/templates/wiki_pages/index.html:153
 msgid "Title"
@@ -2169,10 +2343,11 @@ msgstr "Добавить новый тип хэша"
 #: app/models/credentials.py:63 app/models/files.py:47 app/models/generic.py:194
 #: app/models/issues.py:38 app/models/issues.py:60 app/models/issues.py:114
 #: app/models/networks.py:28 app/models/networks.py:99 app/models/networks.py:135
-#: app/models/networks.py:200 app/models/networks.py:424 app/models/projects.py:25
-#: app/models/projects.py:110 app/models/report_templates.py:19
-#: app/models/tasks.py:38 app/models/tasks.py:65 app/models/tasks.py:120
-#: app/models/wiki_pages.py:19 app/models/wiki_pages.py:50
+#: app/models/networks.py:200 app/models/networks.py:424
+#: app/models/pentest_events.py:113 app/models/pentest_events.py:152
+#: app/models/projects.py:25 app/models/projects.py:110
+#: app/models/report_templates.py:19 app/models/tasks.py:38 app/models/tasks.py:65
+#: app/models/tasks.py:120 app/models/wiki_pages.py:19 app/models/wiki_pages.py:50
 #: app/templates/action_modules/index.html:25
 #: app/templates/admin/background_tasks_index.html:36
 #: app/templates/cves/new.html:13 app/templates/wiki_pages/index.html:103
@@ -2198,16 +2373,20 @@ msgstr "Добавить новый словарь"
 #: app/models/issues.py:109 app/models/networks.py:30 app/models/networks.py:31
 #: app/models/networks.py:206 app/models/networks.py:207
 #: app/models/networks.py:427 app/models/networks.py:428 app/models/notes.py:32
-#: app/models/notes.py:33 app/models/projects.py:27 app/models/projects.py:28
-#: app/models/tasks.py:122 app/models/tasks.py:123 app/models/wiki_pages.py:13
-#: app/models/wiki_pages.py:14 app/models/wiki_pages.py:44
-#: app/models/wiki_pages.py:45 app/templates/notes/index.html:290
+#: app/models/notes.py:33 app/models/pentest_events.py:96
+#: app/models/pentest_events.py:97 app/models/pentest_events.py:138
+#: app/models/pentest_events.py:139 app/models/projects.py:27
+#: app/models/projects.py:28 app/models/tasks.py:122 app/models/tasks.py:123
+#: app/models/wiki_pages.py:13 app/models/wiki_pages.py:14
+#: app/models/wiki_pages.py:44 app/models/wiki_pages.py:45
+#: app/templates/notes/index.html:290
 msgid "Created by"
 msgstr "Добавил(а)"
 
 #: app/models/credentials.py:91 app/models/files.py:18 app/models/generic.py:38
 #: app/models/issues.py:52 app/models/issues.py:110 app/models/networks.py:32
 #: app/models/networks.py:208 app/models/networks.py:429 app/models/notes.py:34
+#: app/models/pentest_events.py:98 app/models/pentest_events.py:140
 #: app/models/projects.py:29 app/models/tasks.py:124 app/models/wiki_pages.py:15
 #: app/models/wiki_pages.py:46
 msgid "Updated at"
@@ -2219,6 +2398,8 @@ msgstr "Изменён в"
 #: app/models/networks.py:33 app/models/networks.py:34 app/models/networks.py:209
 #: app/models/networks.py:210 app/models/networks.py:430
 #: app/models/networks.py:431 app/models/notes.py:35 app/models/notes.py:36
+#: app/models/pentest_events.py:99 app/models/pentest_events.py:100
+#: app/models/pentest_events.py:141 app/models/pentest_events.py:142
 #: app/models/projects.py:30 app/models/projects.py:31 app/models/tasks.py:125
 #: app/models/tasks.py:126 app/models/wiki_pages.py:16 app/models/wiki_pages.py:17
 #: app/models/wiki_pages.py:47 app/models/wiki_pages.py:48
@@ -2274,7 +2455,8 @@ msgstr "Добавить новые учётные данные"
 
 #: app/models/credentials.py:129 app/models/issues.py:152
 #: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:495
-#: app/models/notes.py:49 app/models/report_templates.py:27
+#: app/models/notes.py:49 app/models/pentest_events.py:128
+#: app/models/pentest_events.py:162 app/models/report_templates.py:27
 #: app/models/tasks.py:218
 msgid "Show object list"
 msgstr "Просматривать список объектов"
@@ -2285,42 +2467,51 @@ msgstr "Просматривать список созданных объект�
 
 #: app/models/credentials.py:129 app/models/issues.py:152
 #: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:495
-#: app/models/notes.py:49 app/models/tasks.py:218
+#: app/models/notes.py:49 app/models/pentest_events.py:128
+#: app/models/pentest_events.py:162 app/models/tasks.py:218
 msgid "Create new object"
 msgstr "Создавать новые объекты"
 
 #: app/models/credentials.py:129 app/models/issues.py:152
 #: app/models/networks.py:73 app/models/networks.py:307 app/models/networks.py:495
+#: app/models/pentest_events.py:128 app/models/pentest_events.py:162
 #: app/models/projects.py:92 app/models/tasks.py:218
 msgid "Show object card"
 msgstr "Просматривать карточку объекта"
 
 #: app/models/credentials.py:130 app/models/issues.py:153
 #: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:496
-#: app/models/notes.py:49 app/models/projects.py:92 app/models/tasks.py:219
+#: app/models/notes.py:49 app/models/pentest_events.py:129
+#: app/models/pentest_events.py:163 app/models/projects.py:92
+#: app/models/tasks.py:219
 msgid "Edit and update object"
 msgstr "Редактировать и изменять объект"
 
 #: app/models/credentials.py:130 app/models/issues.py:153
 #: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:496
-#: app/models/notes.py:50 app/models/projects.py:92 app/models/tasks.py:219
+#: app/models/notes.py:50 app/models/pentest_events.py:129
+#: app/models/pentest_events.py:163 app/models/projects.py:92
+#: app/models/tasks.py:219
 msgid "Delete object"
 msgstr "Удалять объект"
 
 #: app/models/credentials.py:130 app/models/issues.py:153
 #: app/models/networks.py:74 app/models/networks.py:308 app/models/networks.py:496
+#: app/models/pentest_events.py:129 app/models/pentest_events.py:163
 #: app/models/tasks.py:219
 msgid "Add comment to object"
 msgstr "Добавлять комментарии к объекту"
 
 #: app/models/credentials.py:131 app/models/issues.py:154
 #: app/models/networks.py:75 app/models/networks.py:309 app/models/networks.py:497
+#: app/models/pentest_events.py:130 app/models/pentest_events.py:164
 #: app/models/tasks.py:220
 msgid "Show comment list of object"
 msgstr "Просматривать список комментариев к объекту"
 
 #: app/models/credentials.py:131 app/models/issues.py:154
 #: app/models/networks.py:75 app/models/networks.py:309 app/models/networks.py:497
+#: app/models/pentest_events.py:130 app/models/pentest_events.py:164
 #: app/models/tasks.py:220
 msgid "Show object history"
 msgstr "Просматривать историю объекта"
@@ -2436,8 +2627,10 @@ msgstr "Ответ на"
 
 #: app/models/generic.py:68 app/templates/credentials/show.html:199
 #: app/templates/cves/show.html:111 app/templates/hosts/show.html:372
-#: app/templates/issues/show.html:239 app/templates/services/show.html:313
-#: app/templates/tasks/show.html:340
+#: app/templates/issues/show.html:239
+#: app/templates/research_events/organization-detection-show.html:91
+#: app/templates/research_events/pentest-show.html:134
+#: app/templates/services/show.html:313 app/templates/tasks/show.html:340
 msgid "Comments"
 msgstr "Примечания"
 
@@ -3052,6 +3245,142 @@ msgstr "Важность"
 msgid "Note"
 msgstr "Заметка"
 
+#: app/models/pentest_events.py:18 app/models/pentest_events.py:35
+msgid "Is default"
+msgstr "По умолчанию"
+
+#: app/models/pentest_events.py:24 app/models/pentest_events.py:115
+#: app/models/pentest_events.py:116
+msgid "Evidence of event detection"
+msgstr "Свидетельство обнаружения события"
+
+#: app/models/pentest_events.py:25
+msgid "Evidences of event detection"
+msgstr "Свидетельства обнаружения событий"
+
+#: app/models/pentest_events.py:26
+msgid "Add new evidence of event detection"
+msgstr "Добавить новое свидетельство обнаружения события"
+
+#: app/models/pentest_events.py:41 app/models/pentest_events.py:117
+#: app/models/pentest_events.py:118
+msgid "Evidence of event prevention"
+msgstr "Свидетельство предотвращения события"
+
+#: app/models/pentest_events.py:42
+msgid "Evidences of event prevention"
+msgstr "Свидетельства предотвращения событий"
+
+#: app/models/pentest_events.py:43
+msgid "Add new evidence of event prevention"
+msgstr "Добавить новое свидетельство предотвращения события"
+
+#: app/models/pentest_events.py:61
+#: app/templates/research_events/organization-detection-index.html:32
+#: app/templates/research_events/pentest-index.html:36
+msgid "MITRE ATT&CK Tactic"
+msgstr "Тактика MITRE ATT&CK"
+
+#: app/models/pentest_events.py:62
+msgid "MITRE ATT&CK Tactics"
+msgstr "Тактики MITRE ATT&CK"
+
+#: app/models/pentest_events.py:63
+msgid "Add new MITRE ATT&CK Tactics"
+msgstr "Добавить новую тактику MITRE ATT&CK"
+
+#: app/models/pentest_events.py:72 app/models/pentest_events.py:73
+msgid "Tactic"
+msgstr "Тактика"
+
+#: app/models/pentest_events.py:86 app/models/pentest_events.py:119
+#: app/models/pentest_events.py:120 app/models/pentest_events.py:153
+#: app/models/pentest_events.py:154
+msgid "MITRE ATT&CK Technique"
+msgstr "Техника MITRE ATT&CK"
+
+#: app/models/pentest_events.py:87
+msgid "MITRE ATT&CK Techniques"
+msgstr "Техники MITRE ATT&CK"
+
+#: app/models/pentest_events.py:88
+msgid "Add new MITRE ATT&CK Technique"
+msgstr "Добавить новую технику MITRE ATT&CK"
+
+#: app/models/pentest_events.py:102 app/models/pentest_events.py:143
+msgid "Event timestamp"
+msgstr "Отметка времени события"
+
+#: app/models/pentest_events.py:103 app/models/pentest_events.py:104
+#: app/models/pentest_events.py:144 app/models/pentest_events.py:145
+msgid "Source host"
+msgstr "Конечное устройство-источник"
+
+#: app/models/pentest_events.py:103 app/models/pentest_events.py:104
+msgid "Host-the source from which the impact was carried out"
+msgstr "Конечное устройство - источник, с которого было осуществлено воздействие"
+
+#: app/models/pentest_events.py:105 app/models/pentest_events.py:146
+msgid "Source user"
+msgstr "Исходный пользователь"
+
+#: app/models/pentest_events.py:106 app/models/pentest_events.py:147
+msgid "Source process"
+msgstr "Исходный процесс"
+
+#: app/models/pentest_events.py:107 app/models/pentest_events.py:108
+#: app/models/pentest_events.py:148 app/models/pentest_events.py:149
+msgid "Target host"
+msgstr "Целевое конечное устройство"
+
+#: app/models/pentest_events.py:107 app/models/pentest_events.py:108
+msgid "The host that was affected"
+msgstr "Затронутое конечное устройство"
+
+#: app/models/pentest_events.py:109 app/models/pentest_events.py:150
+msgid "Target user"
+msgstr "Целевой пользователь"
+
+#: app/models/pentest_events.py:110 app/models/pentest_events.py:151
+msgid "Target process"
+msgstr "Целевой процесс"
+
+#: app/models/pentest_events.py:111 app/models/pentest_events.py:112
+msgid "Operator"
+msgstr "Оператор"
+
+#: app/models/pentest_events.py:111 app/models/pentest_events.py:112
+msgid "The person who performed the action"
+msgstr "Человек, выполнивший это действие"
+
+#: app/models/pentest_events.py:114
+msgid "Raw evidence"
+msgstr "Доказательства"
+
+#: app/models/pentest_events.py:115 app/models/pentest_events.py:116
+msgid "Detected"
+msgstr "Обнаружено"
+
+#: app/models/pentest_events.py:117 app/models/pentest_events.py:118
+msgid "Prevented"
+msgstr "Предотвращено"
+
+#: app/models/pentest_events.py:125
+msgid "Research event"
+msgstr "Событие исследования"
+
+#: app/models/pentest_events.py:130 app/models/pentest_events.py:164
+msgid "Show object list in timeline"
+msgstr "Просматривать список объектов на временной шкале"
+
+#: app/models/pentest_events.py:159
+msgid "Organization Detection Event"
+msgstr "Событие обнаружения организацией"
+
+#: app/models/pentest_events.py:160
+msgid "Organization Detection Events"
+msgstr "События обнаружения организацией"
+
 #: app/models/projects.py:25
 msgid "Project description - additional information not specified in other fields"
 msgstr "Описание проекта - дополнительная информация, не указанная в других полях"
@@ -3108,6 +3437,10 @@ msgstr "Редактировать участников проекта"
 #: app/models/projects.py:93
 msgid "Archive project"
 msgstr "Архивные проекты"
+
+#: app/models/projects.py:93
+msgid "View status charts"
+msgstr "Просматривать диаграммы состояния"
 
 #: app/models/projects.py:111
 msgid "Actions on project objects"
@@ -3500,44 +3833,44 @@ msgstr "Предпочитаемый язык"
 msgid "Roles on project"
 msgstr "Роли на проекте"
 
-#: app/models/users.py:268
+#: app/models/users.py:274
 msgid "Theme style"
 msgstr "Тема окружения"
 
-#: app/models/users.py:269
+#: app/models/users.py:275
 msgid "Theme styles"
 msgstr "Темы окружения"
 
-#: app/models/users.py:276
+#: app/models/users.py:282
 msgid "The sidebar is in a hidden state"
 msgstr "Боковая панель в свёрнутом состоянии"
 
-#: app/models/users.py:277
+#: app/models/users.py:283
 msgid "The order of comments"
 msgstr "Порядок следования кмментариев"
 
-#: app/models/users.py:277
+#: app/models/users.py:283
 msgid "True if direct and False otherwise"
 msgstr "True если прямой и False иначе"
 
-#: app/models/users.py:278
+#: app/models/users.py:284
 msgid ""
 "The indentation from the previous comment to respond to the message in pixels"
 msgstr "Отступ в отвечаемых комментариях в пикселях"
 
-#: app/models/users.py:288
+#: app/models/users.py:294
 msgid "User's Environment Settings"
 msgstr "Настройки окружения пользователя"
 
-#: app/models/users.py:289
+#: app/models/users.py:295
 msgid "User Environment Settings"
 msgstr "Настройки окружений пользователей"
 
-#: app/models/users.py:348
+#: app/models/users.py:354
 msgid "Team"
 msgstr "Команда"
 
-#: app/models/users.py:349
+#: app/models/users.py:355
 msgid "Teams"
 msgstr "Команды"
 
@@ -3667,18 +4000,19 @@ msgstr "Открыть в новой вкладке"
 
 #: app/templates/credentials/index.html:158
 #: app/templates/credentials/pentest-index.html:82
+#: app/templates/credentials/show.html:308
 msgid "Copy"
 msgstr "Копировать"
 
-#: app/templates/credentials/multiple_import.html:9
+#: app/templates/credentials/multiple_import.html:10
 msgid "Import by template"
 msgstr "Импортировать по шаблону"
 
-#: app/templates/credentials/multiple_import.html:28
+#: app/templates/credentials/multiple_import.html:29
 msgid "Parsing data paramethers"
 msgstr "Параметры анализа данных"
 
-#: app/templates/credentials/multiple_import.html:29
+#: app/templates/credentials/multiple_import.html:30
 msgid ""
 "These parameters specify exactly how the columns in the data will be converted "
 "to credential objects."
@@ -3686,35 +4020,35 @@ msgstr ""
 "Эти параметры точно определяют, как столбцы в данных будут преобразованы в "
 "объекты учетных данных."
 
-#: app/templates/credentials/multiple_import.html:29
+#: app/templates/credentials/multiple_import.html:30
 msgid "Parameters for getting data from records"
 msgstr "Параметры для получения данных из записей"
 
-#: app/templates/credentials/multiple_import.html:43
+#: app/templates/credentials/multiple_import.html:44
 msgid "Static data paramethers"
 msgstr "Статические параметры"
 
-#: app/templates/credentials/multiple_import.html:44
+#: app/templates/credentials/multiple_import.html:45
 msgid "These parameters will be added to each new and/or existing object"
 msgstr "Эти параметры будут добавлены каждому новому и/или существующему объекту"
 
-#: app/templates/credentials/multiple_import.html:44
+#: app/templates/credentials/multiple_import.html:45
 msgid "Parameter for adding to data from records"
 msgstr "Параметры для добавления данным к записям"
 
-#: app/templates/credentials/multiple_import.html:61
+#: app/templates/credentials/multiple_import.html:62
 msgid "Content paramether"
 msgstr "Параметры содержимого"
 
-#: app/templates/credentials/multiple_import.html:62
+#: app/templates/credentials/multiple_import.html:63
 msgid "Conversation rules:"
 msgstr "Правила преобразования:"
 
-#: app/templates/credentials/multiple_import.html:64
+#: app/templates/credentials/multiple_import.html:65
 msgid "Static parameters take precedence over parsing parameters"
 msgstr "Статические параметры имеют приоритет перед параметрами анализа данных"
 
-#: app/templates/credentials/multiple_import.html:66
+#: app/templates/credentials/multiple_import.html:67
 msgid ""
 "If the combination «Login:password» or «Login:password hash» already exists, "
 "the existing record will be taken"
@@ -3722,18 +4056,18 @@ msgstr ""
 "Если комбинация «Логин:пароль» или «Логин:хэш пароля» уже существует, будет "
 "взята существующая запись"
 
-#: app/templates/credentials/multiple_import.html:68
+#: app/templates/credentials/multiple_import.html:69
 msgid ""
 "If there is a hash without a login, the data will be substituted for all "
 "objects with this hash"
 msgstr ""
 "Если есть хэш без логина - данные будут подставлены всем объектам с данным хэшом"
 
-#: app/templates/credentials/multiple_import.html:70
+#: app/templates/credentials/multiple_import.html:71
 msgid "Column index started from 0"
 msgstr "Номера столбцов начинаются с 0"
 
-#: app/templates/credentials/multiple_import.html:70
+#: app/templates/credentials/multiple_import.html:71
 msgid "Data that will be uploaded and converted into objects."
 msgstr "Данные, которые будут загружены и преобразованы в объекты."
 
@@ -3763,9 +4097,11 @@ msgstr "Редактировать связанные службы"
 #: app/templates/cves/show.html:117 app/templates/hosts/show.html:380
 #: app/templates/hosts/show.html:386 app/templates/issues/show.html:248
 #: app/templates/issues/show.html:255 app/templates/networks/show.html:233
-#: app/templates/networks/show.html:239 app/templates/services/show.html:321
-#: app/templates/services/show.html:327 app/templates/tasks/show.html:348
-#: app/templates/tasks/show.html:352
+#: app/templates/networks/show.html:239
+#: app/templates/research_events/organization-detection-show.html:99
+#: app/templates/research_events/pentest-show.html:142
+#: app/templates/services/show.html:321 app/templates/services/show.html:327
+#: app/templates/tasks/show.html:348 app/templates/tasks/show.html:352
 msgid "History of property changes"
 msgstr "История изменения свойств"
 
@@ -3818,14 +4154,17 @@ msgid "Specify another host as the interface of the current one"
 msgstr "Указать другой хост как интерфейс к текущему"
 
 #: app/templates/hosts/show.html:205 app/templates/issues/show.html:223
+#: app/templates/research_events/organization-detection-show.html:77
+#: app/templates/research_events/pentest-show.html:106
+#: app/templates/research_events/pentest-show.html:120
 #: app/templates/services/inventory.html:60 app/templates/tasks/show.html:218
 msgctxt "other"
 msgid "(Missing)"
 msgstr "(Отсутствует)"
 
 #: app/templates/hosts/show.html:218 app/templates/issues/show.html:88
-#: app/templates/issues/show.html:98 app/templates/layout/_macrosses.html:311
-#: app/templates/layout/_macrosses.html:337
+#: app/templates/issues/show.html:98 app/templates/layout/_macrosses.html:317
+#: app/templates/layout/_macrosses.html:343
 #: app/templates/services/inventory.html:50
 #: app/templates/services/inventory.html:56
 msgctxt "woman"
@@ -3891,21 +4230,21 @@ msgstr "Дополнительная информация"
 msgid "Edit related tasks"
 msgstr "Редактировать связанные задачи"
 
-#: app/templates/layout/_macrosses.html:79
+#: app/templates/layout/_macrosses.html:31
 #: app/templates/wiki_pages/wikipage_new.html:15
 msgid "All right"
 msgstr "Все верно"
 
-#: app/templates/layout/_macrosses.html:158
+#: app/templates/layout/_macrosses.html:164
 msgid "Activity"
 msgstr "Активность"
 
-#: app/templates/layout/_macrosses.html:166
+#: app/templates/layout/_macrosses.html:172
 msgid "Exit"
 msgstr "Выйти"
 
-#: app/templates/layout/_macrosses.html:246
-#: app/templates/layout/_macrosses.html:270
+#: app/templates/layout/_macrosses.html:252
+#: app/templates/layout/_macrosses.html:276
 msgid "Add new comment"
 msgstr "Добавить комментарий"
 
@@ -3913,35 +4252,35 @@ msgstr "Добавить комментарий"
 msgid "Welcome to PCF"
 msgstr "Добро пожаловать в PCF"
 
-#: app/templates/layout/base.html:264
+#: app/templates/layout/base.html:277
 msgid "Paragraph"
 msgstr "Параграф"
 
-#: app/templates/layout/base.html:265
+#: app/templates/layout/base.html:278
 msgid "Header 1"
 msgstr "Заголовок 1"
 
-#: app/templates/layout/base.html:266
+#: app/templates/layout/base.html:279
 msgid "Header 2"
 msgstr "Заголовок 2"
 
-#: app/templates/layout/base.html:267
+#: app/templates/layout/base.html:280
 msgid "Header 3"
 msgstr "Заголовок 3"
 
-#: app/templates/layout/base.html:268
+#: app/templates/layout/base.html:281
 msgid "Header 4"
 msgstr "Заголовок 4"
 
-#: app/templates/layout/base.html:269
+#: app/templates/layout/base.html:282
 msgid "Header 5"
 msgstr "Заголовок 5"
 
-#: app/templates/layout/base.html:270
+#: app/templates/layout/base.html:283
 msgid "Header 6"
 msgstr "Заголовок 6"
 
-#: app/templates/layout/base.html:277
+#: app/templates/layout/base.html:290
 msgid "Enter text here"
 msgstr "Введите текст здесь"
 
@@ -4084,6 +4423,31 @@ msgstr "Сгенерировать новый отчёт из шаблона"
 msgid "Generate"
 msgstr "Сгенерировать"
 
+#: app/templates/research_events/organization-detection-edit.html:23
+#: app/templates/research_events/organization-detection-new.html:23
+msgid "Event main parameters"
+msgstr "Основные параметры события"
+
+#: app/templates/research_events/organization-detection-index.html:10
+msgid "List of all events, that detected in organization"
+msgstr "Список всех событий, зарегистрированных в организации"
+
+#: app/templates/research_events/pentest-index.html:10
+msgid "List all research events"
+msgstr "Список всех событий исследования"
+
+#: app/templates/research_events/pentest-show.html:47
+msgid "Event paramethers"
+msgstr "Параметры события"
+
+#: app/templates/research_events/timeline.html:32
+#: app/templates/research_events/timeline.html:36
+#: app/templates/services/show.html:488 app/templates/tasks/show.html:30
+#: app/templates/tasks/show.html:39
+msgctxt "man"
+msgid "(Missing)"
+msgstr "(Отсутствует)"
+
 #: app/templates/services/index_group_by_port.html:9
 msgid "Services grouped by port"
 msgstr "Службы, сгруппированные по портам"
@@ -4173,12 +4537,6 @@ msgstr "Загрузка..."
 #: app/templates/services/show.html:480
 msgid "Cannot load a screenshot"
 msgstr "Невозможно загрузить скриншот"
-
-#: app/templates/services/show.html:488 app/templates/tasks/show.html:30
-#: app/templates/tasks/show.html:39
-msgctxt "man"
-msgid "(Missing)"
-msgstr "(Отсутствует)"
 
 #: app/templates/task_templates/new.html:24
 #: app/templates/task_templates/show.html:32
@@ -4651,3 +5009,6 @@ msgstr "Содержание"
 
 #~ msgid "Got an error when taking screenshot"
 #~ msgstr "Возникла ошибка при создании скриншота"
+
+#~ msgid "Organization detection event %(event_title)s"
+#~ msgstr "Событие обнаружения организацией #%(event_title)s"

@@ -536,3 +536,21 @@
 
 .select2-container--classic.select2-container--open .select2-dropdown {
   border-color: #5897fb; }
+
+select.form-control.is-invalid:valid + .select2-container > span.selection > span.select2-selection {
+    border-color: var(--bs-form-invalid-border-color);   
+}
+
+select.form-control.is-invalid:valid + .select2-container--focus > span.selection > span.select2-selection {
+    border-color: var(--bs-form-invalid-border-color);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+select.form-control.is-valid:valid + .select2-container > span.selection > span.select2-selection {
+    border-color: var(--bs-form-valid-border-color);
+}
+
+select.form-control.is-valid:valid + .select2-container--focus > span.selection > span.select2-selection {
+    border-color: var(--bs-form-valid-border-color);
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}

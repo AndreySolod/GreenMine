@@ -12,3 +12,4 @@ from .wiki_pages import *
 from .global_settings import *
 from .chats import *
 from .report_templates import *
+from .pentest_events import *

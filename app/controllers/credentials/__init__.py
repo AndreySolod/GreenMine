@@ -1,7 +1,8 @@
 from flask import Blueprint, url_for
+from app import sanitizer
 from app.models import Credential
 from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_environment, check_if_same_type
-from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink, clean_from_html_tag
+from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink
 from jinja2.filters import Markup
 from app.extensions.moment import moment
 from flask_babel import lazy_gettext as _l
@@ -65,7 +66,7 @@ def environment(obj, action, **kwargs):
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('credentials.credential_delete', credential_id=obj.id), confirm=_l("Are you sure you want to delete these credentials?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=clean_from_html_tag(obj.created_by.title), date=str(moment(obj.created_at).fromNow()))), actions=acts)
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow()))), actions=acts)
     elif action == 'new':
         title = _l("Add new credentials")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=obj.project.fulltitle)

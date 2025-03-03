@@ -455,7 +455,7 @@ class Service(HasComment, db.Model, HasHistory):
                                                             primaryjoin='Service.id==ServiceHasTask.service_id',
                                                             secondaryjoin='ServiceHasTask.task_id==ProjectTask.id',
                                                             back_populates='services', info={'label': _l("Related tasks")})
-    has_been_inventoried: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.sql.expression.false(), info={'label': _l("Has been inventoried")})
+    has_been_inventoried: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Has been inventoried")})
 
     @property
     def fulltitle(self):

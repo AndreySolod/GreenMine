@@ -171,6 +171,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     from app.controllers.action_modules import bp as action_modules_bp
     from app.controllers.chats import bp as chats_bp
     from app.controllers.reports import bp as report_template_bp
+    from app.controllers.research_events import bp as research_events_bp
 
     app.register_blueprint(main_page_bp)
     app.register_blueprint(extensions_bp)
@@ -192,6 +193,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     app.register_blueprint(action_modules_bp)
     app.register_blueprint(chats_bp)
     app.register_blueprint(report_template_bp)
+    app.register_blueprint(research_events_bp)
     
     @app.before_request
     def set_locale():

@@ -55,8 +55,10 @@ class FlaskForm(flask_wtf.FlaskForm):
             if field.__class__.__name__ == 'FileField' or field.__class__.__name__ == 'MultipleFileField':
                 continue
             populate_object(session, o, name, field.data)
-        if 'created_by_id' in inspect(o.__class__).column_attrs.keys() and current_user is not None:
+        if 'created_by_id' in inspect(o.__class__).column_attrs.keys() and current_user is not None and o.created_by is None:
             setattr(o, 'created_by_id', current_user.id)
+        elif 'created_by_id' in inspect(o.__class__).column_attrs.keys() and current_user is not None and o.created_by is None:
+            setattr(o, 'updated_by_id', current_user.id)
 
     def load_exist_value(self, o):
         simple_fields = inspect(o.__class__).column_attrs.keys()
@@ -367,7 +369,8 @@ class Select2Widget:
         if field.data:
             try:
                 if not self.multiple:
-                    field_data = f'<option value="{field.data}" selected="selected">{db.session.scalars(sa.select(field.object_class.title).where(field.object_class.id==int(field.data))).one()}</option>'
+                    field_val = getattr(db.session.scalars(sa.select(field.object_class).where(field.object_class.id==int(field.data))).one(), field.attr_title)
+                    field_data = f'<option value="{field.data}" selected="selected">{field_val}</option>'
                 else:
                     field_data = ''
                     for e in db.session.scalars(sa.select(field.object_class).where(field.object_class.id.in_([int(k) for k in field.data]))):
@@ -380,10 +383,14 @@ class Select2Widget:
             if field.object_class is None:
                 raise ValueError("Object class of Select2Field cannot being None when callback is None")
             callback = url_for('generic.enumeration_object_list', object_class=field.object_class.__name__)
-        if not self.multiple:
-            select_field = f'<select class="select2-standard-widget" id="{field.id}" name="{field.name}">{field_data}</select>'
+        if 'class' in kwargs:
+            additional_classes = " " + kwargs['class']
         else:
-            select_field = f'<select class="select2-standard-widget" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
+            additional_classes = ''
+        if not self.multiple:
+            select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}">{field_data}</select>'
+        else:
+            select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
         jquery_script = '$(document).ready(function() { $("#' + field.id + '").select2({ language: "' + locale + '", placeholder: "' + _l("Select an option") + '''", ajax: {
             url: "''' + callback + '''",'''
         if self.multiple:
@@ -391,6 +398,7 @@ class Select2Widget:
         if dropdownParent is not None:
             jquery_script += f'\ndropdownParent: $("#{dropdownParent}"),'
         jquery_script += '''
+        allowClear: true,
         dataType: 'json',
         } })})'''
         field.script_tag = jquery_script

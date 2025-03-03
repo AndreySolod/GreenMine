@@ -578,10 +578,6 @@ def authenticated_only(f):
     return wrapped
 
 
-def clean_from_html_tag(cleaned_text: str) -> str:
-    return BeautifulSoup(cleaned_text, 'lxml').text
-
-
 def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> None:
     """ Check global settings on application when create an application instance """
     with app.app_context():

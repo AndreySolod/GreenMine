@@ -131,8 +131,8 @@ class RoleHasProjectObjectAction(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     role_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectRole.id, ondelete='CASCADE'), info={'label': _l("Project role")})
     role: so.Mapped[ProjectRole] = so.relationship(lazy='joined', back_populates='actions', info={'label': _l("Project role")})
-    object_class_name: so.Mapped[str] = so.mapped_column(sa.String(15), info={'label': _l("Project object")})
-    action: so.Mapped[str] = so.mapped_column(sa.String(15), info={'label': _l("Object action")})
+    object_class_name: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Project object")})
+    action: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Object action")})
     is_granted: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Is granted")})
 
     __table_args__ = (

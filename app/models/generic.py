@@ -38,7 +38,7 @@ class Comment(db.Model):
     updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={'label': _l("Updated at")})
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys='Comment.created_by_id', back_populates="created_comments", info={'label': "Created by"}) # type: ignore
-    to_object_type: so.Mapped[str] = so.mapped_column(sa.String(30), index=True)
+    to_object_type: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
     to_object_id: so.Mapped[int]
     text: so.Mapped[str] = so.mapped_column(info={'label': _l("Text")})
     reply_to_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('comment.id', ondelete='CASCADE'), info={'label': _l("Reply to")})

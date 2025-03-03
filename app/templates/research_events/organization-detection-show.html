@@ -1,0 +1,126 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import object_comments, object_history %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ event.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.timestamp.info['label'] }}:</td>
+                                <td>{{ moment(event.timestamp).format("LLL") }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.source_host.info['label'] }}:</td>
+                                {% if event.source_host != none %}
+                                <td><a href="{{ url_for('networks.host_show', host_id=event.source_host_id) }}">{{ event.source_host.fulltitle|default("", True) }}</a></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.source_user.info['label'] }}:</td>
+                                <td>{{ event.source_user|suppress_none }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.source_process.info['label'] }}:</td>
+                                <td>{{ event.source_process|suppress_none }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.target_host.info['label'] }}:</td>
+                                {% if event.target_host != none %}
+                                <td><a href="{{ url_for('networks.host_show', host_id=event.target_host_id) }}">{{ event.target_host.fulltitle|suppress_none }}</a></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.target_user.info['label'] }}:</td>
+                                <td>{{ event.target_user|suppress_none }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.target_process.info['label'] }}:</td>
+                                <td>{{ event.target_process|suppress_none }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.MitreAttackTactic.Meta.verbose_name }}:</td>
+                                {% if event.mitre_attack_technique != none %}
+                                <td>{{ event.mitre_attack_technique.tactic.title|default("", True) }}</td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}
+                            </tr>
+                            <tr>
+                                <td>{{ models.PentestOrganizationDetectionEvent.mitre_attack_technique.info['label'] }}:</td>
+                                <td>{{ event.mitre_attack_technique.title|default("", True) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ models.PentestOrganizationDetectionEvent.description.info['label'] }}:</h5>
+                </div>
+                <div class="card-body">
+                    {% if event.description != none and event.description != '' %}
+                    {{ event.description|safe }}
+                    {% else %}
+                    <p class="text-center text-muted">{{ pgettext("other", "(Missing)") }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs" id="CommentAndHistoryTab" role="tablist">
+                        {% set first_tab = " active" %}
+                        {% if roles.project_role_can_make_action(current_user, event, 'show_comments') %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link{{ first_tab }}" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
+                                {{ _("Comments") }}</button>
+                        </li>
+                        {% set first_tab = '' %}
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, event, 'show_history') %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link{{ first_tab }}" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                                role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-grip"></i>
+                                {{ _("History of property changes") }}</button>
+                        </li>
+                        {% set first_tab = '' %}
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="CommentAndHistoryTabContent">
+                        {% set first_tab = ' show active' %}
+                        {% if roles.project_role_can_make_action(current_user, event, 'show_comments') %}
+                        <div class="tab-pane fade{{ first_tab }}" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                            {{ object_comments(event, moment, comment_form, current_user, roles) }}
+                        </div>
+                        {% set first_tab = '' %}
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, event, 'show_history') %}
+                        <div class="tab-pane fade{{ first_tab }}" id="history" role="tabpanel" aria-labelledby="history-tab">
+                            {{ object_history(event, moment, current_user) }}
+                        </div>
+                        {% set first_tab = '' %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -432,8 +432,8 @@ def update_inventory_data(data):
     service.description = sanitizer.sanitize(data['service_description'])
     service.host.title = sanitizer.escape(data['host_title'])
     service.host.description = sanitizer.sanitize(data['host_description'])
-    service.device_type = device_type
-    service.device_vendor = device_vendor
+    service.host.device_type = device_type
+    service.host.device_vendor = device_vendor
     service.has_been_inventoried = True
     db.session.commit()
     ns = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True)

@@ -1,0 +1,80 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("List of all events, that detected in organization") }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table" id="pentest-organization-detection-events-table" data-pagination="true" data-search="true"
+                                        data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true"
+                                        data-filter-control="true" data-buttons-class="primary" data-show-pagination-switch="true"
+                                        data-cookie="true"
+                                        data-cookie-id-table="PentestOrganizationDetectionEventIndex"
+                                        data-cookie-storage="localStorage">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true" data-align="center">{{ models.PentestOrganizationDetectionEvent.id.info['label'] }}</th>
+                            <th data-field="created_by" data-sortable="true" data-align="center" data-filter-control="select">{{ models.PentestOrganizationDetectionEvent.created_by.info['label'] }}</th>
+                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.title.info['label'] }}</th>
+                            <th data-field="timestamp" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.timestamp.info['label'] }}</th>
+                            <th data-field="source_host" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.source_host.info['label'] }}</th>
+                            <th data-field="source_user" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.source_user.info['label'] }}</th>
+                            <th data-field="source_process" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.source_process.info['label'] }}</th>
+                            <th data-field="target_host" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.target_host.info['label'] }}</th>
+                            <th data-field="target_user" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.target_user.info['label'] }}</th>
+                            <th data-field="target_process" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.target_process.info['label'] }}</th>
+                            <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.PentestOrganizationDetectionEvent.description.info['label'] }}</th>
+                            <th data-field="mitre_attack_tactic" data-sortable="true" data-align="center" data-filter-control="select">{{ _("MITRE ATT&CK Tactic") }}</th>
+                            <th data-field="mitre_attack_technique" data-sortable="true" data-align="center" data-filter-control="select">{{ models.PentestOrganizationDetectionEvent.mitre_attack_technique.info['label'] }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in events %}
+                        <tr style="cursor: pointer;">
+                            <td>{{ e.id }}</td>
+                            <td>{{ e.title|suppress_none }}</td>
+                            <td>{{ moment(e.timestamp).format("LLL")|suppress_none }}</td>
+                            <td>{{ e.source_host.fulltitle|default("", True) }}</td>
+                            <td>{{ e.source_user|suppress_none }}</td>
+                            <td>{{ e.source_process|suppress_none }}</td>
+                            <td>{{ e.target_host.fulltitle|default("", True) }}</td>
+                            <td>{{ e.target_user|suppress_none }}</td>
+                            <td>{{ e.target_process|suppress_none }}</td>
+                            <td>{{ sanitizer.pure_text(e.description) }}</td>
+                            {% if e.mitre_attack_technique != none %}
+                            <td>{{ e.mitre_attack_technique.tactic.title|default("", True) }}</td>
+                            {% else %}
+                            <td></td>
+                            {% endif %}
+                            <td>{{ e.mitre_attack_technique.title|default("", True) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $(function() {
+        $('#pentest-organization-detection-events-table').bootstrapTable({ 
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            buttonsClass: 'primary',
+            exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
+            onClickRow: function(row, element, field) {
+                location = "{{ url_for('pentest_events.organization_detection_event_show', event_id='__row_id') }}".replace("__row_id", row.id)
+            }
+         });
+    });
+</script>
+{% endblock %}

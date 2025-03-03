@@ -25,6 +25,18 @@
 {% endif %}
 {% endmacro %}
 
+{% macro form_element_errors(form, element) %}
+{% if element.errors|length == 0 and not form.errors|length == 0 %}
+<div class="valid-feedback">
+  {{ _("All right") }}
+</div>
+{% elif element.errors|length != 0 %}
+<div class="invalid-feedback">
+  {{ "; ".join(element.errors|map('string')) }}
+</div>
+{% endif %}
+{% endmacro %}
+
 {% macro form_element(form, element, spec_class='auto', inline=False, subdivide=3) %}
   {# process labels #}
   {% if not inline %}
@@ -53,6 +65,8 @@
     {% else %}
       {{ element(class=spec_class) }}
     {% endif %}
+    {# process element errors #}
+    {{ form_element_errors(form, element) }}
   {% else %}
     {% if element.errors|length == 0 and not form.errors|length == 0 %}
     {% set additional_class = ' is-valid' %}
@@ -68,20 +82,12 @@
     {% else %}
     {{ element(class=('form-control' + additional_class)) }}
     {% endif %}
+    {# process element errors #}
+    {{ form_element_errors(form, element) }}
   {% endif %}
   {% if inline %}
   </div>
   </div>
-  {% endif %}
-  {# process element errors #}
-  {% if element.errors|length == 0 and not form.errors|length == 0 %}
-    <div class="valid-feedback">
-      {{ _("All right") }}
-    </div>
-  {% elif element.errors|length != 0 %}
-    <div class="invalid-feedback">
-      {{ "; ".join(element.errors|map('string')) }}
-    </div>
   {% endif %}
 {% endmacro %}
 

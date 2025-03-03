@@ -13,7 +13,7 @@ services:
             - "./logs:/app/logs"
             - "/etc/localtime:/etc/localtime:ro"
         environment:
-            - ENVIRONMENT=DEVELOP
+            - ENVIRONMENT=PRODUCTION
             - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
             - CELERY_BROKER_URL=redis://@redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -41,7 +41,7 @@ services:
             - "./config.py:/app/config.py"
             - "/etc/localtime:/etc/localtime:ro"
         environment:
-            - ENVIRONMENT=DEVELOP
+            - ENVIRONMENT=PRODUCTION
             - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
             - CELERY_BROKER_URL=redis://@redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0

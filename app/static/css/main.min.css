@@ -3676,7 +3676,7 @@ a.blog-sm p.blog-date:after {
     top: 0;
     left: 50%;
     margin-left: -1px;
-    border-right: 1px dashed #c4d2e2;
+    border-right: 1px dashed var(--timeline-line-color);
     height: 100%;
     display: block
 }
@@ -3700,7 +3700,7 @@ a.blog-sm p.blog-date:after {
 .timeline-row .timeline-time small {
     display: block;
     margin-top: 5px;
-    color: #8796af
+    color: var(--timeline-time-color);
 }
 
 .timeline-row .timeline-dot {
@@ -3713,7 +3713,7 @@ a.blog-sm p.blog-date:after {
     text-align: center;
     overflow: hidden;
     padding: 2px;
-    color: var(--main-text-color);
+    color: var(--timeline-line-color);
     z-index: 100;
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
@@ -3753,25 +3753,35 @@ a.blog-sm p.blog-date:after {
     line-height: 100%
 }
 
-.timeline-row:nth-child(even) .timeline-content {
-    background: var(--secondary-main-color);
+.timeline-row.timeline-right .timeline-content {
+    background: var(--timeline-blue-team-background-color);
+    color: var(--timeline-blue-team-text-color);
     margin-left: 40px;
     text-align: left
 }
 
-.timeline-row:nth-child(even) .timeline-content:after {
+.timeline-red-team-time {
+    color: var(--timeline-red-team-background-color) !important;
+}
+
+.timeline-blue-team-time {
+    color: var(--timeline-blue-team-background-color) !important;
+}
+
+.timeline-row.timeline-right .timeline-content:after {
     left: -39px;
-    border-right: 18px solid var(--secondary-main-color);
+    border-right: 18px solid var(--timeline-blue-team-background-color);
+    color: var(--timeline-blue-team-text-color);
     border-top: 10px solid rgba(0, 0, 0, 0);
     border-bottom: 10px solid rgba(0, 0, 0, 0)
 }
 
-.timeline-row:nth-child(odd) {
+.timeline-row.timeline-left {
     padding-left: 0;
     padding-right: 50%
 }
 
-.timeline-row:nth-child(odd) .timeline-time {
+.timeline-row.timeline-left .timeline-time {
     right: auto;
     left: 50%;
     text-align: left;
@@ -3779,16 +3789,18 @@ a.blog-sm p.blog-date:after {
     margin-left: 20px
 }
 
-.timeline-row:nth-child(odd) .timeline-content {
-    background: var(--main-color);
+.timeline-row.timeline-left .timeline-content {
+    background: var(--timeline-red-team-background-color);
+    color: var(--timeline-red-team-text-color);
     margin-right: 40px;
     margin-left: 0;
     text-align: right
 }
 
-.timeline-row:nth-child(odd) .timeline-content:after {
+.timeline-row.timeline-left .timeline-content:after {
     right: -39px;
-    border-left: 18px solid var(--main-color);
+    border-left: 18px solid var(--timeline-red-team-background-color);
+    color: var(--timeline-red-team-text-color);
     border-top: 10px solid rgba(0, 0, 0, 0);
     border-bottom: 10px solid rgba(0, 0, 0, 0)
 }
@@ -3838,11 +3850,11 @@ a.blog-sm p.blog-date:after {
         top: 32px
     }
 
-    .timeline .timeline-row:nth-child(odd) {
+    .timeline .timeline-row.timeline-left {
         padding-right: 0
     }
 
-    .timeline .timeline-row:nth-child(odd) .timeline-time {
+    .timeline .timeline-row.timeline-left .timeline-time {
         position: relative;
         right: auto;
         left: auto;
@@ -3851,24 +3863,25 @@ a.blog-sm p.blog-date:after {
         margin: 0 0 6px 56px
     }
 
-    .timeline .timeline-row:nth-child(odd) .timeline-content {
+    .timeline .timeline-row.timeline-left .timeline-content {
         margin-right: 0;
         margin-left: 55px
     }
 
-    .timeline .timeline-row:nth-child(odd) .timeline-content:after {
+    .timeline .timeline-row.timeline-left .timeline-content:after {
         right: auto;
         left: -39px;
         top: 32px;
-        border-right: 18px solid var(--main-color);
+        border-right: 18px solid var(--timeline-red-team-background-color);
+        color: var(--timeline-red-team-text-color);
         border-left: inherit
     }
 
-    .timeline.animated .timeline-row:nth-child(odd) .timeline-content {
+    .timeline.animated .timeline-row.timeline-left .timeline-content {
         left: 20px
     }
 
-    .timeline.animated .timeline-row.active:nth-child(odd) .timeline-content {
+    .timeline.animated .timeline-row.active.timeline-left .timeline-content {
         left: 0
     }
 }

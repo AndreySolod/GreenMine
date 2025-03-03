@@ -49,6 +49,13 @@
 					--color-chats-other-message-text: {{ current_user.theme_style.color_chats_other_message_text }};
 					--bs-card-color: {{ current_user.theme_style.bs_card_color }};
 					--dark-color: {{ current_user.theme_style.dark_color }};
+					--timeline-time-color: {{ current_user.theme_style.timeline_time_color }};
+					--timeline-line-color: {{ current_user.theme_style.timeline_line_color }};
+					--timeline-red-team-background-color: {{ current_user.theme_style.timeline_red_team_background_color }};
+					--timeline-red-team-text-color: {{ current_user.theme_style.timeline_red_team_text_color }};
+					--timeline-blue-team-background-color: {{ current_user.theme_style.timeline_blue_team_background_color }};
+					--timeline-blue-team-text-color: {{ current_user.theme_style.timeline_blue_team_text_color }};
+
 				}
 			</style>
 			{% else %}
@@ -69,6 +76,12 @@
 					--color-chats-other-message-text: #000000;
 					--bs-card-color: #000000;
 					--dark-color: #777;
+					--timeline-time-color: #8796af;
+					--timeline-line-color: #000;
+					--timeline-red-team-background-color: rgb(138, 2, 2);
+					--timeline-red-team-text-color: #fff;
+					--timeline-blue-team-background-color: rgb(0, 0, 138);
+					--timeline-blue-team-text-color: #fff;
 				}
 			</style>
 			{% endif %}

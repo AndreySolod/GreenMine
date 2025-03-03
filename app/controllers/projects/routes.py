@@ -160,7 +160,7 @@ def project_diagrams(project_id: int):
                                                         models.Credential.is_pentest_credentials == False,
                                                         models.Credential.project_id == project_id))).one()
     info_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
-                                     .where(sa.and_(models.Issue.cvss < 2.0, models.Issue.project_id == project_id))).one()
+                                     .where(sa.and_(sa.or_(models.Issue.cvss < 2.0, models.Issue.cvss == None), models.Issue.project_id == project_id))).one()
     low_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)
                                     .where(sa.and_(models.Issue.cvss >= 2.0, models.Issue.cvss < 5.0, models.Issue.project_id == project_id))).one()
     medium_issues = db.session.scalars(sa.select(sa.func.count()).select_from(models.Issue)

@@ -57,6 +57,12 @@ UserThemeStyle:
         color_chats_other_message_text: "#000000"
         bs_card_color: "#000000"
         dark_color: "#777"
+        timeline_time_color: "#8796af"
+        timeline_line_color: "#000"
+        timeline_red_team_background_color: "rgb(138, 2, 2)"
+        timeline_red_team_text_color: "#fff"
+        timeline_blue_team_background_color: "rgb(0, 0, 138)"
+        timeline_blue_team_text_color: "#fff"
         fixed_sidebar: false
         sidebar_position_left: true
     - classic_blue:
@@ -930,3 +936,767 @@ ProjectRole:
         title: 'Наблюдатель'
         description: 'Человек, наблюдающий за проектом'
 
+EvidenceOfEventDetected:
+    - not_applicable:
+        title: "Не применимо"
+        is_default: false
+    - unknown:
+        title: "Неизвестно"
+        is_default: true
+    - no_trace:
+        title: "Следы отсутствуют"
+        is_default: false
+    - event_recordered:
+        title: "Событие записано в журнале"
+        is_default: false
+    - alert_raised:
+        title: "Поднята тревога"
+        is_default: false
+
+EvidenceOfEventPrevented:
+    - not_applicable:
+        title: "Не применимо"
+        is_default: false
+    - not_prevented:
+        title: "Не предотвращено"
+        is_default: true
+    - manual_intervention:
+        title: "Предотвращено вручную"
+        is_default: false
+    - blocked_automatically:
+        title: "Заблокировано автоматически"
+        is_default: false
+
+MitreAttackTactic:
+    - reconnaissance:
+        title: "Разведка"
+    - resource_development:
+        title: "Подготовка ресурсов"
+    - initial_access:
+        title: "Первоначальный доступ"
+    - execution:
+        title: "Выполнение"
+    - persistence:
+        title: "Закрепление"
+    - privilege_escalation:
+        title: "Повышение привилегий"
+    - defence_evasion:
+        title: "Предотвращение обнаружения"
+    - credential_access:
+        title: "Получение учётных данных"
+    - discovery:
+        title: "Исследование"
+    - lateral_movement:
+        title: "Горизонтальное перемещение"
+    - collection:
+        title: "Сбор данных"
+    - command_and_control:
+        title: "Организация управления"
+    - exfiltration:
+        title: "Эксфильтрация данных"
+    - impact:
+        title: "Деструктивное воздействие"
+
+MitreAttackTechnique:
+    - t1596:
+        title: "T1596 Поиск технической информации в общедоступных источниках"
+        tactic: reconnaissance
+    - t1590:
+        title: "T1590 Сбор информации об атакуемой сетевой инфраструктуре"
+        tactic: reconnaissance
+    - t1597:
+        title: "T1597 Поиск в закрытых источниках"
+        tactic: reconnaissance
+    - t1595:
+        title: "T1595 Активное сканирование"
+        tactic: reconnaissance
+    - t1598:
+        title: "T1598 Фишинг с целью сбора сведений"
+        tactic: reconnaissance
+    - t1592:
+        title: "T1592 Сбор информации об атакуемых узлах"
+        tactic: reconnaissance
+    - t1589:
+        title: "T1589 Сбор информации об атакуемых пользователях"
+        tactic: reconnaissance
+    - t1594:
+        title: "T1594 Поиск на сайте атакуемой организации"
+        tactic: reconnaissance
+    - t1591:
+        title: "T1591 Сбор бизнес-информации об атакуемой организации"
+        tactic: reconnaissance
+    - t1593:
+        title: "T1593 Поиск на общедоступных сайтах"
+        tactic: reconnaissance
+    - t1583:
+        title: "T1583 Приобретение инфраструктуры"
+        tactic: resource_development
+    - t1586:
+        title: "T1586 Компрометация учётных записей"
+        tactic: resource_development
+    - t1585:
+        title: "T1585 Создание учётных записей"
+        tactic: resource_development
+    - t1584:
+        title: "T1584 Компрометация сторонней инфраструктуры"
+        tactic: resource_development
+    - t1608:
+        title: "T1608 Размещение средств"
+        tactic: resource_development
+    - t1650:
+        title: "T1650 Приобретение доступа"
+        tactic: resource_development
+    - t1588:
+        title: "T1588 Подготовка необходимых средств"
+        tactic: resource_development
+    - t1587:
+        title: "T1587 Разработка собственных средств"
+        tactic: resource_development
+    - t1659:
+        title: "T1659 Внедрение контента"
+        tactic: initial_access
+    - t1200:
+        title: "T1200 Подключение дополнительных устройств"
+        tactic: initial_access
+    - t1566:
+        title: "T1566 Фишинг"
+        tactic: initial_access
+    - t1199:
+        title: "T1199 Доверительные отношения"
+        tactic: initial_access
+    - t1189:
+        title: "T1189 Теневая (drive-by) компрометация"
+        tactic: initial_access
+    - t1091:
+        title: "T1091 РАспространение через съёмные носители"
+        tactic: initial_access
+    - t1133:
+        title: "T1133 Внешние службы удалённого доступа"
+        tactic: initial_access
+    - t1190:
+        title: "T1190 Недостатки в общедоступном приложении"
+        tactic: initial_access
+    - t1195:
+        title: "T1195 Компрометация цепочки поставок"
+        tactic: initial_access
+    - t1078:
+        title: "T1078 Существующие учётные записи"
+        tactic: initial_access
+    - t1609:
+        title: "T1609 Средства администрирования контейнера"
+        tactic: execution
+    - t1569:
+        title: "T1569 Системные службы"
+        tactic: execution
+    - t1610:
+        title: "T1610 Развёртывание контейнера"
+        tactic: execution
+    - t1559:
+        title: "T1559 Межпроцессорное взаимодействие"
+        tactic: execution
+    - t1129:
+        title: "T1129 Общие модули"
+        tactic: execution
+    - t1106:
+        title: "T1106 нативный API"
+        tactic: execution
+    - t1047:
+        title: "T1047 Инструментарий управления Windows"
+        tactic: execution
+    - t1053:
+        title: "T1053 Запланированная задача (задание)"
+        tactic: execution
+    - t1059:
+        title: "T1059 Интерпретаторы командной строки и сценариев"
+        tactic: execution
+    - t1204:
+        title: "T1204 Выполнение с участием пользователя"
+        tactic: execution
+    - t1203:
+        title: "T1203 Эксплуатация уязвимостей в клиентском ПО"
+        tactic: execution
+    - t1072:
+        title: "T1072 Средства развёртывания ПО"
+        tactic: execution
+    - t1651:
+        title: "T1651 Средства администрирования облака"
+        tactic: execution
+    - t1648:
+        title: "T1648 Бессерверное выполнение"
+        tactic: execution
+    - t1037:
+        title: "T1037 Сценарии инициализации при загрузке или входе в систему"
+        tactic: persistence
+    - t1574:
+        title: "T1574 Перехват потока исполнения"
+        tactic: persistence
+    - t1546:
+        title: "T1546 Выполнение по событию"
+        tactic: persistence
+    - t1554:
+        title: "T1554 Компрометация бинарных файлов ПО узла"
+        tactic: persistence
+    - t1556:
+        title: "T1556 Изменение процесса аутентификации"
+        tactic: persistence
+    - t1547:
+        title: "T1547 Автозапуск при загрузке или входе в систему"
+        tactic: persistence
+    - t1543:
+        title: "T1543 Создание или изменение системных процессов"
+        tactic: persistence
+    - t1176:
+        title: "T1176 Расширения браузеров"
+        tactic: persistence
+    - t1542:
+        title: "T1542 Загрузка раньше ОС"
+        tactic: persistence
+    - t1098:
+        title: "T1098 Манипуляция с учётной записью"
+        tactic: persistence
+    - t1205:
+        title: "T1205 Передача управляющих сигналов в трафике"
+        tactic: persistence
+    - t1505:
+        title: "T1505 Компонент серверного ПО"
+        tactic: persistence
+    - t1133_1:
+        title: "T1133 Внешние службы удалённого доступа"
+        tactic: persistence
+    - t1197:
+        title: "T1197 Задания BITS"
+        tactic: persistence
+    - t1053_1:
+        title: "T1053 Запланированная задача (задание)"
+        tactic: persistence
+    - t1137:
+        title: "T1137 Запуск приложения Office"
+        tactic: persistence
+    - t1136:
+        title: "T1136 Создание учётной записи"
+        tactic: persistence
+    - t1525:
+        title: "T1525 Внедрение кода в образ"
+        tactic: persistence
+    - t1078_1:
+        title: "T1078 Существующие учётные записи"
+        tactic: persistence
+    - t1653:
+        title: "T1653 Настройки питания"
+        tactic: persistence
+    - t1037_1:
+        title: "T1037 Сценарии инициализации при загрузке или входе в систему"
+        tactic: privilege_escalation
+    - t1548_1:
+        title: "T1548 Обход механизмов контроля привилегий"
+        tactic: privilege_escalation
+    - t1574_1:
+        title: "T1574 Перехват потока исполнения"
+        tactic: privilege_escalation
+    - t1546_1:
+        title: "T1546 Выполнение по событию"
+        tactic: privilege_escalation
+    - t1134:
+        title: "T1134 Манипуляции с токеном доступа"
+        tactic: privilege_escalation
+    - t1547_1:
+        title: "T1547 Автозапуск при загрузке или входе в систему"
+        tactic: privilege_escalation
+    - t1543_1:
+        title: "T1543 Создание или изменение системных процессов"
+        tactic: privilege_escalation
+    - t1098_1:
+        title: "T1098 Манипуляции с учётной записью"
+        tactic: privilege_escalation
+    - t1055:
+        title: "T1055 Внедрение кода в процессы"
+        tactic: privilege_escalation
+    - t1053_2:
+        title: "T1053 Запланированная задача (задание)"
+        tactic: privilege_escalation
+    - t1611:
+        title: "T1611 Выход за пределы контейнера"
+        tactic: privilege_escalation
+    - t1078_2:
+        title: "T1078 Существующие учётные записи"
+        tactic: privilege_escalation
+    - t1068:
+        title: "T1068 Эксплуатация уязвимостей для повышения привилегий"
+        tactic: privilege_escalation
+    - t1484:
+        title: "T1484 Изменение политики домена или тенанта"
+        tactic: privilege_escalation
+    - t1014:
+        title: "T1014 Руткит"
+        tactic: defence_evasion
+    - t1562:
+        title: "T1562 Ослабление защиты"
+        tactic: defence_evasion
+    - t1564:
+        title: "T1564 Сокрытие артефактов"
+        tactic: defence_evasion
+    - t1036:
+        title: "T1036 Маскировка"
+        tactic: defence_evasion
+    - t1218:
+        title: "T1218 Выполнение с помощью системных бинарных файлов"
+        tactic: defence_evasion
+    - t1548:
+        title: "T1548 Обход механизмов контроля привилегий"
+        tactic: defence_evasion
+    - t1612:
+        title: "T1612 Создание образа на узле"
+        tactic: defence_evasion
+    - t1574_2:
+        title: "T1574 Перехват потока исполнения"
+        tactic: defence_evasion
+    - t1134_1:
+        title: "T1134 Манипулации с токенами доступа"
+        tactic: defence_evasion
+    - t1556_1:
+        title: "T1556 Изменение процесса аутентификации"
+        tactic: defence_evasion
+    - t1202:
+        title: "T1202 Непрямое выполнение команд"
+        tactic: defence_evasion
+    - t1610_1:
+        title: "T1610 Развёртывание контейнера"
+        tactic: defence_evasion
+    - t1647:
+        title: "T1647 Изменение файла PLIST"
+        tactic: defence_evasion
+    - t1553:
+        title: "T1553 нарушение работы средств контроля доверия"
+        tactic: defence_evasion
+    - t1127:
+        title: "T1127 Выполнение через доверенные утилиты разработчиков"
+        tactic: defence_evasion
+    - t1542_1:
+        title: "T1542 Загрузка раньше ОС"
+        tactic: defence_evasion
+    - t1027:
+        title: "T1027 обфусцированные файлы или данные"
+        tactic: defence_evasion
+    - t1205_1:
+        title: "T1205 Передача управляющих сигналов в трафике"
+        tactic: defence_evasion
+    - t1221:
+        title: "T1221 Внедрение в шаблоны"
+        tactic: defence_evasion
+    - t1216:
+        title: "T1216 Выполнение через системный сценарий"
+        tactic: defence_evasion
+    - t1211:
+        title: "T1211 Эксплуатация уязвимостей для предотвращения обнаружения"
+        tactic: defence_evasion
+    - t1070:
+        title: "T1070 Устранение индикаторов"
+        tactic: defence_evasion
+    - t1620:
+        title: "T1620 Отражённая загрузка кода"
+        tactic: defence_evasion
+    - t1220:
+        title: "T1220 Использование сценариев XSL"
+        tactic: defence_evasion
+    - t1600:
+        title: "T1600 Понижение надёжности шифрования"
+        tactic: defence_evasion
+    - t1055_1:
+        title: "T1055 Внедрение кода в процессы"
+        tactic: defence_evasion
+    - t1207:
+        title: "T1207 Поддельный контроллер домена"
+        tactic: defence_evasion
+    - t1112:
+        title: "T1112 Изменение реестра"
+        tactic: defence_evasion
+    - t1599:
+        title: "T1599 Преодоление границ сети"
+        tactic: defence_evasion
+    - t1197_1:
+        title: "T1197 Задания BITS"
+        tactic: defence_evasion
+    - t1535:
+        title: "T1535 Облачные инфраструктуры в редко используемых регионах"
+        tactic: defence_evasion
+    - t1006:
+        title: "T1006 Прямой доступ к тому"
+        tactic: defence_evasion
+    - t1656:
+        title: "T1656 Имперсонация"
+        tactic: defence_evasion
+    - t1497:
+        title: "T1497 Обход виртализации или песочницы"
+        tactic: defence_evasion
+    - t1578:
+        title: "T1578 Изменение облачной вычислительной инфраструктуры"
+        tactic: defence_evasion
+    - t1140:
+        title: "T1140 Деобфускация или декодирование файлов или данных"
+        tactic: defence_evasion
+    - t1550:
+        title: "T1550 Использование альтернативных сущностей для аутентификации"
+        tactic: defence_evasion
+    - t1222:
+        title: "T1222 Изменение разрешений для файлов и каталогов"
+        tactic: defence_evasion
+    - t1480:
+        title: "T1480 Ограничения на исполнение"
+        tactic: defence_evasion
+    - t1601:
+        title: "T1601 Изменение образа системы"
+        tactic: defence_evasion
+    - t1078_3:
+        title: "T1078 Существующие учётные записи"
+        tactic: defence_evasion
+    - t1622:
+        title: "T1622 Предотвращение отладки"
+        tactic: defence_evasion
+    - t1484_1:
+        title: "T1484 Изменение политики домена или тенанта"
+        tactic: defence_evasion
+    - t1555:
+        title: "T1555 Учётные данные из хранилищ паролей"
+        tactic: credential_access
+    - t1212:
+        title: "T1212 Эксплуатация уязвимостей для получения учётных данных"
+        tactic: credential_access
+    - t1110:
+        title: "T1110 Метод перебора"
+        tactic: credential_access
+    - t1556_2:
+        title: "T1556 Изменение процесса аутентификации"
+        tactic: credential_access
+    - t1552:
+        title: "T1552 Незащищённые учётные данные"
+        tactic: credential_access
+    - t1558:
+        title: "T1558 Кража или подделка билетов Kerberos"
+        tactic: credential_access
+    - t1056:
+        title: "T1056 Перехват вводимых данных"
+        tactic: credential_access
+    - t1040:
+        title: "T1040 Прослушивание сетевого трафика"
+        tactic: credential_access
+    - t1557:
+        title: "T1557 Злоумышленник посередине"
+        tactic: credential_access
+    - t1539:
+        title: "T1539 Кража сессионных Cookie"
+        tactic: credential_access
+    - t1187:
+        title: "T1187 Принудительная аутентификация"
+        tactic: credential_access
+    - t1528:
+        title: "T1528 Кража токена доступа к приложению"
+        tactic: credential_access
+    - t1606:
+        title: "T1606 Подделка учётных данных для веб-ресурсов"
+        tactic: credential_access
+    - t1003:
+        title: "T1003 Получение дампа учётных данных"
+        tactic: credential_access
+    - t1649:
+        title: "T1649 Кража или подделка сертификатов аутентификации"
+        tactic: credential_access
+    - t1621:
+        title: "T1621 Генерирование запросов многофакторной аутентификации"
+        tactic: credential_access
+    - t1111:
+        title: "T1111 Перехват многофакторной аутентификации"
+        tactic: credential_access
+    - t1217:
+        title: "T1217 Изучение браузера"
+        tactic: discovery
+    - t1016:
+        title: "T1016 Изучение конфигурации сети"
+        tactic: discovery
+    - t1083:
+        title: "T1083 Изучение файлов и каталогов"
+        tactic: discovery
+    - t1619:
+        title: "T1619 Изучение объектов облачного хранилища"
+        tactic: discovery
+    - t1012:
+        title: "T1012 Запросы к реестру"
+        tactic: discovery
+    - t1135:
+        title: "T1135 Изучение общих сетевых ресурсов"
+        tactic: discovery
+    - t1614:
+        title: "T1614 Изучение местоположения системы"
+        tactic: discovery
+    - t1018:
+        title: "T1018 Изучение удалённых систем"
+        tactic: discovery
+    - t1046:
+        title: "T1046 Изучение сетевых служб"
+        tactic: discovery
+    - t1518:
+        title: "T1518 Изучение установленного ПО"
+        tactic: discovery
+    - t1124:
+        title: "T1124 Изучение системного времени"
+        tactic: discovery
+    - t1010:
+        title: "T1010 Изучение открытых приложений"
+        tactic: discovery
+    - t1087:
+        title: "T1087 Изучение учётных записей"
+        tactic: discovery
+    - t1482:
+        title: "T1482 Изучение доверительных отношений между доменами"
+        tactic: discovery
+    - t1613:
+        title: "T1613 Изучение контейнеров и их ресурсов"
+        tactic: discovery
+    - t1654:
+        title: "T1654 Сбор журналов"
+        tactic: discovery
+    - t1526:
+        title: "T1526 Изучение облачных служб"
+        tactic: discovery
+    - t1615:
+        title: "T1615 Изучение групповой политики"
+        tactic: discovery
+    - t1007:
+        title: "T1007 Изучение системных служб"
+        tactic: discovery
+    - t1033:
+        title: "T1033 Изучение владельца или пользователей системы"
+        tactic: discovery
+    - t1040_1:
+        title: "T1040 Прослушивание сетевого трафика"
+        tactic: discovery
+    - t1082:
+        title: "T1082 Изучение системы"
+        tactic: discovery
+    - t1057:
+        title: "T1057 Изучение процессов"
+        tactic: discovery
+    - t1049:
+        title: "T1049 Изучение сетевых подключений"
+        tactic: discovery
+    - t1201:
+        title: "T1201 Изучение парольной политики"
+        tactic: discovery
+    - t1580:
+        title: "T1580 Изучение облачной инфраструктуры"
+        tactic: discovery
+    - t1069:
+        title: "T1069 Изучение групп разрешений"
+        tactic: discovery
+    - t1120:
+        title: "T1120 Изучение периферийных устройств"
+        tactic: discovery
+    - t1497_1:
+        title: "T1497 Обход виртуализации или песочницы"
+        tactic: discovery
+    - t1652:
+        title: "T1652 Изучение драйверов устройств"
+        tactic: discovery
+    - t1538:
+        title: "T1538 Дашборд облачного сервиса"
+        tactic: discovery
+    - t1622_1:
+        title: "T1622 Предотвращение отладки"
+        tactic: discovery
+    - t1563:
+        title: "T1564 Перехват сессии службы удалённого доступа"
+        tactic: lateral_movement
+    - t1021:
+        title: "T1021 Службы удалённого доступа"
+        tactic: lateral_movement
+    - t1570:
+        title: "T1570 Передача инструментов внутри периметра"
+        tactic: lateral_movement
+    - t1534:
+        title: "T1534 Внутренний целевой фишинг"
+        tactic: lateral_movement
+    - t1091_1:
+        title: "T1091 Распространение через съёмные носители"
+        tactic: lateral_movement
+    - t1080:
+        title: "T1080 Заражение общего содержимого"
+        tactic: lateral_movement
+    - t1072_1:
+        title: "T1072 Средства развёртывания ПО"
+        tactic: lateral_movement
+    - t1210:
+        title: "T1210 Эксплуатация уязвимостей в удалённых службах"
+        tactic: lateral_movement
+    - t1550_1:
+        title: "T1550 Использование альтернативных сущностей для аутентификации"
+        tactic: lateral_movement
+    - t1125:
+        title: "T1125 Захват видеоданных"
+        tactic: collection
+    - t1039:
+        title: "T1039 Данные с общих сетевых дисков"
+        tactic: collection
+    - t1074:
+        title: "T1074 Промежуточное хранение данных"
+        tactic: collection
+    - t1025:
+        title: "T1025 Данные со съёмных носителей"
+        tactic: collection
+    - t1005:
+        title: "T1005 Данные из локальной системы"
+        tactic: collection
+    - t1056_1:
+        title: "T1056 Перехват вводимых данных"
+        tactic: collection
+    - t1119:
+        title: "T1119 Автоматизированный сбор данных"
+        tactic: collection
+    - t1560:
+        title: "T1560 Архивация собранных данных"
+        tactic: collection
+    - t1213:
+        title: "T1213 Данные из информационных репозиториев"
+        tactic: collection
+    - t1557_1:
+        title: "T1557 Злоумышленник посередине"
+        tactic: collection
+    - t1530:
+        title: "T1530 Данные из облачных хранилищ"
+        tactic: collection
+    - t1114:
+        title: "T1114 Сбор электронной почты"
+        tactic: collection
+    - t1123:
+        title: "T1123 Захват аудиоданных"
+        tactic: collection
+    - t1115:
+        title: "T1115 Данные из буфера обмена"
+        tactic: collection
+    - t1602:
+        title: "T1602 Данные из репозитория конфигураций"
+        tactic: collection
+    - t1185:
+        title: "T1185 Перехват сессии браузера"
+        tactic: collection
+    - t1090:
+        title: "T1090 Прокси-сервер"
+        tactic: command_and_control
+    - t1568:
+        title: "T1568 Динамическое разрешение"
+        tactic: command_and_control
+    - t1102:
+        title: "T1102 Веб-служба"
+        tactic: command_and_control
+    - t1001:
+        title: "T1101 Обфускация данных"
+        tactic: command_and_control
+    - t1132:
+        title: "T1132 Кодирование данных"
+        tactic: command_and_control
+    - t1095:
+        title: "T1095 Протоколы (кроме прикладного уровня)"
+        tactic: command_and_control
+    - t1008:
+        title: "T1008 Резервные каналы"
+        tactic: command_and_control
+    - t1573:
+        title: "T1573 Зашифрованный канал"
+        tactic: command_and_control
+    - t1105:
+        title: "T1105 Передача инструментов из внешней сети"
+        tactic: command_and_control
+    - t1071:
+        title: "T1071 Протокол прикладного уровня"
+        tactic: command_and_control
+    - t1104:
+        title: "T1104 Отдельный канал для каждого этапа"
+        tactic: command_and_control
+    - t1659_1:
+        title: "T1659 Внедрение контента"
+        tactic: command_and_control
+    - t1205_2:
+        title: "T1205 Передача управляющих сигналов в трафике"
+        tactic: command_and_control
+    - t1219:
+        title: "T1219 ПО для удалённого доступа"
+        tactic: command_and_control
+    - t1092:
+        title: "T1092 Взаимодействие через съёмные носители"
+        tactic: command_and_control
+    - t1571:
+        title: "T1571 Нестандартный порт"
+        tactic: command_and_control
+    - t1572:
+        title: "T1572 туннелирование протокола"
+        tactic: command_and_control
+    - t1665:
+        title: "T1665 Сокрытие инфраструктуры"
+        tactic: command_and_control
+    - t1029:
+        title: "T1029 Передача по расписанию"
+        tactic: exfiltration
+    - t1041:
+        title: "T1041 Эксфильтрация по каналу управления"
+        tactic: exfiltration
+    - t1537:
+        title: "T1537 Перемещение данных между облачными учётными записями"
+        tactic: exfiltration
+    - t1011:
+        title: "T1011 Эксфильтрация через альтернативную сетевую среду"
+        tactic: exfiltration
+    - t1030:
+        title: "T1030 Ограничение размера передаваемых блоков данных"
+        tactic: exfiltration
+    - t1020:
+        title: "T1020 Автоматизированная эксфильтрация"
+        tactic: exfiltration
+    - t1052:
+        title: "T1052 Эксфильтрация через альтернативную физическую среду"
+        tactic: exfiltration
+    - t1567:
+        title: "T1567 Эксфильтрация через веб-службу"
+        tactic: exfiltration
+    - t1048:
+        title: "T1048 Эксфильтрация по альтернативному протоколу"
+        tactic: exfiltration
+    - t1491:
+        title: "T1491 Дефейс"
+        tactic: impact
+    - t1565:
+        title: "T1565 Манипуляция с данными"
+        tactic: impact
+    - t1529:
+        title: "T1529 Завершение работы или перезагрузка системы"
+        tactic: impact
+    - t1489:
+        title: "T1489 Остановка службы"
+        tactic: impact
+    - t1561:
+        title: "T1561 Уничтожение диска"
+        tactic: impact
+    - t1499:
+        title: "T1499 Точечный отказ в обслуживании"
+        tactic: impact
+    - t1485:
+        title: "T1485 Уничтожение данных"
+        tactic: impact
+    - t1496:
+        title: "T1496 Несанкционированное использование ресурсов"
+        tactic: impact
+    - t1531:
+        title: "T1531 Прекращение доступа к учётной записи"
+        tactic: impact
+    - t1498:
+        title: "T1498 Сетевой отказ в обслуживании"
+        tactic: impact
+    - t1490:
+        title: "T1490 Препятствование восстановлению системы"
+        tactic: impact
+    - t1486:
+        title: "T1486 Шифрование данных"
+        tactic: impact
+    - t1657:
+        title: "T1657 Кража денежных средств"
+        tactic: impact
+    - t1495:
+        title: "T1495 Повреждение прошивки"
+        tactic: impact
