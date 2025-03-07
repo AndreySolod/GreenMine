@@ -1,5 +1,5 @@
 from flask import Blueprint, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.models import ProjectReportTemplate
 from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_environment, check_if_same_type
 from app.helpers.general_helpers import CurrentObjectInfo, SidebarElement, SidebarElementSublink
@@ -9,6 +9,12 @@ from typing import Optional
 
 
 bp = Blueprint('report_templates', __name__, url_prefix='/report_templates')
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.reports.routes

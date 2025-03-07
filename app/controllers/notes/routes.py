@@ -1,9 +1,9 @@
 from app import db, logger
 from app.controllers.notes import bp
-from flask_login import login_required, current_user
+from flask_login import current_user
 from flask import request, render_template, url_for, redirect, flash, abort
 from app.models import Note, Project
-from app.helpers.general_helpers import get_or_404, utcnow
+from app.helpers.general_helpers import get_or_404
 from app.helpers.projects_helpers import get_default_environment
 from .forms import NoteNewForm, NoteEditForm
 import sqlalchemy as sa
@@ -13,7 +13,6 @@ from app.helpers.roles import project_role_can_make_action_or_abort
 
 
 @bp.route('/index')
-@login_required
 def note_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -31,7 +30,6 @@ def note_index():
 
 
 @bp.route('/delete', methods=["POST"])
-@login_required
 def note_delete():
     try:
         note_id = int(request.form.get('id'))

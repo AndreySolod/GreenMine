@@ -46,7 +46,7 @@
                             <td></td>
                             {% else %}
                             {% if host.mac_info == none %}
-                            <td>{{ host.mac }}</td>
+                            <td>{{ host.mac|suppress_none }}</td>
                             {% else %}
                             <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.mac_info.info['label'] }}: {{ host.mac_info.title }}">{{ host.mac }}</a></td>
                             {% endif %}
@@ -54,16 +54,16 @@
                         </tr>
                         <tr>
                             <td>{{ models.Host.operation_system_family.info["label"] }}:</td>
-                            <td>{{ host.operation_system_family.title }}</td>
+                            <td>{{ host.operation_system_family.title|suppress_none }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Host.operation_system_gen.info["label"] }}:</td>
-                            <td>{{ host.operation_system_gen }}</td>
+                            <td>{{ host.operation_system_gen|suppress_none }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Host.device_type.info["label"] }}:</td>
                             {% if host.device_type != none %}
-                            <td>{{ host.device_type.title }}</td>
+                            <td>{{ host.device_type.title|suppress_none }}</td>
                             {% else %}
                             <td>{{ _("Not defined") }}</td>
                             {% endif %}
@@ -71,7 +71,7 @@
                         <tr>
                             <td>{{ models.Host.device_vendor.info["label"] }}:</td>
                             {% if host.device_vendor != none %}
-                            <td>{{ host.device_vendor.title }}</td>
+                            <td>{{ host.device_vendor.title|suppress_none }}</td>
                             {% else %}
                             <td>{{ _("Not defined") }}</td>
                             {% endif %}
@@ -79,7 +79,7 @@
                         <tr>
                             <td>{{ models.Host.device_model.info["label"] }}:</td>
                             {% if host.device_model != none %}
-                            <td>{{ host.device_model.title }}</td>
+                            <td>{{ host.device_model.title|suppress_none }}</td>
                             {% else %}
                             <td>{{ _("Not defined") }}</td>
                             {% endif %}

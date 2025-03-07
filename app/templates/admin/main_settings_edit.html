@@ -26,28 +26,59 @@
 {% endblock %}
 
 {% block page_content %}
-<div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-8 col-6">
-        <div class="card">
-            <div class="card-header">
-                <h5>{{ _("Information, displayed on the cover page") }}</h5>
-            </div>
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <tbody>
-                        <tr>
-                            <td>{{ models.GlobalSettings.main_page_name.info["label"] }}:</td>
-                            <td class="button_hide_if_no_mouse"><div id="global_settings_value" class="div_value">{{ global_settings.main_page_name }}</div><button id="button-toggle-edit-main-page-name" class="btn-outline-light btn-rounded"><i class="fa-solid fa-pencil"></i></button></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h5 class="button_hide_if_no_mouse">{{ models.GlobalSettings.text_main_page.info["label"] }}:<button class="btn-outline-light btn-rounded" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#modalEditTextMainPage"><i class="fa-solid fa-pencil"></i></button></h5>
-                {{ global_settings.text_main_page|safe }}
+<div class="container=fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-8 col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("Information, displayed on the cover page") }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>{{ models.GlobalSettings.main_page_name.info["label"] }}:</td>
+                                <td class="button_hide_if_no_mouse"><div id="global_settings_value" class="div_value">{{ global_settings.main_page_name }}</div><button id="button-toggle-edit-main-page-name" class="btn-outline-light btn-rounded"><i class="fa-solid fa-pencil"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h5 class="button_hide_if_no_mouse">{{ models.GlobalSettings.text_main_page.info["label"] }}:<button class="btn-outline-light btn-rounded" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#modalEditTextMainPage"><i class="fa-solid fa-pencil"></i></button></h5>
+                    {{ global_settings.text_main_page|safe }}
+                </div>
             </div>
         </div>
-    </div>
-    <div id="edit-main-page-name" class="form-popup">
-        {{ name_form.main_page_name(class="form-control", placeholder=name_form.main_page_name.label.text) }}
+        <div id="edit-main-page-name" class="form-popup">
+            {{ name_form.main_page_name(class="form-control", placeholder=name_form.main_page_name.label.text) }}
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-4 col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="button_hide_if_no_mouse">{{ _("Global paramethers") }}<button class="btn-outline-light btn-rounded" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#modalEditGlobalParameters"><i class="fa-solid fa-pencil"></i></button></h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>{{ models.GlobalSettings.default_language.info['label'] }}:</td>
+                                <td>{{ global_settings.default_language.title }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.GlobalSettings.m2m_join_symbol.info['label'] }}:</td>
+                                <td>{{ global_settings.m2m_join_symbol }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.GlobalSettings.m2m_max_items.info['label'] }}:</td>
+                                <td>{{ global_settings.m2m_max_items }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ models.GlobalSettings.pagination_element_count_select2.info['label'] }}:</td>
+                                <td>{{ global_settings.pagination_element_count_select2 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -75,6 +106,35 @@
     </div>
     </div>
 </div>
+
+{# Modal window for editing the global parameters #}
+<div class="modal fade modal-xl" id="modalEditGlobalParameters" tabindex="-1" aria-labelledby="modalEditGlobalParametersLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditGlobalParametersLabel">{{ _("Edit the global parameters of application") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      <form action="{{ url_for('admin.admin_main_info_edit', edit_elem='main_parameters') }}" method="POST">
+      {{ main_parameters_form.hidden_tag() }}
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(main_parameters_form, main_parameters_form.default_language, inline=True) }}
+            {{ form_element(main_parameters_form, main_parameters_form.m2m_join_symbol, inline=True) }}
+            {{ form_element(main_parameters_form, main_parameters_form.m2m_max_items, inline=True) }}
+            {{ form_element(main_parameters_form, main_parameters_form.pagination_element_count_select2, inline=True) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        {{ main_parameters_form.submit(class="btn btn-primary") }}
+      </div>
+      </form>
+    </div>
+    </div>
+</div>
+
 {% endblock %}
 
 
@@ -100,7 +160,7 @@
     else if (e.key == 'Escape'){
         closeForm(e.target.parentElement.id)
     }
-})
+});
 function toggleForm(event, form_name) {
     let element = document.getElementById(form_name)
     let click_count = 0

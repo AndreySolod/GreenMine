@@ -3,11 +3,17 @@ from app.models import FileDirectory
 from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_environment, check_if_same_type
 from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink
 from flask_babel import lazy_gettext as _l
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 
 
 bp = Blueprint('webfiles', __name__, url_prefix='/webfiles')
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.webfiles.routes

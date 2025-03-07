@@ -3,20 +3,23 @@ from app.controllers.users import bp
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlparse
 from werkzeug.utils import secure_filename
-from flask import url_for, request, redirect, render_template, flash, abort, jsonify
+from flask import url_for, request, redirect, render_template, flash, abort, current_app
 from app.models import User, FileData
 from app.helpers.general_helpers import CurrentObjectInfo, CurrentObjectAction, get_or_404
 from app.helpers.users_helpers import UserSidebar
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
 from .forms import EditUserPasswordForm, UserFormCreate, UserFormEdit, LoginForm, UserFormDelete
 from flask_babel import lazy_gettext as _l
+import sqlalchemy as sa
+import sqlalchemy.exc as exc
 from app.helpers.roles import UserHimself, has_user_role, administrator_only, only_for_roles
+import datetime
 
 
 @bp.route('/index')
 @login_required
 def user_index():
-    users = db.session.scalars(db.select(User)).all()
+    users = db.session.scalars(sa.select(User)).all()
     ctx = MainPageEnvironment('User', 'index')()
     context = {'users': users, 'form_delete': UserFormDelete()}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request user list")
@@ -30,22 +33,19 @@ def user_show(user_id):
     u = db.get_or_404(User, user_id)
     if has_user_role([UserHimself], u):
         act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-user-pen", url_for('users.user_edit', user_id=u.id))
-        act2 = CurrentObjectAction(_l("Change password"), "fa-solid fa-key", 'modalEditPasswordInformation', action_type='button_modal')
+        act2 = CurrentObjectAction(_l("Change password"), "fa-solid fa-key", url_for('users.user_change_password_callback', user_id=user_id))
+        act4 = CurrentObjectAction(_l("Require password change"), "fa-solid fa-handcuffs", url_for('users.require_user_password_change', user_id=user_id), method="POST")
         act3 = CurrentObjectAction(_l("Delete"), "fa-solid fa-user-slash", url_for('users.user_delete', user_id=u.id), confirm=_l("Are you sure you want to delete this user?"), btn_class='btn-danger', method="DELETE")
-        current_object = CurrentObjectInfo(_l("User #%(user_id)s: %(user_title)s", user_id=u.id, user_title=u.title), "fa-solid fa-user-tie", actions=[act1, act2, act3])
+        acts = [act1, act2]
+        if current_user.is_administrator:
+            acts.append(act4)
+        acts.append(act3)
+        current_object = CurrentObjectInfo(_l("User #%(user_id)s: %(user_title)s", user_id=u.id, user_title=u.title), "fa-solid fa-user-tie", actions=acts)
     else:
         current_object = CurrentObjectInfo(_l("User #%(user_id)s: %(user_title)s", user_id=u.id, user_title=u.title), "fa-solid fa-user-tie")
     sidebar_data = UserSidebar(u, 'user_show')()
-    if has_user_role([UserHimself], u):
-        change_password_form = EditUserPasswordForm()
-        if change_password_form.validate_on_submit():
-            u.set_password(change_password_form.password.data)
-            db.session.commit()
-            return redirect(url_for('users.user_show', user_id=u.id))
-    else:
-        change_password_form = None
     context = {'user': u, 'title': _l("User «%(title)s»", title=u.title), 'current_object': current_object,
-               'sidebar_data': sidebar_data, 'password_form': change_password_form}
+               'sidebar_data': sidebar_data}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request user info for user #{user_id}")
     return render_template('users/show.html', **context)
 
@@ -140,7 +140,7 @@ def user_login():
     if current_user.is_authenticated:
         return redirect(url_for('users.user_show', user_id=current_user.id))
     if form.validate_on_submit():
-        user = db.session.scalars(db.select(User).where(User.login==form.login.data)).first()
+        user = db.session.scalars(sa.select(User).where(User.login==form.login.data)).first()
         if user is None or not user.check_password(form.password.data):
             flash(_l("Invalid user login or password"), 'danger')
             logger.warning(f"User '{getattr(user, 'login', 'Anonymous')}' trying to login with wrong password")
@@ -164,3 +164,44 @@ def user_logout():
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' was logged out from system")
     logout_user()
     return redirect(url_for('users.user_login'))
+
+
+@bp.route("/<user_id>/change-password", methods=["GET", "POST"])
+def user_change_password_callback(user_id):
+    try:
+        user = db.session.scalars(sa.select(User).where(User.id == int(user_id))).one()
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request change password with non-integer user_id {user_id} or non-exist user.")
+        abort(400)
+    if not has_user_role([UserHimself], current_user):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request to change password from user {user.login}, which he has no rights to.")
+        abort(403)
+    form = EditUserPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        user.password_expired_date = datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=current_app.config["GlobalSettings"].password_lifetime)
+        user.is_password_expired = form.change_on_next_request.data
+        db.session.commit()
+        logger.info(f"User '{getattr(current_user, 'login', 'anonymous')}' successfully change password for user '{user.login}'.")
+        flash(_l("Password for user %(user_title)s successfully changed!", user_title=user.title), 'success')
+        next_page = request.args.get('next')
+        if not next_page or urlparse(next_page).netloc != '':
+            next_page = url_for('users.user_show', user_id=user.id)
+        return redirect(next_page)
+    sidebar_data = UserSidebar(user, 'user_password_change')()
+    current_object = CurrentObjectInfo(_l("Change password for user %(user_login)s", user_login=user.login), "fa-solid fa-key")
+    context = {'form': form, 'sidebar_data': sidebar_data, 'current_object': current_object, 'title': _l("Change password for user %(user_login)s", user_login=user.login), 'flash_in_header': True}
+    return render_template('users/change_password.html', **context)
+
+
+@bp.route('/<user_id>/require-password-change', methods=["POST"])
+@administrator_only
+def require_user_password_change(user_id):
+    try:
+        user = db.session.scalars(sa.select(User).where(User.id == user_id)).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        abort(400)
+    user.is_password_expired = True
+    db.session.add(user)
+    db.session.commit()
+    return redirect(url_for('users.user_show', user_id=user.id))

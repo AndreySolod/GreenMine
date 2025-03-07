@@ -1,6 +1,6 @@
 import json
 from flask import render_template, flash, redirect, url_for, request, abort, jsonify
-from flask_login import current_user, login_required
+from flask_login import current_user
 from app.controllers.issues import bp
 from app import db, side_libraries, logger
 from app.models import Issue, Project, IssueStatus, IssueTemplate
@@ -15,7 +15,6 @@ from app.helpers.roles import project_role_can_make_action_or_abort, project_rol
 
 
 @bp.route('/index')
-@login_required
 def issue_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -33,7 +32,6 @@ def issue_index():
 
 
 @bp.route('/index-data')
-@login_required
 def issue_data_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -48,7 +46,6 @@ def issue_data_index():
 
 
 @bp.route('/exist-index')
-@login_required
 def exist_issue_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -66,7 +63,6 @@ def exist_issue_index():
 
 
 @bp.route('/exist-index-data')
-@login_required
 def exist_issue_data_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -82,7 +78,6 @@ def exist_issue_data_index():
 
 
 @bp.route('/positive-index')
-@login_required
 def positive_issue_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -100,7 +95,6 @@ def positive_issue_index():
 
 
 @bp.route('/positive-index-data')
-@login_required
 def positive_issue_data_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -116,7 +110,6 @@ def positive_issue_data_index():
 
 
 @bp.route('/new', methods=['GET', 'POST'])
-@login_required
 def issue_new():
     try:
         project_id = int(request.args.get('project_id'))
@@ -149,7 +142,6 @@ def issue_new():
 
 
 @bp.route('/data-by-template/<template_id>')
-@login_required
 def issue_data_by_template(template_id):
     try:
         template_id = int(template_id)
@@ -178,7 +170,6 @@ def issue_data_by_template(template_id):
 
 @bp.route('/<issue_id>')
 @bp.route('/<issue_id>/show')
-@login_required
 def issue_show(issue_id):
     try:
         issue_id = int(issue_id)
@@ -196,7 +187,6 @@ def issue_show(issue_id):
 
 
 @bp.route('/<int:issue_id>/edit', methods=['GET', 'POST'])
-@login_required
 def issue_edit(issue_id):
     issue = get_or_404(db.session, Issue, issue_id)
     project_role_can_make_action_or_abort(current_user, issue, 'update')
@@ -216,7 +206,6 @@ def issue_edit(issue_id):
 
 
 @bp.route('/<int:issue_id>/delete', methods=["POST"])
-@login_required
 def issue_delete(issue_id):
     issue = get_or_404(db.session, Issue, issue_id)
     project_role_can_make_action_or_abort(current_user, issue, 'delete')

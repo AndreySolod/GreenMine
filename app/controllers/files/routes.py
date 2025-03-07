@@ -1,7 +1,7 @@
 from app.controllers.files import bp
 from app import db, logger, sanitizer
 from flask import request, send_file, url_for, abort, jsonify
-from flask_login import login_required, current_user
+from flask_login import current_user
 from app.models import FileData, FileDirectory
 from app.helpers.webfiles_helpers import gen_new_name_for_file_or_dir
 from werkzeug.utils import secure_filename
@@ -12,7 +12,6 @@ from app.helpers.roles import project_role_can_make_action_or_abort
 
 
 @bp.route("/upload", methods=["POST"])
-@login_required
 def upload_file():
     item = request.files.get('upload')
     title = sanitizer.escape(secure_filename(item.filename), FileData.title.type.length)
@@ -42,7 +41,6 @@ def upload_file():
 
 
 @bp.route("/download/<file_id>")
-@login_required
 def download_file(file_id):
     try:
         file_id = int(file_id)

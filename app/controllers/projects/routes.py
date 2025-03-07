@@ -1,9 +1,9 @@
 from app import db, logger, side_libraries
 from app.controllers.projects import bp
 from flask import request, redirect, url_for, render_template, flash, abort
-from flask_login import login_required, current_user
+from flask_login import current_user
 import app.models as models
-from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, get_or_404
+from app.helpers.general_helpers import get_or_404
 from app.helpers.projects_helpers import get_default_environment
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
 from .forms import ProjectForm, EditProjectForm, get_project_role_user_form
@@ -14,7 +14,6 @@ import json
 
 
 @bp.route("/index")
-@login_required
 def project_index():
     p = db.session.scalars(sa.select(models.Project).where(models.Project.archived == False).order_by(models.Project.created_at.desc())).all()
     archived = db.session.scalars(sa.select(models.Project).where(models.Project.archived == True).order_by(models.Project.created_at.desc())).all()
@@ -26,7 +25,6 @@ def project_index():
 
 @bp.route("/<int:project_id>")
 @bp.route("/<int:project_id>/show")
-@login_required
 def project_show(project_id):
     project = db.get_or_404(models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'show')
@@ -39,7 +37,6 @@ def project_show(project_id):
 
 
 @bp.route("/new", methods=["GET", "POST"])
-@login_required
 def project_new():
     form = ProjectForm()
     ctx = MainPageEnvironment("Project", 'new')()
@@ -58,7 +55,6 @@ def project_new():
 
 
 @bp.route("/<int:project_id>/edit", methods=["GET", "POST"])
-@login_required
 def project_edit(project_id):
     project = get_or_404(db.session, models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'update')
@@ -77,7 +73,6 @@ def project_edit(project_id):
 
 
 @bp.route('/<int:project_id>/delete', methods=["POST"])
-@login_required
 def project_delete(project_id: int):
     project = get_or_404(db.session, models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'delete')
@@ -89,7 +84,6 @@ def project_delete(project_id: int):
 
 
 @bp.route('/<int:project_id>/edit_participants', methods=['POST'])
-@login_required
 def edit_project_participants(project_id: int):
     project = get_or_404(db.session, models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'edit_participants')
@@ -109,7 +103,6 @@ def edit_project_participants(project_id: int):
 
 
 @bp.route("/<int:project_id>/archive", methods=["POST"])
-@login_required
 def project_archive(project_id: int):
     project = get_or_404(db.session, models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'archive')
@@ -121,7 +114,6 @@ def project_archive(project_id: int):
 
 
 @bp.route("/<int:project_id>/diagrams")
-@login_required
 def project_diagrams(project_id: int):
     project = db.get_or_404(models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'show_charts')

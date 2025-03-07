@@ -1,7 +1,7 @@
 from app.controllers.chats import bp
 from app.helpers.projects_helpers import get_default_environment
 from flask import render_template, request, abort
-from flask_login import login_required, current_user
+from flask_login import current_user
 from app import db, side_libraries, logger
 import app.models as models
 import sqlalchemy as sa
@@ -9,7 +9,6 @@ from app.helpers.roles import project_role_can_make_action_or_abort
 
 
 @bp.route('/index')
-@login_required
 def index():
     try:
         project_id = int(request.args.get('project_id'))

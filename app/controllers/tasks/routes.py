@@ -1,7 +1,7 @@
 from app import db, side_libraries, logger
 from app.controllers.tasks import bp
-from flask_login import login_required, current_user
-from flask import request, render_template, url_for, redirect, flash, abort, jsonify, g
+from flask_login import current_user
+from flask import request, render_template, url_for, redirect, flash, abort, jsonify
 from app.models import ProjectTask, Project, ProjectTaskTracker, ProjectTaskPriority, User, TaskState, ProjectTaskTemplate
 import app.models as models
 from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
@@ -17,7 +17,6 @@ from app.helpers.roles import project_role_can_make_action_or_abort, project_rol
 
 
 @bp.route('/index-data')
-@login_required
 def projecttask_index_data():
     try:
         project_id = int(request.args.get('project_id'))
@@ -33,7 +32,6 @@ def projecttask_index_data():
 
 
 @bp.route('/index')
-@login_required
 def projecttask_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -56,7 +54,6 @@ def projecttask_index():
 
 
 @bp.route('/index-on-me-data')
-@login_required
 def projecttask_index_on_me_data():
     try:
         project_id = int(request.args.get('project_id'))
@@ -72,7 +69,6 @@ def projecttask_index_on_me_data():
 
 
 @bp.route('/index-on-me')
-@login_required
 def projecttask_index_on_me():
     try:
         project_id = int(request.args.get('project_id'))
@@ -94,7 +90,6 @@ def projecttask_index_on_me():
 
 
 @bp.route('/kanban-board')
-@login_required
 def projecttask_kanban_board():
     try:
         project_id = int(request.args.get('project_id'))
@@ -109,7 +104,6 @@ def projecttask_kanban_board():
 
 
 @bp.route('/kanban-board/data')
-@login_required
 def projecttask_kanban_board_data():
     try:
         project_id = int(request.args.get('project_id'))
@@ -154,7 +148,6 @@ def projecttask_kanban_board_data():
 
 
 @bp.route('/kanban-board/config')
-@login_required
 def projecttask_kanban_board_config():
     conf = {'refresh': 15 * 60, # Параметр refresh отвечает за обновление страницы и задаётся в секундах
             'dynamicColumns': True,
@@ -171,7 +164,6 @@ def projecttask_kanban_board_config():
 
 
 @bp.route('/new', methods=["GET", "POST"])
-@login_required
 def projecttask_new():
     try:
         project_id = int(request.args.get('project_id'))
@@ -213,7 +205,6 @@ def projecttask_new():
 
 @bp.route('/<projecttask_id>')
 @bp.route('/<projecttask_id>/show')
-@login_required
 def projecttask_show(projecttask_id):
     try:
         task_id = int(projecttask_id)
@@ -235,7 +226,6 @@ def projecttask_show(projecttask_id):
 
 
 @bp.route('/<projecttask_id>/edit', methods=['GET', 'POST'])
-@login_required
 def projecttask_edit(projecttask_id):
     task = get_or_404(db.session, ProjectTask, projecttask_id)
     try:
@@ -266,7 +256,6 @@ def projecttask_edit(projecttask_id):
 
 
 @bp.route('/<int:projecttask_id>/delete', methods=["POST"])
-@login_required
 def projecttask_delete(projecttask_id):
     task = get_or_404(db.session, ProjectTask, projecttask_id)
     project_role_can_make_action_or_abort(current_user, task, 'delete')
@@ -279,7 +268,6 @@ def projecttask_delete(projecttask_id):
 
 
 @bp.route('/task_data_by_template/<template_id>')
-@login_required
 def projecttask_data_by_template(template_id):
     try:
         template_id = int(template_id)

@@ -5,11 +5,17 @@ from app.models import Project
 from markupsafe import Markup
 from app.extensions.moment import moment
 from flask_babel import lazy_gettext as _l, pgettext
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 
 
 bp = Blueprint('projects', __name__, url_prefix='/projects')
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.projects.routes

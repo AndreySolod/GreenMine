@@ -1,6 +1,6 @@
 from app import db, side_libraries, logger, automation_modules
 from app.controllers.credentials import bp
-from flask_login import login_required, current_user
+from flask_login import current_user
 from flask import request, render_template, url_for, redirect, flash, abort, jsonify, g
 from app.models import Credential, Project
 import app.models as models
@@ -14,7 +14,6 @@ from app.helpers.roles import project_role_can_make_action, project_role_can_mak
 
 
 @bp.route('/index')
-@login_required
 def credential_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -33,7 +32,6 @@ def credential_index():
 
 
 @bp.route('/pentest-index')
-@login_required
 def pentest_credential_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -53,7 +51,6 @@ def pentest_credential_index():
 
 
 @bp.route('/new', methods=["GET", "POST"])
-@login_required
 def credential_new():
     try:
         project_id = int(request.args.get('project_id'))
@@ -85,7 +82,6 @@ def credential_new():
 
 @bp.route("/<credential_id>")
 @bp.route("/<credential_id>/show")
-@login_required
 def credential_show(credential_id):
     try:
         credential_id = int(credential_id)
@@ -105,7 +101,6 @@ def credential_show(credential_id):
 
 
 @bp.route("/<credential_id>/edit", methods=["GET", "POST"])
-@login_required
 def credential_edit(credential_id):
     try:
         credential_id = int(credential_id)
@@ -129,7 +124,6 @@ def credential_edit(credential_id):
 
 
 @bp.route("/<int:credential_id>/delete", methods=["POST"])
-@login_required
 def credential_delete(credential_id):
     cred = get_or_404(db.session, Credential, credential_id)
     project_role_can_make_action_or_abort(current_user, cred, 'delete')
@@ -143,7 +137,6 @@ def credential_delete(credential_id):
 
 
 @bp.route('/gethashtype/')
-@login_required
 def get_hash_type():
     hash_value = request.args.get('value')
     if hash_value is None:
@@ -158,7 +151,6 @@ def get_hash_type():
 
 
 @bp.route("/multiple_import", methods=["GET", "POST"])
-@login_required
 def multiple_import_credentials():
     try:
         project_id = int(request.args.get("project_id"))
@@ -179,7 +171,6 @@ def multiple_import_credentials():
 
 
 @bp.route("/multiple-import-credentials-template/<template_id>/data", methods=["GET"])
-@login_required
 def get_multiple_import_credentials_template_data(template_id):
     try:
         template_id = int(template_id)

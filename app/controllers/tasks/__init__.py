@@ -1,5 +1,5 @@
 from flask import Blueprint, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.models import ProjectTask
 from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_environment, check_if_same_type
 from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink
@@ -11,6 +11,12 @@ from typing import Optional
 
 
 bp = Blueprint('tasks', __name__, url_prefix='/tasks')
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.tasks.routes

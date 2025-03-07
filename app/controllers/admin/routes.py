@@ -65,14 +65,36 @@ def admin_main_info_edit():
                 current_app.config["GlobalSettings"].text_main_page = text_form.text_main_page.data
                 return redirect(url_for('admin.admin_main_info_edit'))
             abort(400)
+        elif elem == 'main_parameters':
+            main_parameters_form = main_settings_forms.MainParameterForm()
+            if main_parameters_form.validate_on_submit():
+                print('validate on submit!')
+                try:
+                    gs = db.session.scalars(sa.select(models.GlobalSettings)).one()
+                except (exc.MultipleResultsFound, exc.NoResultFound):
+                    current_app.logger.error("Error: There are 2 instances of Global Settings")
+                    abort(500)
+                gs.default_language_id = main_parameters_form.default_language.data
+                gs.m2m_join_symbol = main_parameters_form.m2m_join_symbol.data
+                gs.m2m_max_items = int(main_parameters_form.m2m_max_items.data)
+                gs.pagination_element_count_select2 = int(main_parameters_form.pagination_element_count_select2.data)
+                db.session.add(gs)
+                db.session.commit()
+                db.session.refresh(gs)
+                db.session.expunge(gs)
+                current_app.config["GlobalSettings"] = gs
+            return redirect(url_for('admin.admin_main_info_edit'))
         else:
             abort(404)
     name_form = main_settings_forms.MainPageNameForm()
     text_form = main_settings_forms.MainPageTextForm()
     name_form.main_page_name.data = current_app.config["GlobalSettings"].main_page_name
-    text_form.text_main_page.data = current_app.config["GlobalSettings"].text_main_page                
+    text_form.text_main_page.data = current_app.config["GlobalSettings"].text_main_page
+    main_parameters_form = main_settings_forms.MainParameterForm()
+    main_parameters_form.load_exist_value(current_app.config["GlobalSettings"])
     ctx = DefaultEnvironment('admin_main_info_edit')()
-    context = {'global_settings': current_app.config["GlobalSettings"], "name_form": name_form, "text_form": text_form}
+    context = {'global_settings': current_app.config["GlobalSettings"], "name_form": name_form, "text_form": text_form,
+               'main_parameters_form': main_parameters_form}
     return render_template('admin/main_settings_edit.html', **ctx, **context)
 
 

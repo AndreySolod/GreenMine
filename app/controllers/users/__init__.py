@@ -1,4 +1,5 @@
 from flask import Blueprint
+from app import password_policy
 
 
 bp = Blueprint('users', __name__, url_prefix='/users')

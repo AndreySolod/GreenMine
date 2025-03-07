@@ -1,5 +1,5 @@
 from flask import render_template, abort, redirect, url_for, flash, request, g
-from flask_login import current_user, login_required
+from flask_login import current_user
 from app.controllers.action_modules import bp
 from app.models import Project
 from app import db, side_libraries
@@ -13,7 +13,6 @@ from app import logger
 
 
 @bp.route('/index')
-@login_required
 def action_modules_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -33,7 +32,6 @@ def action_modules_index():
 
 
 @bp.route('/<module_name>/run', methods=['GET', "POST"])
-@login_required
 def module_run(module_name):
     try:
         project_id = int(request.args.get('project_id'))

@@ -6,11 +6,17 @@ from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, 
 from jinja2.filters import Markup
 from app.extensions.moment import moment
 from flask_babel import lazy_gettext as _l
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 
 
 bp = Blueprint('credentials', __name__, url_prefix='/credentials')
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.credentials.routes

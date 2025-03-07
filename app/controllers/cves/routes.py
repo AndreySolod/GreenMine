@@ -1,5 +1,5 @@
 from flask import render_template, abort, redirect, url_for, flash, request
-from flask_login import current_user, login_required
+from flask_login import current_user
 from app.controllers.cves import bp
 from app.models import CriticalVulnerability, ProgrammingLanguage, VulnerableEnvironmentType
 from app import db, side_libraries, logger
@@ -11,7 +11,6 @@ from flask_babel import lazy_gettext as _l
 
 
 @bp.route('/index')
-@login_required
 def cve_index():
     filters = {}
     for obj in [VulnerableEnvironmentType, ProgrammingLanguage]:
@@ -25,7 +24,6 @@ def cve_index():
 
 
 @bp.route('/index-data')
-@login_required
 def cve_index_data():
     additional_params = {'obj': CriticalVulnerability, 'column_index': ['id', 'title', 'description', 'vulnerable_environment_type', 'proof_of_concept_language'],
                          'base_select': lambda x: x.where(CriticalVulnerability.archived == False)}
@@ -35,7 +33,6 @@ def cve_index_data():
 
 
 @bp.route('/new', methods=["GET", "POST"])
-@login_required
 def cve_new():
     form = CriticalVulnerabilityCreateForm(db.session)
     if form.validate_on_submit():
@@ -54,7 +51,6 @@ def cve_new():
 
 
 @bp.route('/<cve_id>/edit', methods=["GET", "POST"])
-@login_required
 def cve_edit(cve_id):
     try:
         cve_id = int(cve_id)
@@ -77,7 +73,6 @@ def cve_edit(cve_id):
 
 
 @bp.route('/<cve_id>/show')
-@login_required
 def cve_show(cve_id):
     try:
         cve_id = int(cve_id)
@@ -91,7 +86,6 @@ def cve_show(cve_id):
 
 
 @bp.route('/<cve_id>/delete', methods=["POST", 'DELETE'])
-@login_required
 def cve_delete(cve_id):
     try:
         cve_id = int(cve_id)

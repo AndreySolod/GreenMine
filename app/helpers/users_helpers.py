@@ -2,9 +2,13 @@ from PIL import ImageDraw, Image
 import numpy as np
 import hashlib
 import io
-from .general_helpers import SidebarElement, SidebarElementSublink
-from flask import url_for
-from flask_babel import lazy_gettext as _l
+from flask_login import current_user
+from .general_helpers import SidebarElement, SidebarElementSublink, UTF8strings
+import datetime
+from flask import url_for, current_app, redirect, request, flash
+from flask_babel import lazy_gettext as _l, LazyString
+import functools
+from typing import Callable, List
 
 
 def generate_avatar(avatar_size: int, nickname: str, extension="png") -> None:
@@ -50,7 +54,8 @@ class UserSidebar:
     def __init__(self, user, current_object):
         se11 = SidebarElementSublink(_l("Main information"), url_for('users.user_show', user_id=user.id), current_object=='user_show')
         se12 = SidebarElementSublink(_l("Edit"), url_for('users.user_edit', user_id=user.id), current_object=='user_edit')
-        se1 = SidebarElement(_l("Profile"), url_for('users.user_show', user_id=user.id), 'fa-solid fa-user-tie', current_object in ['user_show', 'user_edit'], [se11, se12])
+        sel3 = SidebarElementSublink(_l("Change password"), url_for('users.user_change_password_callback', user_id=user.id), current_object=='user_password_change')
+        se1 = SidebarElement(_l("Profile"), url_for('users.user_show', user_id=user.id), 'fa-solid fa-user-tie', current_object in ['user_show', 'user_edit', 'user_password_change'], [se11, se12, sel3])
         self.se = [se1]
 
     def __call__(self):

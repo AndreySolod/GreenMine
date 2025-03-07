@@ -6,13 +6,12 @@ import app.models as models
 from app.controllers.networks import bp
 from app.helpers.general_helpers import get_bootstrap_table_json_data, bootstrap_table_argument_parsing
 from flask import abort, request, jsonify, current_app
-from flask_login import login_required, current_user
+from flask_login import current_user
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy.exc as exc
 
 
 @bp.route('/networks/<network_id>/get-hosts')
-@login_required
 def host_to_network(network_id):
     try:
         network_id = int(network_id)
@@ -30,7 +29,6 @@ def host_to_network(network_id):
 
 
 @bp.route('/hosts/<host_id>/get-services')
-@login_required
 def service_to_host(host_id):
     try:
         host_id = int(host_id)
@@ -48,7 +46,6 @@ def service_to_host(host_id):
 
 
 @bp.route('/services/get-select2-data')
-@login_required
 def get_select2_service_data():
     try:
         page = int(request.args.get('page'))
@@ -66,16 +63,15 @@ def get_select2_service_data():
     data = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True).join(models.Service.transport_level_protocol, isouter=True)
                               .where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False,
                                              (sa.cast(models.Host.ip_address, sa.String) + ':' + sa.cast(models.Service.port, sa.String) + "/" + sa.func.ifnull(models.ServiceTransportLevelProtocol.title, "") + " " + sa.func.ifnull(models.Service.title, "")).ilike('%' + query + '%')))
-                                             .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
-                              .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
-    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+                                             .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                              .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service on project #{project_id} via select2-data")
-    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
     return jsonify(result)
 
 
 @bp.route('/hosts/get-select2-data')
-@login_required
 def get_select2_host_data():
     try:
         page = int(request.args.get('page'))
@@ -93,16 +89,15 @@ def get_select2_host_data():
     data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
                                                                                                   models.Network.project_id == project_id,
                                                                                                   models.Host.excluded == False))
-                                                    .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
-                                                    .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
-    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+                                                    .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                                                    .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host on project #{project_id} via select2-data")
-    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
     return jsonify(result)
 
 
 @bp.route('/hosts/get-select2-all-data')
-@login_required
 def get_select2_all_host_data():
     ''' The same that get_select2_host_data, but with excluded host '''
     try:
@@ -120,16 +115,15 @@ def get_select2_all_host_data():
     query = request.args.get('term') if request.args.get('term') else ''
     data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
                                                                                                   models.Network.project_id == project_id))
-                                                    .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
-                                                    .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
-    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+                                                    .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                                                    .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host on project #{project_id} via select2-data")
-    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
     return jsonify(result)
 
 
 @bp.route('/services/index-by-all-services-port-data')
-@login_required
 def all_services_port_data():
     try:
         project_id = int(request.args.get('project_id'))
@@ -180,7 +174,6 @@ def all_services_port_data():
 
 
 @bp.route('/services/services-by-port-data/<port>/<transport_level_protocol>')
-@login_required
 def services_by_port_data(port, transport_level_protocol):
     try:
         port = int(port)
@@ -199,7 +192,6 @@ def services_by_port_data(port, transport_level_protocol):
 
 
 @bp.route('/hosts/get-select2-interfaces-data')
-@login_required
 def get_select2_hosts_interfaces_data():
     try:
         page = int(request.args.get('page'))
@@ -217,9 +209,9 @@ def get_select2_hosts_interfaces_data():
     data = db.session.scalars(sa.select(models.Host).outerjoin(models.Host.from_network).where(sa.and_(models.Host.id != host.id, models.Network.project_id == host.from_network.project_id,
                                                                                                        models.Host.excluded == False,
                                                                                                   models.Host.ip_address.ilike("%" + query + "%")))
-                                                                                                  .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
-                                                                                                  .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
-    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+                                                                                                  .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                                                                                                  .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request interfaces for host {host.id} via select2-data")
-    result = {'results': [{'id': i.id, 'text': str(i.ip_address)} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    result = {'results': [{'id': i.id, 'text': str(i.ip_address)} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
     return jsonify(result)

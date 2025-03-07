@@ -3,10 +3,16 @@ from app.helpers.general_helpers import SidebarElement, CurrentObjectInfo
 from app.helpers.projects_helpers import check_if_same_type, register_environment, EnvironmentObjectAttrs
 import app.models as models
 from flask_babel import lazy_gettext as _l
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 
 bp = Blueprint('chats', __name__, url_prefix="/chats")
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.chats.routes

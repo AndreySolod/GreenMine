@@ -3,7 +3,7 @@ import io
 import zipfile
 import sqlalchemy as sa
 from flask import render_template, url_for, request, abort, jsonify, send_file
-from flask_login import current_user, login_required
+from flask_login import current_user
 from app.controllers.webfiles import bp
 from app import db, logger
 from app.models import Project, FileDirectory, FileData
@@ -16,7 +16,6 @@ from app.helpers.roles import project_role_can_make_action_or_abort
 
 
 @bp.route('/index')
-@login_required
 def filedirectory_index():
     ''' Returned main page with plugin to show directory '''
     try:
@@ -36,7 +35,6 @@ def filedirectory_index():
 
 
 @bp.route('/folder_content/<folder_id>')
-@login_required
 def filedirectory_folder_content(folder_id):
     ''' Returned directory listing '''
     try:
@@ -62,7 +60,6 @@ def filedirectory_folder_content(folder_id):
 
 
 @bp.route('/filedirectory/new', methods=["POST"])
-@login_required
 def filedirectory_new():
     ''' Creates a new directory from the parameters passed in the request body. Returns a response with the id and title of the created directory '''
     form = request.form
@@ -81,7 +78,6 @@ def filedirectory_new():
 
 
 @bp.route('/elems/<elem_id>/rename', methods=['POST'])
-@login_required
 def elem_rename(elem_id):
     ''' Renames an existing directory. Returns a response with the status and error if present '''
     if elem_id.startswith("dir_"):
@@ -123,7 +119,6 @@ def rename_file(file_id):
 
 
 @bp.route('/copy', methods=["POST"])
-@login_required
 def tree_copy():
     def dir_copy(copied_dir, dest, session):
         ''' Copies the structure of files/directories '''
@@ -181,7 +176,6 @@ def tree_copy():
 
 
 @bp.route('/move', methods=['POST'])
-@login_required
 def tree_move():
     form = request.form
     moved_files = []
@@ -214,7 +208,6 @@ def tree_move():
 
 
 @bp.route('/delete', methods=['POST'])
-@login_required
 def tree_delete():
     form = request.form
     deleted_files = []
@@ -250,7 +243,6 @@ def tree_delete():
 
 
 @bp.route('/download_files', methods=['POST'])
-@login_required
 def tree_download():
     def add_dir(now_dir, zip_file, prefix=[]):
         pc = prefix + [now_dir.title]
@@ -301,6 +293,5 @@ def tree_download():
 
 
 @bp.route('/file/new', methods=['POST'])
-@login_required
 def webfile_new():
     pass

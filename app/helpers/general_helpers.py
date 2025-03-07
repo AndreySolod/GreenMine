@@ -2,7 +2,7 @@ from app import db, side_libraries, sanitizer
 import re
 import uuid
 import math
-import string
+from app.extensions.utf8strings import UTF8strings
 import random
 import json
 import datetime
@@ -12,15 +12,15 @@ import sys
 from typing import List, Optional, Tuple
 from flask_socketio import disconnect
 from flask_login import current_user
-from flask import url_for, abort, g, jsonify, Flask, Request
+from flask import url_for, abort, g, jsonify, Flask, Request, current_app
 from app.extensions.moment import moment
-from app.extensions.csp import csp_nonce
 from jinja2.filters import Markup
 from flask_wtf.csrf import generate_csrf
 import sqlalchemy as sa
 from sqlalchemy import func
 import sqlalchemy.exc as exc
 from sqlalchemy.inspection import inspect
+import sqlalchemy.orm as so
 from bs4 import BeautifulSoup
 from sqlalchemy.orm.session import Session
 import os
@@ -28,7 +28,6 @@ import os.path
 import importlib
 import logging
 from flask_babel import lazy_gettext as _l
-from flask_migrate import upgrade
 from pathlib import Path
 
 
@@ -60,8 +59,8 @@ def default_string_slug() -> str:
 
 def random_string(number_symbols: int) -> str:
     ''' Возвращает случайную строку заданной длины  '''
-    first_symbol = random.choice(string.ascii_uppercase)
-    return first_symbol + ''.join(random.choices(string.ascii_uppercase + string.digits, k=number_symbols - 1))
+    first_symbol = random.choice(UTF8strings.ascii_uppercase)
+    return first_symbol + ''.join(random.choices(UTF8strings.ascii_uppercase + UTF8strings.digits, k=number_symbols - 1))
 
 
 def get_complementary_color(color: str) -> str:
@@ -397,7 +396,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     # Все аргументы разобраны. Начинаем построение sql:
     sql = sa.select(obj)
     # Дополнительный SQL для подсчёта количества объектов
-    sql_count = sa.select(func.count()).select_from(obj)
+    sql_count = sa.select(func.count(obj.id.distinct())).select_from(obj)
     # Все простые атрибуты:
     if column_index is None:
         column_index = obj.Meta.column_index
@@ -416,13 +415,12 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
             where_search.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + search + '%'))
         # Объект - отношение без пути. Тогда он интерпретируется как атрибут title этого объекта
         elif a in rels:
-            dict_aliases[a] = db.aliased(getattr(obj, a).entity.class_)
+            dict_aliases[a] = so.aliased(getattr(obj, a).entity.class_)
             list_joins.append(getattr(obj, a).of_type(dict_aliases[a]))
             where_search.append(dict_aliases[a].title.ilike('%' + search + '%'))
         # Объект - отношение, представленное списком
         elif a in rels_uselist:
-            # Пока что никак не обрабатываем. В дальнейшем можно будет, наверное, настроить фильтрацию по Many-To-Many (One-To-Many) 
-            continue
+            dict_aliases[a] = so.aliased(getattr(obj, a).entity.class_)
         # Объект - отношение с путём. Объект интерпретируется как путь до отношения
         else:
             attr_name = a.split('-')[0].split('.')[0]
@@ -430,7 +428,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
             for num_pos, attr in enumerate(a.split('-')[0].split('.')[1::]):
                 prefix_attr = '.'.join(a.split('-')[0].split('.')[:num_pos + 1:])
                 if prefix_attr not in dict_aliases:
-                    dict_aliases[prefix_attr] = db.aliased(now_attr.entity.class_)
+                    dict_aliases[prefix_attr] = so.aliased(now_attr.entity.class_)
                     list_joins.append(now_attr.of_type(dict_aliases[prefix_attr]))
                 now_attr = getattr(now_attr.entity.class_, attr)
             attr_name = a.split('-')[0].split('.')[-1]
@@ -446,7 +444,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
         if a in simple_attrs:
             # a - простой атрибут
             where_filter.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + val_a + '%'))
-        elif a in rels:
+        elif a in rels or a in rels_uselist:
             # a - записывается как атрибут 'id' данного отношения, и поэтому интерпретируется соответствующе
             where_filter.append(getattr(obj, a + '_id') == val_a)
         else:
@@ -469,7 +467,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     for e in multi_sort:
         if e["sortName"] in simple_attrs:
             sql = sql.order_by(getattr(getattr(obj, e["sortName"]), e['sortOrder'])())
-        elif e["sortName"] in rels:
+        elif e["sortName"] in rels or e['sortName'] in rels_uselist:
             sql = sql.order_by(getattr(dict_aliases[e['sortName']].title, e['sortOrder'])())
         else:
             pass
@@ -477,7 +475,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     if sort is not None and order is not None:
         if sort in simple_attrs:
             sql = sql.order_by(getattr(getattr(obj, sort), order)())
-        elif sort in rels:
+        elif sort in rels or sort in rels_uselist:
             sql = sql.order_by(getattr(dict_aliases[sort].title, order)())
         else:
             attr_path = sort.split('-')[0].split('.')
@@ -485,6 +483,8 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
             sql = sql.order_by(getattr(getattr(dict_aliases[attr_name], attr_path[-1]), order)())
     # Теперь обработаем limit и offset - они обрабатываются очень просто
     sql = sql.limit(limit).offset(offset)
+    # Отдельно - указание на поиск уникальных объектов (поскольку выполняем, в том числе, и Many-To-Many Join'ы):
+    sql = sql.distinct()
     return sql, sql_count
 
 
@@ -506,7 +506,7 @@ def get_bootstrap_table_json_data(request, additional_params):
             if col in inspect(obj).column_attrs.keys():
                 if col == 'description':
                     if i.description is not None:
-                        now_attr[col] = sanitizer.escape(BeautifulSoup(truncate_html_words(i.description, 20), 'lxml').text)
+                        now_attr[col] = sanitizer.escape(sanitizer.pure_text(truncate_html_words(i.description, 20)))
                     else:
                         now_attr[col] = ''
                 elif isinstance(getattr(obj, col).type, sa.DateTime):
@@ -516,7 +516,29 @@ def get_bootstrap_table_json_data(request, additional_params):
                     now_attr[col] = str(value_now_attr) if value_now_attr is not None else '-'
             # Или представлен отношением - в этом случае берётся атрибут title у отношения
             elif col in inspect(obj).relationships.keys():
-                now_attr[col] = getattr(getattr(i, col), 'title', None)
+                if not inspect(obj).relationships[col].uselist: # Отношение - это простое отношение, т.е. не использующее список
+                    now_attr[col] = getattr(getattr(i, col), 'title', None)
+                else: # Отношение использует список. В этом случае мы берём первые m2m_max_items элементов и соединяем их через m2m_join_symbol 
+                    rel_class = inspect(obj).relationships[col].entity.class_
+                    first_elems = current_app.config["GlobalSettings"].m2m_join_symbol.join(map(str,
+                        db.session.scalars(sa.select(rel_class.title).select_from(obj).join(getattr(obj, col)).where(obj.id == i.id)
+                                           .limit(current_app.config['GlobalSettings'].m2m_max_items)).all()))
+                    total_m2m_elems = db.session.scalars(sa.select(sa.func.count()).select_from(obj).join(getattr(obj, col)).where(obj.id == i.id)).first()
+                    if total_m2m_elems > current_app.config['GlobalSettings'].m2m_max_items:
+                        first_elems += current_app.config['GlobalSettings'].m2m_join_symbol + str(_l("Total: %(total)s elements", total=total_m2m_elems))
+                    now_attr[col] = first_elems
+            # Или является составным атрибутом без пути - т.е. имеет отношение "Многие ко многим", имеет один атрибут и использует Input вместо Select:
+            elif len(col.split("-")[0].split(".")) == 2 and inspect(obj).relationships[col.split('-')[0].split('.')[0]].uselist:
+                curr_obj_name, curr_obj_attr = col.split('-')[0].split('.')
+                alias_1 = inspect(obj).relationships[curr_obj_name].entity.class_
+                alias_2 = so.aliased(obj)
+                first_elems_sql = sa.select(getattr(alias_1, curr_obj_attr)).select_from(alias_2).join(getattr(alias_2, curr_obj_name)).where(alias_2.id == i.id)
+                first_elems_sql = first_elems_sql.limit(current_app.config['GlobalSettings'].m2m_max_items)
+                first_elems = current_app.config["GlobalSettings"].m2m_join_symbol.join(map(str, db.session.scalars(first_elems_sql).all()))
+                total_m2m_elems = db.session.scalars(sa.select(sa.func.count()).select_from(alias_2).join(getattr(alias_2, curr_obj_name)).where(alias_2.id == i.id)).first()
+                if total_m2m_elems > current_app.config['GlobalSettings'].m2m_max_items:
+                    first_elems += current_app.config['GlobalSettings'].m2m_join_symbol + str(_l("Total: %(total)s item(s)", total=total_m2m_elems))
+                now_attr[col] = first_elems
             # Или является сложным атрибутом - в этом случае берётся путь этого объекта:
             else:
                 current_object = i

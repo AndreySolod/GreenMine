@@ -18,6 +18,7 @@ from app.extensions.csp import CSPManager
 from app.extensions.sanitizer import TextSanitizerManager
 from app.extensions.moment import Moment
 from app.extensions.side_libraries import SideLibraries
+from app.extensions.security import PasswordPolicyManager
 from flask_socketio import SocketIO
 from app.action_modules import AutomationModules
 from multiprocessing import Process
@@ -58,6 +59,7 @@ babel = Babel()
 csp = CSPManager()
 sanitizer = TextSanitizerManager()
 side_libraries = SideLibraries(libraries_file=Path(__file__).parent / "static_config_paths.yml", always_required_libraries=['notify', 'socketio'])
+password_policy = PasswordPolicyManager(change_password_callback='users.user_change_password_callback', exempt_bp=set(['files']))
 
 class FlaskGreenMine(Flask):
     def setting_custom_attributes_for_application(self):
@@ -100,6 +102,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     csp.init_app(app)
     side_libraries.init_app(app)
     sanitizer.init_app(app)
+    password_policy.init_app(app)
 
     # register automation module as project_object_with_permissions:
     from app.helpers.admin_helpers import project_object_with_permissions

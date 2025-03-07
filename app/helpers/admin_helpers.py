@@ -104,8 +104,10 @@ class DefaultSidebar:
         sel71 = SidebarElementSublink(_l("Project roles list"), url_for('admin.project_role_index'), address=='project_role_index')
         sel72 = SidebarElementSublink(_l("Add new project role"), url_for('admin.project_role_new'), address=='project_role_new')
         sel73 = SidebarElementSublink(_l("Edit role permissions"), url_for('admin.project_role_permissions'), address=='project_role_permissions')
-        se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address in ['project_role_index', 'project_role_new', 'project_role_edit', 'project_role_permissions'], [sel71, sel72, sel73])
-        self.se = [se1, se2, se3, se4, se5, se6, se7]
+        se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address.startswith('project_role_'), [sel71, sel72, sel73])
+        sel81 = SidebarElementSublink(_l("Password Policy"), url_for('admin.authentication_password_policy_settings'), address=='authentication_password_policy_settings')
+        se8 = SidebarElement(_l("Authentication"), url_for('admin.authentication_password_policy_settings'), "fa-solid fa-person-hiking", address.startswith('authentication_'), [sel81])
+        self.se = [se1, se2, se3, se4, se5, se6, se7, se8]
 
     def __call__(self):
         return self.se
@@ -225,6 +227,9 @@ class DefaultEnvironment:
             case 'credential_template_edit':
                 title = _l("Edit credential import template #%(templ_id)s", templ_id=obj.id)
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case "authentication_password_policy_settings":
+                title = _l("Edit password policy settings")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-user-astronaut", subtitle=_l("Password complexity parameters to be set for users"))
 
         sidebar_data = DefaultSidebar(address, obj)()
         self.context = {'title': title, 'current_object': current_object,

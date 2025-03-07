@@ -88,12 +88,11 @@ class CSPManager:
 
             if dest in self.exempt_views:
                 return response
-            if request.endpoint.strip() != 'static':
-                response.headers['Content-Security-Policy'] = self.get_csp_headers()
+            response.headers['Content-Security-Policy'] = self.get_csp_headers()
             return response
         
         def extempt(self, view):
-            """ Mark a view or blueprint to be excluded from CSRF protection
+            """ Mark a view or blueprint to be excluded from CSP protection
             
             @app.route('/index')
             @csp.extempt

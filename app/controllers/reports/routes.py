@@ -1,6 +1,6 @@
 from app import db, logger
 from app.controllers.reports import bp
-from flask_login import login_required, current_user
+from flask_login import current_user
 from flask import request, render_template, abort, send_file
 import app.models as models
 from app.helpers.general_helpers import get_or_404
@@ -14,7 +14,6 @@ from io import BytesIO
 
 
 @bp.route('/index')
-@login_required
 def report_template_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -30,7 +29,6 @@ def report_template_index():
 
 
 @bp.route('/<template_id>/generate_template', methods=['GET'])
-@login_required
 def generate_report_from_template(template_id):
     try:
         template_id = int(template_id)

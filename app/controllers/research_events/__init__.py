@@ -16,7 +16,7 @@ import app.controllers.research_events.routes
 
 @bp.before_request
 @login_required
-def before_pentest_event_request(*args, **kwargs):
+def check_login_required():
     pass
 
 

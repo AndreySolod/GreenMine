@@ -2,3 +2,12 @@ GlobalSettings:
     main_page_name: "GreenMine организации исследователей"
     text_main_page: "Отсутствует"
     default_language: auto
+    m2m_join_symbol: ";<br>"
+    m2m_max_items: 4
+    pagination_element_count_select2: 30
+    password_min_length: 1
+    password_lifetime: 3650
+    password_lowercase_symbol_require: false
+    password_uppercase_symbol_require: false
+    password_numbers_require: false
+    password_special_symbols_require: false

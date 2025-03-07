@@ -17,9 +17,9 @@ def user_select2_data():
         abort(400)
     query = request.args.get('term') if request.args.get('term') else ''
     data = db.session.scalars(sa.select(models.User).where(models.User.title.ilike('%' + query + "%"))
-                              .limit(current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1)
-                              .offset((page - 1) * current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"])).all()
-    more = len(data) == current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"] + 1
+                              .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                              .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request user list via select2-data")
-    result = {'results': [{'id': i.id, 'text': i.title} for i in data[:min(len(data), current_app.config["PAGINATION_ELEMENT_COUNT_SELECT2"]):]], 'pagination': {'more': more}}
+    result = {'results': [{'id': i.id, 'text': i.title} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
     return jsonify(result)

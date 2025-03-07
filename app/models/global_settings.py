@@ -12,6 +12,15 @@ class GlobalSettings(db.Model):
     text_main_page: so.Mapped[str] = so.mapped_column(info={'label': _l('Text of the cover page')})
     default_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('application_language.id', ondelete='SET NULL'), info={'label': _l('Default application language')})
     default_language: so.Mapped["ApplicationLanguage"] = so.relationship(lazy='joined', info={'label': _l('Default application language')})
+    m2m_join_symbol: so.Mapped[str] = so.mapped_column(sa.String(10), info={'label': _l("Many-To-Many join symbol in table cell")}, server_default=";<br>")
+    m2m_max_items: so.Mapped[int] = so.mapped_column(default=4, server_default='4', info={'label': _l("Many-To-Many max items in table cell")})
+    pagination_element_count_select2: so.Mapped[int] = so.mapped_column(default=30, server_default='30', info={'label': _l("Select item count"), 'help_text': _l("The number of items that will be loaded into the selection field one at a time")})
+    password_min_length: so.Mapped[int] = so.mapped_column(default=1, server_default='1', info={'label': _l("Password min length")})
+    password_lifetime: so.Mapped[int] = so.mapped_column(default=3650, server_default='3650', info={'label': _l("Password lifetime (days)")})
+    password_lowercase_symbol_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Required to use lowercase letters")})
+    password_uppercase_symbol_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Required to use uppercase letters")})
+    password_numbers_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Require to use numbers")})
+    password_special_symbols_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Require to use specias symbols")})
 
 class ApplicationLanguage(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})

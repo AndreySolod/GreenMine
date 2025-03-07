@@ -94,6 +94,20 @@
                     filterControl: 'input',
                 },
                 {
+                    field: 'interfaces.ip_address-input',
+                    title: '{{ models.Host.interfaces.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'dnsnames.title-input',
+                    title: '{{ models.Host.dnsnames.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input',
+                },
+                {
                     field: 'mac',
                     title: '{{ models.Host.mac.info["label"] }}',
                     sortable: true,

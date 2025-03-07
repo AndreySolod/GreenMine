@@ -3,10 +3,16 @@ from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_enviro
 from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink
 from app.action_modules import AutomationModules
 from flask_babel import lazy_gettext as _l
-from flask_login import current_user
+from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 
 bp = Blueprint('action_modules', __name__, url_prefix='/action_modules')
+
+
+@bp.before_request
+@login_required
+def check_login_required():
+    pass
 
 
 import app.controllers.action_modules.routes

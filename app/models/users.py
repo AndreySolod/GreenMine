@@ -143,6 +143,8 @@ class User(UserMixin, db.Model):
     archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
     login: so.Mapped[str] = so.mapped_column(sa.String(20), index=True, unique=True, info={'label': _l("Login")})
     password_hash: so.Mapped[str] = so.mapped_column(sa.String(170), default='', info={'label': _l("Password hash")})
+    is_password_expired: so.Mapped[bool] = so.mapped_column(default=True, server_default=sa.true(), info={'label': _l("Is password already expired"), 'help_text': _l("If true, the user will have to change it on the next request.")})
+    password_expired_date: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(default=utcnow, server_default=sa.func.now(), info={'label': _l("Date when password is expired")})
     email: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("E-Mail")})
     first_name: so.Mapped[str] = so.mapped_column(sa.String(20), default='', info={'label': _l("First Name")})
     last_name: so.Mapped[str] = so.mapped_column(sa.String(30), default='', info={'label': _l("Last Name")})

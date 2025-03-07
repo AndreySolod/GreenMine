@@ -4,7 +4,7 @@ from app import db, side_libraries, logger
 from app.controllers.networks import bp
 from werkzeug.utils import secure_filename
 from flask import request, redirect, url_for, render_template, flash, abort, jsonify, send_file
-from flask_login import login_required, current_user
+from flask_login import current_user
 import app.models as models
 from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
 from app.helpers.projects_helpers import get_default_environment
@@ -16,7 +16,6 @@ import sqlalchemy.exc as exc
 
 
 @bp.route("/networks/index")
-@login_required
 def network_index():
     try:
         project_id = int(request.args.get("project_id"))
@@ -43,7 +42,6 @@ def network_index():
 
 
 @bp.route('/newtorks/index-data')
-@login_required
 def network_index_data():
     try:
         project_id = int(request.args.get("project_id"))
@@ -58,7 +56,6 @@ def network_index_data():
 
 
 @bp.route('/networks/host-by-network-data')
-@login_required
 def host_by_network_data():
     try:
         network_id = int(request.args.get('network_id'))
@@ -77,7 +74,6 @@ def host_by_network_data():
 
 
 @bp.route("/networks/new", methods=["GET", "POST"])
-@login_required
 def network_new():
     try:
         project_id = int(request.args.get('project_id'))
@@ -108,7 +104,6 @@ def network_new():
 
 
 @bp.route('/hosts/index-data')
-@login_required
 def host_index_data():
     try:
         project_id = int(request.args.get('project_id'))
@@ -116,14 +111,13 @@ def host_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'title', 'technical', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
+    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'technical', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
                          'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
 
 @bp.route('/hosts/service-by-host-data')
-@login_required
 def service_by_host_data():
     try:
         host_id = int(request.args.get('host_id'))
@@ -142,7 +136,6 @@ def service_by_host_data():
 
 
 @bp.route("/hosts/index")
-@login_required
 def host_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -168,7 +161,6 @@ def host_index():
 
 
 @bp.route('/hosts/excluded-index')
-@login_required
 def hosts_excluded_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -186,7 +178,6 @@ def hosts_excluded_index():
 
 
 @bp.route("/hosts/new", methods=["GET", "POST"])
-@login_required
 def host_new():
     try:
         project_id = int(request.args.get('project_id'))
@@ -216,7 +207,6 @@ def host_new():
 
 
 @bp.route('/service/index-data')
-@login_required
 def service_index_data():
     try:
         project_id = int(request.args.get('project_id'))
@@ -231,7 +221,6 @@ def service_index_data():
 
 
 @bp.route('/service/index')
-@login_required
 def service_index():
     try:
         project_id = int(request.args.get('project_id'))
@@ -254,7 +243,6 @@ def service_index():
 
 
 @bp.route('/service/new', methods=['GET', "POST"])
-@login_required
 def service_new():
     try:
         project_id = int(request.args.get('project_id'))
@@ -299,7 +287,6 @@ def service_new():
 
 
 @bp.route("/services/index-by-port")
-@login_required
 def services_index_by_port():
     try:
         project_id = int(request.args.get('project_id'))
@@ -321,7 +308,6 @@ def services_index_by_port():
 
 @bp.route("/networks/<network_id>/")
 @bp.route("/networks/<network_id>/show")
-@login_required
 def network_show(network_id):
     try:
         network_id = int(network_id)
@@ -341,7 +327,6 @@ def network_show(network_id):
 
 
 @bp.route("/networks/<network_id>/edit", methods=["GET", "POST"])
-@login_required
 def network_edit(network_id):
     try:
         network_id = int(network_id)
@@ -366,7 +351,6 @@ def network_edit(network_id):
 
 
 @bp.route("/networks/<network_id>/delete", methods=["POST"])
-@login_required
 def network_delete(network_id):
     try:
         network_id = int(network_id)
@@ -386,7 +370,6 @@ def network_delete(network_id):
 
 @bp.route("/hosts/<host_id>")
 @bp.route("/hosts/<host_id>/show")
-@login_required
 def host_show(host_id):
     try:
         host_id = int(host_id)
@@ -407,7 +390,6 @@ def host_show(host_id):
 
 
 @bp.route("/hosts/<host_id>/edit", methods=["GET", "POST"])
-@login_required
 def host_edit(host_id):
     try:
         host_id = int(host_id)
@@ -432,7 +414,6 @@ def host_edit(host_id):
 
 
 @bp.route('/hosts/<int:host_id>/include-to-research', methods=['POST'])
-@login_required
 def add_host_to_research(host_id: int):
     host = get_or_404(db.session, models.Host, host_id)
     project_role_can_make_action_or_abort(current_user, host, 'update')
@@ -443,7 +424,6 @@ def add_host_to_research(host_id: int):
 
 
 @bp.route('/hosts/<int:host_id>/exclude-from-research', methods=['POST'])
-@login_required
 def exclude_host_from_research(host_id: int):
     host = db.get_or_404(models.Host, host_id)
     project_role_can_make_action_or_abort(current_user, host, 'update')
@@ -454,7 +434,6 @@ def exclude_host_from_research(host_id: int):
 
 
 @bp.route("/hosts/<int:host_id>/delete", methods=["POST"])
-@login_required
 def host_delete(host_id):
     host = get_or_404(db.session, models.Host, host_id)
     project_role_can_make_action_or_abort(current_user, host, 'delete')
@@ -469,7 +448,6 @@ def host_delete(host_id):
 
 @bp.route('/service/<service_id>')
 @bp.route('/service/<service_id>/show')
-@login_required
 def service_show(service_id):
     try:
         service_id = int(service_id)
@@ -545,7 +523,6 @@ def service_delete(service_id):
 
 
 @bp.route("/service/getdefaultaccessprotocol/<port>/<transport_proto>")
-@login_required
 def get_default_access_proto(port, transport_proto):
     try:
         port = int(port)
@@ -560,7 +537,6 @@ def get_default_access_proto(port, transport_proto):
 
 
 @bp.route('/networks/generate-all-included-ip')
-@login_required
 def generate_all_included_ip_addresses():
     try:
         project_id = int(request.args.get('project_id'))
@@ -586,7 +562,6 @@ def generate_all_included_ip_addresses():
 
 
 @bp.route('/services/inventory')
-@login_required
 def services_inventory():
     try:
         project_id = int(request.args.get('project_id'))

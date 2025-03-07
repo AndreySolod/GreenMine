@@ -1,6 +1,6 @@
 from app import db, logger, side_libraries
 from app.controllers.wiki_pages import bp
-from flask_login import login_required, current_user
+from flask_login import current_user
 from flask import request, render_template, url_for, redirect, flash, abort, jsonify
 from app.models import WikiPage, WikiDirectory
 from app.helpers.general_helpers import get_or_404
@@ -12,7 +12,6 @@ from flask_babel import lazy_gettext as _l
 
 
 @bp.route('/wikidirectory/index')
-@login_required
 def pagedirectory_index():
     directories = db.session.scalars(db.select(WikiDirectory).where(WikiDirectory.parent_directory_id == None)).all()
     pages = db.session.scalars(db.select(WikiPage).where(WikiPage.directory_id == None)).all()
@@ -23,7 +22,6 @@ def pagedirectory_index():
 
 
 @bp.route('/wikidirectory/ajax-new', methods=["POST"])
-@login_required
 def pagedirectory_ajax_new():
     dir_title = request.form.get('title') or ''
     dir_description = request.form.get('description') or ''
@@ -44,7 +42,6 @@ def pagedirectory_ajax_new():
 
 
 @bp.route('/wikidirectory/new', methods=['GET', 'POST'])
-@login_required
 def pagedirectory_new():
     form = WikiDirectoryNewForm(db.session)
     if form.validate_on_submit():
@@ -63,7 +60,6 @@ def pagedirectory_new():
 
 
 @bp.route('/wikidirectory/<wikidirectory_id>/edit', methods=["POST"])
-@login_required
 def pagedirectory_edit(wikidirectory_id):
     try:
         wikidirectory_id = int(wikidirectory_id)
@@ -86,7 +82,6 @@ def pagedirectory_edit(wikidirectory_id):
 
 
 @bp.route('/wikidirectory/<wikidirectory_id>/delete', methods=["POST"])
-@login_required
 def pagedirectory_delete(wikidirectory_id):
     try:
         directory_id = int(wikidirectory_id)
@@ -104,7 +99,6 @@ def pagedirectory_delete(wikidirectory_id):
 
 
 @bp.route('/wikipage/<wikipage_id>/show')
-@login_required
 def wikipage_show(wikipage_id):
     try:
         wikipage_id = int(wikipage_id)
@@ -119,7 +113,6 @@ def wikipage_show(wikipage_id):
 
 
 @bp.route('/wikipage/new', methods=["GET", "POST"])
-@login_required
 def wikipage_new():
     form = WikiPageNewForm(db.session)
     if form.validate_on_submit():
@@ -138,7 +131,6 @@ def wikipage_new():
 
 
 @bp.route('/wikipage/ajax-new', methods=["POST"])
-@login_required
 def wikipage_ajax_new():
     parent_dir_id = request.form.get('parent_dir_id') or ''
     try:
@@ -155,7 +147,6 @@ def wikipage_ajax_new():
 
 
 @bp.route('/wikipage/<wikipage_id>/edit', methods=["GET", "POST"])
-@login_required
 def wikipage_edit(wikipage_id):
     try:
         wikipage_id = int(wikipage_id)
@@ -181,7 +172,6 @@ def wikipage_edit(wikipage_id):
 
 
 @bp.route('/wikipage/ajax-edit', methods=["POST"])
-@login_required
 def wikipage_ajax_edit():
     title = request.form.get('title') or ''
     description = request.form.get('description') or ''
@@ -202,7 +192,6 @@ def wikipage_ajax_edit():
 
 
 @bp.route('/wikipage/ajax-delete', methods=["POST"])
-@login_required
 def wikipage_ajax_delete():
     page_id = request.form.get('page_id') or None
     try:
@@ -218,7 +207,6 @@ def wikipage_ajax_delete():
 
 
 @bp.route('/wikipage/<wikipage_id>/delete', methods=["POST", "DELETE"])
-@login_required
 def wikipage_delete(wikipage_id):
     try:
         wikipage_id = int(wikipage_id)
@@ -234,7 +222,6 @@ def wikipage_delete(wikipage_id):
 
 
 @bp.route('/tree-wikistruct')
-@login_required
 def wiki_ajax_struct():
     if 'id' not in request.args or request.args['id'] == '#':
         dir_id = None

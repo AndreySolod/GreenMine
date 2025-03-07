@@ -1,10 +1,13 @@
 from app.controllers.forms import FlaskForm, TreeSelectMultipleField
+from app.extensions.security import check_password_complexity, check_password_hash
+from flask_login import current_user
 import app.models as models
 import flask_wtf.file as wtfile
 import wtforms
 import wtforms.validators as validators
 from app import db
 from flask_babel import lazy_gettext as _l
+from flask import current_app
 
 
 class LoginForm(FlaskForm):
@@ -15,9 +18,20 @@ class LoginForm(FlaskForm):
 
 
 class EditUserPasswordForm(FlaskForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.password.validators.append(validators.Length(min=current_app.config["GlobalSettings"].password_min_length))
     password = wtforms.PasswordField(_l("Password:"), validators=[validators.DataRequired(message=_l("This field is mandatory!"))])
     password_again = wtforms.PasswordField(_l("Password again:"), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.EqualTo("password", message=_l("Must match the password field"))])
+    change_on_next_request = wtforms.BooleanField(_l("Change password on the next time log in:"), default=False)
     submit = wtforms.SubmitField(_l("Confirm"))
+
+    def validate_password(form, field):
+        errors = check_password_complexity(field.data)
+        if check_password_hash(current_user.password_hash, field.data):
+            errors.append(_l("The new password must be different from the old one"))
+        if len(errors) != 0:
+            raise validators.ValidationError("; ".join(list(map(str, errors))))
 
 
 class UserForm(FlaskForm):
