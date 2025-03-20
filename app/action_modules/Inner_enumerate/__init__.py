@@ -17,6 +17,7 @@ logger = logging.getLogger('Module_Inner_enumerate')
 
 def action_run(target: models.Service, running_user_id: int, protocol: str, window_size: str, timeout: str, implicity_wait: str, session: Session) -> bool:
     ''' Gets a screenshot of the web service and added him to session '''
+    logger.info(f"Checking target:{target.host.ip_address}:{target.port}")
     chrome_options = Options()
     chrome_options.add_argument('--headless=new')
     chrome_options.add_argument(f'--window-size={window_size}') # 1920,2500
@@ -44,6 +45,7 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
         target.https_title = driver.title
     attr = "screenshot_" + protocol
     session.add(target)
+    session.commit()
 
 
 def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str, project_id: int) -> None:

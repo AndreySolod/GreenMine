@@ -315,6 +315,7 @@ def load_comment_script(comment_form, object_with_comments) -> str:
       comment_div.appendChild(comment_footer_div);
       comment_footer_div.setAttribute('class', 'comments-footer clearfix');
       let inner_ul = document.createElement('ul');
+      inner_ul.classList.add('main-list-ul');
       comment_footer_div.appendChild(inner_ul);
       let li_1 = document.createElement('li');
       inner_ul.appendChild(li_1);

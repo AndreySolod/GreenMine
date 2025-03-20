@@ -127,9 +127,9 @@ class SidebarElementSublink:
 
     def sidebar(self) -> str:
         if (self.is_current_page):
-            return "<li><a href='{}' class=\"current-page\">{}</a></li>".format(self.link, self.title)
+            return "<li class='main-list-ul'><a href='{}' class=\"current-page\">{}</a></li>".format(self.link, self.title)
         else:
-            return "<li><a href='{}'>{}</a></li>".format(self.link, self.title)
+            return "<li class='main-list-ul'><a href='{}'>{}</a></li>".format(self.link, self.title)
 
 
 class SidebarElement:
@@ -144,15 +144,15 @@ class SidebarElement:
         if len(self.sublinks) == 0:
             res = '<li'
             if self.is_current_page:
-                res += ' class="active selected"'
+                res += ' class="main-list-ul active selected"'
             res += '><a href="{}"><span class="has-icon"><i class="{}"></i></span><span class="nav-title">{}</span></a></li>'.format(self.link, self.icon, self.title)
         elif len(self.sublinks) != 0:
             res = '<li'
             if self.is_current_page:
-                res += ' class="active selected"'
-            res += '><a href="#" class="has-arrow" aria-expanded="false"><span class="has-icon"><i class="{}"></i></span><span class="nav-title">{}</span></a><ul aria-expanded="false"'.format(self.icon, self.title)
+                res += ' class="main-list-ul active selected"'
+            res += '><a href="#" class="has-arrow" aria-expanded="false"><span class="has-icon"><i class="{}"></i></span><span class="nav-title">{}</span></a><ul aria-expanded="false" class="main-list-ul"'.format(self.icon, self.title)
             if self.is_current_page:
-                res += ' class="collapse in"'
+                res += ' class="main-list-ul collapse in"'
             res += ">"
             for s in self.sublinks:
                 res += s.sidebar()

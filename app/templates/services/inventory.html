@@ -2,9 +2,9 @@
 {% from 'layout/_macrosses.html' import form_element %}
 
 {% block page_content %}
-<div class="row">
+<div class="row" id="main-row-on-page">
+    {% if service != none %}
     <div class="col-6">
-        {% if service != none %}
         <div class="carousel slide" id="screenshot-carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#screenshot-carousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="{{ models.Service.screenshot_http.info['label'] }}"></button>
@@ -56,9 +56,6 @@
         <p class="text-center text-muted">{{ pgettext("woman", "(Missing)") }}</p>
         {% endif %}
     </div>
-    {% else %}
-    <p class="text-center text-muted">{{ pgettext("other", "(Missing)") }}</p>
-    {% endif %}
     <div class="col-6">
         <h5 id="inventory-object-title" data-service-id="{{ service.id }}">{{ service.fulltitle }}</h5>
         {{ form_element(form, form.host_title, inline=True) }}
@@ -73,6 +70,9 @@
             </div>
         </div>
     </div>
+    {% else %}
+    <p class="text-center text-muted">{{ _("(There is nothing to inventory)") }}</p>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -95,6 +95,10 @@
                                              'service_description': service_description.getData(), 'host_title': host_title.value, 'host_description': host_description.getData(),
                                              'device_type_id': host_device_type.value, 'device_vendor_id': host_device_vendor.value},
                             function(data) {
+            if(data.service_id === null) {
+                document.getElementById('main-row-on-page').innerHTML = '<p class="text-center text-muted">{{ _("(There is nothing to inventory)") }}</p>';
+                return null;
+            }
             inventory_object_title.setAttribute('data-service-id', data.service_id);
             inventory_object_title.innerHTML = data.obj_title;
             service_title.value = data.service_title;
@@ -112,7 +116,6 @@
             svg_no_image.innerHTML = `<title>{{ _("The screenshot is missing") }}</title><rect width="100%" height="100%" fill="{{ current_user.theme_style.dark_color }}"></rect><text x="50%" y="50%" fill="#555" dy=".3em">{{ _("The screenshot is missing") }}</text>`;
             let new_screenshot_http;
             if(data.screenshot_http === null) {
-                console.log('http is null!')
                 new_screenshot_http = svg_no_image.cloneNode(true);
                 new_screenshot_http.setAttribute('id', 'service-screenshot-http');
                 nsh = new_screenshot_http;
@@ -128,9 +131,7 @@
             oshs = screenshot_https;
             let new_screenshot_https;
             if(data.screenshot_https === null) {
-                console.log('https is null ')
                 new_screenshot_https = svg_no_image.cloneNode(true);
-                console.log(new_screenshot_https);
                 new_screenshot_https.setAttribute('id', 'service-screenshot-https');
                 nshs = new_screenshot_https;
             }
@@ -139,7 +140,6 @@
                 setMultipleAttributes(new_screenshot_https, {'id': 'service-screenshot-https', 'src': data.screenshot_https, 'class': 'd-block w-100', 'alt': "{{ _('Unable to load an image') }}"});
             };
             document.getElementById('service-screenshot-https-carousel-item').insertBefore(new_screenshot_https, screenshot_https);
-            console.log(new_screenshot_https);
             screenshot_https.remove();
             document.getElementById('service-https-title').innerHTML = data.https_title;
         });

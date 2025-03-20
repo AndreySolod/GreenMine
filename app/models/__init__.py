@@ -13,3 +13,4 @@ from .global_settings import *
 from .chats import *
 from .report_templates import *
 from .pentest_events import *
+from .project_additional_parameters import *

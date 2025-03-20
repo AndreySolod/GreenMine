@@ -107,7 +107,10 @@ class DefaultSidebar:
         se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address.startswith('project_role_'), [sel71, sel72, sel73])
         sel81 = SidebarElementSublink(_l("Password Policy"), url_for('admin.authentication_password_policy_settings'), address=='authentication_password_policy_settings')
         se8 = SidebarElement(_l("Authentication"), url_for('admin.authentication_password_policy_settings'), "fa-solid fa-person-hiking", address.startswith('authentication_'), [sel81])
-        self.se = [se1, se2, se3, se4, se5, se6, se7, se8]
+        sel91 = SidebarElementSublink(models.ProjectAdditionalField.Meta.verbose_name_plural, url_for('admin.project_additional_parameters_index'), address=='project_additional_parameters_index')
+        sel92 = SidebarElementSublink(_l("Add new project additional field"), url_for('admin.project_additional_parameters_new'), address=='project_additional_parameters_new')
+        se9 = SidebarElement(_l("Project parameters"), url_for('admin.project_additional_parameters_index'), "fa-solid fa-building-columns", address.startswith('project_additional_parameters'), [sel91, sel92])
+        self.se = [se1, se2, se3, se4, se5, se6, se7, se8, se9]
 
     def __call__(self):
         return self.se
@@ -230,6 +233,17 @@ class DefaultEnvironment:
             case "authentication_password_policy_settings":
                 title = _l("Edit password policy settings")
                 current_object = CurrentObjectInfo(title, "fa-solid fa-user-astronaut", subtitle=_l("Password complexity parameters to be set for users"))
+            case 'project_additional_parameters_index':
+                title = _l("All project additional parameters")
+                act1 = CurrentObjectAction(_l("Add new project field"), "fa-solid fa-square-plus", url_for('admin.project_additional_parameters_new'))
+                act2 = CurrentObjectAction(_l("Add new group"), "fa-solid fa-campground", url_for('admin.object_type_new', object_type='ProjectAdditionalFieldGroup'))
+                current_object = CurrentObjectInfo(title, models.ProjectAdditionalField.Meta.icon, subtitle=_l("Parameters, that was being assigned to every project"), actions=[act1, act2])
+            case 'project_additional_parameters_new':
+                title = _l("Add new project additional field")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus")
+            case 'project_additional_parameters_edit':
+                title = _l("Edit project additional field #%(field_id)s", field_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
 
         sidebar_data = DefaultSidebar(address, obj)()
         self.context = {'title': title, 'current_object': current_object,

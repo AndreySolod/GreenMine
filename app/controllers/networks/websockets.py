@@ -421,13 +421,20 @@ def update_inventory_data(data):
         return False
     project_id, current_room_name = r
     try:
-        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == data['service_id'])).one()
-        device_type = db.session.scalars(sa.select(models.DeviceType).where(models.DeviceType.id == int(data['device_type_id']))).first()
-        device_vendor = db.session.scalars(sa.select(models.DeviceVendor).where(models.DeviceVendor.id == int(data['device_vendor_id']))).first()
-    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError, KeyError):
+        service = db.session.scalars(sa.select(models.Service).where(models.Service.id == int(data['service_id']))).one()
+        if data['device_type_id'] != '':
+            device_type = db.session.scalars(sa.select(models.DeviceType).where(models.DeviceType.id == int(data['device_type_id']))).first()
+        else:
+            device_type = None
+        if data['device_vendor_id'] != '':
+            device_vendor = db.session.scalars(sa.select(models.DeviceVendor).where(models.DeviceVendor.id == int(data['device_vendor_id']))).first()
+        else:
+            device_vendor = None
+    except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError, KeyError) as e:
         return None
     if not project_role_can_make_action(current_user, service.host, 'update') or not project_role_can_make_action(current_user, service, 'update'):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to update service and host via service-inventory on project #{project_id}, in which he has no rights to")
+        return None
     service.title = sanitizer.escape(data['service_title'])
     service.description = sanitizer.sanitize(data['service_description'])
     service.host.title = sanitizer.escape(data['host_title'])
@@ -439,6 +446,8 @@ def update_inventory_data(data):
     ns = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True)
                             .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project_id,
                                            sa.or_(models.Service.screenshot_http_id != None, models.Service.screenshot_https_id != None)))).first()
+    if ns is None:
+        return {'service_id': None}
     ret_data = {'service_id': ns.id, 'service_title': ns.title or '', 'service_description': ns.description or '', 'host_title': ns.host.title or '', 'host_description': ns.host.description or '',
                 'host_device_type': str(ns.host.device_type_id), 'host_device_vendor': str(ns.host.device_vendor_id), 'obj_title': str(ns.fulltitle)}
     if ns.screenshot_http_id is not None:

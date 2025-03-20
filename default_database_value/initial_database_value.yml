@@ -1700,3 +1700,346 @@ MitreAttackTechnique:
     - t1495:
         title: "T1495 Повреждение прошивки"
         tactic: impact
+
+ProjectAdditionalFieldGroup:
+    - admin_group_and_users:
+        title: "Вопросы по группе администрирования и рядовым пользователям"
+        order_number: 1
+    - documentation:
+        title: "Вопросы по документации"
+        order_number: 2
+    - network_organization:
+        title: "Организация сети"
+        order_number: 3
+    - wireless_networks:
+        title: "Вопросы по беспроводным сетям"
+        order_number: 4
+    - its_organization:
+        title: "Вопросы по организации информационно-телекоммуникационных систем"
+        order_number: 5
+    - outer_network_resourses:
+        title: "Вопросы по внешним сетевым ресурсам"
+        order_number: 6
+    - defence_from_comp_attack:
+        title: "Вопосы по защите сети от компьютерных атак"
+        order_number: 7
+    - antivirus_defence:
+        title: "Вопросы по антивирусной защите"
+        order_number: 8
+    - blitz:
+        title: "Блиц"
+        order_number: 9
+    - contacts:
+        title: "Контакты"
+        order_number: 10
+
+ProjectAdditionalField:
+    - group_admin:
+        title: "Подразделение группы администраторов"
+        description: "<ul><li>Название</li><li>ФИО начальника</li></ul>"
+        field_type: "WysiwygField"
+        group: admin_group_and_users
+    - admin_is_official:
+        title: "Должность администратора закреплена официально"
+        field_type: "BooleanField"
+        group: admin_group_and_users
+    - additional_training_admins:
+        title: "Ездят ли администраторы на курсы дополнительного обучения"
+        field_type: "BooleanField"
+        group: admin_group_and_users
+    - admin_qualifications:
+        title: "Квалификация администраторов"
+        field_type: "WysiwygField"
+        group: admin_group_and_users
+    - users_teach:
+        title: "Проводится ли обучение с пользователями"
+        field_type: "BooleanField"
+        group: admin_group_and_users
+    - admin_another:
+        title: "Прочее (наблюдения, замечания)"
+        description: ""
+        field_type: "WysiwygField"
+        group: admin_group_and_users
+    - documentation_is:
+        title: "Документация на информационные системы"
+        description: "<ul><li>Ввод в эксплуатацию</li><li>карта сети (структура)</li><li>состав оборудования + паспорта</li><li>списки угроз</li><li>модели нарушителей</li><li>перечень защищаемых ресурсов</li><li>договора со сторонними организациями</li><li>документация о типовой настройке антивируса на объекте</li></ul>"
+        field_type: "WysiwygField"
+        group: documentation
+    - admin_instruction:
+        title: "Инструкция администратора сети"
+        field_type: "BooleanField"
+        group: documentation
+    - user_instruction:
+        title: "Инструкция пользователя сети"
+        field_type: "BooleanField"
+        group: documentation
+    - emergency_situation_instruction:
+        title: "Инструкция действий при нештатных ситуациях"
+        field_type: "BooleanField"
+        group: documentation
+    - policies:
+        title: "Политики"
+        description: "<ul><li>ИБ</li><li>Парольная</li><li>Управления доступом</li><li>Интернет</li><li>Антивирусная</li><li>Резервного копирования</li><li>Обработки конфиденциальной информации</li><li>Внешние носители, мобильные устройства, модемы</li><li>Беспроводные сети (Wi-Fi)</li></ul>"
+        field_type: "WysiwygField"
+        group: documentation
+    - communication_lines:
+        title: "Линии связи сети"
+        description: "<ul><li>Тип</li><li>Где проложены</li></ul>"
+        field_type: "WysiwygField"
+        group: network_organization
+    - network_structure:
+        title: "Перечень коммутационного и сетевого оборудования"
+        description: "<p>Какое оборудование в основном стоит</p>"
+        field_type: "WysiwygField"
+        group: network_organization
+    - network_reserver:
+        title: "Резерв на случай отказа оборудования"
+        description: "<p>Резерв оборудования, обычно принимаемый в диапазоне 10% от действующего оборудования</p>"
+        field_type: "BooleanField"
+        group: network_organization
+    - network_routing:
+        title: "Тип маршрутизации"
+        description: "<p>Статическая или динамическая маршрутизация</p>"
+        field_type: "WysiwygField"
+        group: network_organization
+    - network_vrf:
+        title: "Наличие VRF"
+        description: "<p>VRF, или виртуальная маршрутизация</p>"
+        field_type: "BooleanField"
+        group: network_organization
+    - vlan_subdivide:
+        title: "Деленние на VLAN"
+        description: "<ul><li>Принцип деления</li><li>Количество</li><li>Сетевое взаимодействие между сегментами</li></ul>"
+        field_type: "WysiwygField"
+        group: network_organization
+    - ip_diapasons:
+        title: "Диапазоны IP-адресов"
+        description: "<ul><li>IP/маска</li><li>Назначение сегмента</li><li>Тип адресации (статика/динамика)</li></ul>"
+        field_type: "WysiwygField"
+        group: network_organization
+    - new_device_control:
+        title: "Контролируется ли подключение несанкционированных устройств к сети"
+        field_type: "BooleanField"
+        group: network_organization
+    - unused_power_outlets:
+        title: "Деактивируются ли незадействованные сетевые розетки"
+        field_type: "BooleanField"
+        group: network_organization
+    - detected_new_devices:
+        title: "Детектирование новых устройств"
+        field_type: "BooleanField"
+        group: network_organization
+    - intruder_end_up:
+        title: "Куда попадают несанкционированные устройства"
+        field_type: "WysiwygField"
+        group: network_organization
+    - outer_networks:
+        title: "Взаимодействие с внешними сетями"
+        description: "<ul><li>Провайдеры (пропускная способность, диапазоны белых IP-адресов)</li><li>Наличие выделенных каналов связи (криптошлюзы, VPN)</li></ul>"
+        field_type: "WysiwygField"
+        group: network_organization
+    - wireless_organization:
+        title: "Организация"
+        description: "<ul><li>Назначение</li><li>Списки точек доступа</li><li>Используемое оборудование</li><li>Зона покрытия</li></ul>"
+        field_type: "WysiwygField"
+        group: wireless_networks
+    - wireless_access:
+        title: "Доступ"
+        description: "<ul><li>Кто имеет</li><li>Взаимная видимость с основными сегментами ИТС</li></ul>"
+        field_type: "WysiwygField"
+        group: wireless_networks
+    - wireless_defence:
+        title: "Защищённость"
+        description: "<ul><li>Способ аутентификации</li><li>Длина паролей</li><li>Списки доступа (чёрный, белый)</li></ul>"
+        field_type: "WysiwygField"
+        group: wireless_networks
+    - its_appointment:
+        title: "Назначение ИТС"
+        field_type: "WysiwygField"
+        group: its_organization
+    - used_os:
+        title: "Используемые ОС"
+        field_type: "StringField"
+        group: its_organization
+    - download_from_third_party_media:
+        title: "Имеется ли возможность загрузки со сторонних носителей"
+        field_type: "BooleanField"
+        group: its_organization
+    - allowed_po_list:
+        title: "Имеется ли список разрешённого ПО"
+        field_type: "BooleanField"
+        group: its_organization
+    - connected_device_monitor:
+        title: "Ведётся ли контроль за списком подключаемых устройств"
+        field_type: "BooleanField"
+        description: "<p>Имеет ли сотрудник возможность подключить собственную флешку/клавиатуру к рабочему компьютеру</p>"
+        group: its_organization
+    - po_update:
+        title: "Ведётся ли контроль обновления ПО"
+        field_type: "BooleanField"
+        group: its_organization
+    - hardware_access_control:
+        title: "Ведётся ли контроль доступа к аппаратной части"
+        field_type: "BooleanField"
+        group: its_organization
+    - is_on_object:
+        title: "Информационные системы, функционирующие на объекте"
+        description: "<ul><li>Название</li><li>Версия</li><li>Назначение</li><li>Место расположения в сети</li></ul>"
+        field_type: "WysiwygField"
+        group: its_organization
+    - backups:
+        title: "Резервное копирование"
+        description: "<ul><li>Объекты резервного копирования</li><li>Используемое ПО</li><li>Срок хранения</li><li>Место хранения</li></ul>"
+        field_type: "WysiwygField"
+        group: its_organization
+    - monitoring:
+        title: "Мониторинг"
+        description: "<ul><li>Как организован</li><li>Оповещения</li></ul>"
+        group: its_organization
+        field_type: "WysiwygField"
+    - internet_access:
+        title: "Способ предоставления доступа в интернет"
+        group: its_organization
+        field_type: "WysiwygField"
+    - object_ierarchy:
+        title: "Иерархия объектов"
+        description: "<ul><li>Домены/рабочие группы</li><li>Репликация домена</li><li>Структура домена по Organization Unit</li><li>Доверительные отношения между доменами</li></ul>"
+        group: its_organization
+        field_type: "WysiwygField"
+    - account_policy:
+        title: "Политика учётных записей"
+        description: "<ul><li>Права обычного пользователя</li><li>Порядок действие при увольнении/переводе сотрудника</li></ul>"
+        group: its_organization
+        field_type: "WysiwygField"
+    - min_password_length:
+        title: "Минимальная длина пароля"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "IntegerField"
+    - password_alphabet:
+        title: "Алфавит пароля"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "StringField"
+    - password_complexity:
+        title: "Сложность пароля"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "StringField"
+    - password_validity_period:
+        title: "Срок действия пароля (дней)"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "IntegerField"
+    - password_history:
+        title: "История (глубина) пароля"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "IntegerField"
+    - password_max_trying_count:
+        title: "Число попыток аутентификации до блокировки учётной записи"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "IntegerField"
+    - password_block_time:
+        title: "Время блокировки (в минутах)"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "IntegerField"
+    - password_can_change_by_user:
+        title: "Возможность смены пароля пользователем"
+        description: "<p>В соответствие с парольной политикой</p>"
+        group: its_organization
+        field_type: "BooleanField"
+    - outer_domain:
+        title: "Домены (через запятую)"
+        description: "<p>Домены, используемые в сети Интернет</p>"
+        group: outer_network_resourses
+        field_type: "StringField"
+    - outer_domain_registers:
+        title: "На кого зарегистрированы доменные имена"
+        description: "<p>Данные пользователей, регистрировавших доменные имена</p>"
+        group: outer_network_resourses
+        field_type: "StringField"
+    - outer_domain_caa:
+        title: "Наличие CAA-записей для доменов"
+        group: outer_network_resourses
+        field_type: "BooleanField"
+    - outer_dns_itself:
+        title: "Собственные DNS-сервера (через запятую)"
+        description: "<p>DNS-сервера, размещённые организацией на маршрутизируемых в сети интернет IP-адресах</p>"
+        group: outer_network_resourses
+        field_type: "StringField"
+    - website_urls:
+        title: "URL (IP) веб-сайтов (через запятую)"
+        description: "<p>URL и/или IP-адреса веб-сайтов организации</p>"
+        group: outer_network_resourses
+        field_type: "StringField"
+    - website_https:
+        title: "Наличие HTTPS-шифрования для веб-сайтов"
+        group: outer_network_resourses
+        field_type: "BooleanField"
+    - website_other:
+        title: "Прочая информация по веб-сайтам"
+        description: "<ul><li>Используемые технологии</li><li>Хостинг</li><li>Где расположен</li><li>Выделенный сервер/VDS</li><li>Резервное копирование</li></ul>"
+        group: outer_network_resourses
+        field_type: "WysiwygField"
+    - mail_servers:
+        title: "URL (IP) Mail-серверов"
+        group: outer_network_resourses
+        field_type: "StringField"
+    - mail_spf:
+        title: "Наличие SPF-записи для Mail-серверов"
+        group: outer_network_resourses
+        field_type: "BooleanField"
+    - mail_dkim:
+        title: "Наличие DKIM-записей для Mail-серверов"
+        group: outer_network_resourses
+        field_type: "BooleanField"
+    - mail_dmark:
+        title: "Наличие DMARC-записей для Mail-серверов"
+        group: outer_network_resourses
+        field_type: "BooleanField"
+    - mail_other:
+        title: "Прочая информация по Mail-серверам"
+        description: "<ul><li>Используемое ПО</li><li>Хостинг</li><li>Где расположен</li><li>Выделенный сервер/VDS</li><li>Резервное копирование</li><li>Разрешено ли использование личной электронной почты для служебных целей</li><li>Спам-фильтрация</li><li>Проверка содержимого антивирусными средствами</li><li>Действия при получении подозрительного письма</li></ul>"
+        group: outer_network_resourses
+        field_type: "WysiwygField"
+    - firewalls:
+        title: "Межсетевые экраны"
+        description: "<ul><li>Наименование решения</li><li>Правила</li></ul>"
+        group: defence_from_comp_attack
+        field_type: "WysiwygField"
+    - ids_or_ips:
+        title: "Средства IDS/IPS"
+        group: defence_from_comp_attack
+        field_type: "WysiwygField"
+    - audit:
+        title: "Аудит"
+        description: "<ul><li>Как организован</li><li>Где хранятся журналы</li><li>Срок хранения журналов</li></ul>"
+        group: defence_from_comp_attack
+        field_type: "WysiwygField"
+    - another_defence_from_comp_attack:
+        title: "Прочее"
+        group: defence_from_comp_attack
+        field_type: "WysiwygField"
+    - antivirus_data:
+        title: "Организация антивирусной защиты"
+        description: "<ul><li>Наименование антивирусного решения</li><li>Версия</li><li>Покрытие рабочих станций, серверов</li><li>Центры управления</li><li>Порядок обновления</li><li>Откуда берутся обновления</li><li>Доступ пользователей к настройкам антивируса</li></ul>"
+        group: antivirus_defence
+        field_type: "WysiwygField"
+    - system_minuses:
+        title: "Какие минусы присутствуют в системах"
+        description: "<p>Вопрос администратору - на что стоит обратить внимание при исследовании</p>"
+        group: blitz
+        field_type: "WysiwygField"
+    - system_wanted:
+        title: "Что долгое время планируется к внедрению, на что стоит обратить внимание"
+        description: "<p>Вопрос администратору - на что стоит обратить внимание в отчёте</p>"
+        group: blitz
+        field_type: "WysiwygField"
+    - contacts_data:
+        title: "Контакты"
+        description: "<ul><li>ФИО</li><li>Должность</li><li>Телефоны</li></ul>"
+        field_type: "WysiwygField"
+        group: contacts

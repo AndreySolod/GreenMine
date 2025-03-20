@@ -1,0 +1,153 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("List of all project additional parameters") }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table" id="project-additional-parameters-table" data-pagination="true" data-search="true"
+                                        data-show-columns="true" data-show-toggle="true" data-show-export="true" data-show-multi-sort="true"
+                                        data-filter-control="true" data-buttons-class="primary" data-show-pagination-switch="true",
+                                        data-cookie="true"
+                                        data-cookie-id-table="ProjectAdditionalParametersGroupIndex"
+                                        data-cookie-storage="localStorage">
+                        <thead>
+                            <tr>
+                                <th data-field="id" data-align="center" data-sortable="true">{{ models.ProjectAdditionalFieldGroup.id.info['label'] }}</th>
+                                <th data-field="string_slug" data-align="center" data-sortable="true" data-filter-control="input">{{ models.ProjectAdditionalFieldGroup.string_slug.info['label'] }}</th>
+                                <th data-field="title" data-align="center" data-sortable="true" data-filter-control="input">{{ models.ProjectAdditionalFieldGroup.title.info['label'] }}</th>
+                                <th data-field="order_number" data-align="center" data-sortable="true" data-filter-control="input">{{ models.ProjectAdditionalFieldGroup.order_number.info['label'] }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in param_groups %}
+                            <tr>
+                                <td>{{ group.id }}</td>
+                                <td>{{ group.string_slug }}</td>
+                                <td>{{ group.title }}</td>
+                                <td>{{ group.order_number }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="delete-parameter-form" action="{{ url_for('admin.project_additional_parameter_delete', parameter_id='__parameter_id') }}" method="POST">
+    <input name="csrf_token" id="csrf_token_one" type="hidden" value="{{ csrf_token() }}">
+</form>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $('#project-additional-parameters-table').bootstrapTable({
+        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+        buttonsClass: 'primary',
+        exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
+        detailView: true,
+        onExpandRow: function(index, row, $detail) {
+            $detail.html("<table></table>").find('table').bootstrapTable({
+                columns: [
+                {
+                    field: "id",
+                    title: "{{ models.ProjectAdditionalField.id.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input'
+                },
+                {
+                    field: 'string_slug',
+                    title: "{{ models.ProjectAdditionalField.string_slug.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterContol: 'input'
+                },
+                {
+                    field: 'title',
+                    title: "{{ models.ProjectAdditionalField.title.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input'
+                },
+                {
+                    field: 'help_text',
+                    title: "{{ models.ProjectAdditionalField.help_text.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input'
+                },
+                {
+                    field: 'description',
+                    title: "{{ models.ProjectAdditionalField.description.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterControl: 'input'
+                },
+                {
+                    field: 'field_type',
+                    title: "{{ models.ProjectAdditionalField.field_type.info['label'] }}",
+                    align: 'center',
+                    sortable: true,
+                    filterContol: 'select'
+                }
+                ],
+                buttonsClass: 'primary',
+                icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                rowStyle: (row, index) => { return { classes: "with-context-menu-parameter" } },
+                search: true,
+                showColumns: true,
+                showToggle: true,
+                filterContol: true,
+                cookie: true,
+                cookieIdTable: 'ProjectAdditionalParametersIndex',
+                cookieStorage: 'localStorage',
+                sidePagination: 'server',
+                url: '{{ url_for("admin.project_additional_parameters_index_data", group_id="__group_id") }}'.replace('__group_id', row.id),
+            })
+        },
+        rowStyle: (row, index) => { return { classes: "with-context-menu-group" } }
+    });
+    $(function () {
+        $.contextMenu({
+            selector: '.with-context-menu-parameter',
+            callback: function (key, options) {
+                if (key === 'edit') {
+                    window.open("{{ url_for('admin.project_additional_parameters_edit', parameter_id='__parameter_id') }}".replace("__parameter_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank');
+                }
+                else if(key === 'delete') {
+                    if(confirm("{{ _('Are you sure you want to delete this parameter?') }}")) {
+                        let form = document.getElementById('delete-parameter-form');
+                        form.action = form.action.replace('__parameter_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id);
+                        form.submit();
+                    }
+                }
+            },
+            items: {
+                "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                "delete": { name: '{{ _("Delete") }}', icon: 'delete' }
+            }
+        });
+    });
+    $(function () {
+        $.contextMenu({
+            selector: '.with-context-menu-group',
+            callback: function (key, options) {
+                if (key === 'edit') {
+                    window.open("{{ url_for('admin.object_type_edit', object_type='ProjectAdditionalFieldGroup', object_id='__object_id') }}".replace("__object_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank');
+                }
+            },
+            items: {
+                "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+            }
+        });
+    });
+</script>
+{% endblock %}

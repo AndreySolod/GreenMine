@@ -1,0 +1,43 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        {% for group in groups %}
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>{{ group.title }}</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tbody>
+                            {% if grouped_fields[group]|length == 0 %}
+                            <p class="text-center text-muted">{{ _("(Data is missing)") }}</p>
+                            {% else %}
+                            {% for field in grouped_fields[group] %}
+                            <tr class="user-text-data">
+                                <td><h6 data-toggle="tooltip" data-placement="top" data-bs-title="{{ field.field_type.help_text|suppress_none|safe }}">{{ field.field_type.title|suppress_none }}</h6>{{ field.field_type.description|suppress_none|safe }}</td>
+                                {% if field.field_type.field_type == 'BooleanField' %}
+                                {% if field.data == "True" %}
+                                <td>{{ _("Yes") }}</td>
+                                {% else %}
+                                <td>{{ _("No") }}</td>
+                                {% endif %}
+                                {% else %}
+                                <td>{{ field.data|suppress_none|safe }}</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">{{ _("(Additional parameters is missing)") }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

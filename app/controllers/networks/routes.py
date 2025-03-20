@@ -575,6 +575,8 @@ def services_inventory():
     if serv is not None:
         project_role_can_make_action_or_abort(current_user, serv, 'update')
         project_role_can_make_action_or_abort(current_user, serv.host, 'update')
-    ctx = get_default_environment(serv, 'inventory')
+        ctx = get_default_environment(serv, 'inventory')
+    else:
+        ctx = get_default_environment(models.Service(), 'inventory', proj=project)
     context = {'service': serv, 'form': forms.InventoryForm(serv), 'project': project, 'ckeditor_height': '100px'}
     return render_template('/services/inventory.html', **ctx, **context)

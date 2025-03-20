@@ -4,7 +4,7 @@
   <div class="side-content ">
     <div class="sidebarNavScroll">
       <nav class="side-nav">
-        <ul class="unifyMenu" id="unifyMenu">
+        <ul class="main-list-ul unifyMenu" id="unifyMenu">
           {% autoescape false %}
           {% for element in data %}
           {{ element.sidebar() }}
@@ -107,13 +107,13 @@
         </a>
       </div>
       <div class="col-xl-6 col-lg-6 col-md-6 col-sm-4 col-4">
-        <ul class="header-actions">
+        <ul class="main-list-ul header-actions">
           <li class="dropdown">
             <a class="dropdown-toggle" href="#" id="notifications" data-bs-toggle="dropdown"
               aria-expanded="false">
               <i class="fa-solid fa-bell"></i>
             </a>
-            <ul id="user-notification-list" class="dropdown-menu dropdown-menu-right lg imp-notify">
+            <ul id="user-notification-list" class="main-list-ul dropdown-menu dropdown-menu-right lg imp-notify">
             {% if current_user.notifications %}
               {% for notification in current_user.notifications[:5:] %}
               <li>
@@ -147,7 +147,7 @@
               <img class="avatar" src="{{ url_for('files.download_file', file_id=current_user.avatar_id) }}" alt="User Thumb">
             </a>
             <div class="dropdown-menu lg dropdown-menu-right" aria-labelledby="userSettings">
-              <ul class="user-settings-list">
+              <ul class="main-list-ul user-settings-list">
                 <li>
                   <a href="{{ url_for('users.user_show', user_id=current_user.id) }}">
                     <div class="icon">
@@ -203,7 +203,7 @@
   </div>
 
   <div class="comments-footer clearfix">
-    <ul>
+    <ul class="main-list-ul">
       <li>
         {% if comment.has_reaction_by_user(current_user, True) %}
         <a href="#" class="comment-reaction-high high" data-comment-id="{{ comment.id }}" id="positive-reaction-for-comment-{{ comment.id }}"><span class="count">{{ comment.positive_reactions_count() }}</span><i class="fa-solid fa-thumbs-up"></i></a>

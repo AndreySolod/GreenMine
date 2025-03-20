@@ -30,7 +30,6 @@
                                         data-side-pagination="server"
                                         data-page-list="[10, 25, 50, 100, 500, All]"
                                         data-url="{{ url_for('networks.host_index_data', project_id=project.id) }}"
-                                        data-row-style="hostsRowStyle"
                                         data-toolbar="#hosts-toolbar"
                                         data-cookie="true"
                                         data-cookie-id-table="HostsIndex"
@@ -47,6 +46,7 @@
     <script nonce="{{ csp_nonce() }}">
         $(function() {
             $('#hosts-table').bootstrapTable({
+                rowStyle: (row, index) => { return { classes: "with-context-menu-host", css: {"cursor": 'pointer' } } },
                 filterControl: true,
                 disableUnusedSelectOptions: true,
                 columns: [
@@ -236,10 +236,7 @@
                           })
                     }
                 })
-        })
-        function hostsRowStyle(row, index) {
-            return { classes: "with-context-menu-host", css: {"cursor": 'pointer' } }
-        }
+        });
     </script>
     <script nonce="{{ csp_nonce() }}">
         document.getElementById('button-export-ip-addresses-host').addEventListener('click', function() {

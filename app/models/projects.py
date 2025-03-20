@@ -8,7 +8,6 @@ import sqlalchemy.orm as so
 from sqlalchemy.orm import validates
 from sqlalchemy.inspection import inspect
 import datetime
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import event
 from sqlalchemy.orm.session import Session as SessionBase
 from flask_babel import lazy_gettext as _l
@@ -36,6 +35,7 @@ class Project(db.Model):
     tasks: so.Mapped[List["ProjectTask"]] = so.relationship(back_populates="project", cascade="all, delete-orphan", info={'label': _l("Tasks"), 'description': _l("Tasks performed within the framework of the project")}) # type: ignore
     networks: so.Mapped[List[Network]] = so.relationship(lazy='select', back_populates='project', info={'label': _l("Networks")}, cascade='all,delete-orphan')
     participants: so.Mapped[List["UserRoleHasProject"]] = so.relationship(back_populates="project", lazy='select', cascade='all, delete-orphan', order_by="UserRoleHasProject.role_id", info={'label': _l("Participants")})
+    additional_parameters: so.Mapped[List["ProjectAdditionalFieldData"]] = so.relationship(lazy='select', info={'label': _l("Additional fields")}, back_populates="project", cascade="all,delete-orphan") # type: ignore
 
     @validates("end_at")
     def validates_end_at(self, key, end_at):
@@ -90,7 +90,8 @@ class Project(db.Model):
         icon = 'fa fa-home'
         icon_index = 'fa-solid fa-list-check'
         project_permission_actions = {'show': _l("Show object card"), 'update': _l("Edit and update object"), 'delete': _l("Delete object"),
-                                      'edit_participants': _l("Edit participants of project"), "archive": _l("Archive project"), 'show_charts': _l("View status charts")}
+                                      'edit_participants': _l("Edit participants of project"), "archive": _l("Archive project"), 'show_charts': _l("View status charts"),
+                                      'show_additional_parameters': _l("Show additional parameters"), 'edit_additional_parameters': _l("Edit additional parameters")}
 
 
 @event.listens_for(SessionBase, 'before_commit')

@@ -1,0 +1,55 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_label %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            {% for group in groups %}
+            <div class="col-sm-12 col-md-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ group.title|safe }}</h5>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div class="row gy-3">
+                            {% for field, form_attr in grouped_fields[group] %}
+                            <div class="col-3">
+                                {% if form_attr.__class__.__name__ == 'BooleanField' %}
+                                {{ form_label(form_attr, 'form-check-label') }}
+                                {% else %}
+                                {{ form_label(form_attr, 'form-label') }}
+                                {% endif %}
+                                {{ field.field_type.description|suppress_none|safe }}
+                            </div>
+                            <div class="col-9">
+                                {% if form_attr.__class__.__name__ == 'BooleanField' %}
+                                {{ form_attr(class="form-check-input") }}
+                                {% else %}
+                                {{ form_attr(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            <hr />
+                            {% else %}
+                            <p class="text-center text-muted">{{ _("(Data is missing)") }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-center text-muted">{{ _("(Additional parameters is missing)") }}</p>
+            {% endfor %}
+        </div>
+        {% if groups|length > 0 %}
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class='btn btn-primary') }}
+            </div>
+        </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

@@ -119,16 +119,14 @@ a:focus {
     color: #000
 }
 
-ul {
+ul.main-list-ul {
     margin: 0;
     padding: 0
 }
 
-ul li {
-    list-style-type: none
+ul.main-list-ul  {
+    list-style-type: none;
 }
-
-
 
 .card333 {
     height: 324px

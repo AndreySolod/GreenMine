@@ -1,7 +1,7 @@
 from flask import Blueprint, url_for
 from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink
 from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_environment, check_if_same_type
-from app.models import Project
+from app.models import Project, ProjectAdditionalField
 from markupsafe import Markup
 from app.extensions.moment import moment
 from flask_babel import lazy_gettext as _l, pgettext
@@ -19,6 +19,7 @@ def check_login_required():
 
 
 import app.controllers.projects.routes
+import app.controllers.projects.additional_parameters_routes
 
 
 # Боковая панель, окружение шаблона:
@@ -36,6 +37,9 @@ def sidebar(current_object, act: str, **kwargs):
     if project_role_can_make_action(current_user, proj, 'show_charts'):
         sel2 = SidebarElementSublink(_l("Status charts"), url_for('projects.project_diagrams', project_id=proj.id), con=='Project' and act == 'project_diagrams')
         sels.append(sel2)
+    if project_role_can_make_action(current_user, proj, 'show_additional_parameters'):
+        sel3 = SidebarElementSublink(_l("Additional parameters"), url_for('projects.project_additional_parameter_index', project_id=proj.id), con=='Project' and act=='project_additional_parameters_index')
+        sels.append(sel3)
     return [SidebarElement("Страница проекта", url_for('projects.project_show', project_id=proj.id), "fa fa-home", con=='Project', sels)]
 
 
@@ -63,6 +67,13 @@ def environment(obj, action, **kwargs):
     elif action == 'project_diagrams':
         title = _l("Status charts")
         current_object = CurrentObjectInfo(title, "fa-solid fa-chart-pie", subtitle=_l("Summary statistics for the project #%(project_id)s", project_id=obj.id))
+    elif action == 'project_additional_parameters_index':
+        title = _l("Additional parameters for Project #%(project_id)s", project_id=obj.id)
+        act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('projects.project_additional_parameter_edit', project_id=obj.id))
+        current_object = CurrentObjectInfo(_l("Additional parameters for Project %(project_fulltitle)s", project_fulltitle=obj.fulltitle), ProjectAdditionalField.Meta.icon, actions=[act1])
+    elif action == 'project_additional_parameter_edit':
+        title = _l("Edit addtional parameters for Project #%(project_id)s", project_id=obj.id)
+        current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.fulltitle) 
     return {'title': title, 'current_object': current_object}
 
 register_environment(EnvironmentObjectAttrs('Project', sidebar, environment), None)

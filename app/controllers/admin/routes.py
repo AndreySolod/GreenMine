@@ -68,7 +68,6 @@ def admin_main_info_edit():
         elif elem == 'main_parameters':
             main_parameters_form = main_settings_forms.MainParameterForm()
             if main_parameters_form.validate_on_submit():
-                print('validate on submit!')
                 try:
                     gs = db.session.scalars(sa.select(models.GlobalSettings)).one()
                 except (exc.MultipleResultsFound, exc.NoResultFound):
