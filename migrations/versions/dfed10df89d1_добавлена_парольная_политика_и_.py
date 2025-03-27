@@ -62,13 +62,13 @@ def upgrade():
         batch_op.add_column(sa.Column('pagination_element_count_select2', sa.Integer(), server_default='30', nullable=False))
         batch_op.add_column(sa.Column('password_min_length', sa.Integer(), server_default='1', nullable=False))
         batch_op.add_column(sa.Column('password_lifetime', sa.Integer(), server_default='3650', nullable=False))
-        batch_op.add_column(sa.Column('password_lowercase_symbol_require', sa.Boolean(), server_default=sa.text('0'), nullable=False))
-        batch_op.add_column(sa.Column('password_uppercase_symbol_require', sa.Boolean(), server_default=sa.text('0'), nullable=False))
-        batch_op.add_column(sa.Column('password_numbers_require', sa.Boolean(), server_default=sa.text('0'), nullable=False))
-        batch_op.add_column(sa.Column('password_special_symbols_require', sa.Boolean(), server_default=sa.text('0'), nullable=False))
+        batch_op.add_column(sa.Column('password_lowercase_symbol_require', sa.Boolean(), server_default=sa.false(), nullable=False))
+        batch_op.add_column(sa.Column('password_uppercase_symbol_require', sa.Boolean(), server_default=sa.false(), nullable=False))
+        batch_op.add_column(sa.Column('password_numbers_require', sa.Boolean(), server_default=sa.false(), nullable=False))
+        batch_op.add_column(sa.Column('password_special_symbols_require', sa.Boolean(), server_default=sa.false(), nullable=False))
 
     with op.batch_alter_table('user', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('is_password_expired', sa.Boolean(), server_default=sa.text('1'), nullable=False))
+        batch_op.add_column(sa.Column('is_password_expired', sa.Boolean(), server_default=sa.true(), nullable=False))
         batch_op.add_column(sa.Column('password_expired_date', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True))
 
     # ### end Alembic commands ###

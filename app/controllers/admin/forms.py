@@ -31,7 +31,7 @@ class ObjectFormMeta(FormMeta):
             # Обработка полей
             if 'form' in col.info:
                 nf = col.info['form'](_l("%(field_name)s:", field_name=col.info['label']), validators=valids)
-            elif col.type.__class__.__name__ == 'String':
+            elif col.type.__class__.__name__ == 'String' or col.type.__class__.__name__ == 'LimitedLengthString':
                 nf = wtforms.StringField(_l("%(field_name)s:", field_name=col.info['label']), validators=valids)
             elif col.type.__class__.__name__ == 'Integer':
                 nf = wtforms.fields.IntegerField(_l("%(field_name)s:", field_name=col.info['label']), validators=valids)

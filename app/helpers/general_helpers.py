@@ -438,6 +438,24 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     for j in list_joins:
         sql = sql.join(j, isouter=True)
         sql_count = sql_count.join(j, isouter=True)
+    # Отдельно - загрузка всех не M2M-объектов в joinedload - это нужно для получения возможности фильтрации по ним
+    for a in column_index:
+        if a in rels:
+            sql = sql.options(so.joinedload(getattr(obj, a)))
+        elif a not in simple_attrs and a not in rels_uselist:
+            attr_name = a.split('-')[0].split('.')[0]
+            now_attr = getattr(obj, attr_name)
+            load_chain = so.joinedload(now_attr)
+            is_list = inspect(obj).relationships[attr_name].uselist
+            for num_pos, attr in enumerate(a.split('-')[0].split('.')[1:len(a.split('-')[0].split('.')) - 1:]):
+                if inspect(now_attr.entity.class_).relationships[attr].uselist:
+                    is_list = True
+                    break
+                now_attr = getattr(now_attr.entity.class_, attr)
+                load_chain.joinedload(now_attr)
+            if is_list:
+                continue
+            sql = sql.options(load_chain)
     # Теперь обрабатываем where - фильтры. Они заключаются в db.and_
     where_filter = []
     for a, val_a in filter_data.items():
@@ -475,16 +493,17 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     if sort is not None and order is not None:
         if sort in simple_attrs:
             sql = sql.order_by(getattr(getattr(obj, sort), order)())
-        elif sort in rels or sort in rels_uselist:
+        elif sort in rels:
             sql = sql.order_by(getattr(dict_aliases[sort].title, order)())
-        else:
+        elif sort not in rels_uselist:
             attr_path = sort.split('-')[0].split('.')
             attr_name = ".".join(attr_path[:len(attr_path) - 1:])
             sql = sql.order_by(getattr(getattr(dict_aliases[attr_name], attr_path[-1]), order)())
     # Теперь обработаем limit и offset - они обрабатываются очень просто
     sql = sql.limit(limit).offset(offset)
     # Отдельно - указание на поиск уникальных объектов (поскольку выполняем, в том числе, и Many-To-Many Join'ы):
-    sql = sql.distinct()
+    #sql = sql.distinct()
+    #sql_count = sql_count.distinct()
     return sql, sql_count
 
 
@@ -639,7 +658,11 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             db.session.add(gs)
             db.session.commit()
             gs = db.session.scalars(sa.select(GlobalSettings)).one()
+            lang = gs.default_language
             db.session.expunge(gs)
+            db.session.expunge(lang)
+            app.config["GlobalSettings"] = gs
+            app.config["GlobalSettings"].default_language = lang
             app.config["GlobalSettings"] = gs
         
         def check_default_values():

@@ -1,7 +1,7 @@
 services:
     greenmine:
         container_name: greenmine
-        image: greenmine:latest
+        image: greenmine:1.4
         restart: always
         depends_on:
           postgres:
@@ -32,7 +32,7 @@ services:
         stop_signal: SIGINT
     celery_worker:
         container_name: celery_worker
-        image: greenmine:latest
+        image: greenmine:1.3
         restart: always
         depends_on:
             greenmine:

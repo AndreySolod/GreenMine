@@ -54,4 +54,5 @@ class AutomationModules:
         verbose_name = _l("Action Module")
         verbose_name_plural = _l("Action Modules")
         icon = 'icon-sword-smithing-svgrepo-com'
-        project_permission_actions = {'index': _l("Show action modules list"), 'create': _l("Run action modules by target")}
+        project_permission_actions = {'index': _l("Show action modules list"), 'create': _l("Run action modules by target"),
+                                      'default_credentials': _l("Access to Default Credentials module")}

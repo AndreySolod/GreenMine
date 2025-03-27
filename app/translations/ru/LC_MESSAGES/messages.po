@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-20 17:04+1000\n"
-"PO-Revision-Date: 2025-03-20 20:35+1000\n"
+"POT-Creation-Date: 2025-03-27 23:01+1000\n"
+"PO-Revision-Date: 2025-03-27 23:03+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -49,6 +49,10 @@ msgstr "Видеть список модулей автоматизации"
 msgid "Run action modules by target"
 msgstr "Запускать модули автоматизации"
 
+#: app/action_modules/__init__.py:58
+msgid "Access to Default Credentials module"
+msgstr "Доступ к модулю заводских учётных данных"
+
 #: app/action_modules/GetKyoceraCreds/__init__.py:97
 #: app/action_modules/GetKyoceraCreds/__init__.py:112
 #, python-format
@@ -73,6 +77,7 @@ msgstr ""
 #: app/action_modules/Inner_enumerate/__init__.py:88
 #: app/action_modules/Inner_enumerate/__init__.py:89
 #: app/action_modules/Inner_enumerate/__init__.py:90
+#: app/action_modules/Mass_import_scan_data/__init__.py:60
 #: app/controllers/admin/authentication_forms.py:12
 #: app/controllers/admin/authentication_forms.py:13
 #: app/controllers/admin/credential_templates_forms.py:15
@@ -309,10 +314,12 @@ msgstr ""
 "Столбец с IP-адресом конечного устройства, с которого эти данные были получены"
 
 #: app/action_modules/Mass_import_creds/__init__.py:114
+#: app/action_modules/Mass_import_scan_data/__init__.py:64
 msgid "Column delimither:"
 msgstr "Разделитель столбцов:"
 
 #: app/action_modules/Mass_import_creds/__init__.py:114
+#: app/action_modules/Mass_import_scan_data/__init__.py:64
 msgid "The symbol by which the rows will be divided into columns"
 msgstr "Символ, по которому строки будут разделены на столбцы"
 
@@ -511,6 +518,7 @@ msgid "%(field_name)s:"
 msgstr "%(field_name)s:"
 
 #: app/action_modules/Mass_import_creds/__init__.py:123
+#: app/action_modules/Mass_import_scan_data/__init__.py:65
 msgid "Content:"
 msgstr "Содержимое:"
 
@@ -523,6 +531,7 @@ msgstr ""
 "атрибутами, разделёнными по заданному символу)"
 
 #: app/action_modules/Mass_import_creds/__init__.py:124
+#: app/action_modules/Mass_import_scan_data/__init__.py:66
 msgid "File:"
 msgstr "Файл:"
 
@@ -539,6 +548,7 @@ msgid "Only .txt file are allowed!"
 msgstr "Разрешены только файлы .txt!"
 
 #: app/action_modules/Mass_import_creds/__init__.py:125
+#: app/action_modules/Mass_import_scan_data/__init__.py:67
 #: app/helpers/admin_helpers.py:133 app/templates/chats/index.html:41
 #: app/templates/hosts/show.html:435 app/templates/hosts/show.html:460
 msgid "Add"
@@ -546,11 +556,15 @@ msgstr "Добавить"
 
 #: app/action_modules/Mass_import_creds/__init__.py:129
 #: app/action_modules/Mass_import_creds/__init__.py:133
+#: app/action_modules/Mass_import_scan_data/__init__.py:71
+#: app/action_modules/Mass_import_scan_data/__init__.py:75
 msgid "At least one of the two fields is required: 'Content' or 'File'!"
 msgstr "Как минимум одно из двух полей 'Содержимое' или 'Файл' необходимо!"
 
 #: app/action_modules/Mass_import_creds/__init__.py:138
 #: app/action_modules/Mass_import_creds/__init__.py:140
+#: app/action_modules/Mass_import_scan_data/__init__.py:80
+#: app/action_modules/Mass_import_scan_data/__init__.py:82
 msgid "Incorrect input delimiter - not enough columns to parse"
 msgstr "Некорректный символ разделителя - недостаточно столбцов"
 
@@ -566,6 +580,57 @@ msgstr ""
 "Создает или обновляет учетные данные из переданного файла, разделяя их в "
 "соответствии с указанным разделителем"
 
+#: app/action_modules/Mass_import_scan_data/__init__.py:60
+msgid "IP address position:"
+msgstr "Позиция IP-адреса:"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:61
+msgid "Title position:"
+msgstr "Позиция заголовка:"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:62
+msgid "Description position:"
+msgstr "Позиция описания:"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:62
+msgid "Will be added to the end of the existing element"
+msgstr "Эти параметры будут добавлены каждому новому и/или существующему объекту"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:63
+msgid "MAC address position:"
+msgstr "Позиция MAC-адреса:"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:65
+msgid ""
+"Input content to add here (one host per line with attribute, separated by column "
+"delimither)"
+msgstr ""
+"Введите содержимое для импорта сюда (по одному объекту хостов с атрибутами, "
+"разделёнными по заданному символу)"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:66
+msgid ""
+"A file with host to add (one hostf per line, separated by column delimither)"
+msgstr ""
+"Файл с учётными данным для добавления (по одному объекту хостов на строку, "
+"разделённым по заданному символу)"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:66
+msgid "Only .csv file are allowed!"
+msgstr "Разрешены только файлы .csv!"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:111
+msgid "Mass import a host data"
+msgstr "Множественный импорт конечных устройств"
+
+#: app/action_modules/Mass_import_scan_data/__init__.py:112
+msgid ""
+"Creates or updates host from the transferred file, split according to the "
+"specified separator"
+msgstr ""
+"Создает или обновляет конечные устройства из переданного файла, разделяя их в "
+"соответствии с указанным разделителем"
+
 #: app/controllers/forms.py:394
 msgid "Select an option"
 msgstr "Выберите опцию"
@@ -577,18 +642,26 @@ msgstr "Выберите опцию"
 msgid "Not a valid choice."
 msgstr "Не является корректным выбором."
 
-#: app/controllers/action_modules/__init__.py:31
-#: app/controllers/action_modules/__init__.py:35
-msgid "Automation modules"
-msgstr "Модуль автоматизации"
+#: app/controllers/action_modules/__init__.py:32
+msgid "Automation modules list"
+msgstr "Список модулей автоматизации"
 
-#: app/controllers/action_modules/__init__.py:41
+#: app/controllers/action_modules/__init__.py:45
 msgid "All automation modules"
 msgstr "Все модули автоматизации"
 
-#: app/controllers/action_modules/__init__.py:42
+#: app/controllers/action_modules/__init__.py:46
 msgid "Process automation modules"
 msgstr "Модули автоматизации процессов"
+
+#: app/controllers/action_modules/__init__.py:54
+msgid "Factory credentials"
+msgstr "Заводские учётные данные"
+
+#: app/controllers/action_modules/__init__.py:54
+msgid "A list of credentials installed at the factory by various manufacturers"
+msgstr ""
+"Список учётных данных, устанавливаемых на заводе различными производителями"
 
 #: app/controllers/action_modules/routes.py:48
 msgid "The module has been sent for execution"
@@ -850,9 +923,9 @@ msgid "«%(login)s» login credentials"
 msgstr "Учётные данные для логина «%(login)s»"
 
 #: app/controllers/credentials/__init__.py:70 app/controllers/issues/__init__.py:76
-#: app/controllers/networks/__init__.py:107
-#: app/controllers/networks/__init__.py:146
-#: app/controllers/networks/__init__.py:191 app/controllers/projects/__init__.py:52
+#: app/controllers/networks/__init__.py:109
+#: app/controllers/networks/__init__.py:148
+#: app/controllers/networks/__init__.py:203 app/controllers/projects/__init__.py:52
 #: app/controllers/projects/__init__.py:72
 #: app/controllers/research_events/__init__.py:68
 #: app/controllers/research_events/__init__.py:94
@@ -863,7 +936,7 @@ msgstr "Учётные данные для логина «%(login)s»"
 #: app/helpers/users_helpers.py:56 app/templates/admin/object_type_index.html:69
 #: app/templates/admin/project_role_index.html:58
 #: app/templates/credentials/index.html:156
-#: app/templates/hosts/excluded-index.html:117 app/templates/hosts/index.html:303
+#: app/templates/hosts/excluded-index.html:117 app/templates/hosts/index.html:310
 #: app/templates/networks/index.html:317
 #: app/templates/project_additional_parameters/admin_index.html:134
 #: app/templates/project_additional_parameters/admin_index.html:148
@@ -874,9 +947,9 @@ msgid "Edit"
 msgstr "Редактировать"
 
 #: app/controllers/credentials/__init__.py:73 app/controllers/issues/__init__.py:79
-#: app/controllers/networks/__init__.py:110
-#: app/controllers/networks/__init__.py:154
-#: app/controllers/networks/__init__.py:194 app/controllers/projects/__init__.py:58
+#: app/controllers/networks/__init__.py:112
+#: app/controllers/networks/__init__.py:156
+#: app/controllers/networks/__init__.py:206 app/controllers/projects/__init__.py:58
 #: app/controllers/research_events/__init__.py:71
 #: app/controllers/research_events/__init__.py:97
 #: app/controllers/tasks/__init__.py:79 app/controllers/users/routes.py:38
@@ -885,7 +958,7 @@ msgstr "Редактировать"
 #: app/helpers/main_page_helpers.py:71 app/helpers/main_page_helpers.py:90
 #: app/templates/admin/object_type_index.html:70
 #: app/templates/admin/project_role_index.html:59
-#: app/templates/hosts/index.html:305 app/templates/networks/index.html:319
+#: app/templates/hosts/index.html:312 app/templates/networks/index.html:319
 #: app/templates/project_additional_parameters/admin_index.html:135
 #: app/templates/wiki_pages/index.html:201 app/templates/wiki_pages/index.html:238
 msgid "Delete"
@@ -896,9 +969,9 @@ msgid "Are you sure you want to delete these credentials?"
 msgstr "Вы действительно уверены в том, что хотите удалить данные учётные данные?"
 
 #: app/controllers/credentials/__init__.py:75 app/controllers/issues/__init__.py:81
-#: app/controllers/networks/__init__.py:112
-#: app/controllers/networks/__init__.py:156
-#: app/controllers/networks/__init__.py:196 app/controllers/projects/__init__.py:60
+#: app/controllers/networks/__init__.py:114
+#: app/controllers/networks/__init__.py:164
+#: app/controllers/networks/__init__.py:208 app/controllers/projects/__init__.py:60
 #: app/controllers/research_events/__init__.py:73
 #: app/controllers/research_events/__init__.py:99
 #: app/controllers/tasks/__init__.py:81
@@ -1048,13 +1121,13 @@ msgstr "Проблема #%(issue_id)s успешно изменена"
 msgid "Issue #%(issue_id)s has been successfully deleted"
 msgstr "Проблема #%(issue_id)s успешно удалена"
 
-#: app/controllers/networks/__init__.py:37 app/controllers/networks/__init__.py:97
-#: app/controllers/networks/__init__.py:102
+#: app/controllers/networks/__init__.py:37 app/controllers/networks/__init__.py:99
+#: app/controllers/networks/__init__.py:104
 msgid "All networks"
 msgstr "Все сети"
 
-#: app/controllers/networks/__init__.py:40 app/controllers/networks/__init__.py:100
-#: app/controllers/networks/__init__.py:114
+#: app/controllers/networks/__init__.py:40 app/controllers/networks/__init__.py:102
+#: app/controllers/networks/__init__.py:116
 msgid "Add new network"
 msgstr "Добавить новую сеть"
 
@@ -1063,118 +1136,131 @@ msgstr "Добавить новую сеть"
 msgid "Networks"
 msgstr "Сети"
 
-#: app/controllers/networks/__init__.py:57 app/controllers/networks/__init__.py:129
-#: app/controllers/networks/__init__.py:134 app/templates/hosts/index.html:9
+#: app/controllers/networks/__init__.py:57 app/controllers/networks/__init__.py:131
+#: app/controllers/networks/__init__.py:136 app/templates/hosts/index.html:9
 msgid "All hosts"
 msgstr "Все конечные устройства"
 
-#: app/controllers/networks/__init__.py:58 app/controllers/networks/__init__.py:136
-#: app/controllers/networks/__init__.py:141
+#: app/controllers/networks/__init__.py:58 app/controllers/networks/__init__.py:138
+#: app/controllers/networks/__init__.py:143
 msgid "Excluded hosts"
 msgstr "Исключённые конечные устройства"
 
-#: app/controllers/networks/__init__.py:62 app/controllers/networks/__init__.py:132
-#: app/controllers/networks/__init__.py:158
+#: app/controllers/networks/__init__.py:62 app/controllers/networks/__init__.py:134
+#: app/controllers/networks/__init__.py:167
 msgid "Add new host"
 msgstr "Добавить новое конечное устройство"
 
-#: app/controllers/networks/__init__.py:66 app/models/networks.py:304
+#: app/controllers/networks/__init__.py:64
+msgid "Multiple import"
+msgstr "Множественный импорт"
+
+#: app/controllers/networks/__init__.py:68 app/models/networks.py:304
 msgid "Hosts"
 msgstr "Конечные устройства"
 
-#: app/controllers/networks/__init__.py:79
+#: app/controllers/networks/__init__.py:81
 msgid "All servicves"
 msgstr "Все службы"
 
-#: app/controllers/networks/__init__.py:81
+#: app/controllers/networks/__init__.py:83
 msgid "Services by port"
 msgstr "Службы по портам"
 
-#: app/controllers/networks/__init__.py:84 app/controllers/networks/__init__.py:176
-#: app/controllers/networks/__init__.py:183
-#: app/controllers/networks/__init__.py:198 app/templates/hosts/show.html:171
+#: app/controllers/networks/__init__.py:86 app/controllers/networks/__init__.py:188
+#: app/controllers/networks/__init__.py:195
+#: app/controllers/networks/__init__.py:210 app/templates/hosts/show.html:171
 msgid "Add new service"
 msgstr "Добавить новую службу"
 
-#: app/controllers/networks/__init__.py:87 app/controllers/networks/__init__.py:204
+#: app/controllers/networks/__init__.py:89 app/controllers/networks/__init__.py:216
 msgid "Inventory of services"
 msgstr "Инвентаризация служб"
 
-#: app/controllers/networks/__init__.py:91 app/models/networks.py:492
+#: app/controllers/networks/__init__.py:93 app/models/networks.py:492
 msgid "Services"
 msgstr "Службы"
 
-#: app/controllers/networks/__init__.py:104
+#: app/controllers/networks/__init__.py:106
 #, python-format
 msgid "Network «%(ip_addr)s»"
 msgstr "Сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:110 app/templates/networks/index.html:307
+#: app/controllers/networks/__init__.py:112 app/templates/networks/index.html:307
 msgid "Are you sure you want to delete this network?"
 msgstr "Вы уверены в том, что хотите удалить эту сеть?"
 
-#: app/controllers/networks/__init__.py:117
+#: app/controllers/networks/__init__.py:119
 #, python-format
 msgid "Edit network «%(ip_addr)s»"
 msgstr "Редактировать сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:139
+#: app/controllers/networks/__init__.py:141
 msgid "Add new excluded host"
 msgstr "Добавить новое исключённое конечное устройство"
 
-#: app/controllers/networks/__init__.py:143
+#: app/controllers/networks/__init__.py:145
 #, python-format
 msgid "Host «%(ip_addr)s»"
 msgstr "Конечное устройство «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:149
+#: app/controllers/networks/__init__.py:151
 #: app/templates/hosts/excluded-index.html:118
 msgid "Include to research"
 msgstr "Включить в исследование"
 
-#: app/controllers/networks/__init__.py:151
+#: app/controllers/networks/__init__.py:153
 msgid "Exclude from research"
 msgstr "Исключить из исследования"
 
-#: app/controllers/networks/__init__.py:154 app/templates/hosts/index.html:293
+#: app/controllers/networks/__init__.py:156 app/templates/hosts/index.html:300
 msgid "Are you sure you want to delete this host?"
 msgstr "Вы уверены в том, что хотите удалить это конечное устройство?"
 
-#: app/controllers/networks/__init__.py:161
+#: app/controllers/networks/__init__.py:160
+msgctxt "man"
+msgid "Anonymous"
+msgstr "Анонимный"
+
+#: app/controllers/networks/__init__.py:170
 #, python-format
 msgid "Edit host «%(ip_addr)s»"
 msgstr "Редактировать конечное устройство «%(ip_addr)s»"
 
 #: app/controllers/networks/__init__.py:173
-#: app/controllers/networks/__init__.py:178 app/templates/services/index.html:9
+msgid "Multiple import hosts"
+msgstr "Множественный импорт конечных устройств"
+
+#: app/controllers/networks/__init__.py:185
+#: app/controllers/networks/__init__.py:190 app/templates/services/index.html:9
 msgid "All services"
 msgstr "Все службы"
 
-#: app/controllers/networks/__init__.py:180
-#: app/controllers/networks/__init__.py:185
+#: app/controllers/networks/__init__.py:192
+#: app/controllers/networks/__init__.py:197
 msgid "Services, splitted by ports"
 msgstr "Службы, разбитые по портам"
 
-#: app/controllers/networks/__init__.py:188
+#: app/controllers/networks/__init__.py:200
 #, python-format
 msgid "Service «%(ip_addr)s:%(port)s»"
 msgstr "Служба «%(ip_addr)s:%(port)s»"
 
-#: app/controllers/networks/__init__.py:194
+#: app/controllers/networks/__init__.py:206
 msgid "Are you sure you want to delete this service?"
 msgstr "Вы уверены в том, что хотите удалить эту службу?"
 
-#: app/controllers/networks/__init__.py:201
+#: app/controllers/networks/__init__.py:213
 #, python-format
 msgid "Edit service «%(ip_addr)s:%(port)s»"
 msgstr "Редактировать службу «%(ip_addr)s:%(port)s»"
 
-#: app/controllers/networks/__init__.py:205
+#: app/controllers/networks/__init__.py:217
 #, python-format
 msgid "Inventory of services on project #%(project_id)s"
 msgstr "Инвентаризация служб на проекте #%(project_id)s"
 
-#: app/controllers/networks/__init__.py:205
+#: app/controllers/networks/__init__.py:217
 msgid "A page that allows you to quickly fill in basic data for hosts/services"
 msgstr ""
 "Страница, позволяющая быстро заполнить основные данные конечных устройств/служб"
@@ -1283,6 +1369,10 @@ msgstr "Служба «%(serv_title)s» успешно изменена"
 msgid "Service #%(service_id)s has been successfully deleted"
 msgstr "Служба #%(service_id)s успешно удалена"
 
+#: app/controllers/networks/routes.py:597
+msgid "The hosts import module has been successfully launched"
+msgstr "Модуль импорта конечных устройств успешно запущен"
+
 #: app/controllers/notes/__init__.py:32 app/controllers/notes/__init__.py:43
 #: app/controllers/notes/__init__.py:47
 msgid "All notes"
@@ -1365,7 +1455,7 @@ msgid "Edit addtional parameters for Project #%(project_id)s"
 msgstr ""
 "Редактировать параметры дополнительной информации для проекта #%(project_id)s"
 
-#: app/controllers/projects/additional_parameters_routes.py:64
+#: app/controllers/projects/additional_parameters_routes.py:67
 msgid "Additional parameters are successfully updated"
 msgstr "Параметры дополнительной информации успешно обновлены"
 
@@ -1638,6 +1728,7 @@ msgid "%(field_name)s"
 msgstr "%(field_name)s"
 
 #: app/controllers/users/forms.py:15 app/models/credentials.py:102
+#: app/models/credentials.py:163
 msgid "Password"
 msgstr "Пароль"
 
@@ -2180,17 +2271,17 @@ msgstr "IP-адрес некорректен"
 msgid "Incorrect MAC-addres"
 msgstr "MAC-адрес некорректен"
 
-#: app/helpers/general_helpers.py:528
+#: app/helpers/general_helpers.py:547
 #, python-format
 msgid "Total: %(total)s elements"
 msgstr "Всего: %(total)s элементов"
 
-#: app/helpers/general_helpers.py:540
+#: app/helpers/general_helpers.py:559
 #, python-format
 msgid "Total: %(total)s item(s)"
 msgstr "Всего: %(total)s элементов"
 
-#: app/helpers/general_helpers.py:668
+#: app/helpers/general_helpers.py:691
 msgid "Anonymous"
 msgstr "Анонимная"
 
@@ -2406,20 +2497,20 @@ msgstr "Добавлять новые сообщения"
 
 #: app/models/credentials.py:23 app/models/credentials.py:37
 #: app/models/credentials.py:60 app/models/credentials.py:84
-#: app/models/credentials.py:135 app/models/files.py:13 app/models/files.py:44
-#: app/models/generic.py:36 app/models/generic.py:187
-#: app/models/global_settings.py:10 app/models/global_settings.py:26
-#: app/models/global_settings.py:33 app/models/issues.py:20 app/models/issues.py:35
-#: app/models/issues.py:48 app/models/issues.py:104 app/models/issues.py:162
-#: app/models/networks.py:25 app/models/networks.py:80 app/models/networks.py:96
-#: app/models/networks.py:115 app/models/networks.py:132 app/models/networks.py:154
-#: app/models/networks.py:168 app/models/networks.py:179 app/models/networks.py:330
-#: app/models/networks.py:346 app/models/networks.py:383 app/models/networks.py:405
-#: app/models/networks.py:421 app/models/notes.py:14 app/models/notes.py:29
-#: app/models/pentest_events.py:15 app/models/pentest_events.py:32
-#: app/models/pentest_events.py:49 app/models/pentest_events.py:69
-#: app/models/pentest_events.py:94 app/models/pentest_events.py:135
-#: app/models/project_additional_parameters.py:13
+#: app/models/credentials.py:135 app/models/credentials.py:159
+#: app/models/files.py:13 app/models/files.py:44 app/models/generic.py:36
+#: app/models/generic.py:187 app/models/global_settings.py:10
+#: app/models/global_settings.py:26 app/models/global_settings.py:33
+#: app/models/issues.py:20 app/models/issues.py:35 app/models/issues.py:48
+#: app/models/issues.py:104 app/models/issues.py:162 app/models/networks.py:25
+#: app/models/networks.py:80 app/models/networks.py:96 app/models/networks.py:115
+#: app/models/networks.py:132 app/models/networks.py:154 app/models/networks.py:168
+#: app/models/networks.py:179 app/models/networks.py:330 app/models/networks.py:346
+#: app/models/networks.py:383 app/models/networks.py:405 app/models/networks.py:421
+#: app/models/notes.py:14 app/models/notes.py:29 app/models/pentest_events.py:15
+#: app/models/pentest_events.py:32 app/models/pentest_events.py:49
+#: app/models/pentest_events.py:69 app/models/pentest_events.py:94
+#: app/models/pentest_events.py:135 app/models/project_additional_parameters.py:13
 #: app/models/project_additional_parameters.py:30
 #: app/models/project_additional_parameters.py:58 app/models/projects.py:21
 #: app/models/report_templates.py:17 app/models/tasks.py:34 app/models/tasks.py:62
@@ -2459,14 +2550,14 @@ msgid "Archived"
 msgstr "Архивный"
 
 #: app/models/credentials.py:39 app/models/credentials.py:61
-#: app/models/credentials.py:136 app/models/global_settings.py:27
-#: app/models/issues.py:21 app/models/issues.py:36 app/models/issues.py:164
-#: app/models/networks.py:81 app/models/networks.py:97 app/models/networks.py:116
-#: app/models/networks.py:133 app/models/networks.py:180 app/models/networks.py:331
-#: app/models/networks.py:384 app/models/networks.py:406 app/models/notes.py:15
-#: app/models/pentest_events.py:16 app/models/pentest_events.py:33
-#: app/models/pentest_events.py:50 app/models/pentest_events.py:70
-#: app/models/project_additional_parameters.py:14
+#: app/models/credentials.py:136 app/models/credentials.py:160
+#: app/models/global_settings.py:27 app/models/issues.py:21 app/models/issues.py:36
+#: app/models/issues.py:164 app/models/networks.py:81 app/models/networks.py:97
+#: app/models/networks.py:116 app/models/networks.py:133 app/models/networks.py:180
+#: app/models/networks.py:331 app/models/networks.py:384 app/models/networks.py:406
+#: app/models/notes.py:15 app/models/pentest_events.py:16
+#: app/models/pentest_events.py:33 app/models/pentest_events.py:50
+#: app/models/pentest_events.py:70 app/models/project_additional_parameters.py:14
 #: app/models/project_additional_parameters.py:31 app/models/projects.py:109
 #: app/models/tasks.py:35 app/models/tasks.py:63 app/models/tasks.py:83
 #: app/models/tasks.py:361 app/models/users.py:32 app/models/users.py:53
@@ -2475,15 +2566,15 @@ msgid "Slug"
 msgstr "Слаг"
 
 #: app/models/credentials.py:40 app/models/credentials.py:62
-#: app/models/credentials.py:137 app/models/files.py:14 app/models/files.py:45
-#: app/models/global_settings.py:28 app/models/global_settings.py:34
-#: app/models/issues.py:22 app/models/issues.py:37 app/models/issues.py:59
-#: app/models/issues.py:113 app/models/networks.py:27 app/models/networks.py:82
-#: app/models/networks.py:98 app/models/networks.py:117 app/models/networks.py:134
-#: app/models/networks.py:169 app/models/networks.py:181 app/models/networks.py:199
-#: app/models/networks.py:332 app/models/networks.py:347 app/models/networks.py:385
-#: app/models/networks.py:407 app/models/networks.py:423 app/models/notes.py:16
-#: app/models/notes.py:37 app/models/pentest_events.py:17
+#: app/models/credentials.py:137 app/models/credentials.py:161
+#: app/models/files.py:14 app/models/files.py:45 app/models/global_settings.py:28
+#: app/models/global_settings.py:34 app/models/issues.py:22 app/models/issues.py:37
+#: app/models/issues.py:59 app/models/issues.py:113 app/models/networks.py:27
+#: app/models/networks.py:82 app/models/networks.py:98 app/models/networks.py:117
+#: app/models/networks.py:134 app/models/networks.py:169 app/models/networks.py:181
+#: app/models/networks.py:199 app/models/networks.py:332 app/models/networks.py:347
+#: app/models/networks.py:385 app/models/networks.py:407 app/models/networks.py:423
+#: app/models/notes.py:16 app/models/notes.py:37 app/models/pentest_events.py:17
 #: app/models/pentest_events.py:34 app/models/pentest_events.py:51
 #: app/models/pentest_events.py:71 app/models/pentest_events.py:101
 #: app/models/pentest_events.py:136 app/models/project_additional_parameters.py:15
@@ -2599,7 +2690,8 @@ msgstr "Изменён в"
 msgid "Updated by"
 msgstr "Изменил(а)"
 
-#: app/models/credentials.py:94 app/models/users.py:144
+#: app/models/credentials.py:94 app/models/credentials.py:162
+#: app/models/users.py:144
 msgid "Login"
 msgstr "Логин"
 
@@ -2752,6 +2844,26 @@ msgstr "Шаблон импорта учётных данных"
 #: app/models/credentials.py:153
 msgid "Credential import templates"
 msgstr "Шаблоны импорта учётных данных"
+
+#: app/models/credentials.py:166
+msgid "Default credential"
+msgstr "Учётные данные по умолчанию"
+
+#: app/models/credentials.py:167
+msgid "Default credentials"
+msgstr "Учётные данные по умолчанию"
+
+#: app/models/credentials.py:168
+msgid ""
+"Factory credentials installed by default by various manufacturers on their "
+"devices"
+msgstr ""
+"Заводские учетные данные, установленные по умолчанию различными производителями "
+"на их устройствах"
+
+#: app/models/credentials.py:169
+msgid "Add new default credential"
+msgstr "Добавить новые учётные данные по умолчанию"
 
 #: app/models/files.py:22 app/models/files.py:25 app/models/wiki_pages.py:52
 msgid "Parent directory"
@@ -3746,6 +3858,10 @@ msgstr "Просматривать диаграммы состояния"
 msgid "Show additional parameters"
 msgstr "Просматривать параметры дополнительной информации"
 
+#: app/models/projects.py:94
+msgid "Edit additional parameters"
+msgstr "Редактировать дополнительные параметры"
+
 #: app/models/projects.py:112
 msgid "Actions on project objects"
 msgstr "Действия с объектами проекта"
@@ -4215,6 +4331,10 @@ msgstr "Директория страницы базы знаний"
 msgid "Directories of Wiki pages"
 msgstr "Директории страниц базы знаний"
 
+#: app/templates/action_modules/default_credentials.html:10
+msgid "List of all registered default credentials"
+msgstr "Список всех зарегистрированных заводских учётных данных"
+
 #: app/templates/admin/authentication_password_policy_settings.html:15
 #: app/templates/admin/index.html:90
 msgid "Password policy"
@@ -4341,7 +4461,7 @@ msgstr "Экспортировать в формате"
 
 #: app/templates/credentials/index.html:155
 #: app/templates/credentials/pentest-index.html:80
-#: app/templates/hosts/excluded-index.html:116 app/templates/hosts/index.html:302
+#: app/templates/hosts/excluded-index.html:116 app/templates/hosts/index.html:309
 #: app/templates/networks/index.html:316 app/templates/services/index.html:198
 #: app/templates/services/index_group_by_port.html:175
 #: app/templates/tasks/index.html:125 app/templates/tasks/show.html:473
@@ -4473,13 +4593,17 @@ msgstr "Уязвимая среда"
 msgid "Hosts, that are excluded from the study"
 msgstr "Хосты, которые были исключены из исследования"
 
-#: app/templates/hosts/index.html:304
+#: app/templates/hosts/index.html:311
 msgid "Exclude"
 msgstr "Исключить"
 
-#: app/templates/hosts/index.html:306
+#: app/templates/hosts/index.html:313
 msgid "Copy IP address"
 msgstr "Копировать IP-адрес"
+
+#: app/templates/hosts/multiple_import.html:12
+msgid "Data to import"
+msgstr "Данные для импорта"
 
 #: app/templates/hosts/show.html:13
 msgid "(Title is missing)"

@@ -2043,3 +2043,6 @@ ProjectAdditionalField:
         description: "<ul><li>ФИО</li><li>Должность</li><li>Телефоны</li></ul>"
         field_type: "WysiwygField"
         group: contacts
+
+DefaultCredential:
+    - _import_module: "gen_list_default_passwords"

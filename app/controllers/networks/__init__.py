@@ -4,7 +4,7 @@ from app.helpers.projects_helpers import EnvironmentObjectAttrs, register_enviro
 from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo, SidebarElement, SidebarElementSublink
 from markupsafe import Markup
 from app.extensions.moment import moment
-from flask_babel import lazy_gettext as _l
+from flask_babel import lazy_gettext as _l, pgettext
 from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 from typing import Optional
@@ -61,6 +61,8 @@ def sidebar_host(current_object, act: str, **kwargs) -> Optional[SidebarElement]
     if project_role_can_make_action(current_user, Host(), 'create', project=proj):
         sel42 = SidebarElementSublink(_l("Add new host"), url_for('networks.host_new', project_id=proj.id), con=='Host' and act=='new')
         sels.append(sel42)
+        sel46 = SidebarElementSublink(_l("Multiple import"), url_for('networks.multiple_import_hosts', project_id=proj.id), con=='Host' and act=='multiple_import')
+        sels.append(sel46)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Hosts"), url_for('networks.host_index', project_id=proj.id), Host.Meta.icon_index, con=='Host', sels)
@@ -153,13 +155,23 @@ def environment_host(obj, action, **kwargs):
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('networks.host_delete', host_id=obj.id), confirm=_l("Are you sure you want to delete this host?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=obj.created_by.title, date=str(moment(obj.created_at).fromNow()))), actions=acts)
+        if obj.created_by_id is None:
+            link = "#"
+            created_by_title = pgettext('man', "Anonymous")
+        else:
+            link = url_for('users.user_show', user_id=obj.created_by.id)
+            created_by_title = obj.created_by.title
+        subtitle = Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=link, created_by=created_by_title, date=str(moment(obj.created_at).fromNow())))
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=subtitle, actions=acts)
     elif action == 'new':
         title = _l("Add new host")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=proj.fulltitle)
     elif action == 'edit':
         title = _l("Edit host «%(ip_addr)s»", ip_addr=str(obj.ip_address))
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=proj.fulltitle)
+    elif action == 'multiple_import':
+        title = _l("Multiple import hosts")
+        current_object = CurrentObjectInfo(title, "fa-solid fa-cash-register", subtitle=proj.fulltitle)
     return {'title': title, 'current_object': current_object}
 
 

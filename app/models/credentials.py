@@ -152,3 +152,20 @@ class CredentialImportTemplate(db.Model):
         verbose_name = _l("Credential import template")
         verbose_name_plural = _l("Credential import templates")
         icon = 'fa-brands fa-keycdn'
+
+
+@project_enumerated_object
+class DefaultCredential(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    string_slug: so.Mapped[str] = so.mapped_column(LimitedLengthString(80), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    title: so.Mapped[str] = so.mapped_column(sa.String(80), index=True, info={'label': _l("Title")})
+    login: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Login")})
+    password: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Password")})
+
+    class Meta:
+        verbose_name = _l("Default credential")
+        verbose_name_plural = _l("Default credentials")
+        description = _l("Factory credentials installed by default by various manufacturers on their devices")
+        title_new = _l("Add new default credential")
+        column_index = ['id', 'string_slug', 'title', 'login', 'password']
+        icon = "fa-solid fa-industry"

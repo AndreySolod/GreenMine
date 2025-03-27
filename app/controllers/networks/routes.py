@@ -1,9 +1,9 @@
 import json
 import sqlalchemy as sa
-from app import db, side_libraries, logger
+from app import db, side_libraries, logger, automation_modules
 from app.controllers.networks import bp
 from werkzeug.utils import secure_filename
-from flask import request, redirect, url_for, render_template, flash, abort, jsonify, send_file
+from flask import request, redirect, url_for, render_template, flash, abort, jsonify, send_file, g
 from flask_login import current_user
 import app.models as models
 from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
@@ -111,7 +111,7 @@ def host_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'technical', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
+    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
                          'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
@@ -580,3 +580,22 @@ def services_inventory():
         ctx = get_default_environment(models.Service(), 'inventory', proj=project)
     context = {'service': serv, 'form': forms.InventoryForm(serv), 'project': project, 'ckeditor_height': '100px'}
     return render_template('/services/inventory.html', **ctx, **context)
+
+
+@bp.route("/hosts/multiple_import", methods=["GET", "POST"])
+def multiple_import_hosts():
+    try:
+        project_id = int(request.args.get("project_id"))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to multiple import hosts with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, models.Host(), 'create', project=project)
+    form = automation_modules.get('MultipleImportHosts').run_form(project_id)
+    if form.validate_on_submit():
+        automation_modules.get('MultipleImportHosts').run(form, current_user, request.files, locale=g.locale, project_id=project_id)
+        flash(_l("The hosts import module has been successfully launched"), 'success')
+        return redirect(url_for('networks.host_index', project_id=project_id))
+    ctx = get_default_environment(models.Host(), 'multiple_import', proj=project)
+    context = {'form': form, 'project': project}
+    return render_template('hosts/multiple_import.html', **ctx, **context)
