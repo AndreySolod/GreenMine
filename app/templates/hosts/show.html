@@ -103,6 +103,11 @@
                             type="button" role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-ethernet"></i>
                             {{ models.Host.interfaces.info['label'] }}</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="default-credentials-tab" data-bs-toggle="tab" data-bs-target="#default-credentials"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="{{ models.DefaultCredential.Meta.icon }}"></i>
+                            {{ models.DefaultCredential.Meta.verbose_name_plural }}</button>
+                    </li>
                     {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=host.from_network.project) %}
                     <li class="nav-item" role="presentaion">
                         <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services"
@@ -159,6 +164,28 @@
                                     <td>{{ sanitizer.pure_text(iface.title) }}</td>
                                     <td>{{ sanitizer.pure_text(iface.description) }}</td>
                                     <td>{{ sanitizer.pure_text(iface.technical) }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="tab-pane fade" id="default-credentials" role="tabpanel" aria-labelledby="default-credentials-tab">
+                        <table class="table" id="default-credentials-table" data-page-size="5" data-show-columns="true" data-show-toggle="true" data-buttons-class="primary">
+                            <thead>
+                                <tr>
+                                    <th data-field="title" data-align="center">{{ models.DefaultCredential.title.info['label'] }}</th>
+                                    <th data-field="login" data-align="center">{{ models.DefaultCredential.login.info['label'] }}</th>
+                                    <th data-field="password" data-align="center">{{ models.DefaultCredential.password.info['label'] }}</th>
+                                    <th data-field="comment" data-align="center">{{ models.DefaultCredential.comment.info['label'] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for default_cred in self.default_credentials %}
+                                <tr>
+                                    <td>{{ default_cred.title|safe }}</td>
+                                    <td>{{ default_cred.login|safe }}</td>
+                                    <td>{{ default_cred.password|safe }}</td>
+                                    <td>{{ default_cred.comment|safe }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -478,6 +505,9 @@
         $('#dns-table').bootstrapTable({
             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
         });
+        $('#default-credentials-table').bootstrapTable({
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+        })
         $("#interfaces-table").bootstrapTable({
             columns: [
             {

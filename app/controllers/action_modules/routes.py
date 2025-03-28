@@ -74,7 +74,7 @@ def default_credentials_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request default credentials index with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, AutomationModules(), 'default_credentials', project_id=project_id)
-    additional_params = {'obj': models.DefaultCredential, 'column_index': ['id', 'title', 'login', 'password'],
+    additional_params = {'obj': models.DefaultCredential, 'column_index': ['id', 'title', 'login', 'password', 'comment'],
                          'base_select': lambda x: x}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request default credentials index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)

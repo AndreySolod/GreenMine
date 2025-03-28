@@ -161,11 +161,12 @@ class DefaultCredential(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(80), index=True, info={'label': _l("Title")})
     login: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Login")})
     password: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Password")})
+    comment: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150), info={'label': _l("Comment")})
 
     class Meta:
         verbose_name = _l("Default credential")
         verbose_name_plural = _l("Default credentials")
         description = _l("Factory credentials installed by default by various manufacturers on their devices")
         title_new = _l("Add new default credential")
-        column_index = ['id', 'string_slug', 'title', 'login', 'password']
+        column_index = ['id', 'string_slug', 'title', 'login', 'password', 'comment']
         icon = "fa-solid fa-industry"

@@ -5,7 +5,7 @@ from .generic import HasComment, HasHistory
 from .datatypes import NetworkAddress, IPAddress, LimitedLengthString
 from .issues import Issue
 from .tasks import ProjectTask
-from .credentials import Credential
+from .credentials import Credential, DefaultCredential
 from typing import List, Optional, Set
 import sqlalchemy as sa
 from sqlalchemy import event
@@ -262,6 +262,12 @@ class Host(HasComment, db.Model, HasHistory):
     def credentials(self):
         return db.session.scalars(sa.select(Credential).join(Credential.services).join(Service.host).where(Host.id == self.id).distinct()).all()
     
+    @property
+    def default_credentials(self):
+        if not self.device_vendor:
+            return []
+        return db.session.scalars(sa.select(DefaultCredential).where(DefaultCredential.title.ilike('%' + self.device_vendor.title + '%'))).all()
+    
     @validates("mac")
     def validates_mac(self, key, mac):
         if mac == '':
@@ -309,8 +315,8 @@ class Host(HasComment, db.Model, HasHistory):
                                       'show_comments': _l("Show comment list of object"), 'show_history': _l("Show object history")}
 
 
-@event.listens_for(SessionBase, 'before_commit')
-def update_host_mac_vendor_info(session):
+@event.listens_for(SessionBase, 'before_flush')
+def update_host_mac_vendor_info(session, flush_context, instances):
     '''For all changed host if MAC-address is changed also change MAC vendor '''
     hs = [u for u in session.dirty if isinstance(u, Host)]
     hs += [u for u in session.new if isinstance(u, Host)]

@@ -29,7 +29,7 @@ def sidebar(current_object, act: str, **kwargs) -> SidebarElement:
         proj = current_object.project
     sels = []
     if project_role_can_make_action(current_user, AutomationModules(), 'index', project=proj):
-        sel_all_modules = SidebarElementSublink(_l("Automation modules list"), url_for('action_modules.action_modules_index', project_id=proj.id), con=='AutomationModules' and act in ['index', 'run'])
+        sel_all_modules = SidebarElementSublink(_l("Automation modules list"), url_for('action_modules.action_modules_index', project_id=proj.id), con=='AutomationModules' and act == 'index')
         sels.append(sel_all_modules)
     if project_role_can_make_action(current_user, AutomationModules(), 'default_credentials', project=proj):
         sel_default_creds = SidebarElementSublink(models.DefaultCredential.Meta.verbose_name_plural, url_for('action_modules.default_credentials_index', project_id=proj.id), con=='DefaultCredential')

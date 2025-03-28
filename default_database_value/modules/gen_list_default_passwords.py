@@ -16,5 +16,6 @@ class ImportDefaultData:
                 cred.title = sanitizer.escape(line['productvendor'])
                 cred.login = sanitizer.escape(line['username'])
                 cred.password = sanitizer.escape(line['password'])
+                cred.comment = sanitizer.escape(line['comment'])
                 db.session.add(cred)
         db.session.commit()
