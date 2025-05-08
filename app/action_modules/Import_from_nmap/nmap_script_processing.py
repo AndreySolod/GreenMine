@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from xml.etree.ElementTree import Element as etreeElement
 from flask_babel import force_locale, lazy_gettext as _l
 import ipaddress
+import re
 
 class NmapScriptProcessor:
     script_processors = {}
@@ -70,6 +71,32 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
     def __call__(self, script_element: etreeElement, session: Session, project: models.Project, host: models.Host, current_user_id: int, locale: str='en'):
         elem = script_element.find('table')
         if elem is None:
+            # another style of filling
+            elems = script_element.findall('elem')
+            for e in elems:
+                if e.get('key') == 'message_signing':
+                    if e.text.strip() == 'disabled':
+                        issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.by_template_slug == 'nmap_script_smb2_security_mode', models.Issue.project_id == project.id))).first()
+                        if issue is None:
+                            issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
+                            if issue_status is None:
+                                return None
+                            issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'nmap_script_smb2_security_mode')).first()
+                            if issue_template is None:
+                                return None
+                            issue = issue_template.create_issue_by_template()
+                            issue.status = issue_status
+                            issue.project = project
+                            issue.created_by_id = current_user_id
+                            session.add(issue)
+                        for serv in host.services:
+                            if serv.port == 445:
+                                issue.services.add(serv)
+                                break
+                        try:
+                            session.commit()
+                        except:
+                            return None
             return ''
         elem = elem.find('elem')
         if elem is None:
@@ -101,3 +128,84 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
         else:
             return None
         return ''
+
+
+class NmapScriptNBSTAT(NmapScriptProcessor):
+    script_id = 'nbstat'
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, host: models.Host, current_user_id: int, locale: str='en'):
+        if host.title == None or host.title == '':
+            out = script_element.get('output')
+            m = re.search(pattern="NetBIOS name: (.*?),", string=out)
+            if m:
+                host.title = m.groups()[0]
+            return ''
+        else:
+            return None
+
+
+class NmapScriptCVE20093103(NmapScriptProcessor):
+    script_id = 'smb-vuln-cve2009-3103'
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, host: models.Host, current_user_id: int, locale: str='en'):
+        tables = script_element.findall('table')
+        for table in tables:
+            if table.attrib['key'] == 'CVE-2009-3103':
+                for elem in table:
+                    if elem.attrib['key'] == 'state':
+                        if elem.text.strip() == 'VULNERABLE':
+                            issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.by_template_slug == 'cve_2009_3103', models.Issue.project_id == project.id))).first()
+                            if issue is None:
+                                issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
+                                if issue_status is None:
+                                    return None
+                                issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'cve_2009_3103')).first()
+                                if issue_template is None:
+                                    return None
+                                issue = issue_template.create_issue_by_template()
+                                issue.status = issue_status
+                                issue.project = project
+                                issue.created_by_id = current_user_id
+                                session.add(issue)
+                            for serv in host.services:
+                                if serv.port == 445:
+                                    issue.services.add(serv)
+                                    break
+                            try:
+                                session.commit()
+                            except:
+                                return None
+                            return ''
+        return None
+
+
+class NmapScriptCVE20170144(NmapScriptProcessor):
+    script_id = 'smb-vuln-ms17-010'
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, host: models.Host, current_user_id: int, locale: str='en'):
+        tables = script_element.findall('table')
+        for table in tables:
+            if table.attrib['key'] == 'CVE-2017-0143':
+                for elem in table:
+                    if elem.attrib['key'] == 'state':
+                        if elem.text.strip() == 'VULNERABLE':
+                            issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.by_template_slug == 'cve_2017_0144', models.Issue.project_id == project.id))).first()
+                            if issue is None:
+                                issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
+                                if issue_status is None:
+                                    return None
+                                issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'cve_2017_0144')).first()
+                                if issue_template is None:
+                                    return None
+                                issue = issue_template.create_issue_by_template()
+                                issue.status = issue_status
+                                issue.project = project
+                                issue.created_by_id = current_user_id
+                                session.add(issue)
+                            for serv in host.services:
+                                if serv.port == 445:
+                                    issue.services.add(serv)
+                                    break
+                            try:
+                                session.commit()
+                            except:
+                                return None
+                            return ''
+        return None

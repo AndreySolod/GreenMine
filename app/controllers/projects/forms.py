@@ -8,6 +8,7 @@ from app.helpers.general_helpers import utcnow
 from app.models import User, Project, ProjectRole, UserRoleHasProject
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
+from flask_login import current_user
 
 
 class ProjectForm(FlaskForm):
@@ -26,7 +27,6 @@ class ProjectForm(FlaskForm):
                                validators.DataRequired(message=_l("This field is mandatory!"))])
     leader = wtforms.SelectField(_l("%(field_name)s:", field_name=Project.leader.info["label"]),
                                  validators=[validators.DataRequired(message=_l("This field is mandatory!"))])
-    submit = wtforms.SubmitField(_l("Create"))
 
     def validate_end_at(form, field):
         if field.data < form.start_at.data:
@@ -35,6 +35,15 @@ class ProjectForm(FlaskForm):
     def validate_description(form, field):
         if len(field.data.strip()) == 0:
             raise validators.ValidationError(_l("This field is mandatory!"))
+
+
+class ProjectFormCreate(ProjectForm):
+    def __init__(self, *args, **kwargs):
+        super(ProjectFormCreate, self).__init__(*args, **kwargs)
+        self.leader.data = str(current_user.id)
+        self.teams.choices = [(t.id, t) for t in db.session.scalars(sa.select(models.Team)).all()]
+    teams = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Team.Meta.verbose_name_plural), validators=[validators.Optional()])
+    submit = wtforms.SubmitField(_l("Create"))
 
 
 class EditProjectForm(ProjectForm):

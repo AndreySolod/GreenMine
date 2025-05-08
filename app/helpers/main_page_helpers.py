@@ -23,7 +23,9 @@ class DefaultSidebar:
         sel51 = SidebarElementSublink(_l("List of users"), url_for('users.user_index'), obj=='User' and act=='index')
         sel52 = SidebarElementSublink(_l("My page"), url_for('users.user_show', user_id=current_user.id), obj=='User' and act=='show')
         sel53 = SidebarElementSublink(_l("Add new user"), url_for('users.user_new'), obj=='User' and act == 'new')
-        se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj=='User', [sel51, sel52, sel53])
+        sel54 = SidebarElementSublink(models.Team.Meta.verbose_name_plural, url_for('users.team_index'), act=='team_index')
+        sel55 = SidebarElementSublink(_l("Add new team"), url_for('users.team_new'), act=='team_new')
+        se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj in ['User', 'Team'], [sel51, sel52, sel53, sel54, sel55])
         self.se = [se1, se2, se3, se4, se5]
         if not current_user.is_anonymous and current_user.is_administrator:
             sel61 = SidebarElementSublink(_l("The Admin Panel"), url_for('admin.index'), obj=='admin')
@@ -68,7 +70,7 @@ class DefaultEnvironment:
             title = _l("Add a page to the knowledge base")
         elif obj == 'WikiPage' and op == 'show':
             act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('wiki_pages.wikipage_edit', wikipage_id=kwargs['obj_val'].id))
-            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('wiki_pages.wikipage_delete', wikipage_id=kwargs['obj_val'].id), confirm='Вы уверены, что хотите удалить эту страницу?', btn_class='btn-danger', method='DELETE')
+            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('wiki_pages.wikipage_delete', wikipage_id=kwargs['obj_val'].id), confirm=_l("Are you sure you want to delete this page?"), btn_class='btn-danger', method='DELETE')
             current_object = CurrentObjectInfo(_l("Knowledge Base Page"), 'fa-brands fa-wikipedia-w', actions=[act1, act2])
             title = kwargs['obj_val'].title
         elif obj == 'WikiPage' and op == 'edit':
@@ -87,7 +89,7 @@ class DefaultEnvironment:
             title = _l("Add new critical vulnerability")
         elif obj == "CriticalVulnerability" and op == "show":
             act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('cves.cve_edit', cve_id=kwargs['obj_val'].id))
-            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for("cves.cve_delete", cve_id=kwargs['obj_val'].id, confirm='Вы уверены, что хотите удалить эту запись о критической уязвимости?'), btn_class='btn-danger', method='DELETE')
+            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for("cves.cve_delete", cve_id=kwargs['obj_val'].id, confirm=_l("Are you sure you want to delete this Critical Vulnerability?")), btn_class='btn-danger', method='DELETE')
             current_object = CurrentObjectInfo(_l("Critical vulnerability «%(title)s»", title=kwargs['obj_val'].title), "fa-solid fa-droplet", actions=[act1, act2])
             title = _l("Critical vulnerability «CVE-%(year)s-%(identifier)s»", year=kwargs['obj_val'].year, identifier=kwargs['obj_val'].identifier)
         elif obj == 'CriticalVulnerability' and op == 'edit':
@@ -105,6 +107,25 @@ class DefaultEnvironment:
         elif obj == 'User' and op == 'new':
             current_object = CurrentObjectInfo(_l("Add new user"), 'fa-solid fa-user-plus')
             title = _l("Add new user")
+        # Teams
+        elif obj == 'Team' and op == 'team_index':
+            title = _l("All teams")
+            acts = []
+            if not current_user.is_anonymous and current_user.is_administrator:
+                act1 = CurrentObjectAction(_l("Add new team"), "fa-solid fa-square-plus", url_for('users.team_new'))
+                acts.append(act1)
+            current_object = CurrentObjectInfo(_l("Team list"), models.Team.Meta.icon, subtitle=models.Team.Meta.description, actions=acts)
+        elif obj == 'Team' and op == 'team_new':
+            title = _l("Add new team")
+            current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=models.Team.Meta.description)
+        elif obj == 'Team' and op == 'team_show':
+            title = _l("Team #%(team_id)s", team_id=kwargs['obj_val'].id)
+            act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('users.team_edit', team_id=kwargs['obj_val'].id))
+            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('users.team_delete', team_id=kwargs['obj_val'].id), confirm=_l("Are you sure you want to delete this team?"), btn_class='btn-danger', method='DELETE')
+            current_object = CurrentObjectInfo(_l("Team #%(team_id)s: «%(team_title)s»", team_id=kwargs['obj_val'].id, team_title=kwargs['obj_val'].title), models.Team.Meta.icon, subtitle=models.Team.Meta.description, actions=[act1, act2])
+        elif obj == 'Team' and op == 'team_edit':
+            title = _l("Edit team #%(team_id)s", team_id=kwargs['obj_val'].id)
+            current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
         sidebar_data = DefaultSidebar(obj, op)()
         self.context = {'title': title, 'current_object': current_object,
                         'sidebar_data': sidebar_data}

@@ -1,0 +1,61 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ team.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td>{{ models.Team.leader.info['label'] }}:</td>
+                                <td>{{ team.leader.title }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ models.Team.members.info['label'] }}:</h5>
+                </div>
+                <div class="card-body">
+                    {% if team.members|length == 0 %}
+                    <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
+                    {% else %}
+                    <table class="table table-borderless">
+                        <tbody>
+                            {% for role, members in team.grouped_members.items() %}
+                            <tr>
+                            <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ role.description }}"><b>{{ role.title }}</b></a></td>
+                            <td>
+                                {{ members|safe }}
+                            </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ models.Team.description.info['label'] }}</h5>
+                </div>
+                <div class="card-body">
+                    {{ team.description }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

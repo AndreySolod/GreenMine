@@ -1,5 +1,5 @@
 from app import db, login, logger
-from flask import current_app
+from flask import current_app, url_for
 from app.helpers.general_helpers import default_string_slug, utcnow
 from app.helpers.users_helpers import generate_avatar
 from app.helpers.admin_helpers import project_enumerated_object
@@ -7,7 +7,7 @@ from unidecode import unidecode
 import datetime
 import os
 import os.path
-from typing import List, Optional
+from typing import List, Optional, Dict, Set
 from app.extensions.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import sqlalchemy as sa
@@ -23,6 +23,7 @@ from flask_babel import lazy_gettext as _l
 import secrets
 import json
 from .global_settings import ApplicationLanguage
+from .projects import ProjectRole
 
 
 @project_enumerated_object
@@ -124,8 +125,12 @@ class ProgrammingLanguageTheme(db.Model):
 
 
 class UserHasTeam(db.Model):
-    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True)
-    team_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('team.id', ondelete='CASCADE'), primary_key=True)
+    user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True, info={'label': _l("User")})
+    team_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('team.id', ondelete='CASCADE'), primary_key=True, info={'label': _l("Team")})
+    role_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectRole.id, ondelete='CASCADE'), primary_key=True, info={'label': _l("Role")})
+    team: so.Mapped["Team"] = so.relationship(back_populates='members', info={'label': _l("Team")})
+    user: so.Mapped["User"] = so.relationship(back_populates='teams', info={'label': _l("User")})
+    role: so.Mapped[ProjectRole] = so.relationship(lazy='joined', info={'label': _l("Role")})
 
 
 def default_user_string_slug(context):
@@ -168,11 +173,7 @@ class User(UserMixin, db.Model):
                                                                                     info={'label': _l("Programming languages used")})
     theme_style_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user_theme_style.id', ondelete='SET NULL'), info={'label': _l("Interface design theme")})
     theme_style: so.Mapped["UserThemeStyle"] = so.relationship(lazy="select", foreign_keys=[theme_style_id], info={'label': _l("Interface design theme")})
-    teams: so.Mapped[List["Team"]] = so.relationship(secondary=UserHasTeam.__table__,
-                                                     primaryjoin="User.id==UserHasTeam.user_id",
-                                                     secondaryjoin="Team.id==UserHasTeam.team_id",
-                                                     back_populates="users",
-                                                     info={'label': _l("Member of the team")})
+    teams: so.Mapped[List["UserHasTeam"]] = so.relationship(lazy='select', back_populates='user', cascade="all,delete", info={'label': _l("Member of the team")})
     created_comments: so.Mapped[List["Comment"]] = so.relationship(foreign_keys=[Comment.created_by_id], back_populates="created_by",
                                                                    info={'label': _l("Added comments")})
     reactions: so.Mapped[List["Reaction"]] = so.relationship(foreign_keys=[Reaction.created_by_id], back_populates="created_by", info={'label': _l("Reactions")})
@@ -181,7 +182,7 @@ class User(UserMixin, db.Model):
     environment_setting: so.Mapped["UserEnvironmentSetting"] = so.relationship(back_populates='to_user', lazy='joined', cascade='all, delete-orphan', info={'label': _l("Environment settings")})
     preferred_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('application_language.id', ondelete='SET NULL'), info={'label': _l("Preferred language")})
     preferred_language: so.Mapped["ApplicationLanguage"] = so.relationship(lazy='select', info={'label': _l("Preferred language")}) # type: ignore
-    project_roles: so.Mapped["UserRoleHasProject"] = so.relationship(lazy='select', info={'label': _l("Roles on project")}, back_populates="user") # type: ignore
+    project_roles: so.Mapped[List["UserRoleHasProject"]] = so.relationship(lazy='select', cascade="all,delete", info={'label': _l("Roles on project")}, back_populates="user") # type: ignore
 
     @hybrid_property
     def title(self):
@@ -341,18 +342,36 @@ def request_user_load(request):
 
 
 class Team(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    title: so.Mapped[str] = so.mapped_column(sa.String(30), index=True)
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug)
-    description: so.Mapped[str]
-    leader_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='SET NULL'))
-    leader: so.Mapped["User"] = so.relationship(lazy="joined", foreign_keys=[leader_id])
-    users: so.Mapped[List["User"]] = so.relationship(secondary=UserHasTeam.__table__,
-                                                     primaryjoin="Team.id==UserHasTeam.team_id",
-                                                     secondaryjoin="User.id==UserHasTeam.user_id",
-                                                     back_populates="teams")
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    title: so.Mapped[str] = so.mapped_column(sa.String(30), index=True, info={'label': _l("Title")})
+    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
+    leader_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='SET NULL'), info={'label': _l("Leader of the team")})
+    leader: so.Mapped["User"] = so.relationship(lazy="joined", foreign_keys=[leader_id], info={'label': _l("Leader of the team")})
+    members: so.Mapped[List["UserHasTeam"]] = so.relationship(lazy='select', back_populates="team", cascade='all,delete', info={'label': _l("Team members")})
+
+    @property
+    def unique_members(self) -> Set["User"]:
+        return set([m.user for m in self.members])
+
+    @property
+    def grouped_members(self) -> Dict[ProjectRole, str]:
+        groups = {g: [] for g in db.session.scalars(sa.select(ProjectRole))}
+        for m in self.members:
+            groups[m.role].append(m.user)
+        for key, value in groups.items():
+            groups[key] = ', '.join([f'''<a href="{url_for('users.user_show', user_id=m.id)}">{m.title}</a>''' for m in value])
+        return groups
+    
+    def __repr__(self):
+        return f"Team(title='{self.title}', leader_id={self.leader_id})"
+    
+    @property
+    def treeselecttitle(self):
+        return self.title
 
     class Meta:
         verbose_name = _l("Team")
         verbose_name_plural = _l("Teams")
-
+        description = _l("A team is a group of users whose creation simplifies the assignment of roles on a project")
+        icon = "fa-solid fa-users-rays"

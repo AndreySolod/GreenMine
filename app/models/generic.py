@@ -91,7 +91,7 @@ def setup_listener_comment(mapper, class_):
         ),
         backref=backref(
             "to_object_%s" % to_object_type,
-            primaryjoin=remote(class_.id) == foreign(Comment.to_object_id), overlaps="comments,to_object_%s,to_object_network,to_object_projecttask,to_object_host,to_object_credential,to_object_service,to_object_criticalvulnerability" % to_object_type
+            primaryjoin=remote(class_.id) == foreign(Comment.to_object_id), overlaps="comments,to_object_%s,to_object_network,to_object_projecttask,to_object_host,to_object_credential,to_object_service,to_object_criticalvulnerability,to_object_issue,to_object_pentestresearchevent" % to_object_type
         ), order_by=(Comment.created_at.asc()), overlaps="comments,to_object_%s" % to_object_type, cascade="all, delete-orphan"
     )
     

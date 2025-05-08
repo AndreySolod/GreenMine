@@ -238,166 +238,166 @@ def load_comment_script(comment_form, object_with_comments) -> str:
     ''' Added a script to edit coments via websocket to side_libraries scripts '''
     script = '''
     const addCommentModal = document.getElementById('addCommentModal')
-      if (addCommentModal) {
-        addCommentModal.addEventListener('show.bs.modal', event => {
-        const recipient = event.relatedTarget.getAttribute('data-comment-id')
-        if (recipient !== null) {
-          const modalTitle = addCommentModal.querySelector('.modal-title')
-          const modalBodyInput = document.getElementById("''' + str(comment_form.reply_to_id.id) + '''")
+        if (addCommentModal) {
+            addCommentModal.addEventListener('show.bs.modal', event => {
+            const recipient = event.relatedTarget.getAttribute('data-comment-id')
+            if (recipient !== null) {
+                const modalTitle = addCommentModal.querySelector('.modal-title')
+                const modalBodyInput = document.getElementById("''' + str(comment_form.reply_to_id.id) + '''")
               
-          modalTitle.textContent = `''' + gettext("Reply to comment") + '''`
-          modalBodyInput.value = recipient
-        }
-      })
+                modalTitle.textContent = `''' + gettext("Reply to comment") + '''`
+                modalBodyInput.value = recipient
+            }
+        })
     }
     let generic_websocket_defined = typeof(generic_websocket) === 'undefined';
     var generic_websocket = generic_websocket || io('/generic');
     if(generic_websocket_defined) {
-      generic_websocket.on('connect', function() {
-        generic_websocket.emit('join_room', "''' + object_with_comments.__class__.__name__  + ':' + str(object_with_comments.id)  + '''");
-      });
+        generic_websocket.on('connect', function() {
+            generic_websocket.emit('join_room', "''' + object_with_comments.__class__.__name__  + ':' + str(object_with_comments.id)  + '''");
+        });
     };
     document.getElementById("''' + str(comment_form.submit.id) + '''").addEventListener('click', function(event) {
-      let reply_to_id = document.getElementById("''' + str(comment_form.reply_to_id.id) + '''").value;
-      let text = CKEDITOR_LIST["''' + str(comment_form.text.id) + '''"].getData();
-      generic_websocket.emit('add comment', {'reply_to_id': reply_to_id, 'text': text});
-      CKEDITOR_LIST["''' + str(comment_form.text.id) + '''"].setData('');
-      document.getElementById("''' + str(comment_form.reply_to_id.id)  + '''").value = '';
-      // close modal window
-      let modal_add_note = bootstrap.Modal.getInstance(document.getElementById('addCommentModal'))
-      modal_add_note.hide()
+        let reply_to_id = document.getElementById("''' + str(comment_form.reply_to_id.id) + '''").value;
+        let text = CKEDITOR_LIST["''' + str(comment_form.text.id) + '''"].getData();
+        generic_websocket.emit('add comment', {'reply_to_id': reply_to_id, 'text': text});
+        CKEDITOR_LIST["''' + str(comment_form.text.id) + '''"].setData('');
+        document.getElementById("''' + str(comment_form.reply_to_id.id)  + '''").value = '';
+        // close modal window
+        let modal_add_note = bootstrap.Modal.getInstance(document.getElementById('addCommentModal'))
+        modal_add_note.hide()
       
     })
     function reaction_high_event_listener(event) {
-      event.preventDefault();
-      let comment_id = event.target.parentElement.getAttribute('data-comment-id');
-      generic_websocket.emit('add reaction', {'comment_id': comment_id, 'is_positive': 1});
+        event.preventDefault();
+        let comment_id = event.target.parentElement.getAttribute('data-comment-id');
+        generic_websocket.emit('add reaction', {'comment_id': comment_id, 'is_positive': 1});
     }
     function reaction_low_event_listener(event) {
-      event.preventDefault();
-      let comment_id = event.target.parentElement.getAttribute('data-comment-id');
-      generic_websocket.emit('add reaction', {'comment_id': comment_id, 'is_positive': 0});
+        event.preventDefault();
+        let comment_id = event.target.parentElement.getAttribute('data-comment-id');
+        generic_websocket.emit('add reaction', {'comment_id': comment_id, 'is_positive': 0});
     }
     // Event listeners for reactions
     for(const el of document.getElementsByClassName('comment-reaction-high')) {
-      el.addEventListener('click', reaction_high_event_listener);
+        el.addEventListener('click', reaction_high_event_listener);
     }
     for(const el of document.getElementsByClassName('comment-reaction-low')) {
-      el.addEventListener('click', reaction_low_event_listener);
+        el.addEventListener('click', reaction_low_event_listener);
     }
     // Action when comment added
     generic_websocket.on('comment added', data => {
-      let comment_div = document.createElement('div');
-      comment_div.setAttribute('class', 'comment')
-      comment_div.setAttribute('id', 'comment-' + data.comment_id)
-      let inner_div_1 = document.createElement('div');
-      comment_div.appendChild(inner_div_1);
-      inner_div_1.setAttribute('class', 'd-flex flex-start align-items-center')
-      let img_ava = document.createElement('img');
-      setMultipleAttributes(img_ava, {'class': 'rounded-circle shadow-1-strong me-3', 'src': data.created_by_ava, 'alt': 'Avatar', 'width': '60', 'height': '60'});
-      inner_div_1.appendChild(img_ava);
-      let div_media_body = document.createElement('div');
-      div_media_body.setAttribute('class', 'media-body');
-      inner_div_1.appendChild(div_media_body);
-      let h5_user = document.createElement('h5');
-      div_media_body.appendChild(h5_user);
-      h5_user.setAttribute('class', 'mt-0 media-heading')
-      h5_user.innerHTML = data.created_by;
-      let p_user = document.createElement('p');
-      div_media_body.appendChild(p_user);
-      p_user.setAttribute('class', 'text-muted small mb-0');
-      p_user.innerHTML = data.created_by_position;
-      let text_div = document.createElement('div')
-      comment_div.appendChild(text_div);
-      text_div.setAttribute('class', 'mt-3 mb-4 pb-2');
-      text_div.innerHTML = data.text;
-      let comment_footer_div = document.createElement('div');
-      comment_div.appendChild(comment_footer_div);
-      comment_footer_div.setAttribute('class', 'comments-footer clearfix');
-      let inner_ul = document.createElement('ul');
-      inner_ul.classList.add('main-list-ul');
-      comment_footer_div.appendChild(inner_ul);
-      let li_1 = document.createElement('li');
-      inner_ul.appendChild(li_1);
-      li_1.innerHTML = `<a href="#" class="comment-reaction-high high" data-comment-id="${data.comment_id}" id="positive-reaction-for-comment-${data.comment_id}"><span class="count">0</span><i class="fa-regular fa-thumbs-up"></i></a>`;
-      li_1.addEventListener('click', reaction_high_event_listener);
-      let li_2 = document.createElement('li');
-      inner_ul.appendChild(li_2);
-      li_2.innerHTML = `<a href="#" class="comment-reaction-low low" data-comment-id="${data.comment_id}" id="negative-reaction-for-comment-${data.comment_id}"><span class="count">0</span><i class="fa-regular fa-thumbs-down"></i></a>`;
-      li_2.addEventListener('click', reaction_low_event_listener);
-      let li_3 = document.createElement('li');
-      inner_ul.appendChild(li_3);
-      li_3.innerHTML = `<a href="#addCommentModal" data-bs-toggle="modal" data-comment-id="${data.comment_id}">Ответить</a>`;
-      let media_div = document.createElement('div');
-      media_div.appendChild(comment_div);
-      media_div.setAttribute('class', 'media created');
-      let comment_list = document.getElementById('comment-list');
-      if(comment_list.innerHTML.trim() === '<p class="text-center text-muted">''' +  pgettext("they", "(Missing)") + '''</p>') {
-        comment_list.innerHTML = '';
-      };
-      if(data.reply_to_id !== null) {
-        let comment_media_div = document.getElementById('comment-media-' + data.reply_to_id)
-        if(comment_media_div !== null) {
-          if("''' + str(current_user.environment_setting.comment_order_asc) + '''" === 'True') {
-            comment_media_div.appendChild(media_div);
-            let hr = document.createElement('hr');
-            media_div.insertAdjacentElement('afterend', hr);
-          }
-          else {
-            comment_media_div.insertAdjacentElement('afterbegin', media_div);
-            let hr = document.createElement('hr');
-            comment_media_div.insertAdjacentElement('beforebegin', hr);
-          }
+        let comment_div = document.createElement('div');
+        comment_div.setAttribute('class', 'comment')
+        comment_div.setAttribute('id', 'comment-' + data.comment_id)
+        let inner_div_1 = document.createElement('div');
+        comment_div.appendChild(inner_div_1);
+        inner_div_1.setAttribute('class', 'd-flex flex-start align-items-center')
+        let img_ava = document.createElement('img');
+        setMultipleAttributes(img_ava, {'class': 'rounded-circle shadow-1-strong me-3', 'src': data.created_by_ava, 'alt': 'Avatar', 'width': '60', 'height': '60'});
+        inner_div_1.appendChild(img_ava);
+        let div_media_body = document.createElement('div');
+        div_media_body.setAttribute('class', 'media-body');
+        inner_div_1.appendChild(div_media_body);
+        let h5_user = document.createElement('h5');
+        div_media_body.appendChild(h5_user);
+        h5_user.setAttribute('class', 'mt-0 media-heading')
+        h5_user.innerHTML = data.created_by;
+        let p_user = document.createElement('p');
+        div_media_body.appendChild(p_user);
+        p_user.setAttribute('class', 'text-muted small mb-0');
+        p_user.innerHTML = data.created_by_position;
+        let text_div = document.createElement('div')
+        comment_div.appendChild(text_div);
+        text_div.setAttribute('class', 'mt-3 mb-4 pb-2');
+        text_div.innerHTML = data.text;
+        let comment_footer_div = document.createElement('div');
+        comment_div.appendChild(comment_footer_div);
+        comment_footer_div.setAttribute('class', 'comments-footer clearfix');
+        let inner_ul = document.createElement('ul');
+        inner_ul.classList.add('main-list-ul');
+        comment_footer_div.appendChild(inner_ul);
+        let li_1 = document.createElement('li');
+        inner_ul.appendChild(li_1);
+        li_1.innerHTML = `<a href="#" class="comment-reaction-high high" data-comment-id="${data.comment_id}" id="positive-reaction-for-comment-${data.comment_id}"><span class="count">0</span><i class="fa-regular fa-thumbs-up"></i></a>`;
+        li_1.addEventListener('click', reaction_high_event_listener);
+        let li_2 = document.createElement('li');
+        inner_ul.appendChild(li_2);
+        li_2.innerHTML = `<a href="#" class="comment-reaction-low low" data-comment-id="${data.comment_id}" id="negative-reaction-for-comment-${data.comment_id}"><span class="count">0</span><i class="fa-regular fa-thumbs-down"></i></a>`;
+        li_2.addEventListener('click', reaction_low_event_listener);
+        let li_3 = document.createElement('li');
+        inner_ul.appendChild(li_3);
+        li_3.innerHTML = `<a href="#addCommentModal" data-bs-toggle="modal" data-comment-id="${data.comment_id}">Ответить</a>`;
+        let media_div = document.createElement('div');
+        media_div.appendChild(comment_div);
+        media_div.setAttribute('class', 'media created');
+        let comment_list = document.getElementById('comment-list');
+        if(comment_list.innerHTML.trim() === '<p class="text-center text-muted">''' +  pgettext("they", "(Missing)") + '''</p>') {
+            comment_list.innerHTML = '';
+        };
+        if(data.reply_to_id !== null) {
+            let comment_media_div = document.getElementById('comment-media-' + data.reply_to_id)
+            if(comment_media_div !== null) {
+                if("''' + str(current_user.environment_setting.comment_order_asc) + '''" === 'True') {
+                    comment_media_div.appendChild(media_div);
+                    let hr = document.createElement('hr');
+                    media_div.insertAdjacentElement('afterend', hr);
+                }
+                else {
+                    comment_media_div.insertAdjacentElement('afterbegin', media_div);
+                    let hr = document.createElement('hr');
+                    comment_media_div.insertAdjacentElement('beforebegin', hr);
+                }
+            }
+            else {
+                let outer_media_div = document.createElement('div')
+                setMultipleAttributes(outer_media_div, {'class': 'media', 'style': 'padding-left:''' + str(current_user.environment_setting.comment_reply_padding) + '''px;', 'id': 'comment-media-' + data.reply_to_id})
+                outer_media_div.appendChild(media_div);
+                let comment_to_reply = document.getElementById('comment-' + data.reply_to_id);
+                comment_to_reply.insertAdjacentElement('afterend', outer_media_div);
+                let hr = document.createElement('hr');
+                outer_media_div.insertAdjacentElement('beforebegin', hr);
+            }
         }
         else {
-          let outer_media_div = document.createElement('div')
-          setMultipleAttributes(outer_media_div, {'class': 'media', 'style': 'padding-left:''' + str(current_user.environment_setting.comment_reply_padding) + '''px;', 'id': 'comment-media-' + data.reply_to_id})
-          outer_media_div.appendChild(media_div);
-          let comment_to_reply = document.getElementById('comment-' + data.reply_to_id);
-          comment_to_reply.insertAdjacentElement('afterend', outer_media_div);
-          let hr = document.createElement('hr');
-          outer_media_div.insertAdjacentElement('beforebegin', hr);
+            if("''' + str(current_user.environment_setting.comment_order_asc) + '''" === 'True') {
+                comment_list.appendChild(media_div);
+                let hr = document.createElement('hr');
+                comment_list.appendChild(hr);
+            }
+            else {
+                comment_list.insertAdjacentElement('afterbegin', media_div);
+                let hr = document.createElement('hr');
+                media_div.insertAdjacentElement('afterend', hr);
+            }
         }
-      }
-      else {
-        if("''' + str(current_user.environment_setting.comment_order_asc) + '''" === 'True') {
-          comment_list.appendChild(media_div);
-          let hr = document.createElement('hr');
-          comment_list.appendChild(hr);
-        }
-        else {
-          comment_list.insertAdjacentElement('afterbegin', media_div);
-          let hr = document.createElement('hr');
-          media_div.insertAdjacentElement('afterend', hr);
-        }
-      }
 
-      // render all moment units
-      flask_moment_render_all();
+        // render all moment units
+        flask_moment_render_all();
     });
     generic_websocket.on('reaction added', data => {
-      var current_user_id = Number("''' + str(current_user.id) + '''");
-      var positive_reaction = document.getElementById('positive-reaction-for-comment-' + data.to_comment);
-      var negative_reaction = document.getElementById('negative-reaction-for-comment-' + data.to_comment);
-      if(data.added_by_id != current_user_id) {
-        positive_reaction.children[0].innerHTML = data.positive_count;
-        negative_reaction.children[0].innerHTML = data.negative_count;
-      }
-      else {
-        if(data.is_positive === true) {
-          positive_reaction.innerHTML = `<span class="count">${data.positive_count}</span><i class="fa-solid fa-thumbs-up"></i>`;
-          negative_reaction.innerHTML = `<span class="count">${data.negative_count}</span><i class="fa-regular fa-thumbs-down"></i>`;
-        }
-        else if(data.is_positive === false) {
-          positive_reaction.innerHTML = `<span class="count">${data.positive_count}</span><i class="fa-regular fa-thumbs-up"></i>`;
-          negative_reaction.innerHTML = `<span class="count">${data.negative_count}</span><i class="fa-solid fa-thumbs-down"></i>`;
+        var current_user_id = Number("''' + str(current_user.id) + '''");
+        var positive_reaction = document.getElementById('positive-reaction-for-comment-' + data.to_comment);
+        var negative_reaction = document.getElementById('negative-reaction-for-comment-' + data.to_comment);
+        if(data.added_by_id != current_user_id) {
+            positive_reaction.children[0].innerHTML = data.positive_count;
+            negative_reaction.children[0].innerHTML = data.negative_count;
         }
         else {
-          positive_reaction.innerHTML = `<span class="count">${data.positive_count}</span><i class="fa-regular fa-thumbs-up"></i>`;
-          negative_reaction.innerHTML = `<span class="count">${data.negative_count}</span><i class="fa-regular fa-thumbs-down"></i>`;
+            if(data.is_positive === true) {
+                positive_reaction.innerHTML = `<span class="count">${data.positive_count}</span><i class="fa-solid fa-thumbs-up"></i>`;
+                negative_reaction.innerHTML = `<span class="count">${data.negative_count}</span><i class="fa-regular fa-thumbs-down"></i>`;
+            }
+            else if(data.is_positive === false) {
+                positive_reaction.innerHTML = `<span class="count">${data.positive_count}</span><i class="fa-regular fa-thumbs-up"></i>`;
+                negative_reaction.innerHTML = `<span class="count">${data.negative_count}</span><i class="fa-solid fa-thumbs-down"></i>`;
+            }
+            else {
+                positive_reaction.innerHTML = `<span class="count">${data.positive_count}</span><i class="fa-regular fa-thumbs-up"></i>`;
+                negative_reaction.innerHTML = `<span class="count">${data.negative_count}</span><i class="fa-regular fa-thumbs-down"></i>`;
+            }
         }
-      }
-    })
+    });
     '''
     side_libraries.require_script(script)
     return ''
@@ -407,63 +407,74 @@ def load_history_script(object_with_history) -> str:
     ''' load history websocket script to side_libraries '''
     script = '''
     let generic_ws_defined = typeof(generic_websocket) === 'undefined';
-      var generic_websocket = generic_websocket || io('/generic');
-      if(generic_ws_defined) {
+    var generic_websocket = generic_websocket || io('/generic');
+    if(generic_ws_defined) {
         generic_websocket.on('connect', function() {
-          generic_websocket.emit('join_room', "''' + object_with_history.__class__.__name__ + ':' + str(object_with_history.id) + '''");
+            generic_websocket.emit('join_room', "''' + object_with_history.__class__.__name__ + ':' + str(object_with_history.id) + '''");
         });
-      };
-      generic_websocket.on('history element added', function(data){
+    };
+    generic_websocket.on('history element added', function(data){
         generic_websocket.emit('get history', {'id': data.id, 'locale': "''' + str(g.locale) + '''"}, function(data) {
-          let p_history_missing = document.getElementById('p-history-missing');
-          if(p_history_missing !== null) {
-            p_history_missing.remove()
-          }
-          let history_list = document.getElementById('div-history-list');
-          let media = document.createElement('div');
-          media.classList.add('media');
-          media.classList.add('created');
-          let div_header = document.createElement('div');
-          media.appendChild(div_header);
-          div_header.setAttribute('class', 'd-flex flex-start align-items-center');
-          let img = document.createElement('img');
-          setMultipleAttributes(img, {src: data.created_by_avatar, class: 'rounded-circle shadow-1-strong me-3', alt: 'avatar', width: 60, height: 60});
-          div_header.appendChild(img);
-          let div_media_body = document.createElement('div');
-          div_header.appendChild(div_media_body);
-          div_media_body.classList.add('media-body');
-          let h5_media_body = document.createElement('h5');
-          div_media_body.appendChild(h5_media_body);
-          h5_media_body.setAttribute('class', 'mt-0 media-heading');
-          let a_user = document.createElement('a');
-          h5_media_body.appendChild(a_user);
-          a_user.setAttribute('href', data.created_by_href);
-          a_user.innerHTML = data.created_by_title;
-          let created_date = document.createElement('span');
-          h5_media_body.appendChild(created_date);
-          created_date.classList.add('date');
-          created_date.innerHTML = data.created_at;
-          let p_position = document.createElement('p');
-          div_media_body.appendChild(p_position);
-          p_position.setAttribute('class', 'text-muted small mb-0');
-          p_position.innerHTML = data.created_by_position;
-          let div_body = document.createElement('div');
-          div_body.setAttribute('class', 'mt-3 mb-4 pb-2');
-          media.appendChild(div_body);
-          div_body.innerHTML = data.history_text;
-          if("''' + str(current_user.environment_setting.comment_order_asc) + '''" === 'True') {
-            history_list.appendChild(media);
-            let hr = document.createElement('hr');
-            history_list.appendChild(hr);
-          }
-          else {
-            history_list.insertAdjacentElement('afterbegin', media);
-            let hr = document.createElement('hr');
-            history_list.insertAdjacentElement('afterend', hr);
-          };
-          flask_moment_render_all();
+            let p_history_missing = document.getElementById('p-history-missing');
+            if(p_history_missing !== null) {
+                p_history_missing.remove()
+            }
+            let history_list = document.getElementById('div-history-list');
+            let media = document.createElement('div');
+            media.classList.add('media');
+            media.classList.add('created');
+            let div_header = document.createElement('div');
+            media.appendChild(div_header);
+            div_header.setAttribute('class', 'd-flex flex-start align-items-center');
+            let img = document.createElement('img');
+            setMultipleAttributes(img, {src: data.created_by_avatar, class: 'rounded-circle shadow-1-strong me-3', alt: 'avatar', width: 60, height: 60});
+            div_header.appendChild(img);
+            let div_media_body = document.createElement('div');
+            div_header.appendChild(div_media_body);
+            div_media_body.classList.add('media-body');
+            let h5_media_body = document.createElement('h5');
+            div_media_body.appendChild(h5_media_body);
+            h5_media_body.setAttribute('class', 'mt-0 media-heading');
+            let a_user = document.createElement('a');
+            h5_media_body.appendChild(a_user);
+            a_user.setAttribute('href', data.created_by_href);
+            a_user.innerHTML = data.created_by_title;
+            let created_date = document.createElement('span');
+            h5_media_body.appendChild(created_date);
+            created_date.classList.add('date');
+            created_date.innerHTML = data.created_at;
+            let p_position = document.createElement('p');
+            div_media_body.appendChild(p_position);
+            p_position.setAttribute('class', 'text-muted small mb-0');
+            p_position.innerHTML = data.created_by_position;
+            let div_body = document.createElement('div');
+            div_body.setAttribute('class', 'mt-3 mb-4 pb-2');
+            media.appendChild(div_body);
+            div_body.innerHTML = data.history_text;
+            if("''' + str(current_user.environment_setting.comment_order_asc) + '''" === 'True') {
+                history_list.appendChild(media);
+                let hr = document.createElement('hr');
+                history_list.appendChild(hr);
+            }
+            else {
+                history_list.insertAdjacentElement('afterbegin', media);
+                let hr = document.createElement('hr');
+                history_list.insertAdjacentElement('afterend', hr);
+            };
+            flask_moment_render_all();
         });
-      });
+    });
     '''
     side_libraries.require_script(script)
     return ''
+
+
+def add_team_users_to_project(project, teams: List) -> None:
+    roles = {i: set() for i in db.session.scalars(sa.select(models.ProjectRole))}
+    for team in teams:
+        for member in team.members:
+            roles[member.role].add(member.user)
+    for role, users in roles.items():
+        for user in users:
+            p = models.UserRoleHasProject(user=user, project=project, role=role)
+            db.session.add(p)

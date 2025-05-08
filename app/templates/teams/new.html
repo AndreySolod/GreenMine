@@ -1,0 +1,39 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <form action="" method="POST">
+        <div class="row">
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form_element(form, form.title) }}
+                            {{ form_element(form, form.leader_id) }}
+                            {{ form_element(form, form.description) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            {% for e in form.attr_names %}
+                            {{ form_element(form, getattr(form, e), inline=True) }}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class='btn btn-primary') }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

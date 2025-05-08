@@ -4,9 +4,9 @@ from flask import request, redirect, url_for, render_template, flash, abort
 from flask_login import current_user
 import app.models as models
 from app.helpers.general_helpers import get_or_404
-from app.helpers.projects_helpers import get_default_environment
+from app.helpers.projects_helpers import get_default_environment, add_team_users_to_project
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
-from .forms import ProjectForm, EditProjectForm, get_project_role_user_form
+from .forms import ProjectFormCreate, EditProjectForm, get_project_role_user_form
 from flask_babel import lazy_gettext as _l, pgettext
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy as sa
@@ -38,19 +38,19 @@ def project_show(project_id):
 
 @bp.route("/new", methods=["GET", "POST"])
 def project_new():
-    form = ProjectForm()
+    form = ProjectFormCreate()
     ctx = MainPageEnvironment("Project", 'new')()
     if form.validate_on_submit():
         p = models.Project()
         form.populate_obj(db.session, p, current_user)
         db.session.add(p)
+        add_team_users_to_project(p, db.session.scalars(sa.select(models.Team).where(models.Team.id.in_([int(i) for i in form.teams.data]))).all())
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new project #{p.id}")
         flash(_l("Project #%(project_id)s has been successfully created", project_id=p.id), 'success')
         return redirect(url_for('projects.project_show', project_id=p.id))
     elif request.method == 'GET':
         form.load_data_from_json(request.args)
-        form.leader.data = current_user.id
     return render_template('projects/new.html', form=form, **ctx)
 
 
