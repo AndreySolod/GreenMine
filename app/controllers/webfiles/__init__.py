@@ -43,6 +43,6 @@ def environment(obj, action, **kwargs):
     if action == 'index':
         title = _l("All files")
         current_object = CurrentObjectInfo(_l("Files, related with project"), obj.Meta.icon_index, subtitle=obj.project.fulltitle)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 register_environment(EnvironmentObjectAttrs('FileDirectory', sidebar, environment), 'Note')

@@ -85,6 +85,6 @@ def environment(obj, action, **kwargs) -> dict:
     elif action == 'edit':
         title = _l("Edit task #%(task_id)s", task_id=obj.id)
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 register_environment(EnvironmentObjectAttrs('ProjectTask', sidebar, environment), 'Project')

@@ -102,7 +102,7 @@ def environment(obj, action, **kwargs):
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)
     else:
         return {}
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 
 register_environment(EnvironmentObjectAttrs('PentestResearchEvent', sidebar, environment), 'Issue')

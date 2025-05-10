@@ -45,7 +45,7 @@ def environment(obj, action, **kwargs):
             act1 = CurrentObjectAction(_l("Add new note"), "fa-solid fa-square-plus", 'modalAddNewNote', action_type='button_modal')
             acts.append(act1)
         current_object = CurrentObjectInfo(_l("All notes"), Note.Meta.icon_index, subtitle=obj.project.fulltitle, actions=acts)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 
 register_environment(EnvironmentObjectAttrs('Note', sidebar, environment), 'Credential')

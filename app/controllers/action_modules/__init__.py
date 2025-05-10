@@ -47,12 +47,12 @@ def environment(obj, action, **kwargs):
         elif action == 'run':
             title = kwargs["action_module"].title
             current_object = CurrentObjectInfo(kwargs["action_module"].title, AutomationModules.Meta.icon, subtitle=kwargs["action_module"].description)
-        return {'title': title, 'current_object': current_object}
+        return {'title': title, 'current_object': current_object, 'archived': kwargs['proj'].archived}
     elif isinstance(obj, models.DefaultCredential):
         if action == 'index':
             title = models.DefaultCredential.Meta.verbose_name_plural
             current_object = CurrentObjectInfo(_l("Factory credentials"), models.DefaultCredential.Meta.icon, subtitle=_l("A list of credentials installed at the factory by various manufacturers"))
-        return {'title': title, 'current_object': current_object}
+        return {'title': title, 'current_object': current_object, 'archived': kwargs['proj'].archived}
     else:
         return {}
 

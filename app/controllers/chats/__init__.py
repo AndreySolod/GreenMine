@@ -37,7 +37,7 @@ def environment(obj, action, **kwargs):
     if action == 'index':
         title = _l("Project chat")
         current_object = CurrentObjectInfo(models.ChatMessage.Meta.verbose_name_plural, models.ChatMessage.Meta.icon, subtitle=obj.project.fulltitle)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 
 register_environment(EnvironmentObjectAttrs('ChatMessage', sidebar, environment), 'Note')

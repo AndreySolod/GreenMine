@@ -84,8 +84,8 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="archived" role="tabpanel" aria-labelledby="archived-tab">
-                {% if archived|length != 0 %}
-                {% for project in archived %}
+                {% if archive_projects|length != 0 %}
+                {% for project in archive_projects %}
                     <div class="card">
                         <div class="card-body">
                             <h4><a href='{{ url_for("projects.project_show", project_id=project.id) }}'>{{ project.title|safe }}</a></h4>

@@ -43,7 +43,7 @@ def environment(obj, action, **kwargs) -> dict:
     if action == 'index':
         title = _l("All report templates")
         current_object = CurrentObjectInfo(title, obj.Meta.icon, subtitle=kwargs['proj'].fulltitle, actions=acts)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': kwargs['proj'].archived}
 
 
 register_environment(EnvironmentObjectAttrs('ProjectReportTemplate', sidebar, environment), after='ChatMessage')

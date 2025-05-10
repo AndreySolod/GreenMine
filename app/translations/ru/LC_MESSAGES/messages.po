@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-10 19:03+1000\n"
-"PO-Revision-Date: 2025-05-10 19:06+1000\n"
+"POT-Creation-Date: 2025-05-10 22:15+1000\n"
+"PO-Revision-Date: 2025-05-10 22:16+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -101,7 +101,7 @@ msgstr ""
 #: app/controllers/admin/task_templates_forms.py:16
 #: app/controllers/credentials/forms.py:27 app/controllers/cves/forms.py:16
 #: app/controllers/cves/forms.py:18 app/controllers/cves/forms.py:26
-#: app/controllers/issues/forms.py:23 app/controllers/issues/forms.py:67
+#: app/controllers/issues/forms.py:26 app/controllers/issues/forms.py:71
 #: app/controllers/networks/forms.py:19 app/controllers/networks/forms.py:147
 #: app/controllers/networks/forms.py:153 app/controllers/networks/forms.py:215
 #: app/controllers/notes/forms.py:14 app/controllers/notes/forms.py:27
@@ -231,7 +231,7 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/admin/roles_forms.py:33 app/controllers/admin/roles_forms.py:85
 #: app/controllers/admin/task_templates_forms.py:30
 #: app/controllers/credentials/forms.py:44 app/controllers/cves/forms.py:48
-#: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:48
+#: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:52
 #: app/controllers/networks/forms.py:54 app/controllers/networks/forms.py:119
 #: app/controllers/networks/forms.py:191 app/controllers/notes/forms.py:31
 #: app/controllers/projects/forms.py:50 app/controllers/projects/forms.py:93
@@ -310,7 +310,7 @@ msgid ""
 msgstr ""
 "Если на заданном порту запущена служба IPMI (открыт порт), модуль пытается "
 "проэксплуатировать известные уязвимости (такие как CVE-2013-4786) и сохранить "
-"результаты в базу данных."
+"результаты в базу данных"
 
 #: app/action_modules/Mass_import_creds/__init__.py:109
 msgid "Login column number:"
@@ -465,47 +465,47 @@ msgstr "Статический пароль:"
 #: app/controllers/cves/forms.py:29 app/controllers/cves/forms.py:31
 #: app/controllers/cves/forms.py:33 app/controllers/cves/forms.py:35
 #: app/controllers/generics/forms.py:11 app/controllers/generics/forms.py:12
-#: app/controllers/generics/forms.py:18 app/controllers/issues/forms.py:22
-#: app/controllers/issues/forms.py:25 app/controllers/issues/forms.py:26
-#: app/controllers/issues/forms.py:27 app/controllers/issues/forms.py:29
-#: app/controllers/issues/forms.py:31 app/controllers/issues/forms.py:33
-#: app/controllers/issues/forms.py:35 app/controllers/issues/forms.py:36
-#: app/controllers/issues/forms.py:37 app/controllers/issues/forms.py:38
-#: app/controllers/issues/forms.py:39 app/controllers/issues/forms.py:64
-#: app/controllers/issues/forms.py:66 app/controllers/issues/forms.py:67
-#: app/controllers/issues/forms.py:69 app/controllers/issues/forms.py:70
-#: app/controllers/issues/forms.py:71 app/controllers/networks/forms.py:18
-#: app/controllers/networks/forms.py:21 app/controllers/networks/forms.py:22
-#: app/controllers/networks/forms.py:23 app/controllers/networks/forms.py:24
-#: app/controllers/networks/forms.py:25 app/controllers/networks/forms.py:73
-#: app/controllers/networks/forms.py:76 app/controllers/networks/forms.py:77
-#: app/controllers/networks/forms.py:78 app/controllers/networks/forms.py:79
-#: app/controllers/networks/forms.py:80 app/controllers/networks/forms.py:82
-#: app/controllers/networks/forms.py:85 app/controllers/networks/forms.py:87
-#: app/controllers/networks/forms.py:89 app/controllers/networks/forms.py:110
-#: app/controllers/networks/forms.py:141 app/controllers/networks/forms.py:144
-#: app/controllers/networks/forms.py:146 app/controllers/networks/forms.py:148
-#: app/controllers/networks/forms.py:149 app/controllers/networks/forms.py:150
-#: app/controllers/networks/forms.py:152 app/controllers/networks/forms.py:154
-#: app/controllers/networks/forms.py:155 app/controllers/networks/forms.py:157
-#: app/controllers/networks/forms.py:160 app/controllers/networks/forms.py:162
-#: app/controllers/networks/forms.py:165 app/controllers/networks/forms.py:166
-#: app/controllers/networks/forms.py:167 app/controllers/networks/forms.py:208
-#: app/controllers/networks/forms.py:209 app/controllers/networks/forms.py:210
-#: app/controllers/networks/forms.py:214 app/controllers/networks/forms.py:217
-#: app/controllers/networks/forms.py:229 app/controllers/networks/forms.py:245
-#: app/controllers/networks/forms.py:248 app/controllers/networks/forms.py:250
-#: app/controllers/networks/forms.py:252 app/controllers/networks/forms.py:254
-#: app/controllers/networks/forms.py:257 app/controllers/notes/forms.py:13
-#: app/controllers/notes/forms.py:16 app/controllers/notes/forms.py:17
-#: app/controllers/notes/forms.py:26 app/controllers/notes/forms.py:29
-#: app/controllers/notes/forms.py:30 app/controllers/projects/forms.py:19
-#: app/controllers/projects/forms.py:22 app/controllers/projects/forms.py:24
-#: app/controllers/projects/forms.py:26 app/controllers/projects/forms.py:28
-#: app/controllers/projects/forms.py:45 app/controllers/projects/forms.py:62
-#: app/controllers/projects/forms.py:108 app/controllers/projects/forms.py:110
-#: app/controllers/projects/forms.py:112 app/controllers/projects/forms.py:114
-#: app/controllers/projects/forms.py:116
+#: app/controllers/generics/forms.py:18 app/controllers/issues/forms.py:25
+#: app/controllers/issues/forms.py:28 app/controllers/issues/forms.py:29
+#: app/controllers/issues/forms.py:30 app/controllers/issues/forms.py:32
+#: app/controllers/issues/forms.py:34 app/controllers/issues/forms.py:36
+#: app/controllers/issues/forms.py:38 app/controllers/issues/forms.py:39
+#: app/controllers/issues/forms.py:40 app/controllers/issues/forms.py:41
+#: app/controllers/issues/forms.py:42 app/controllers/issues/forms.py:43
+#: app/controllers/issues/forms.py:68 app/controllers/issues/forms.py:70
+#: app/controllers/issues/forms.py:71 app/controllers/issues/forms.py:73
+#: app/controllers/issues/forms.py:74 app/controllers/issues/forms.py:75
+#: app/controllers/networks/forms.py:18 app/controllers/networks/forms.py:21
+#: app/controllers/networks/forms.py:22 app/controllers/networks/forms.py:23
+#: app/controllers/networks/forms.py:24 app/controllers/networks/forms.py:25
+#: app/controllers/networks/forms.py:73 app/controllers/networks/forms.py:76
+#: app/controllers/networks/forms.py:77 app/controllers/networks/forms.py:78
+#: app/controllers/networks/forms.py:79 app/controllers/networks/forms.py:80
+#: app/controllers/networks/forms.py:82 app/controllers/networks/forms.py:85
+#: app/controllers/networks/forms.py:87 app/controllers/networks/forms.py:89
+#: app/controllers/networks/forms.py:110 app/controllers/networks/forms.py:141
+#: app/controllers/networks/forms.py:144 app/controllers/networks/forms.py:146
+#: app/controllers/networks/forms.py:148 app/controllers/networks/forms.py:149
+#: app/controllers/networks/forms.py:150 app/controllers/networks/forms.py:152
+#: app/controllers/networks/forms.py:154 app/controllers/networks/forms.py:155
+#: app/controllers/networks/forms.py:157 app/controllers/networks/forms.py:160
+#: app/controllers/networks/forms.py:162 app/controllers/networks/forms.py:165
+#: app/controllers/networks/forms.py:166 app/controllers/networks/forms.py:167
+#: app/controllers/networks/forms.py:208 app/controllers/networks/forms.py:209
+#: app/controllers/networks/forms.py:210 app/controllers/networks/forms.py:214
+#: app/controllers/networks/forms.py:217 app/controllers/networks/forms.py:229
+#: app/controllers/networks/forms.py:245 app/controllers/networks/forms.py:248
+#: app/controllers/networks/forms.py:250 app/controllers/networks/forms.py:252
+#: app/controllers/networks/forms.py:254 app/controllers/networks/forms.py:257
+#: app/controllers/notes/forms.py:13 app/controllers/notes/forms.py:16
+#: app/controllers/notes/forms.py:17 app/controllers/notes/forms.py:26
+#: app/controllers/notes/forms.py:29 app/controllers/notes/forms.py:30
+#: app/controllers/projects/forms.py:19 app/controllers/projects/forms.py:22
+#: app/controllers/projects/forms.py:24 app/controllers/projects/forms.py:26
+#: app/controllers/projects/forms.py:28 app/controllers/projects/forms.py:45
+#: app/controllers/projects/forms.py:62 app/controllers/projects/forms.py:108
+#: app/controllers/projects/forms.py:110 app/controllers/projects/forms.py:112
+#: app/controllers/projects/forms.py:114 app/controllers/projects/forms.py:116
 #: app/controllers/research_events/forms.py:29
 #: app/controllers/research_events/forms.py:32
 #: app/controllers/research_events/forms.py:33
@@ -746,7 +746,7 @@ msgstr "Шаблон импорта учётных данных успешно �
 #: app/controllers/admin/task_templates_forms.py:18
 #: app/controllers/credentials/forms.py:27 app/controllers/credentials/forms.py:32
 #: app/controllers/cves/forms.py:19 app/controllers/cves/forms.py:22
-#: app/controllers/issues/forms.py:24 app/controllers/issues/forms.py:68
+#: app/controllers/issues/forms.py:27 app/controllers/issues/forms.py:72
 #: app/controllers/networks/forms.py:20 app/controllers/networks/forms.py:27
 #: app/controllers/networks/forms.py:74 app/controllers/networks/forms.py:83
 #: app/controllers/networks/forms.py:142 app/controllers/networks/forms.py:158
@@ -780,7 +780,7 @@ msgstr "Это поле не может быть больше %(length)s сим�
 #: app/controllers/admin/roles_forms.py:24
 #: app/controllers/admin/task_templates_forms.py:26
 #: app/controllers/credentials/forms.py:39 app/controllers/cves/forms.py:44
-#: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:43
+#: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:47
 #: app/controllers/networks/forms.py:46 app/controllers/networks/forms.py:111
 #: app/controllers/networks/forms.py:184 app/controllers/notes/forms.py:18
 #: app/controllers/projects/forms.py:46 app/controllers/research_events/forms.py:61
@@ -1046,7 +1046,7 @@ msgstr "Редактировать учётные данные"
 msgid "The dictionary for which the verification was performed/is planned"
 msgstr "Словарь, по которому была выполнена/планируется к выполнению проверка"
 
-#: app/controllers/credentials/forms.py:40 app/controllers/issues/forms.py:44
+#: app/controllers/credentials/forms.py:40 app/controllers/issues/forms.py:48
 #: app/controllers/networks/forms.py:47 app/controllers/networks/forms.py:112
 #: app/controllers/tasks/forms.py:63
 msgid "Create and add another one"
@@ -1144,19 +1144,19 @@ msgstr "Вы уверены, что хотите удалить эту проб�
 msgid "Edit issue #%(issue_id)s"
 msgstr "Редактировать проблему #%(issue_id)s"
 
-#: app/controllers/issues/forms.py:28
+#: app/controllers/issues/forms.py:31
 msgid "What is required to fix this problem"
 msgstr "Что необходимо сделать для исправления этой проблемы"
 
-#: app/controllers/issues/forms.py:30
+#: app/controllers/issues/forms.py:33
 msgid "Additional technical information about the problem"
 msgstr "Дополнительная техническая информация о проблеме"
 
-#: app/controllers/issues/forms.py:32
+#: app/controllers/issues/forms.py:35
 msgid "The risks of exploiting this problem"
 msgstr "Риски эксплуатации проблемы"
 
-#: app/controllers/issues/forms.py:34
+#: app/controllers/issues/forms.py:37
 msgid "Additional links with information about the problem"
 msgstr "Дополнительные ссылки с информацией о проблеме"
 
@@ -1791,7 +1791,7 @@ msgstr "Пароль"
 msgid "Remember me"
 msgstr "Запомнить меня"
 
-#: app/controllers/users/forms.py:17 app/controllers/users/routes.py:156
+#: app/controllers/users/forms.py:17 app/controllers/users/routes.py:161
 msgid "Enter"
 msgstr "Войти"
 
@@ -1847,54 +1847,67 @@ msgstr "Принудить к смене пароля"
 msgid "Are you sure you want to delete this user?"
 msgstr "Вы уверены в том, что хотите удалить этого пользователя?"
 
-#: app/controllers/users/routes.py:43 app/controllers/users/routes.py:45
+#: app/controllers/users/routes.py:40
+msgid "Archive"
+msgstr "Архивировать"
+
+#: app/controllers/users/routes.py:42
+msgid "Unarchive"
+msgstr "Разархивировать"
+
+#: app/controllers/users/routes.py:48 app/controllers/users/routes.py:50
 #, python-format
 msgid "User #%(user_id)s: %(user_title)s"
 msgstr "Пользователь #%(user_id)s: %(user_title)s"
 
-#: app/controllers/users/routes.py:47
+#: app/controllers/users/routes.py:52
 #, python-format
 msgid "User «%(title)s»"
 msgstr "Пользователь «%(title)s»"
 
-#: app/controllers/users/routes.py:69 app/controllers/users/routes.py:101
+#: app/controllers/users/routes.py:74 app/controllers/users/routes.py:106
 #, python-format
 msgid "Avatar for %(login)s"
 msgstr "Аватар для %(login)s"
 
-#: app/controllers/users/routes.py:75
+#: app/controllers/users/routes.py:80
 #, python-format
 msgid "User «%(title)s» successfully created"
 msgstr "Пользователь «%(title)s» успешно создан"
 
-#: app/controllers/users/routes.py:91 app/controllers/users/routes.py:112
+#: app/controllers/users/routes.py:96 app/controllers/users/routes.py:117
 #, python-format
 msgid "Edit user #%(user_id)s"
 msgstr "Редактировать пользователя #%(user_id)s"
 
-#: app/controllers/users/routes.py:106
+#: app/controllers/users/routes.py:111
 #, python-format
 msgid "User «%(title)s» successfully changed"
 msgstr "Пользователь «%(title)s» успешно изменён"
 
-#: app/controllers/users/routes.py:130
+#: app/controllers/users/routes.py:135
 #, python-format
 msgid "User #%(uid)s: «%(title)s» sucessfully deleted"
 msgstr "Пользователь #%(uid)s: «%(title)s» успешно удалён"
 
-#: app/controllers/users/routes.py:145
+#: app/controllers/users/routes.py:150
 msgid "Invalid user login or password"
 msgstr "Неверный логин пользователя и/или пароль"
 
-#: app/controllers/users/routes.py:186
+#: app/controllers/users/routes.py:191
 #, python-format
 msgid "Password for user %(user_title)s successfully changed!"
 msgstr "Пароль для пользователя %(user_title)s успешно обновлён!"
 
-#: app/controllers/users/routes.py:192 app/controllers/users/routes.py:193
+#: app/controllers/users/routes.py:197 app/controllers/users/routes.py:198
 #, python-format
 msgid "Change password for user %(user_login)s"
 msgstr "Сменить пароль для пользователя %(user_login)s"
+
+#: app/controllers/users/routes.py:225
+#, python-format
+msgid "User #%(user_id)s sucessfully archived"
+msgstr "Пользователь #%(user_id)s успешно перемещён в архив"
 
 #: app/controllers/users/teams_routes.py:29
 msgid "Team successfully created"
@@ -2628,7 +2641,7 @@ msgstr "Добавлять новые сообщения"
 #: app/models/report_templates.py:17 app/models/tasks.py:34 app/models/tasks.py:62
 #: app/models/tasks.py:82 app/models/tasks.py:116 app/models/users.py:31
 #: app/models/users.py:53 app/models/users.py:78 app/models/users.py:106
-#: app/models/users.py:145 app/models/users.py:345 app/models/wiki_pages.py:11
+#: app/models/users.py:145 app/models/users.py:349 app/models/wiki_pages.py:11
 #: app/models/wiki_pages.py:42 app/templates/admin/background_tasks_index.html:34
 msgid "ID"
 msgstr "ID"
@@ -2675,7 +2688,7 @@ msgstr "Архивный"
 #: app/models/tasks.py:35 app/models/tasks.py:63 app/models/tasks.py:83
 #: app/models/tasks.py:361 app/models/users.py:33 app/models/users.py:54
 #: app/models/users.py:80 app/models/users.py:108 app/models/users.py:147
-#: app/models/users.py:347
+#: app/models/users.py:351
 msgid "Slug"
 msgstr "Слаг"
 
@@ -2697,7 +2710,7 @@ msgstr "Слаг"
 #: app/models/projects.py:110 app/models/report_templates.py:18
 #: app/models/tasks.py:36 app/models/tasks.py:64 app/models/tasks.py:84
 #: app/models/users.py:32 app/models/users.py:55 app/models/users.py:79
-#: app/models/users.py:107 app/models/users.py:346 app/models/wiki_pages.py:18
+#: app/models/users.py:107 app/models/users.py:350 app/models/wiki_pages.py:18
 #: app/models/wiki_pages.py:49 app/templates/action_modules/index.html:24
 #: app/templates/admin/background_tasks_index.html:35
 #: app/templates/wiki_pages/index.html:99 app/templates/wiki_pages/index.html:153
@@ -2745,7 +2758,7 @@ msgstr "Добавить новый тип хэша"
 #: app/models/project_additional_parameters.py:34 app/models/projects.py:24
 #: app/models/projects.py:111 app/models/report_templates.py:19
 #: app/models/tasks.py:38 app/models/tasks.py:65 app/models/tasks.py:120
-#: app/models/users.py:348 app/models/wiki_pages.py:19 app/models/wiki_pages.py:50
+#: app/models/users.py:352 app/models/wiki_pages.py:19 app/models/wiki_pages.py:50
 #: app/templates/action_modules/index.html:25
 #: app/templates/admin/background_tasks_index.html:36
 #: app/templates/cves/new.html:13 app/templates/wiki_pages/index.html:103
@@ -4314,7 +4327,7 @@ msgstr "Темы языков программирования"
 msgid "Add a new programming languages theme"
 msgstr "Добавить новую тему языков программирования"
 
-#: app/models/users.py:129 app/models/users.py:131 app/models/users.py:374
+#: app/models/users.py:129 app/models/users.py:131 app/models/users.py:378
 msgid "Team"
 msgstr "Команда"
 
@@ -4404,52 +4417,52 @@ msgstr "Предпочитаемый язык"
 msgid "Roles on project"
 msgstr "Роли на проекте"
 
-#: app/models/users.py:277
+#: app/models/users.py:281
 msgid "Theme style"
 msgstr "Тема окружения"
 
-#: app/models/users.py:278
+#: app/models/users.py:282
 msgid "Theme styles"
 msgstr "Темы окружения"
 
-#: app/models/users.py:285
+#: app/models/users.py:289
 msgid "The sidebar is in a hidden state"
 msgstr "Боковая панель в свёрнутом состоянии"
 
-#: app/models/users.py:286
+#: app/models/users.py:290
 msgid "The order of comments"
 msgstr "Порядок следования кмментариев"
 
-#: app/models/users.py:286
+#: app/models/users.py:290
 msgid "True if direct and False otherwise"
 msgstr "True если прямой и False иначе"
 
-#: app/models/users.py:287
+#: app/models/users.py:291
 msgid ""
 "The indentation from the previous comment to respond to the message in pixels"
 msgstr "Отступ в отвечаемых комментариях в пикселях"
 
-#: app/models/users.py:297
+#: app/models/users.py:301
 msgid "User's Environment Settings"
 msgstr "Настройки окружения пользователя"
 
-#: app/models/users.py:298
+#: app/models/users.py:302
 msgid "User Environment Settings"
 msgstr "Настройки окружений пользователей"
 
-#: app/models/users.py:349 app/models/users.py:350
+#: app/models/users.py:353 app/models/users.py:354
 msgid "Leader of the team"
 msgstr "Лидер команды"
 
-#: app/models/users.py:351
+#: app/models/users.py:355
 msgid "Team members"
 msgstr "Члены команду"
 
-#: app/models/users.py:375
+#: app/models/users.py:379
 msgid "Teams"
 msgstr "Команды"
 
-#: app/models/users.py:376
+#: app/models/users.py:380
 msgid ""
 "A team is a group of users whose creation simplifies the assignment of roles on "
 "a project"
@@ -4847,7 +4860,7 @@ msgstr "Следующий"
 msgid "Create by template"
 msgstr "Создать по шаблону"
 
-#: app/templates/issues/new.html:93 app/templates/tasks/new.html:91
+#: app/templates/issues/new.html:94 app/templates/tasks/new.html:91
 #: app/templates/wiki_pages/index.html:190 app/templates/wiki_pages/index.html:229
 #: app/templates/wiki_pages/index.html:266
 msgid "Something went wrong. Try to reload page"
@@ -4889,35 +4902,35 @@ msgstr "Добавить комментарий"
 msgid "Welcome to PCF"
 msgstr "Добро пожаловать в PCF"
 
-#: app/templates/layout/base.html:277
+#: app/templates/layout/base.html:284
 msgid "Paragraph"
 msgstr "Параграф"
 
-#: app/templates/layout/base.html:278
+#: app/templates/layout/base.html:285
 msgid "Header 1"
 msgstr "Заголовок 1"
 
-#: app/templates/layout/base.html:279
+#: app/templates/layout/base.html:286
 msgid "Header 2"
 msgstr "Заголовок 2"
 
-#: app/templates/layout/base.html:280
+#: app/templates/layout/base.html:287
 msgid "Header 3"
 msgstr "Заголовок 3"
 
-#: app/templates/layout/base.html:281
+#: app/templates/layout/base.html:288
 msgid "Header 4"
 msgstr "Заголовок 4"
 
-#: app/templates/layout/base.html:282
+#: app/templates/layout/base.html:289
 msgid "Header 5"
 msgstr "Заголовок 5"
 
-#: app/templates/layout/base.html:283
+#: app/templates/layout/base.html:290
 msgid "Header 6"
 msgstr "Заголовок 6"
 
-#: app/templates/layout/base.html:290
+#: app/templates/layout/base.html:297
 msgid "Enter text here"
 msgstr "Введите текст здесь"
 

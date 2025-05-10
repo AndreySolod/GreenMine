@@ -90,6 +90,6 @@ def environment(obj, action, **kwargs):
     elif action == 'edit':
         title = _l("Edit issue #%(issue_id)s", issue_id=obj.id)
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 register_environment(EnvironmentObjectAttrs('Issue', sidebar, environment), 'Service')

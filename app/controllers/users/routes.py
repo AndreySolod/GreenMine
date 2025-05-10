@@ -36,16 +36,21 @@ def user_show(user_id):
         act2 = CurrentObjectAction(_l("Change password"), "fa-solid fa-key", url_for('users.user_change_password_callback', user_id=user_id))
         act4 = CurrentObjectAction(_l("Require password change"), "fa-solid fa-handcuffs", url_for('users.require_user_password_change', user_id=user_id), method="POST")
         act3 = CurrentObjectAction(_l("Delete"), "fa-solid fa-user-slash", url_for('users.user_delete', user_id=u.id), confirm=_l("Are you sure you want to delete this user?"), btn_class='btn-danger', method="DELETE")
+        if not u.archived:
+            act5 = CurrentObjectAction(_l("Archive"), "fa-solid fa-box-archive", url_for('users.archive_user', user_id=u.id), btn_class="btn-light", method="POST")
+        else:
+            act5 = CurrentObjectAction(_l("Unarchive"), "fa-solid fa-box-archive", url_for('users.archive_user', user_id=u.id), btn_class="btn-light", method="POST")
         acts = [act1, act2]
         if current_user.is_administrator:
             acts.append(act4)
+            acts.append(act5)
         acts.append(act3)
         current_object = CurrentObjectInfo(_l("User #%(user_id)s: %(user_title)s", user_id=u.id, user_title=u.title), "fa-solid fa-user-tie", actions=acts)
     else:
         current_object = CurrentObjectInfo(_l("User #%(user_id)s: %(user_title)s", user_id=u.id, user_title=u.title), "fa-solid fa-user-tie")
     sidebar_data = UserSidebar(u, 'user_show')()
     context = {'user': u, 'title': _l("User «%(title)s»", title=u.title), 'current_object': current_object,
-               'sidebar_data': sidebar_data}
+               'sidebar_data': sidebar_data, 'archived': u.archived}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request user info for user #{user_id}")
     return render_template('users/show.html', **context)
 
@@ -110,7 +115,7 @@ def user_edit(user_id):
         form.load_exist_value(user)
         form.load_data_from_json(request.args)
     context = {'form': form, 'title': _l('Edit user #%(user_id)s', user_id=user.id),
-               'sidebar_data': sidebar_data, 'current_object': current_object}
+               'sidebar_data': sidebar_data, 'current_object': current_object, 'archived': user.archived}
     return render_template('users/edit.html', **context)
 
 
@@ -140,7 +145,7 @@ def user_login():
     if current_user.is_authenticated:
         return redirect(url_for('users.user_show', user_id=current_user.id))
     if form.validate_on_submit():
-        user = db.session.scalars(sa.select(User).where(User.login==form.login.data)).first()
+        user = db.session.scalars(sa.select(User).where(sa.and_(User.login==form.login.data, User.archived == False))).first()
         if user is None or not user.check_password(form.password.data):
             flash(_l("Invalid user login or password"), 'danger')
             logger.warning(f"User '{getattr(user, 'login', 'Anonymous')}' trying to login with wrong password")
@@ -204,4 +209,18 @@ def require_user_password_change(user_id):
     user.is_password_expired = True
     db.session.add(user)
     db.session.commit()
+    return redirect(url_for('users.user_show', user_id=user.id))
+
+@bp.route('/<user_id>/archive', methods=["POST"])
+@administrator_only
+def archive_user(user_id):
+    try:
+        user = db.session.scalars(sa.select(User).where(User.id == int(user_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        abort(400)
+    user.archived = not user.archived
+    db.session.add(user)
+    db.session.commit()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' archived user #{user.id}")
+    flash(_l("User #%(user_id)s sucessfully archived", user_id=user.id), 'success')
     return redirect(url_for('users.user_show', user_id=user.id))

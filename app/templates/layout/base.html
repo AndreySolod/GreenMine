@@ -34,10 +34,17 @@
 			{% if not current_user.is_anonymous %}
 			<style nonce="{{ csp_nonce() }}">
 				:root {
+					{% if not archived is defined or not archived %}
 					--main-color: {{ current_user.theme_style.main_color }};
 					--neightboring-main-color: {{ current_user.theme_style.neightboring_main_color }};
 					--secondary-main-color: {{ current_user.theme_style.secondary_main_color }};
 					--main-text-color: {{ current_user.theme_style.main_text_color }};
+					{% else %}
+					--main-color: {{ current_user.theme_style.archived_main_color }};
+					--neightboring-main-color: {{ current_user.theme_style.archived_neightboring_main_color }};
+					--secondary-main-color: {{ current_user.theme_style.archived_secondary_main_color }};
+					--main-text-color: {{ current_user.theme_style.archived_main_text_color }};
+					{% endif %}
 					--hovering-main-element-color: {{ current_user.theme_style.hovering_main_element_color }};
 					--sidebar-background-color: {{ current_user.theme_style.sidebar_background_color }};
 					--main-content-background-color: {{ current_user.theme_style.main_content_background_color }};

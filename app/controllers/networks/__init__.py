@@ -118,7 +118,7 @@ def environment_network(obj, action, **kwargs):
     elif action == 'edit':
         title = _l("Edit network «%(ip_addr)s»", ip_addr=str(obj.ip_address))
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 
 @check_if_same_type(Host)
@@ -172,7 +172,7 @@ def environment_host(obj, action, **kwargs):
     elif action == 'multiple_import':
         title = _l("Multiple import hosts")
         current_object = CurrentObjectInfo(title, "fa-solid fa-cash-register", subtitle=proj.fulltitle)
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': proj.archived}
 
 
 @check_if_same_type(Service)
@@ -215,7 +215,7 @@ def environment_service(obj, action, **kwargs):
     elif action == 'inventory':
         title = _l("Inventory of services")
         current_object = CurrentObjectInfo(_l("Inventory of services on project #%(project_id)s", project_id=proj.id), "fa-solid fa-boxes-stacked", subtitle=_l("A page that allows you to quickly fill in basic data for hosts/services"))
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': proj.archived}
 
 
 register_environment(EnvironmentObjectAttrs('Network', sidebar_network, environment_network), 'ProjectTask')

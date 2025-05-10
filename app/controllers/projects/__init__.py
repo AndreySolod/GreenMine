@@ -74,6 +74,6 @@ def environment(obj, action, **kwargs):
     elif action == 'project_additional_parameter_edit':
         title = _l("Edit addtional parameters for Project #%(project_id)s", project_id=obj.id)
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.fulltitle) 
-    return {'title': title, 'current_object': current_object}
+    return {'title': title, 'current_object': current_object, 'archived': bool(obj.archived)}
 
 register_environment(EnvironmentObjectAttrs('Project', sidebar, environment), None)

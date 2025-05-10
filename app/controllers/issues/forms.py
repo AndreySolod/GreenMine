@@ -6,7 +6,7 @@ import app.models as models
 from flask_babel import lazy_gettext as _l
 from flask import url_for, g
 import sqlalchemy as sa
-from app.helpers.projects_helpers import validate_service
+from app.helpers.projects_helpers import validate_service, validate_host
 from flask_login import current_user
 
 
@@ -19,6 +19,9 @@ class IssueForm(FlaskForm):
         self.services.callback = url_for('networks.get_select2_service_data', project_id=project_id)
         self.services.locale = g.locale
         self.services.validate_funcs = lambda x: validate_service(project_id, x)
+        self.hosts.callback = url_for('networks.get_select2_host_data', project_id=project_id)
+        self.hosts.locale = g.locale
+        self.hosts.validate_funcs = lambda x: validate_host(project_id, x)
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Issue.title.info["label"]),
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=models.Issue.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Issue.title.type.length))])
@@ -36,6 +39,7 @@ class IssueForm(FlaskForm):
     cve_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Issue.cve_id.info["label"]), validators=[validators.Optional()])
     status_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Issue.status_id.info["label"]), validators=[validators.Optional()])
     services = Select2MultipleField(models.Service, label=_l("%(field_name)s:", field_name=models.Issue.services.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
+    hosts = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Issue.hosts.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
     tasks_by_issue = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Issue.tasks_by_issue.info["label"]), validators=[validators.Optional()])
 
 

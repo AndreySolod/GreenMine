@@ -16,10 +16,10 @@ import json
 @bp.route("/index")
 def project_index():
     p = db.session.scalars(sa.select(models.Project).where(models.Project.archived == False).order_by(models.Project.created_at.desc())).all()
-    archived = db.session.scalars(sa.select(models.Project).where(models.Project.archived == True).order_by(models.Project.created_at.desc())).all()
+    archive_projects = db.session.scalars(sa.select(models.Project).where(models.Project.archived == True).order_by(models.Project.created_at.desc())).all()
     ctx = MainPageEnvironment('Project', 'index')()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index all projects")
-    context = {'projects': p, "archived": archived}
+    context = {'projects': p, "archive_projects": archive_projects}
     return render_template('projects/index.html', **context, **ctx)
 
 

@@ -65,6 +65,10 @@ UserThemeStyle:
         timeline_blue_team_text_color: "#fff"
         fixed_sidebar: false
         sidebar_position_left: true
+        archived_main_color: "#a3a3a3"
+        archived_main_text_color: "#000000"
+        archived_secondary_main_color: "#7d7d7d"
+        archived_neightboring_main_color: "#ccb6b6"
     - classic_blue:
         title: "Классический голубой"
         is_default: false
@@ -85,6 +89,10 @@ UserThemeStyle:
         dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: true
+        archived_main_color: "#a3a3a3"
+        archived_main_text_color: "#000000"
+        archived_secondary_main_color: "#7d7d7d"
+        archived_neightboring_main_color: "#ccb6b6"
     - right_green:
         title: "Правый зелёный"
         is_default: false
@@ -105,6 +113,10 @@ UserThemeStyle:
         dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: false
+        archived_main_color: "#a3a3a3"
+        archived_main_text_color: "#000000"
+        archived_secondary_main_color: "#7d7d7d"
+        archived_neightboring_main_color: "#ccb6b6"
     - right_blue:
         title: "Правый голубой"
         is_default: false
@@ -125,6 +137,10 @@ UserThemeStyle:
         dark_color: "#777"
         fixed_sidebar: false
         sidebar_position_left: false
+        archived_main_color: "#a3a3a3"
+        archived_main_text_color: "#000000"
+        archived_secondary_main_color: "#7d7d7d"
+        archived_neightboring_main_color: "#ccb6b6"
     - fixed_green_left:
         title: "Фиксированный левый зелёный"
         is_default: false
@@ -145,6 +161,10 @@ UserThemeStyle:
         dark_color: "#777"
         fixed_sidebar: true
         sidebar_position_left: true
+        archived_main_color: "#a3a3a3"
+        archived_main_text_color: "#000000"
+        archived_secondary_main_color: "#7d7d7d"
+        archived_neightboring_main_color: "#ccb6b6"
     - fixed_green_right:
         title: "Фиксированный правый зелёный"
         main_color: "30a7700"
@@ -164,7 +184,10 @@ UserThemeStyle:
         dark_color: "#777"
         fixed_sidebar: true
         sidebar_position_left: false
-
+        archived_main_color: "#a3a3a3"
+        archived_main_text_color: "#000000"
+        archived_secondary_main_color: "#7d7d7d"
+        archived_neightboring_main_color: "#ccb6b6"
 
 ProgrammingLanguageClass:
     - imperative:

@@ -264,6 +264,10 @@ class UserThemeStyle(db.Model):
     timeline_blue_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#fff")
     fixed_sidebar: so.Mapped[bool] = so.mapped_column(default=False)
     sidebar_position_left: so.Mapped[bool] = so.mapped_column(default=True)
+    archived_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#a3a3a3")
+    archived_main_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#000000")
+    archived_secondary_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#7d7d7d")
+    archived_neightboring_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#ccb6b6")
     
 
     @hybrid_property
