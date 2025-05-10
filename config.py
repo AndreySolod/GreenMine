@@ -32,10 +32,6 @@ class DevelopmentConfig:
     CELERY_WORKERS_CONCURRENCY_COUNT = int(os.environ.get("CELERY_WORKERS_CONCURRENCY_COUNT") or 4)
     DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE') or 'ru'
     try:
-        PAGINATION_ELEMENT_COUNT_SELECT2 = int(os.environ.get("PAGINATION_ELEMENT_COUNT_SELECT2") or 30)
-    except (ValueError, TypeError):
-        PAGINATION_ELEMENT_COUNT_SELECT2 = 30
-    try:
         USER_ACTION_LOGGING_ON_STDOUT = bool(os.environ.get("USER_ACTION_LOGGING_ON_STDOUT")) or True
     except:
         USER_ACTION_LOGGING_ON_STDOUT = True
@@ -46,6 +42,9 @@ class DevelopmentConfig:
         FLASK_LOGGING_ON_STDOUT = True
     FLASK_LOGGING_FILE = os.environ.get("FLASK_LOGGING_FILE") or "logs/flask.log"
     ERROR_LOGGING_FILE = os.environ.get("ERROR_LOGGING_FILE") or "logs/error.log"
+    METASPLOIT_HOST = os.environ.get("METASPLOIT_HOST") or "127.0.0.1"
+    METASPLOIT_PORT = os.environ.get("METASPLOIT_PORT") or "55553"
+    METASPLOIT_PASSWORD = os.environ.get("METASPLOIT_PASSWORD") or "secret"
 
 
 class ProductionConfig(DevelopmentConfig):
