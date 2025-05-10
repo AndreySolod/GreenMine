@@ -7,6 +7,7 @@ from flask_babel import lazy_gettext as _l
 from flask import url_for, g
 import sqlalchemy as sa
 from app.helpers.projects_helpers import validate_service
+from flask_login import current_user
 
 
 class IssueForm(FlaskForm):
@@ -56,6 +57,15 @@ class EditRelatedObjectsForm(FlaskForm):
         self.services.locale = g.locale
         self.services.callback = url_for('networks.get_select2_service_data', project_id=issue.project_id)
         self.tasks_by_issue.data = [str(i.id) for i in issue.tasks_by_issue]
+        self.proof_of_concept_source_code_language.choices = [(str(i.id), i.title) for i in current_user.programming_languages]
+        self.proof_of_concept_title.data = getattr(issue.proof_of_concept, 'title', '')
+        self.proof_of_concept_description.data = getattr(issue.proof_of_concept, 'description', '')
+        self.proof_of_concept_source_code.data = getattr(issue.proof_of_concept, 'source_code', '')
     services = Select2MultipleField(models.Service, _l("%(field_name)s:", field_name=models.Issue.services.info["label"]), validators=[validators.Optional()],
                                     id='EditRelatedServicesField', attr_title='treeselecttitle')
     tasks_by_issue = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Issue.tasks_by_issue.info["label"]), validators=[validators.Optional()], id='EditRelatedTasksField')
+    proof_of_concept_title = wtforms.StringField(_l("%(field_name)s:", field_name=models.ProofOfConcept.title.info["label"]), validators=[validators.InputRequired(message=_l("This field is mandatory!")),
+                                                                                                                                          validators.Length(max=models.ProofOfConcept.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.ProofOfConcept.title.type.length))])
+    proof_of_concept_description = WysiwygField(_l("%(field_name)s:", field_name=models.ProofOfConcept.description.info["label"]), validators=[validators.Optional()])
+    proof_of_concept_source_code = wtforms.TextAreaField(_l("%(field_name)s:", field_name=models.ProofOfConcept.source_code.info["label"]), validators=[validators.Optional()])
+    proof_of_concept_source_code_language = wtforms.SelectField(_l("%(field_name)s:", field_name=models.ProofOfConcept.source_code_language.info["label"]), validators=[validators.Optional()])

@@ -169,6 +169,7 @@ class NmapScriptCVE20093103(NmapScriptProcessor):
                                 if serv.port == 445:
                                     issue.services.add(serv)
                                     break
+                            issue.hosts.add(host)
                             try:
                                 session.commit()
                             except:
@@ -203,6 +204,7 @@ class NmapScriptCVE20170144(NmapScriptProcessor):
                                 if serv.port == 445:
                                     issue.services.add(serv)
                                     break
+                            issue.hosts.add(host)
                             try:
                                 session.commit()
                             except:

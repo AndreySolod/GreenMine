@@ -228,6 +228,10 @@ class Host(HasComment, db.Model, HasHistory):
     interfaces: so.Mapped[Set["Host"]] = so.relationship(secondary=HostAnotherInterface.__table__, primaryjoin=id==HostAnotherInterface.first_interface_id,
                                                          secondaryjoin=HostAnotherInterface.second_interface_id==id, lazy='select', info={'label': _l("Another IP addresses")})
     excluded: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Excluded from the study")})
+    issues: so.Mapped[Set[Issue]] = so.relationship(secondary="issue_has_host",
+                                                    primaryjoin="Host.id==IssueHasHost.host_id",
+                                                    secondaryjoin="Issue.id==IssueHasHost.host_id",
+                                                    back_populates='hosts', info={'label': _l("Related issues")})
 
     @property
     def fulltitle(self):
@@ -251,8 +255,9 @@ class Host(HasComment, db.Model, HasHistory):
         return self.from_network.project
     
     @property
-    def issues(self):
-        return db.session.scalars(sa.select(Issue).join(Issue.services).join(Service.host).where(sa.and_(Host.id == self.id)).distinct()).all()
+    def all_issues(self):
+        return db.session.scalars(sa.select(Issue).join(Issue.services).join(Service.host).where(sa.and_(Host.id == self.id))
+                                  .union(sa.select(Issue).join(Issue.hosts).where(sa.ans_(Host.id == self.id))).distinct()).all()
 
     @property
     def tasks(self):

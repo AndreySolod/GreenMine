@@ -1,6 +1,7 @@
 {% extends 'layout/base.html' %}
 {% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element %}
 
+
 {% block page_content %}
 <div class="row gutters">
     <div class="col-lg-3 col-md-6 col-sm-12">
@@ -45,6 +46,12 @@
                             data-bs-target="#additional_info" type="button" role="tab" aria-controls="home"
                             aria-selected="true"><i class="fa-solid fa-list"></i>
                             {{ _("Additional info") }}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="proof-of-concept-tab" data-bs-toggle="tab"
+                        data-bs-target="#proof-of-concept" type="button" role="tab" aria-controls="home"
+                        aria-selected="false"><i class="fa-solid fa-cloud-bolt"></i>
+                        {{ models.Issue.proof_of_concept.info['label'] }}</button>
                     </li>
                     {% if roles.project_role_can_make_action(current_user, models.Service(), 'index', project=issue.project) %}
                     <li class="nav-item" role="presentation">
@@ -107,6 +114,45 @@
                                 {% else %}
                                 <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
                                 {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="proof-of-concept" role="tabpanel" aria-labelledby="proof-of-concept-tab">
+                        {% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditProofOfConcept" data-toggle="tooltip" data-placement="top" title="{{ _('Edit Proof of Concept') }}"><i class="fa-solid fa-pen-ruler"></i></button>
+                        {% endif %}
+                        <div id="proofOfConceptCarousel" class="carousel slide">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active" id="proof-of-concept-description-text">
+                                    {% if issue.proof_of_concept.title or issue.proof_of_concept.description %}
+                                    <h4>{{ issue.proof_of_concept.title|safe }}</h4>
+                                    {{ issue.proof_of_concept.description|safe }}
+                                    {% else %}
+                                    <p class="text-center text-muted">{{ pgettext('they', '(Missing)') }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="carousel-item" id="proof-of-concept-source-code-text">
+                                    {% if issue.proof_of_concept.source_code_language %}
+                                    <p>{{ models.ProgrammingLanguage.Meta.verbose_name }}: {{ issue.proof_of_concept.source_code_language.title|safe }}</p>
+                                    {% else %}
+                                    <p>{{ models.ProgrammingLanguage.Meta.verbose_name }}: </p>
+                                    {% endif %}
+                                    <pre>
+                                        {% if issue.proof_of_concept.source_code_language %}
+                                        <code class="language-{{ issue.proof_of_concept.source_code_language.alias }}">{{ issue.proof_of_concept.source_code|safe }}</code>
+                                        {% else %}
+                                        <code>{{ issue.proof_of_concept.source_code|safe }}</code>
+                                        {% endif %}
+                                    </pre>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#proofOfConceptCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
+                                    <span class="visually-hidden">{{ _("Previous") }}</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#proofOfConceptCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+                                    <span class="visually-hidden">{{ _("Next") }}</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -333,6 +379,35 @@
 </div>
 {% endif %}
 
+{# modal window to edit Proof of Concept #}
+{% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+<div class="modal fade modal-xl" id="modalEditProofOfConcept" tabindex="-1" aria-labelledby="modalEditProofOfConceptLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditProofOfConceptLabel">{{ _("Edit Proof of Concept") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_title, inline=True) }}
+            {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_description) }}
+            {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_source_code_language, inline=True) }}
+            {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_source_code) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_proof_of_concept_button" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
 
@@ -372,6 +447,36 @@
         $(function() {
             $('#tasks-table').bootstrapTable('load', data.rows);
         })
+    });
+
+    document.getElementById('edit_proof_of_concept_button').addEventListener('click', function() {
+        let proof_of_concept_title = document.getElementById("{{ edit_related_objects.proof_of_concept_title.id }}").value;
+        let proof_of_concept_description = CKEDITOR_LIST["{{ edit_related_objects.proof_of_concept_description.id }}"].getData();
+        let proof_of_concept_source_code_language = document.getElementById("{{ edit_related_objects.proof_of_concept_source_code_language.id }}").value;
+        let proof_of_concept_source_code = document.getElementById("{{ edit_related_objects.proof_of_concept_source_code.id }}").value;
+        issueSocket.emit('edit proof of concept', {'proof_of_concept_title': proof_of_concept_title,
+                                                   'proof_of_concept_description': proof_of_concept_description,
+                                                   'proof_of_concept_source_code_language': proof_of_concept_source_code_language,
+                                                   'proof_of_concept_source_code': proof_of_concept_source_code});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditProofOfConcept')).hide();
+    });
+    issueSocket.on('change proof of concept', function(data) {
+        document.getElementById('proof-of-concept-description-text').innerHTML = `<h4>${data.proof_of_concept_title}</h4>${data.proof_of_concept_description}`;
+        let p_lang = document.createElement('p');
+        if('proof_of_concept_source_code_language' in data){
+            p_lang.innerHTML = "<p>{{ models.ProgrammingLanguage.Meta.verbose_name }}: " + data.proof_of_concept_source_code_language + "</p>";
+        };
+        let pre_elem = document.createElement('pre');
+        let code_elem = document.createElement('code');
+        code_elem.innerHTML = data.proof_of_concept_source_code;
+        if ('proof_of_concept_source_code_language_alias' in data){
+            code_elem.className = 'language-' + data.proof_of_concept_source_code_language_alias;
+        }
+        pre_elem.appendChild(code_elem);
+        document.getElementById('proof-of-concept-source-code-text').innerHTML = '';
+        document.getElementById('proof-of-concept-source-code-text').appendChild(p_lang);
+        document.getElementById('proof-of-concept-source-code-text').appendChild(pre_elem);
+        hljs.highlightAll();
     });
 
 </script>

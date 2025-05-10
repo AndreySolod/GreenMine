@@ -216,3 +216,20 @@ def issue_delete(issue_id):
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete issue #{issue_id}")
     flash(msg, 'success')
     return redirect(url_for('issues.issue_index', project_id=project_id))
+
+
+@bp.route('/carousel')
+def issue_carousel():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request carousel with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = get_or_404(db.session, Project, project_id)
+    project_role_can_make_action_or_abort(current_user, Issue(), 'index', project=project)
+    confirmed_status = db.session.scalars(sa.select(IssueStatus).where(IssueStatus.string_slug == 'confirmed')).one()
+    issues = db.session.scalars(sa.select(Issue).where(Issue.project_id==project_id, Issue.archived==False, Issue.status_id == confirmed_status.id).order_by(sa.desc(Issue.cvss))).all()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request carousel for project #{project_id}")
+    ctx = get_default_environment(Issue(project=project), 'carousel')
+    context = {'issues': issues}
+    return render_template('issues/carousel.html', **context, **ctx)

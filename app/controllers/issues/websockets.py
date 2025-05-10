@@ -101,3 +101,38 @@ def relate_issue_to_service(data):
         new_issues = [{'id': i.id, 'title': i.title, 'description': BeautifulSoup(i.description, 'lxml').text, 'status': i.status.title} for i in task.issues]
         emit('change related issues', {'rows': new_issues},
             namespace='/task', to=str(task.id))
+
+
+@socketio.on("edit proof of concept", namespace="/issue")
+@authenticated_only
+def edit_proof_of_concept(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    issue_id, current_room_name = r
+    try:
+        issue = db.session.scalars(sa.select(models.Issue).where(models.Issue.id == int(issue_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        return None
+    if not project_role_can_make_action(current_user, issue, 'update'):
+        return None
+    if not issue.proof_of_concept:
+        poc = models.ProofOfConcept()
+        db.session.add(poc)
+        issue.proof_of_concept = poc
+    issue.proof_of_concept.title = data['proof_of_concept_title']
+    issue.proof_of_concept.description = data['proof_of_concept_description']
+    issue.proof_of_concept.source_code = data['proof_of_concept_source_code']
+    try:
+        issue.proof_of_concept.source_code_language = db.session.scalars(sa.select(models.ProgrammingLanguage).where(models.ProgrammingLanguage.id == int(data['proof_of_concept_source_code_language']))).first()
+    except (ValueError, TypeError):
+        pass
+    db.session.commit()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit proof of concept for issue #{issue.id}")
+    emit_data = {'proof_of_concept_title': issue.proof_of_concept.title, 'proof_of_concept_description': issue.proof_of_concept.description,
+            'proof_of_concept_source_code': issue.proof_of_concept.source_code}
+    if issue.proof_of_concept.source_code_language:
+        emit_data['proof_of_concept_source_code_language'] = issue.proof_of_concept.source_code_language.title
+        emit_data['proof_of_concept_source_code_language_alias'] = issue.proof_of_concept.source_code_language.alias
+    emit('change proof of concept', emit_data,
+         namespace='/issue', to=current_room_name)

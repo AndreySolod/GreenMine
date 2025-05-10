@@ -1,0 +1,73 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">{{ _("Finding issues") }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if issues|length == 0 %}
+                    <p class="text-center text-muted">{{ pgettext('they', '(Missing)') }}</p>
+                    {% else %}
+                    <div id="IssuesCarousel" class="carousel slide h-100">
+                        <div class="carousel-indicators">
+                            {% for issue in issues %}
+                            {% if loop.first %}
+                            <button type="button" data-bs-target="#IssuesCarousel" data-bs-slide-to="{{ loop.index0 }}" aria-label="{{ issue.title|e }}" class="active" aria-current="true"></button>
+                            {% else %}
+                            <button type="button" data-bs-target="#IssuesCarousel" data-bs-slide-to="{{ loop.index0 }}" aria-label="{{ issue.title|e }}"></button>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="carousel-inner h-100">
+                            {% for issue in issues %}
+                                {% if loop.first %}
+                                {% set active = ' active' %}
+                                {% else %}
+                                {% set active = '' %}
+                                {% endif %}
+                            <div class="carousel-item{{ active }}">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-12 d-block">
+                                        <div class="container-fluid">
+                                            <h4>{{ issue.title|safe }}</h4>
+                                            <p>{{ models.Issue.cvss.info['label'] }}: issue.cvss</p>
+                                            {{ issue.description|suppress_none|safe }}
+                                            <h5>{{ models.Issue.fix.info['label'] }}:</h5>
+                                            {{ issue.fix|suppress_none|safe }}
+                                            <h5>{{ models.Issue.technical.info['label'] }}:</h5>
+                                            {{ issue.technical|suppress_none|safe }}
+                                            <h5>{{ models.Issue.riscs.info['label'] }}:</h5>
+                                            {{ issue.riscs|suppress_none|safe }}
+                                            <h5>{{ models.Issue.references.info['label'] }}:</h5>
+                                            {{ issue.references|suppress_none|safe }}
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="col-lg-6 col-md-12">
+                                        <h4>{{ models.Issue.proof_of_concept.info['label'] }}:</h4>
+                                        {{ issue.proof_of_concept.description|suppress_none|safe }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#IssuesCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
+                            <span class="visually-hidden">{{ _("Previous") }}</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#IssuesCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
+                            <span class="visually-hidden">{{ _("Next") }}</span>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

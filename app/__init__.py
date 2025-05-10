@@ -139,7 +139,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
                 'getattr': getattr, 'is_empty_string': is_empty_string,
                 'is_archived': False, 'models': importlib.import_module('app.models'),
                 'GlobalSettings': current_app.config["GlobalSettings"], 'need_socetio': False,
-                'roles': importlib.import_module('app.helpers.roles')}
+                'roles': importlib.import_module('app.helpers.roles'), 'enumerate': enumerate}
     
     @app.template_filter('escapejs')
     def add_template_filter_escapejs(string: str | dict) -> Markup:

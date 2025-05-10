@@ -75,14 +75,14 @@ class CriticalVulnerability(HasComment, db.Model, HasHistory):
 
 
 class ProofOfConcept(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    archived: so.Mapped[bool] = so.mapped_column(default=False)
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, default=default_string_slug)
-    title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50))
-    description: so.Mapped[str]
-    source_code: so.Mapped[str]
-    source_code_language_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('programming_language.id', ondelete='SET NULL'), nullable=False)
-    source_code_language: so.Mapped["ProgrammingLanguage"] = so.relationship(lazy='joined') # type: ignore
+    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, default=default_string_slug, info={'label': _l("Slug")})
+    title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
+    description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
+    source_code: so.Mapped[str] = so.mapped_column(info={'label': _l("Source code")})
+    source_code_language_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('programming_language.id', ondelete='SET NULL'), nullable=False, info={'label': _l("Programming language")})
+    source_code_language: so.Mapped["ProgrammingLanguage"] = so.relationship(lazy='joined', info={'label': _l("Programming language")}) # type: ignore
 
     class Meta:
         verbose_name = _l('Proof of Concept')
@@ -91,6 +91,11 @@ class ProofOfConcept(db.Model):
 
 class IssueHasService(db.Model):
     service_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('service.id', ondelete='CASCADE'), primary_key=True)
+    issue_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('issue.id', ondelete='CASCADE'), primary_key=True)
+
+
+class IssueHasHost(db.Model):
+    host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), primary_key=True)
     issue_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('issue.id', ondelete='CASCADE'), primary_key=True)
 
 
@@ -126,6 +131,11 @@ class Issue(HasComment, db.Model, HasHistory):
                                                                      secondaryjoin='Service.id==IssueHasService.service_id',
                                                                      back_populates="issues",
                                                                      info={'label': _l('Related services')})
+    hosts: so.Mapped[Set["Host"]] = so.relationship(secondary=IssueHasHost.__table__, # type: ignore
+                                                    primaryjoin='Issue.id==IssueHasHost.issue_id',
+                                                    secondaryjoin='Host.id==IssueHasHost.host_id',
+                                                    back_populates="issues",
+                                                    info={'label': _l('Related hosts')})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete="CASCADE"), info={'label': _l("Project")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', backref=db.backref('issues', cascade='all, delete-orphan'), info={'label': _l("Project")}) # type: ignore
     tasks_by_issue: so.Mapped[List["ProjectTask"]] = so.relationship(secondary=IssueHasTask.__table__, # type: ignore

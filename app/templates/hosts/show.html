@@ -304,7 +304,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for issue in host.issues %}
+                                {% for issue in host.all_issues %}
                                 <tr>
                                     <td>{{ issue.id }}</td>
                                     <td>{{ sanitizer.unescape(issue.title)|default("", True) }}</td>

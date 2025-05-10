@@ -1,6 +1,15 @@
 {% extends 'layout/base.html' %}
 {% from 'layout/_macrosses.html' import form_element %}
 
+{% block styles %}
+{{ super() }}
+<style nonce="{{ csp_nonce() }}">
+    .carousel-item {
+        max-height: 450px;
+    }
+</style>
+{% endblock %}
+
 {% block page_content %}
 <div class="row" id="main-row-on-page">
     {% if service != none %}
@@ -36,11 +45,11 @@
                 <button class="carousel-control-prev" type="button" data-bs-target="#screenshot-carousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon bg-dark" aria-hidden="true"></span>
                     <span class="visually-hidden">{{ _("Previous") }}</span>
-                  </button>
-                  <button class="carousel-control-next" type="button" data-bs-target="#screenshot-carousel" data-bs-slide="next">
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#screenshot-carousel" data-bs-slide="next">
                     <span class="carousel-control-next-icon bg-dark" aria-hidden="true"></span>
                     <span class="visually-hidden">{{ _("Next") }}</span>
-                  </button>
+                </button>
             </div>
         </div>
         <h5>{{ _("Host technical information") }}:</h5>

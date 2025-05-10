@@ -3971,10 +3971,6 @@ a.blog-sm p.blog-date:after {
     border-bottom: 1px solid #e1e5f1
 }
 
-.carousel-item {
-    max-height: 450px
-}
-
 .btn {
     font-size: .9rem;
     -webkit-border-radius: 0;

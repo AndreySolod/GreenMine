@@ -36,9 +36,11 @@ def sidebar(current_object, act: str, **kwargs) -> SidebarElement:
         sel_exist = SidebarElementSublink(_l("Existing issues"), url_for('issues.exist_issue_index', project_id=proj.id), con=="Issue" and act=="exist-index")
         sels.append(sel_exist)
         sel_positive = SidebarElementSublink(_l("Fixed issues"), url_for('issues.positive_issue_index', project_id=proj.id), con=="Issue" and act=="positive-index")
+        sel_carousel = SidebarElementSublink(_l("Issue carousel"), url_for('issues.issue_carousel', project_id=proj.id), con=="Issue" and act=="carousel")
         sel1 = SidebarElementSublink(_l("All issues"), url_for('issues.issue_index', project_id=proj.id), con=='Issue' and act=='index')
         sels.append(sel_positive)
         sels.append(sel1)
+        sels.append(sel_carousel)
     if project_role_can_make_action(current_user, Issue(), 'create', project=proj):
         sel2 = SidebarElementSublink(_l("Add new issue"), url_for('issues.issue_new', project_id=proj.id), con=='Issue' and act=='new')
         sels.append(sel2)
@@ -70,6 +72,9 @@ def environment(obj, action, **kwargs):
             act1 = CurrentObjectAction(_l("Add new issue"), "fa-solid fa-square-plus", url_for('issues.issue_new', project_id=obj.project.id))
             acts.append(act1)
         current_object = CurrentObjectInfo(_l("Existing issues"), obj.Meta.icon_index, subtitle=obj.project.fulltitle, actions=acts)
+    elif action == 'carousel':
+        title = _l("Issue carousel")
+        current_object = CurrentObjectInfo(_l("Issue carousel"), "fa-brands fa-slideshare", subtitle=obj.project.fulltitle)
     elif action == 'show':
         title = _l("Issue #%(issue_id)s", issue_id=obj.id)
         if project_role_can_make_action(current_user, obj, 'update'):
