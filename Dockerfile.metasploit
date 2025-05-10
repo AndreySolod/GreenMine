@@ -1,0 +1,7 @@
+FROM ruby:latest
+RUN apt update && apt -y dist-upgrade && apt install curl
+RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall && chmod 755 msfinstall && ./msfinstall
+
+ENV MSFPASSWORD=secret
+ENV MSFPORT=55553
+CMD msfrpcd -P ${MSFPASSWORD} -f -n -p ${MSFPORT}

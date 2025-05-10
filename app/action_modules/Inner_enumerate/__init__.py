@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import WebDriverException
 from app.controllers.forms import FlaskForm, TreeSelectMultipleField
 from app.action_modules.classes import ActionModule
+from app.helpers.webfiles_helpers import gen_new_name_for_file_or_dir
 from app import db
 import logging
 from flask_babel import lazy_gettext as _l
@@ -27,11 +28,18 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
     driver.implicitly_wait(int(implicity_wait))
     driver.get(f"{protocol}://{target.host.ip_address}:{target.port}")
     png_data = driver.get_screenshot_as_png()
+    screenshot_directory = session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.project_id==target.project_id, models.FileDirectory.title=="Screenshots"))).first()
+    if screenshot_directory is None:
+        screenshot_directory = models.FileDirectory(title="Screenshots", description="Folder with screenshots of web services", project_id=target.project_id, created_by_id=running_user_id)
+        session.add(screenshot_directory)
+        session.commit()
+    all_files_title = session.scalars(sa.select(models.FileData.title).where(models.FileData.directory_id == screenshot_directory.id)).all()
     if (protocol == 'http'):
         if target.screenshot_http is not None:
             session.delete(target.screenshot_http)
             session.commit()
-        fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
+        fd = models.FileData(title=f"Screenshot {protocol}-{target.host.ip_address}-{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
+        fd.title = gen_new_name_for_file_or_dir(fd.title, all_files_title)
         session.add(fd)
         target.screenshot_http = fd
         target.http_title = driver.title
@@ -39,7 +47,8 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
         if target.screenshot_https is not None:
             session.delete(target.screenshot_https)
             session.commit()
-        fd = models.FileData(title=f"Screenshot {protocol}://{target.host.ip_address}:{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
+        fd = models.FileData(title=f"Screenshot {protocol}-{target.host.ip_address}-{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
+        fd.title = gen_new_name_for_file_or_dir(fd.title, all_files_title)
         session.add(fd)
         target.screenshot_https = fd
         target.https_title = driver.title

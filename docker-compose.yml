@@ -45,6 +45,9 @@ services:
             - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
             - CELERY_BROKER_URL=redis://@redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
+            - METASPLOIT_HOST=metasploit
+            - METASPLOIT_PORT=55553
+            - METASPLOIT_PASSWORD=secret
         networks:
             - innerNetwork
         logging:
@@ -90,6 +93,25 @@ services:
             - innerNetwork
         volumes:
             - "/etc/localtime:/etc/localtime:ro"
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
+
+    metasploit:
+        container_name: metasploit
+        image: metasploit:latest
+        build:
+            context: .
+            dockerfile: Dockerfile.metasploit
+        restart: always
+        hostname: metasploit
+        environment:
+            - MSFPASSWORD=secret
+        networks:
+            - innerNetwork
         logging:
             driver: "json-file"
             options:
