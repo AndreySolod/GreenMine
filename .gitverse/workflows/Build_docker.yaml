@@ -6,7 +6,7 @@ env:
 jobs:
   build-test:
     name: Build and push docker container
-    runs-on: ubuntu-latest
+    runs-on: c8bb656bd049
     container:
       image: catthehacker/ubuntu:act-latest
       options: --cpus=0.5 --memory=2G --net=bridge
