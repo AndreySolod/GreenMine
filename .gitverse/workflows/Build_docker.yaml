@@ -7,8 +7,6 @@ jobs:
   build-test:
     name: Build and push docker container
     runs-on: ubuntu-cloud-runner
-    container:
-      options: --cpus=0.5 --memory=2G --net=bridge
     steps:
       - name: Checkout to the branch
         uses: https://github.com/actions/checkout@v3
