@@ -6,8 +6,9 @@ env:
 jobs:
   build-test:
     name: Build and push docker container
-    runs-on: ubuntu-cloud-runner
+    runs-on: ubuntu-latest
     container:
+      image: catthehacker/ubuntu:act-latest
       options: --cpus=0.5 --memory=2G --net=bridge
     steps:
       - name: Checkout to the branch
