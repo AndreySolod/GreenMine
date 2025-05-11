@@ -1,19 +1,18 @@
-name: Демонстрация GitVerse Cloud CI/CD
+name: Простой пример использования GitVerse CI/CD
 on:
-  push:
+ push:
 jobs:
   build-test:
-    name: Cloud Runner Demo
+    name: Test context
+    # для примера мы используем запуск на облачном раннере https://gitverse.ru/docs/knowledge-base/actions/cloud-runners/
     runs-on: ubuntu-cloud-runner
-    container:
-      options: --cpus=0.5 --memory=2G --net=bridge ## Ограничения по CPU (50%) и RAM
     steps:
       - name: Display event name
         run: echo ${{ gitverse.event_name }}
       - name: Display Workflow
         run: echo ${{ gitverse.workflow }}
       - name: Display repository name
-        run: echo ${{ gitverse.Repository}}
+        run: echo ${{ gitverse.Repository }}
       - name: Display repository owner
         run: echo ${{ gitverse.repository_owner }}
       - name: Display actor
