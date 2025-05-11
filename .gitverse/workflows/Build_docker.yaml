@@ -7,8 +7,8 @@ jobs:
     # для примера мы используем запуск на облачном раннере https://gitverse.ru/docs/knowledge-base/actions/cloud-runners/
     runs-on: ubuntu-cloud-runner
     steps:
-      - name: Display event name
-        run: echo ${{ gitverse.event_name }}
+      - name: Checkout to the branch
+        uses: https://github.com/actions/checkout@v3
       - name: Display Workflow
         run: echo ${{ gitverse.workflow }}
       - name: Display repository name
