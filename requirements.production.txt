@@ -24,7 +24,7 @@ celery
 redis
 flask-socketio
 flask-babel
-pybluemonday
+nh3
 docxtpl
 packaging
 gostcrypto
@@ -32,4 +32,3 @@ psycopg
 gunicorn
 gevent-websocket
 git+https://gitverse.ru/NekiyUser/CVE-2022-1026
-pymetasploit3

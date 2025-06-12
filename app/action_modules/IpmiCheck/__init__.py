@@ -50,7 +50,7 @@ def console_read(console_data):
 
 def action_run(target: models.Service, running_user_id: int, session: Session, locale: str="en") -> Dict[str, Union[str, List[Dict[str, str]]]]:
     global CONSOLE_BUSY, IPMI_VERSION, IPMI_ACTION, FOUND_HASHES
-    client = MsfRpcClient(current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'], server=current_app.config['METASPLOIT_HOST'])
+    client = MsfRpcClient(current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'], server=current_app.config['METASPLOIT_HOST'], ssl=True)
     console = MsfRpcConsole(client, cb=console_read)
     # Firstly, we check all host on ipmi version
     IPMI_ACTION = "ipmi_version"
@@ -129,6 +129,7 @@ class ModuleInitForm(FlaskForm):
                                                                                                     .where(sa.and_(models.Network.project_id == project_id,
                                                                                                                    models.Service.access_protocol_id == ipmi_mark_nmap.id)))]
     targets =TreeSelectMultipleField(_l("Services:"), coerce=int, description=_l("Choose targets to exploit"), validators=[validators.Optional()])
+    submit = wtforms.SubmitField(_l('Run'))
 
 
 class IPMIcheck(ActionModule):

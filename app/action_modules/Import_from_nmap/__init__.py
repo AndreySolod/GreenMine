@@ -1,4 +1,4 @@
-from app import db, sanitizer
+from app import db, sanitizer, create_app
 from app.action_modules.classes import ActionModule
 import app.models as models
 import sqlalchemy as sa
@@ -12,6 +12,8 @@ import wtforms.validators as validators
 import flask_wtf.file as wtfile
 from flask_babel import lazy_gettext as _l
 from .nmap_script_processing import NmapScriptProcessor
+import logging
+logger = logging.getLogger("Import from nmap")
 
 
 def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
@@ -43,12 +45,12 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             if host_ip in network.ip_address:
                 return network
         return None
-    def create_host_if_not_exist(host_ip: ipaddress.IPv4Address) -> models.Host:
+    def create_host_if_not_exist(host_ip: ipaddress.IPv4Address, current_user_id: int) -> models.Host:
         ''' Trying to create host if them is not exist. Returned Host if they exist and create Host and saved it otherwise '''
         host = session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id, models.Host.ip_address == host_ip))).first()
         if host is not None:
             return host
-        host = models.Host(ip_address=host_ip)
+        host = models.Host(ip_address=host_ip, created_by_id=current_user_id)
         return host
     
     def create_service_if_not_exist(host: models.Host, portid: int, transport_proto: str) -> Optional[models.Service]:
@@ -68,7 +70,7 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             nmap_file_data = nmap_file_data.decode('utf8') + "</nmaprun>"
             nmap_etree = ElementTree.fromstring(nmap_file_data)
         except ElementTree.ParseError:
-            print("Error when parsing Nmap file data")
+            logger.error("Error when parsing Nmap file data")
             return None
     
     if add_host_with_only_arp_response:
@@ -85,12 +87,11 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
             if status_state == 'up':
                 network = get_network_by_host(ipaddress.IPv4Address(ip_addr))
                 if network is not None and mac_addr != '':
-                    new_host = create_host_if_not_exist(ipaddress.IPv4Address(ip_addr))
+                    new_host = create_host_if_not_exist(ipaddress.IPv4Address(ip_addr), current_user_id)
                     new_host.mac = mac_addr
                     new_host.state = host_status_up
                     new_host.state_reason = status_reason
                     new_host.from_network = network
-                    new_host.created_by_id = current_user_id
                     session.add(new_host)
     # Processing pure hosts and ports
     for host in nmap_etree.iter('host'):
@@ -104,9 +105,8 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
         current_network = get_network_by_host(ipaddress.IPv4Address(ip_addr))
         if current_network is None:
             continue
-        current_host = create_host_if_not_exist(ip_addr)
+        current_host = create_host_if_not_exist(ip_addr, current_user_id)
         current_host.mac = mac_addr
-        current_host.created_by_id = current_user_id
         current_host.from_network = current_network
         # processing ports
         for port in host.iter('port'):
@@ -202,8 +202,8 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
 def exploit(filled_form: dict, running_user: int, default_options: dict, locale: str, project_id: int) -> None:
     with so.sessionmaker(bind=db.engine)() as session:
         action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
-                filled_form["ignore_host_without_open_ports_and_arp_response"],
-                filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"], session=session, locale=locale)
+                   filled_form["ignore_host_without_open_ports_and_arp_response"],
+                   filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"], session=session, locale=locale)
 
 
 class AdminOptionsForm(FlaskForm):

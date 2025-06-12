@@ -24,9 +24,8 @@ celery
 redis
 flask-socketio
 flask-babel
-pybluemonday
+nh3
 docxtpl
 packaging
 gostcrypto
 git+https://gitverse.ru/NekiyUser/CVE-2022-1026
-pymetasploit3

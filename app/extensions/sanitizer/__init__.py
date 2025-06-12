@@ -1,16 +1,19 @@
 from flask import Flask
-from pybluemonday import UGCPolicy, Policy
-from typing import List, Optional
+from typing import Optional, Set
 from jinja2.filters import Markup
 from bs4 import BeautifulSoup
+from nh3 import clean, ALLOWED_ATTRIBUTES
+from copy import deepcopy
 
 
 class TextSanitizerManager:
     ''' Sanitize all text to safety use with various WYSIWYG editos  '''
-    def __init__(self, app: Optional[Flask]=None, policy: Policy=UGCPolicy(), allowed_attrs: Optional[List[str]]=["class", "style"]):
-        self.policy = policy
-        if allowed_attrs:
-            self.policy.AllowAttrs(*allowed_attrs).Globally()
+    def __init__(self, app: Optional[Flask]=None, allowed_attrs: Optional[Set[str]]=set(["class", "style", 'href', 'src', 'width', 'height', 'colspan']), allowed_tags: Optional[Set[str]]=set(['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                                                                                                                                            'strong', 'i', 'u', 's', 'a', 'ul', 'ol', 'li', 'pre', 'code',
+                                                                                                                                            'mark', 'span', 'hr', 'figure', 'img', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td'])):
+        self.allowed_attrs = deepcopy(ALLOWED_ATTRIBUTES)
+        self.allowed_attrs.update({'ul': {'style', 'class'}, 'ol': {'style', 'class'}, 'p': {'style'}, 'code': {'class'}, 'span': {'style'}, 'mark': {'class'}, 'figure': {'class'}})
+        self.allowed_tags = allowed_tags
         if app:
             self.init_app(app)
         
@@ -27,7 +30,7 @@ class TextSanitizerManager:
             return text
         if not isinstance(text, str):
             raise TypeError("Paramether text must being a string or None!")
-        return self.policy.sanitize(text)
+        return clean(text, tags=self.allowed_tags, attributes=self.allowed_attrs, link_rel="nofollow")
     
     def escape(self, text: Optional[str], length: Optional[int] = None) -> Optional[str]:
         ''' Returned string that convert all tags values as escaped. Work via jinja2.filters.escape filter.
