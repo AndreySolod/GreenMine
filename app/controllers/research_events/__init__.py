@@ -44,6 +44,9 @@ def sidebar(current_object, act: str, **kwargs):
     if project_role_can_make_action(current_user, models.PentestResearchEvent(), 'show_timeline', project=proj) or project_role_can_make_action(current_user, models.PentestOrganizationDetectionEvent(), 'show_timeline', project=proj):
         sel5 = SidebarElementSublink(_l("Events timeline"), url_for('pentest_events.all_events_timeline', project_id=proj.id), con=='PentestResearchEvent' and act == 'timeline')
         sels.append(sel5)
+    if project_role_can_make_action(current_user, models.PentestResearchEvent(), 'pentest_chain', project=proj):
+        sel6 = SidebarElementSublink(_l("Event chains"), url_for('pentest_events.research_events_chain', project_id=proj.id), con=='PentestResearchEvent' and act=='pentest_chain')
+        sels.append(sel6)
     if len(sels) == 0:
         return None
     return [SidebarElement(_l("Research events"), url_for('pentest_events.researcher_event_index', project_id=proj.id), models.PentestResearchEvent.Meta.icon, con in ["PentestResearchEvent", "PentestOrganizationDetectionEvent"], sels)]
@@ -77,6 +80,9 @@ def environment(obj, action, **kwargs):
             case 'timeline':
                 title = _l("Events timeline")
                 current_object = CurrentObjectInfo(title, "fa-solid fa-timeline", subtitle=_l("Comparison between research events and exposure detection events"))
+            case 'pentest_chain':
+                title = _l("Events chain")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-chart-diagram", subtitle=_l("Chains of security research actions"))
     elif isinstance(obj, models.PentestOrganizationDetectionEvent):
         match action:
             case 'index':

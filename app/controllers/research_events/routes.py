@@ -8,6 +8,7 @@ from flask_login import current_user
 import app.models as models
 import app.controllers.research_events.forms as forms
 from flask_babel import lazy_gettext as _l
+import json
 
 
 @bp.route('/research-events/index')
@@ -65,6 +66,7 @@ def researcher_event_show(event_id):
     event = db.get_or_404(models.PentestResearchEvent, event_id)
     project_role_can_make_action_or_abort(current_user, event, 'show')
     ctx = get_default_environment(event, 'show')
+    side_libraries.library_required('bootstrap_table')
     return render_template('research_events/pentest-show.html', **ctx, event=event)
 
 
@@ -77,7 +79,7 @@ def researcher_event_edit(event_id):
         abort(400)
     event = db.get_or_404(models.PentestResearchEvent, event_id)
     project_role_can_make_action_or_abort(current_user, event, 'update')
-    form = forms.PentestResearchEventEditForm(event.project)
+    form = forms.PentestResearchEventEditForm(event.project, event)
     if form.validate_on_submit():
         form.populate_obj(db.session, event, current_user)
         event.updated_by = current_user
@@ -237,3 +239,25 @@ def all_events_timeline():
     ctx = get_default_environment(models.PentestResearchEvent(project=project), 'timeline')
     context = {'event_list': event_list}
     return render_template('research_events/timeline.html', **ctx, **context)
+
+
+@bp.route('/research-events/pentest-chain')
+def research_events_chain():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request pentest chain with non-integer project_id: {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, models.PentestResearchEvent(), 'pentest_chain', project=project)
+    events = db.session.scalars(sa.select(models.PentestResearchEvent).where(models.PentestResearchEvent.project_id == project.id)).all()
+    ctx = get_default_environment(models.PentestResearchEvent(project=project), 'pentest_chain')
+    nodes = [{"id": i.id, "label": i.title} for i in events]
+    edges = []
+    for evt in events:
+        if len(evt.follow_from_events) != 0:
+            for fe in evt.follow_from_events:
+                edges.append({'from': fe.id, 'to': evt.id, 'arrows': 'to'})
+    context = {'nodes': json.dumps(nodes), 'edges': json.dumps(edges)}
+    side_libraries.library_required('visjs')
+    return render_template('research_events/pentest-chain.html', **ctx, **context)

@@ -1,4 +1,4 @@
-from app.controllers.forms import FlaskForm, WysiwygField, Select2Field, TreeSelectSingleField
+from app.controllers.forms import FlaskForm, WysiwygField, Select2Field, TreeSelectSingleField, TreeSelectMultipleField
 import app.models as models
 from flask import url_for, g
 from app import db
@@ -26,6 +26,7 @@ class PentestResearchEventForm(FlaskForm):
         self.operator_id.locale = g.locale
         self.operator_id.data = current_user.id
         self.mitre_attack_technique_id.choices = [('0', '')] + [ (str(i.id), i) for i in db.session.scalars(sa.select(models.MitreAttackTechnique))]
+        self.follow_from_events.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.PentestResearchEvent).where(models.PentestResearchEvent.project_id == project.id))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.PentestResearchEvent.title.info["label"]), validators=[
                                 validators.DataRequired(message=_l("This field is mandatory!")),
                                 validators.Length(max=models.PentestResearchEvent.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.PentestResearchEvent.title.type.length))])
@@ -55,6 +56,7 @@ class PentestResearchEventForm(FlaskForm):
     detected_id = Select2Field(models.EvidenceOfEventDetected, label=_l("%(field_name)s:", field_name=models.PentestResearchEvent.detected.info["label"]), validators=[validators.InputRequired()])
     prevented_id = Select2Field(models.EvidenceOfEventPrevented, label=_l("%(field_name)s:", field_name=models.PentestResearchEvent.prevented.info["label"]), validators=[validators.InputRequired()])
     mitre_attack_technique_id = TreeSelectSingleField(_l("%(field_name)s:", field_name=models.PentestResearchEvent.mitre_attack_technique_id.info["label"]), validators=[validators.Optional()])
+    follow_from_events = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.PentestResearchEvent.follow_from_events.info["label"]), validators=[validators.Optional()])
 
 
 class PentestResearchEventCreateForm(PentestResearchEventForm):
@@ -62,6 +64,9 @@ class PentestResearchEventCreateForm(PentestResearchEventForm):
 
 
 class PentestResearchEventEditForm(PentestResearchEventForm):
+    def __init__(self, project, research_event, *args, **kwargs):
+        super(PentestResearchEventEditForm, self).__init__(project, *args, **kwargs)
+        self.follow_from_events.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.PentestResearchEvent).where(sa.and_(models.PentestResearchEvent.project_id == project.id, models.PentestResearchEvent.id != research_event.id)))]
     submit = wtforms.SubmitField(_l("Save"))
 
 

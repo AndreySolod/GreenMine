@@ -5364,3 +5364,8 @@ label {
     background-color: var(--secondary-main-color);
     color: var(--main-text-color); 
 }
+
+.full-screen-element {
+    height: 80vh;
+    overflow: auto;
+}

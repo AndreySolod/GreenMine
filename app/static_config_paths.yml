@@ -67,3 +67,8 @@ libraries:
     css:
     js:
       - "js/chart.umd.min.js"
+  visjs:
+    css:
+      - "npm/node_modules/vis-network/dist/dist/vis-network.min.css"
+    js:
+      - "npm/node_modules/vis-network/dist/vis-network.min.js"
