@@ -72,7 +72,8 @@ class Network(HasComment, db.Model, HasHistory):
         icon_index = 'fa-solid fa-network-wired'
         project_permission_actions = {'index': _l("Show object list"), 'create': _l("Create new object"), 'show': _l("Show object card"),
                                       'update': _l("Edit and update object"), 'delete': _l("Delete object"), 'add_comment': _l("Add comment to object"),
-                                      'show_comments': _l("Show comment list of object"), 'show_history': _l("Show object history")}
+                                      'show_comments': _l("Show comment list of object"), 'show_history': _l("Show object history"),
+                                      'show_graph': _l("Show network graph")}
 
 
 @project_enumerated_object

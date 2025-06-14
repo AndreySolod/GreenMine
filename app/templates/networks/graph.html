@@ -1,0 +1,53 @@
+{% extends 'layout/base.html' %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+             <div id="network-graph-scheme" class="full-screen-element"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+        var nodes = new vis.DataSet(JSON.parse("{{ nodes|escapejs }}"));
+    var edges = new vis.DataSet(JSON.parse("{{ edges|escapejs }}"));
+    var container = document.getElementById('network-graph-scheme');
+    var data = {
+        nodes: nodes,
+        edges: edges,
+    };
+    var options = {autoResize: true,
+        height: '100%',
+        width: '100%',
+        locale: '{{ g.locale }}'};
+    var network = new vis.Network(container, data, options);
+    network.on('doubleClick', function(properties) {
+        if(properties.nodes.length == 1) {
+            let node_id = properties.nodes[0];
+            if(node_id.startsWith('network_')) {
+                fetch("{{ url_for('networks.add_hosts_to_network_graph', network_id='__network_id') }}".replace('__network_id', node_id.slice(8)))
+                .then(response => { if (response.ok) { return response.json() } })
+                .then((data) => { 
+                    nodes.update(data.nodes);
+                    edges.update(data.edges);
+                 })
+            }
+            else if(node_id.startsWith('host_')) {
+                fetch("{{ url_for('networks.add_services_to_network_graph', host_id='__host_id') }}".replace('__host_id', node_id.slice(5)))
+                .then(response => { if (response.ok) { return response.json() } })
+                .then((data) => {
+                    nodes.update(data.nodes);
+                    edges.update(data.edges);
+                })
+            }
+            else if(node_id.startsWith('service_')) {
+                window.location.href = "{{ url_for('networks.service_show', service_id='__service_id') }}".replace('__service_id', node_id.slice(8))
+            }
+        };
+    });
+</script>
+{% endblock %}

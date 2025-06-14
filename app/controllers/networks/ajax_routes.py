@@ -215,3 +215,43 @@ def get_select2_hosts_interfaces_data():
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request interfaces for host {host.id} via select2-data")
     result = {'results': [{'id': i.id, 'text': str(i.ip_address)} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
     return jsonify(result)
+
+
+@bp.route('/network/graph/add_hosts')
+def add_hosts_to_network_graph():
+    try:
+        network_id = int(request.args.get('network_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to request hosts to network graph with non-integer network_id {request.args.get('network_id')}")
+        abort(400)
+    network = db.get_or_404(models.Network, network_id)
+    project_role_can_make_action_or_abort(current_user, network, 'show_graph')
+    nodes = []
+    edges = []
+    for host in network.to_hosts:
+        nodes.append({'id': 'host_' + str(host.id), 'label': str(host.ip_address)})
+        edges.append({'from': 'network_' + str(network.id), 'to': 'host_' + str(host.id), 'arrows': 'to'})
+        for iface in host.interfaces:
+            new_edge = {'from': 'host_' + str(host.id), 'to': 'host_' + str(iface.id), 'arrows': 'to,from'}
+            new_edge_another = {'from': 'host_' + str(iface.id), 'to': 'host_' + str(host.id), 'arrows': 'to,from'}
+            if not new_edge in edges and not new_edge_another in edges:
+                edges.append(new_edge)
+    return jsonify({'nodes': nodes, 'edges': edges})
+
+
+@bp.route('/networks/graph/add_services')
+def add_services_to_network_graph():
+    try:
+        host_id = int(request.args.get('host_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to request service to network graph with non-integer host_id {request.args.get('host_id')}")
+        abort(400)
+    host = db.get_or_404(models.Host, host_id)
+    project_role_can_make_action_or_abort(current_user, host.from_network, 'show_graph')
+    nodes = []
+    edges = []
+    for service in host.services:
+        service_title = str(service.port) + ": " + service.title if service.title else str(service.port)
+        nodes.append({'id': 'service_' + str(service.id), 'label': service_title, 'color': 'yellow'})
+        edges.append({'from': 'host_' + str(host.id), 'to': 'service_' + str(service.id), 'arrows': 'to'})
+    return jsonify({'nodes': nodes, 'edges': edges})

@@ -39,6 +39,9 @@ def sidebar_network(current_object, act: str, **kwargs) -> Optional[SidebarEleme
     if project_role_can_make_action(current_user, Network(), 'create', project=proj):
         sel32 = SidebarElementSublink(_l("Add new network"), url_for('networks.network_new', project_id=proj.id), con=="Network" and act=='new')
         sels.append(sel32)
+    if project_role_can_make_action(current_user, Network(), 'show_graph', project=proj):
+        sel33 = SidebarElementSublink(_l("Network graph"), url_for('networks.network_graph', project_id=proj.id), con=='Network' and act=='show_graph')
+        sels.append(sel33)
     if len(sels) == 0:
         return None
     return SidebarElement(_l("Networks"), url_for('networks.network_index', project_id=proj.id), Network.Meta.icon_index, con=='Network', sels)
@@ -118,6 +121,9 @@ def environment_network(obj, action, **kwargs):
     elif action == 'edit':
         title = _l("Edit network «%(ip_addr)s»", ip_addr=str(obj.ip_address))
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)
+    elif action == 'show_graph':
+        title = _l("Project #%(project_id)s: Network graph", project_id=obj.project.id)
+        current_object = CurrentObjectInfo(_l("Network graph"), "fa-solid fa-hexagon-nodes", subtitle=_l("Graph of connections between subnets"))
     return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 

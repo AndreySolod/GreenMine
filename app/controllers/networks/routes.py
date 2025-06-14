@@ -599,3 +599,23 @@ def multiple_import_hosts():
     ctx = get_default_environment(models.Host(), 'multiple_import', proj=project)
     context = {'form': form, 'project': project}
     return render_template('hosts/multiple_import.html', **ctx, **context)
+
+
+@bp.route('/networks/graph')
+def network_graph():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to request network graph with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, models.Network(), 'show_graph', project=project)
+    networks = db.session.scalars(sa.select(models.Network).where(models.Network.project_id == project.id))
+    nodes = []
+    edges = []
+    for network in networks:
+        nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.main_color, 'font': {'color': current_user.theme_style.main_text_color}})
+    ctx = get_default_environment(models.Network(project=project), 'show_graph')
+    context = {'nodes': json.dumps(nodes), 'edges': json.dumps(edges)}
+    side_libraries.library_required('visjs')
+    return render_template('networks/graph.html', **ctx, **context)
