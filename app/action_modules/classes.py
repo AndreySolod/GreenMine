@@ -4,11 +4,12 @@ from flask import Flask
 from app.action_modules import AutomationModules
 from app.controllers.forms import FlaskForm
 from sqlalchemy.orm.session import Session
-from typing import Callable, Any
+from typing import Callable, Any, Dict
 
 
 class ActionModuleError(Exception):
     pass
+
 
 class ActionModule:
     def __init_subclass__(cls):

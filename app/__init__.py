@@ -68,22 +68,6 @@ class FlaskGreenMine(Flask):
         check_global_settings_on_init_app(self, logger)
     def run(self, *args, **kwargs):
         self.setting_custom_attributes_for_application()
-        # Run background tasks
-        if not self.debug or (self.debug and not werkzeug.serving.is_running_from_reloader()):
-            processes = []
-            def clean_all_subprocesses():
-                ''' Break all subprocesses, specified in processes variable '''
-                for i in processes:
-                    i.terminate()
-            atexit.register(clean_all_subprocesses)
-            def celery_worker_run():
-                celery_worker = celery.app.Worker(loglevel="INFO", concurrency=self.config["CELERY_WORKERS_CONCURRENCY_COUNT"])
-                celery_worker.start()
-            for _ in range(self.config["CELERY_WORKERS_COUNT"]):
-                #p1 = Process(target=os.system, args=("celery -A app.celery.run worker --loglevel=info", ), daemon=True)
-                p1 = Process(target=celery_worker_run, daemon=True)
-                p1.start()
-                processes.append(p1)
         return super(FlaskGreenMine, self).run(*args, **kwargs)
 
 def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenMine:

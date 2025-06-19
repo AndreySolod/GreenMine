@@ -26,6 +26,9 @@ def console_read(console_data):
     for line in console_data['data'].split('\n'):
         if "Detected RDP on" in line: #Detected RDP on 10.0.0.1:3389     (name:SOME-NAME) (domain:SOME-DOMAIN) (domain_fqdn:SOME-FQDN) (server_fqdn:SOME-FQDN) (os_version:10.0.19041) (Requires NLA: Yes)
             rdp_props = re.findall(r".*?- Detected RDP on .*?\(name:(.*?)\) \(domain:(.*?)\) \(domain_fqdn:(.*?)\) \(server_fqdn:(.*?)\) \(os_version:(.*?)\) \(Requires NLA: (.*?)\)", line)
+            if len(rdp_props) == 0:
+                logger.warning(f"Error when parse rdp props. String: {line}")
+                continue
             RDP_PROPS = rdp_props[0]
     CONSOLE_BUSY = console_data['busy']
 
@@ -64,6 +67,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
                 issue.created_by_id = running_user_id
                 issue.project_id = target.host.from_network.project_id
                 session.add(issue)
+                session.commit()
         if issue:
             issue.services.add(target)
     session.add(target)
