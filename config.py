@@ -61,3 +61,9 @@ class ProductionConfig(DevelopmentConfig):
     USER_ACTION_LOGGING_FILE = os.environ.get("USER_ACTION_LOGGING_FILE") 
     FLASK_LOGGING_FILE = os.environ.get("FLASK_LOGGING_FILE")
     ERROR_LOGGING_FILE = os.environ.get("ERROR_LOGGING_FILE")
+
+
+class TestConfig(DevelopmentConfig):
+    SECRET_KEY = 'secret'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test_database.db' + '?mode=memory&cache=shared')
+    WTF_CSRF_ENABLED = False

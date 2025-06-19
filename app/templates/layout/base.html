@@ -12,86 +12,14 @@
     <title>{% block title %}{% if title %}{{ title }} - PCF{% else %}{{ _("Welcome to PCF") }}{% endif %}{% endblock %}</title>
     {% block styles %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" nonce="{{ csp_nonce() }}">
-		{% if not current_user.is_anonymous %}
+		{% if not current_user.is_anonymous and current_user.programming_language_theme != none %}
 		<link rel="stylesheet" href="{{ url_for('static', filename='js/highlight/styles/' + current_user.programming_language_theme.relative_path()) }}" nonce="{{ csp_nonce() }}">
         {% endif %}
-		{% if not (ckeditor_height) is defined %}
-		<style nonce="{{ csp_nonce() }}">
-			.ck-editor__editable_inline {
-				min-height: 400px;
-			}
-		</style>
-		{% else %}
-		<style nonce="{{ csp_nonce() }}">
-			.ck-editor__editable_inline {
-				min-height: {{ ckeditor_height }};
-			}
-		</style>
-		{% endif %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome/css/all.min.css') }}" nonce="{{ csp_nonce() }}">
+		<link rel="stylesheet" href="{{ url_for('generic.get_ckeditor_styles', height=ckeditor_height) }}" type="text/css" nonce="{{ csp_nonce() }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome/css/all.min.css') }}" type="text/css" nonce="{{ csp_nonce() }}">
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/icomoon/style.css') }}" nonce="{{ csp_nonce() }}">
-        {% if not (need_main_style) is defined or need_main_style %}
-			{% if not current_user.is_anonymous %}
-			<style nonce="{{ csp_nonce() }}">
-				:root {
-					{% if not archived is defined or not archived %}
-					--main-color: {{ current_user.theme_style.main_color }};
-					--neightboring-main-color: {{ current_user.theme_style.neightboring_main_color }};
-					--secondary-main-color: {{ current_user.theme_style.secondary_main_color }};
-					--main-text-color: {{ current_user.theme_style.main_text_color }};
-					{% else %}
-					--main-color: {{ current_user.theme_style.archived_main_color }};
-					--neightboring-main-color: {{ current_user.theme_style.archived_neightboring_main_color }};
-					--secondary-main-color: {{ current_user.theme_style.archived_secondary_main_color }};
-					--main-text-color: {{ current_user.theme_style.archived_main_text_color }};
-					{% endif %}
-					--hovering-main-element-color: {{ current_user.theme_style.hovering_main_element_color }};
-					--sidebar-background-color: {{ current_user.theme_style.sidebar_background_color }};
-					--main-content-background-color: {{ current_user.theme_style.main_content_background_color }};
-					--color-card-background-header: {{ current_user.theme_style.color_card_background_header }};
-					--color-chats-hour: {{ current_user.theme_style.color_chats_hour }};
-					--color-chats-my-message: {{ current_user.theme_style.color_chats_my_message }};
-					--color-chats-my-message-text: {{ current_user.theme_style.color_chats_my_message_text }};
-					--color-chats-other-message: {{ current_user.theme_style.color_chats_other_message }};
-					--color-chats-other-message-text: {{ current_user.theme_style.color_chats_other_message_text }};
-					--bs-card-color: {{ current_user.theme_style.bs_card_color }};
-					--dark-color: {{ current_user.theme_style.dark_color }};
-					--timeline-time-color: {{ current_user.theme_style.timeline_time_color }};
-					--timeline-line-color: {{ current_user.theme_style.timeline_line_color }};
-					--timeline-red-team-background-color: {{ current_user.theme_style.timeline_red_team_background_color }};
-					--timeline-red-team-text-color: {{ current_user.theme_style.timeline_red_team_text_color }};
-					--timeline-blue-team-background-color: {{ current_user.theme_style.timeline_blue_team_background_color }};
-					--timeline-blue-team-text-color: {{ current_user.theme_style.timeline_blue_team_text_color }};
-
-				}
-			</style>
-			{% else %}
-			<style nonce="{{ csp_nonce() }}">
-				:root {
-					--main-color: #0a7700;
-					--neightboring-main-color: #167000;
-					--secondary-main-color: #65ab53;
-					--main-text-color: #ffffff;
-					--hovering-main-element-color: #1fb7dd;
-					--sidebar-background-color: #2b394c;
-					--main-content-background-color: #e6ecf3;
-					--color-card-background-header: #f0f4f9;
-					--color-chats-hour: #004715;
-					--color-chats-my-message: #89ff99;
-					--color-chats-my-message-text: #000000;
-					--color-chats-other-message: #e6ecf3;
-					--color-chats-other-message-text: #000000;
-					--bs-card-color: #000000;
-					--dark-color: #777;
-					--timeline-time-color: #8796af;
-					--timeline-line-color: #000;
-					--timeline-red-team-background-color: rgb(138, 2, 2);
-					--timeline-red-team-text-color: #fff;
-					--timeline-blue-team-background-color: rgb(0, 0, 138);
-					--timeline-blue-team-text-color: #fff;
-				}
-			</style>
-			{% endif %}
+        {% if (not (need_main_style) is defined or need_main_style) %}
+			<link rel="stylesheet" href="{{ url_for('generic.get_current_user_theme_style', archived=archived) }}" nonce="{{ csp_nonce() }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='css/main.min.css') }}" type="text/css" nonce="{{ csp_nonce() }}">
         {% endif %}
 		{{ side_libraries.get_css_required_libraries() }}

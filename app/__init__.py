@@ -42,7 +42,7 @@ convention = {
 
 metadata = MetaData(naming_convention=convention)
 
-# Main paramethers for Flask application:
+# Main parameters for Flask application:
 db = SQLAlchemy(metadata=metadata)
 migrate = Migrate(render_as_batch=True)
 moment = Moment()
@@ -59,7 +59,7 @@ babel = Babel()
 csp = CSPManager()
 sanitizer = TextSanitizerManager()
 side_libraries = SideLibraries(libraries_file=Path(__file__).parent / "static_config_paths.yml", always_required_libraries=['notify', 'socketio'])
-password_policy = PasswordPolicyManager(change_password_callback='users.user_change_password_callback', exempt_bp=set(['files']))
+password_policy = PasswordPolicyManager(change_password_callback='users.user_change_password_callback', exempt_bp=set(['files']), exempt_endpoint=set(["generic.get_current_user_theme_style", "generic.get_ckeditor_styles"]))
 
 class FlaskGreenMine(Flask):
     def setting_custom_attributes_for_application(self):

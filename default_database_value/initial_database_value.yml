@@ -605,18 +605,24 @@ TaskState:
 OperationSystemFamily:
     - windows:
         title: "Windows"
+        icon: "ef85ba"
     - linux:
         title: 'Linux'
+        icon: "ef85bc"
     - ios:
         title: "IOS"
+        icon: "ef85b9"
     - ios_xe:
         title: "IOS-XE"
+        icon: "ef85b9"
     - openbsd:
         title: "OpenBSD"
     - android:
         title: "Android"
+        icon: "ef85bb"
     - apple_tv:
         title: "Apple TV"
+        icon: "ef85b9"
     - arubaos:
         title: "ArubaOS"
     - esxi:

@@ -86,7 +86,6 @@ def exploit(filled_form: dict, running_user_id: int, default_options: dict, loca
             target = session.scalars(sa.select(models.Service).where(models.Service.id == int(target))).one()
             logger.info("Trying to exploit " + str(target))
             action_run(target, running_user_id, session, console)
-        print('committing session')
         session.commit()
         console.execute('exit')
 

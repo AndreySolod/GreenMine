@@ -9,6 +9,7 @@ from flask import abort, request, jsonify, current_app
 from flask_login import current_user
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy.exc as exc
+import binascii
 
 
 @bp.route('/networks/<network_id>/get-hosts')
@@ -229,8 +230,12 @@ def add_hosts_to_network_graph():
     nodes = []
     edges = []
     for host in network.to_hosts:
-        nodes.append({'id': 'host_' + str(host.id), 'label': str(host.ip_address)})
-        edges.append({'from': 'network_' + str(network.id), 'to': 'host_' + str(host.id), 'arrows': 'to'})
+        new_node = {'id': 'host_' + str(host.id), 'label': str(host.ip_address)}
+        if host.operation_system_family and host.operation_system_family.icon:
+            new_node["icon"] = {"face": "FontAwesome", "code": binascii.unhexlify(host.operation_system_family.icon.encode()).decode()} # to convert: make fontawesome code (like f17c), then binascii.hexlify("\uf17c".encode())
+            new_node["shape"] = "icon"
+        nodes.append(new_node)
+        edges.append({'from': 'network_' + str(network.id), 'to': 'host_' + str(host.id)})
         for iface in host.interfaces:
             new_edge = {'from': 'host_' + str(host.id), 'to': 'host_' + str(iface.id), 'arrows': 'to,from'}
             new_edge_another = {'from': 'host_' + str(iface.id), 'to': 'host_' + str(host.id), 'arrows': 'to,from'}
@@ -253,5 +258,22 @@ def add_services_to_network_graph():
     for service in host.services:
         service_title = str(service.port) + ": " + service.title if service.title else str(service.port)
         nodes.append({'id': 'service_' + str(service.id), 'label': service_title, 'color': 'yellow'})
-        edges.append({'from': 'host_' + str(host.id), 'to': 'service_' + str(service.id), 'arrows': 'to'})
+        edges.append({'from': 'host_' + str(host.id), 'to': 'service_' + str(service.id)})
+        for accessible_host in service.accessible_from_hosts:
+            edges.append({'from': 'host_' + str(accessible_host.id), 'to': 'service_' + str(service.id), 'arrows': 'to'})
     return jsonify({'nodes': nodes, 'edges': edges})
+
+
+@bp.route('/services/accessible-from-hosts')
+def hosts_from_which_service_are_avaliable():
+    try:
+        service_id = int(request.args.get('service_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to request hosts from which service are avaliable with non-integer service_id {request.args.get('service_id')}")
+        abort(400)
+    service = db.get_or_404(models.Service, service_id)
+    project_role_can_make_action_or_abort(current_user, service, 'show')
+    additional_params = {'obj': models.Host, 'column_index': ['id', 'from_network.title-input', 'title', 'ip_address', 'operation_system_family.title-input'],
+                         'base_select': lambda x: x.join(models.Host.accessible_services).where(sa.and_(models.Service.id == service_id))}
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host from which service are avaliable with service_id {service_id}")
+    return get_bootstrap_table_json_data(request, additional_params)

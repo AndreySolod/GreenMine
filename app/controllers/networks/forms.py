@@ -137,7 +137,7 @@ class ServiceForm(FlaskForm):
         self.issues.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Issue).where(models.Issue.project_id == project_id))]
         self.credentials.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Credential).where(models.Credential.project_id == project_id))]
         self.tasks.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.ProjectTask).where(models.ProjectTask.project_id == project_id))]
-        #self.access_protocol_id.locale = g.locale
+        self.accessible_from_hosts.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(models.Network.project_id == project_id))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Service.title.info["label"]),
                                 validators=[validators.Length(min=0, max=models.Service.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.title.type.length)),
                                             validators.Optional()])
@@ -165,6 +165,7 @@ class ServiceForm(FlaskForm):
     issues = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.issues.info["label"]), validators=[validators.Optional()])
     credentials = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.credentials.info["label"]), validators=[validators.Optional()])
     tasks = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.tasks.info["label"]), validators=[validators.Optional()])
+    accessible_from_hosts = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.accessible_from_hosts.info["label"]), validators=[validators.Optional()])
 
     def validate_host_id(form, field):
         if field.data is None or int(field.data) == 0:

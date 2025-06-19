@@ -5,11 +5,12 @@ import app.controllers.users.teams_forms as forms
 from flask import url_for, flash, abort, redirect, render_template, request
 import sqlalchemy as sa
 from app.helpers.main_page_helpers import DefaultEnvironment
-from flask_login import current_user
+from flask_login import current_user, login_required
 from flask_babel import lazy_gettext as _l
 
 
 @bp.route('/teams/index')
+@login_required
 def team_index():
     teams = db.session.scalars(sa.select(models.Team)).all()
     env = DefaultEnvironment('Team', 'team_index')()
@@ -18,6 +19,7 @@ def team_index():
 
 
 @bp.route('/teams/new', methods=["GET", "POST"])
+@login_required
 def team_new():
     form = forms.get_team_create_form()()
     if form.validate_on_submit():
@@ -37,6 +39,7 @@ def team_new():
 
 
 @bp.route('/teams/<team_id>/show')
+@login_required
 def team_show(team_id):
     try:
         team = db.get_or_404(models.Team, int(team_id))
@@ -49,6 +52,7 @@ def team_show(team_id):
 
 
 @bp.route('/teams/<team_id>edit', methods=["GET", "POST"])
+@login_required
 def team_edit(team_id):
     try:
         team = db.get_or_404(models.Team, int(team_id))
@@ -72,6 +76,7 @@ def team_edit(team_id):
 
 
 @bp.route('/teams/<team_id>/delete', methods=["POST", "DELETE"])
+@login_required
 def team_delete(team_id):
     try:
         team = db.get_or_404(models.Team, int(team_id))

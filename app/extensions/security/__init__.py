@@ -49,8 +49,6 @@ def check_user_need_change_password(callback_endpoint: str, exempt_endpoint: Set
             if not request.endpoint or request.endpoint in exempt_endpoint or request.blueprint in exempt_bp or current_user.is_anonymous or request.endpoint == callback_endpoint:
                 return func(*args, **kwargs)
             if current_user.is_password_expired or current_user.password_expired_date < datetime.datetime.now():
-                print('password_expired:', current_user.is_password_expired)
-                print('date:', current_user.password_expired_date)
                 flash(_l("Your password has expired or the administrator has requested to change it"), 'warning')
                 return redirect(url_for(callback_endpoint, user_id=current_user.id, next=request.url))
             return func(*args, **kwargs)

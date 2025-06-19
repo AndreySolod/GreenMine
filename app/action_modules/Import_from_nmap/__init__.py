@@ -6,28 +6,35 @@ import sqlalchemy.orm as so
 from xml.etree import ElementTree
 import ipaddress
 from typing import Optional
-from app.controllers.forms import FlaskForm
+from app.controllers.forms import FlaskForm, Select2Field
 import wtforms
 import wtforms.validators as validators
 import flask_wtf.file as wtfile
 from flask_babel import lazy_gettext as _l
+from flask import url_for, g
+from app.helpers.projects_helpers import validate_host
 from .nmap_script_processing import NmapScriptProcessor
 import logging
 logger = logging.getLogger("Import from nmap")
 
 
 def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
-               ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True, add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
+               ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
+               add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
+               scanning_host_id: Optional[int]=None,
                session=db.session, locale: str='en'):
     ''' Parse nmap file and create host/service object in project.
         Paramethers:
         :param nmap_file_data: data of nmap file, representated as string;
         :param project_id: project to which create host/service object;
         :param current_user_id: user's id that running a task;
-        :param ignore_closed_ports: did not append a port that have state 'closed' or 'filtered'
-        :param ignore_host_without_open_ports_and_arp_response: did not add a host that haven't an open ports and arp response
-        :param add_host_with_only_arp_response: host with arp-response and with MAC-address will be added to project
-        :param process_operation_system: processing the operation system data, containing in nmap file
+        :param ignore_closed_ports: did not append a port that have state 'closed' or 'filtered';
+        :param ignore_host_without_open_ports_and_arp_response: did not add a host that haven't an open ports and arp response;
+        :param add_host_with_only_arp_response: host with arp-response and with MAC-address will be added to project;
+        :param process_operation_system: processing the operation system data, containing in nmap file;
+        :param scanning_host_id: scanning host's id which or through which the scan was performed. Added as a mutual visibility with this service;
+        :param session: sqlalchemy database session object;
+        :param locale: locale of user, that running a task;
         Features:
         - If network to which host belongs does not exist, the host is skipped;
         - If port transport level protocol (tcp, udp, sctp etc) does not exist in database like string slug field, the port is skipped '''
@@ -36,6 +43,7 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
     port_state_open = session.scalars(sa.select(models.ServicePortState).where(models.ServicePortState.string_slug == 'opened')).one()
     port_state_filtered = session.scalars(sa.select(models.ServicePortState).where(models.ServicePortState.string_slug == 'filtered')).one()
     port_state_closed = session.scalars(sa.select(models.ServicePortState).where(models.ServicePortState.string_slug == 'closed')).one()
+    scanning_host = session.scalars(sa.select(models.Host).where(models.Host.id == scanning_host_id)).first()
     all_device_vendors = session.scalars(sa.select(models.DeviceVendor)).all()
 
     def get_network_by_host(host_ip: ipaddress.IPv4Address) -> Optional[models.Network]:
@@ -54,12 +62,15 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
         return host
     
     def create_service_if_not_exist(host: models.Host, portid: int, transport_proto: str) -> Optional[models.Service]:
+        nonlocal scanning_host
         transport_proto_id = session.execute(sa.select(models.ServiceTransportLevelProtocol.id).where(models.ServiceTransportLevelProtocol.string_slug == transport_proto)).first()
         if transport_proto_id is None:
             return None
         service = session.scalars(sa.select(models.Service).where(sa.and_(models.Service.host_id == host.id, models.Service.port == portid, models.Service.transport_level_protocol_id == transport_proto_id[0]))).first()
         if service is None:
             service = models.Service(host=host, port=portid, transport_level_protocol_id=transport_proto_id[0])
+        if scanning_host is not None:
+            service.accessible_from_hosts.add(scanning_host)
         return service
     
     try:
@@ -203,7 +214,8 @@ def exploit(filled_form: dict, running_user: int, default_options: dict, locale:
     with so.sessionmaker(bind=db.engine)() as session:
         action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
                    filled_form["ignore_host_without_open_ports_and_arp_response"],
-                   filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"], session=session, locale=locale)
+                   filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"],
+                   filled_form["scanning_host"], session=session, locale=locale)
 
 
 class AdminOptionsForm(FlaskForm):
@@ -214,11 +226,19 @@ class ModuleInitForm(FlaskForm):
     def __init__(self, project_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.project_id.data = project_id
+        self.scanning_host.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False)))]
+        self.scanning_host.callback = url_for('networks.get_select2_host_data', project_id=project_id)
+        self.scanning_host.locale = g.locale
+        self.scanning_host.validate_funcs = lambda x: validate_host(project_id, x)
     nmap_file = wtforms.FileField(_l("Nmap scan result file:"), validators=[wtfile.FileAllowed(['xml'], _l("Only an xml file!")), wtfile.FileRequired(message=_l("This field is mandatory!"))])
     ignore_closed_ports = wtforms.BooleanField(_l("Ignore ports that do not have the status <Open>:"), default=True)
     ignore_host_without_open_ports_and_arp_response = wtforms.BooleanField(_l("Ignore hosts without open ports and ARP response:"), default=True)
     add_host_with_only_arp_response = wtforms.BooleanField(_l("Add hosts for which an ARP response has been received and there are no open ports:"), default=True)
     process_operation_system = wtforms.BooleanField(_l("Process host operating system data:"), default=True)
+    scanning_host = Select2Field(models.Host, label=_l("%(field_name)s:", field_name=_l("Scanning host")),
+                                  description=_l("The host from which or through which the scan was performed. Affects the mutual visibility of hosts/services with the specified one."),
+                                  validators=[validators.Optional()],
+                                  attr_title="treeselecttitle")
     project_id = wtforms.HiddenField(_l("Project ID:"), validators=[validators.InputRequired()])
     submit = wtforms.SubmitField(_l("Import"))
 

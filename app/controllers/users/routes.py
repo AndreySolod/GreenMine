@@ -200,6 +200,7 @@ def user_change_password_callback(user_id):
 
 
 @bp.route('/<user_id>/require-password-change', methods=["POST"])
+@login_required
 @administrator_only
 def require_user_password_change(user_id):
     try:
@@ -212,6 +213,7 @@ def require_user_password_change(user_id):
     return redirect(url_for('users.user_show', user_id=user.id))
 
 @bp.route('/<user_id>/archive', methods=["POST"])
+@login_required
 @administrator_only
 def archive_user(user_id):
     try:

@@ -1,5 +1,5 @@
 {% extends 'layout/base.html' %}
-{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element %}
+{% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element, bootstrap_table_icons %}
 
 {% block page_content %}
 <div class="row gutters">
@@ -78,6 +78,11 @@
                             {{ _("Related tasks") }}</button>
                     </li>
                     {% endif %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="accessible_from_hosts-tab" data-bs-toggle="tab" data-bs-target="#accessible_from_hosts"
+                            type="button" role="tab" aria-controls="home" aria-selected="false"><i class="fa-brands fa-accessible-icon"></i>
+                            {{ models.Service.accessible_from_hosts.info['label'] }}</button>
+                    </li>
                 </ul>
             </div>
             <div class="card-body">
@@ -266,6 +271,27 @@
                         </table>
                     </div>
                     {% endif %}
+                    <div class="tab-pane fade" id="accessible_from_hosts" role="tabpanel" aria-labelledby="accessible_from_hosts-tab">
+                        <table class="table" id="accessible_from_hosts-table"
+                                            data-page-size="5" data-pagination="true"
+                                            data-search="true" data-show-columns="true"
+                                            data-show-toggle="true" data-show-export="true"
+                                            data-show-multi-sort="true" data-filter-control="true"
+                                            data-buttons-class="primary" data-row-style="default_row_style"
+                                            data-cookie="true"
+                                            data-cookie-id-table="AccessibleServiceFromHost"
+                                            data-cookie-storage="localStorage">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Host.id.info["label"] }}</th>
+                                    <th data-field="from_network.title-input" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.from_network.info['label'] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.title.info['label'] }}</th>
+                                    <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.ip_address.info['label'] }}</th>
+                                    <th data-field="operation_system_family.title-input" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.operation_system_family.info['label'] }}</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -541,5 +567,9 @@
             $('#tasks-table').bootstrapTable('load', data.rows);
         })
     });
+    $('#accessible_from_hosts-table').bootstrapTable({
+        url: "{{ url_for('networks.hosts_from_which_service_are_avaliable', service_id=service.id) }}",
+        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
+    })
 </script>
 {% endblock %}

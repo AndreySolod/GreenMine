@@ -81,6 +81,7 @@ class OperationSystemFamily(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
     string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
+    icon: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon")})
 
     def __repr__(self):
         return f"<OperationSystemFamily '{self.title}' with id='{self.id}'>"
@@ -233,6 +234,10 @@ class Host(HasComment, db.Model, HasHistory):
                                                     primaryjoin="Host.id==IssueHasHost.host_id",
                                                     secondaryjoin="Issue.id==IssueHasHost.host_id",
                                                     back_populates='hosts', info={'label': _l("Related issues")})
+    accessible_services: so.Mapped[Set["Service"]] = so.relationship(secondary="accessible_service_has_host",
+                                                                     primaryjoin="Host.id==AccessibleServiceHasHost.host_id",
+                                                                     secondaryjoin="AccessibleServiceHasHost.accessible_service_id==Service.id",
+                                                                     back_populates="accessible_from_hosts", info={'label': _l("Accessible services")})
 
     @property
     def fulltitle(self):
@@ -428,6 +433,11 @@ class ServicePortState(db.Model):
         column_index = ['id', 'string_slug', 'title']
 
 
+class AccessibleServiceHasHost(db.Model):
+    accessible_service_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey("service.id", ondelete='CASCADE'), primary_key=True)
+    host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Host.id, ondelete='CASCADE'), primary_key=True)
+
+
 @project_object_with_permissions
 class Service(HasComment, db.Model, HasHistory):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
@@ -450,7 +460,11 @@ class Service(HasComment, db.Model, HasHistory):
     transport_level_protocol_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ServiceTransportLevelProtocol.id, ondelete='SET NULL'), info={'label': _l("Transport Layer Protocol")})
     transport_level_protocol: so.Mapped["ServiceTransportLevelProtocol"] = so.relationship(lazy='joined', info={'label': _l("Transport Layer Protocol")})
     host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Host.id, ondelete='CASCADE'), info={'label': _l("Host")})
-    host: so.Mapped["Host"] = so.relationship(lazy='joined', back_populates='services', info={'label': _l("Host")})
+    host: so.Mapped["Host"] = so.relationship(lazy='select', foreign_keys=host_id, back_populates='services', info={'label': _l("Host")})
+    accessible_from_hosts: so.Mapped[Set[Host]] = so.relationship(secondary=AccessibleServiceHasHost.__table__, 
+                                                                  primaryjoin=id==AccessibleServiceHasHost.accessible_service_id,
+                                                                  secondaryjoin=AccessibleServiceHasHost.host_id==Host.id,
+                                                                  back_populates='accessible_services', lazy='select', info={'label': _l("Accessible from hosts")})
     issues: so.Mapped[List["Issue"]] = so.relationship(secondary=IssueHasService.__table__,
                                                        primaryjoin='Service.id==IssueHasService.service_id',
                                                        secondaryjoin='Issue.id==IssueHasService.issue_id',
