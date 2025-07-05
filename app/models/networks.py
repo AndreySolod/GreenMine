@@ -482,6 +482,7 @@ class Service(HasComment, db.Model, HasHistory):
                                                             secondaryjoin='ServiceHasTask.task_id==ProjectTask.id',
                                                             back_populates='services', info={'label': _l("Related tasks")})
     has_been_inventoried: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Has been inventoried")})
+    nmap_fingerprint: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Nmap Fingerprint"), "description": _l("Submit it on https://nmap.org/cgi-bin/submit.cgi?new-service"), "was_escaped": True})
 
     @property
     def fulltitle(self):

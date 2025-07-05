@@ -154,6 +154,8 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                                 break
                 if service_attr.get('extrainfo') is not None:
                     serv.technical = f'<p>Extrainfo: {service_attr.get('extrainfo')}</p>'
+                if service_attr.get('servicefp') is not None:
+                    serv.nmap_fingerprint = sanitizer.escape(service_attr.get('servicefp'))
             if port.find('script') is not None:
                 for script in port.iter('script'):
                     technical = NmapScriptProcessor.process(script, session, project, serv, current_user_id, locale)

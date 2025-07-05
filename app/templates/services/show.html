@@ -326,6 +326,21 @@
             </div>
         </div>
     </div>
+    <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>{{ models.Service.nmap_fingerprint.info['label'] }}</h5>
+                <p class="card-subtitle">{{ models.Service.nmap_fingerprint.info['description'] }}</p>
+            </div>
+            <div class="card-body">
+                {% if service.nmap_fingerprint != none and service.nmap_fingerprint != '' %}
+                {{ service.nmap_fingerprint|safe }}
+                {% else %}
+                <p class="text-muted">{{ _("(Missing)") }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
     <div class="col-sm-12 col-md-12 col-lg-12 col-12">
         <div class="card">
             <div class="card-header">

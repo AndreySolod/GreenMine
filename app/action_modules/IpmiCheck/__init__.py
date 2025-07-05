@@ -1,6 +1,6 @@
 from pymetasploit3.msfrpc import MsfRpcClient
 from pymetasploit3.msfconsole import MsfRpcConsole
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 from app.controllers.forms import FlaskForm, TreeSelectMultipleField
 import wtforms
 from wtforms import validators
@@ -18,13 +18,11 @@ import logging
 logger = logging.getLogger('Module IpmiCheck')
 
 
-CONSOLE_BUSY = False
 IPMI_ACTION = ""
 IPMI_VERSION = ""
 FOUND_HASHES = []
 def console_read(console_data):
-    global CONSOLE_BUSY, IPMI_VERSION, IPMI_ACTION, FOUND_HASHES
-    CONSOLE_BUSY = console_data['busy']
+    global IPMI_VERSION, IPMI_ACTION, FOUND_HASHES
     console_data['data']
     if IPMI_ACTION == "ipmi_version":
         logger.info("Trying to get IPMI version")
@@ -37,7 +35,7 @@ def console_read(console_data):
             logger.info("Found IPMI hash")
             login = ipmi_hash.split(':', 1)[0]
             ipmi_hash = ipmi_hash.split(':', 1)[1]
-            FOUND_HASHES.append[{'login': login, 'hash': ipmi_hash}]
+            FOUND_HASHES.append({'login': login, 'hash': ipmi_hash})
         elif "[+]" in console_data["data"] and " - IPMI - Hash for user " in console_data["data"]: # [+] 10.0.0.1:623 - IPMI - Hash for user 'admin' matches password 'admin'
             login_password = re.findall(".*? - IPMI - Hash for user '(.*?)' matches password '(.*?)'", console_data['data'])[0]
             login, password = login_password[0], login_password[1]
@@ -48,10 +46,8 @@ def console_read(console_data):
                 break
 
 
-def action_run(target: models.Service, running_user_id: int, session: Session, locale: str="en") -> Dict[str, Union[str, List[Dict[str, str]]]]:
-    global CONSOLE_BUSY, IPMI_VERSION, IPMI_ACTION, FOUND_HASHES
-    client = MsfRpcClient(current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'], server=current_app.config['METASPLOIT_HOST'], ssl=True)
-    console = MsfRpcConsole(client, cb=console_read)
+def action_run(target: models.Service, running_user_id: int, session: Session, console: Optional[MsfRpcConsole], locale: str="en") -> Dict[str, Union[str, List[Dict[str, str]]]]:
+    global IPMI_VERSION, IPMI_ACTION, FOUND_HASHES
     # Firstly, we check all host on ipmi version
     IPMI_ACTION = "ipmi_version"
     console.execute("use auxiliary/scanner/ipmi/ipmi_version")
@@ -59,7 +55,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, l
     console.execute(f"set RPORT {target.port}")
     console.execute("run")
     time.sleep(3)
-    while CONSOLE_BUSY:
+    while console.console.is_busy():
         time.sleep(3)
     if not target.title:
         target.title = IPMI_VERSION.split(' ', 1)[0].strip()
@@ -75,7 +71,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, l
     console.execute(f"set RPORT {target.port}")
     console.execute("run")
     time.sleep(3)
-    while CONSOLE_BUSY:
+    while console.console.is_busy():
         time.sleep(3)
     ipmi_hash_type = session.scalars(sa.select(models.HashType).where(models.HashType.string_slug == 'IPMI-2-0-RAKP-HMAC-SHA1')).first()
     for h in FOUND_HASHES:
@@ -96,7 +92,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, l
     if len(FOUND_HASHES) != 0:
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == target.host.from_network.project_id, models.Issue.by_template_slug == 'cve_2013_4786'))).first()
         if not issue:
-            issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.by_slug == 'cve_2013_4786')).first()
+            issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'cve_2013_4786')).first()
             issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
             if issue_template and issue_status:
                 issue = issue_template.create_issue_by_template()
@@ -112,12 +108,18 @@ def action_run(target: models.Service, running_user_id: int, session: Session, l
 
 def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str, project_id: int) -> None:
     logger.info("Running module IpmiCheck")
+    client = MsfRpcClient(current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'], server=current_app.config['METASPLOIT_HOST'], ssl=True)
+    console = MsfRpcConsole(client, cb=console_read)
     with so.sessionmaker(db.engine, autoflush=False)() as session:
         for target in filled_form['targets']:
             target = session.scalars(sa.select(models.Service).where(models.Service.id == int(target))).one()
             logger.info("Trying to exploit " + str(target))
-            action_run(target, running_user_id, session, locale)
+            action_run(target, running_user_id, session, console, locale)
         session.commit()
+    try:
+        console.console.destroy()
+    except:
+        pass
 
 
 class ModuleInitForm(FlaskForm):

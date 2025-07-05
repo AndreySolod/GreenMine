@@ -72,7 +72,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
             issue.services.add(target)
     session.add(target)
     if require_close_console:
-        console.execute('exit')
+        console.console.destroy()
     return {"Name": RDP_PROPS[0], "Domain":RDP_PROPS[1], "Domain FQDN":RDP_PROPS[2], "Server FQDN":RDP_PROPS[3], "OS Version":RDP_PROPS[4], "Requires NLA":RDP_PROPS[5]}
 
 
@@ -87,7 +87,10 @@ def exploit(filled_form: dict, running_user_id: int, default_options: dict, loca
             logger.info("Trying to exploit " + str(target))
             action_run(target, running_user_id, session, console)
         session.commit()
-        console.execute('exit')
+        try:
+            console.console.destroy()
+        except:
+            pass
 
 
 class ModuleInitForm(FlaskForm):
