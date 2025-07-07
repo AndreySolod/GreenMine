@@ -39,6 +39,14 @@ class Network(HasComment, db.Model, HasHistory):
     to_hosts: so.Mapped[List["Host"]] = so.relationship(back_populates="from_network", foreign_keys="Host.from_network_id", cascade="all, delete-orphan", info={'label': _l("Avaliable connection to host"), 'help_text': _l("Connection to the following host is avaliable from this subnet")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l("Project")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates='networks', info={'label': _l("Project")}) # type: ignore
+    can_see_network: so.Mapped[Set["Network"]] = so.relationship(secondary='mutual_network_visibility',
+                                                                 primaryjoin="Network.id==MutualNetworkVisibility.from_network_id",
+                                                                 secondaryjoin="MutualNetworkVisibility.to_network_id==Network.id", back_populates="can_being_observed_from_network",
+                                                                 lazy='select', info={'label': _l("Can see networks"), "description": _l("List of networks that the network's devices can access")})
+    can_being_observed_from_network: so.Mapped[Set["Network"]] = so.relationship(secondary='mutual_network_visibility',
+                                                                 primaryjoin="Network.id==MutualNetworkVisibility.to_network_id",
+                                                                 secondaryjoin="MutualNetworkVisibility.from_network_id==Network.id", back_populates="can_see_network",
+                                                                 lazy='select', info={'label': _l("It can be observed from the network"), "description": _l("List of networks from which the devices in this networkc are accessible")})
 
     @property
     def fulltitle(self):
@@ -74,6 +82,11 @@ class Network(HasComment, db.Model, HasHistory):
                                       'update': _l("Edit and update object"), 'delete': _l("Delete object"), 'add_comment': _l("Add comment to object"),
                                       'show_comments': _l("Show comment list of object"), 'show_history': _l("Show object history"),
                                       'show_graph': _l("Show network graph")}
+
+
+class MutualNetworkVisibility(db.Model):
+    from_network_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Network.id, ondelete='CASCADE'), primary_key=True)
+    to_network_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Network.id, ondelete='CASCADE'), primary_key=True)
 
 
 @project_enumerated_object

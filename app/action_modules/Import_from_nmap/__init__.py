@@ -21,7 +21,7 @@ logger = logging.getLogger("Import from nmap")
 def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
                add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
-               scanning_host_id: Optional[int]=None,
+               scanning_host_id: Optional[int]=None, add_network_mutial_visibility: bool=True,
                session=db.session, locale: str='en'):
     ''' Parse nmap file and create host/service object in project.
         Paramethers:
@@ -69,8 +69,6 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
         service = session.scalars(sa.select(models.Service).where(sa.and_(models.Service.host_id == host.id, models.Service.port == portid, models.Service.transport_level_protocol_id == transport_proto_id[0]))).first()
         if service is None:
             service = models.Service(host=host, port=portid, transport_level_protocol_id=transport_proto_id[0])
-        if scanning_host is not None:
-            service.accessible_from_hosts.add(scanning_host)
         return service
     
     try:
@@ -119,6 +117,10 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
         current_host = create_host_if_not_exist(ip_addr, current_user_id)
         current_host.mac = mac_addr
         current_host.from_network = current_network
+        # add network mutual visibility
+        if add_network_mutial_visibility and scanning_host is not None:
+            if current_host.from_network.id != scanning_host.from_network.id:
+                scanning_host.from_network.can_see_network.add(current_host.from_network)
         # processing ports
         for port in host.iter('port'):
             state = port.find('state').get('state').strip()
@@ -229,7 +231,7 @@ class ModuleInitForm(FlaskForm):
         super().__init__(*args, **kwargs)
         self.project_id.data = project_id
         self.scanning_host.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False)))]
-        self.scanning_host.callback = url_for('networks.get_select2_host_data', project_id=project_id)
+        self.scanning_host.callback = url_for('networks.get_select2_host_data', project_id=project_id, with_excluded='1')
         self.scanning_host.locale = g.locale
         self.scanning_host.validate_funcs = lambda x: validate_host(project_id, x)
     nmap_file = wtforms.FileField(_l("Nmap scan result file:"), validators=[wtfile.FileAllowed(['xml'], _l("Only an xml file!")), wtfile.FileRequired(message=_l("This field is mandatory!"))])
@@ -241,6 +243,7 @@ class ModuleInitForm(FlaskForm):
                                   description=_l("The host from which or through which the scan was performed. Affects the mutual visibility of hosts/services with the specified one."),
                                   validators=[validators.Optional()],
                                   attr_title="treeselecttitle")
+    add_network_accessible = wtforms.BooleanField(_l("Automatically add mutual visibility of networks"), default=True)
     project_id = wtforms.HiddenField(_l("Project ID:"), validators=[validators.InputRequired()])
     submit = wtforms.SubmitField(_l("Import"))
 

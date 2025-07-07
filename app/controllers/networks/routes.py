@@ -615,6 +615,15 @@ def network_graph():
     edges = []
     for network in networks:
         nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.main_color, 'font': {'color': current_user.theme_style.main_text_color}})
+        for accessible_network in network.can_see_network:
+            edge_exist = False
+            for e in edges:
+                if (e['from'] == 'network_' + str(network.id) and e['to'] == 'network_' + str(accessible_network.id)) or (e['from'] == 'network_' + str(accessible_network.id) and e['to'] == str(network.id)):
+                    e['arrows'] = 'to,from'
+                    edge_exist = True
+                    break
+            if not edge_exist:
+                edges.append({'from': 'network_' + str(network.id), 'to': 'network_' + str(accessible_network.id), 'arrows': 'to'})
     ctx = get_default_environment(models.Network(project=project), 'show_graph')
     context = {'nodes': json.dumps(nodes), 'edges': json.dumps(edges)}
     side_libraries.library_required('visjs')

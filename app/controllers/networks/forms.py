@@ -15,6 +15,7 @@ class NetworkForm(FlaskForm):
     def __init__(self, project_id, *args, **kwargs):
         self.project_id = project_id
         super(NetworkForm, self).__init__(*args, **kwargs)
+        self.can_see_network.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Network).where(models.Network.project_id == project_id))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Network.title.info["label"]),
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=models.Network.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Network.title.type.length))])
@@ -25,6 +26,7 @@ class NetworkForm(FlaskForm):
     connect_cmd = wtforms.TextAreaField(_l("%(field_name)s:", field_name=models.Network.connect_cmd.info["label"]),
                                         validators=[validators.Optional(),
                                                     validators.Length(min=0, max=models.Network.connect_cmd.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Network.connect_cmd.type.length))])
+    can_see_network = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Network.can_see_network.info["label"]), description=models.Network.can_see_network.info["description"])
 
     def validate_ip_address(self, field):
         ns = [str(i) for i in db.session.scalars(sa.select(models.Network.ip_address).where(models.Network.project_id==int(self.project_id)))]

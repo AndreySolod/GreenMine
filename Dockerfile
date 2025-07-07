@@ -15,5 +15,5 @@ COPY ./GreenMine.py /greenmine/GreenMine.py
 COPY ./run_celery.py /greenmine/run.py
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh && mkdir logs
-ENV FLASK_APP=/greenmine/GreenMine
+ENV FLASK_APP=/greenmine/GreenMine.py
 CMD ["/docker-entrypoint.sh"]

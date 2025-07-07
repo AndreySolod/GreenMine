@@ -144,7 +144,7 @@ class CredentialImportTemplate(db.Model):
     static_password_hash: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Static password hash")})
     static_hash_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HashType.id, ondelete='CASCADE'), info={'label': _l("Static hash type")})
     static_hash_type: so.Mapped[HashType] = so.relationship(lazy='select', info={'label': _l("Static hash type")})
-    static_check_wordlist_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CheckWordlist.id, ondelete='CASCADE'), info={'label': _l("Static check wordlist")})
+    static_check_wordlist_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CheckWordlist.id, ondelete='CASCADE', name="fk_credential_import_template_check_wordlist"), info={'label': _l("Static check wordlist")})
     static_check_wordlist: so.Mapped[CheckWordlist] = so.relationship(lazy='select', info={'label': _l("Static check wordlist")})
     static_description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Static description")})
     

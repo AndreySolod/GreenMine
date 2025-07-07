@@ -52,49 +52,69 @@
         <div class="card">
             <div class="card-header">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    {% set first_tab = False %}
-                    {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=network.project) %}
-                    {% set first_tab = True %}
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="hosts-tab" data-bs-toggle="tab" data-bs-target="#hosts"
+                        <button class="nav-link active" id="avaliable_networks-tab" data-bs-toggle="tab" data-bs-target="#avaliable_networks"
+                            type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-server"></i>
+                            {{ _("Availables networks") }}</button>
+                    </li>
+                    {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=network.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="hosts-tab" data-bs-toggle="tab" data-bs-target="#hosts"
                             type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-server"></i>
                             {{ _("Availables hosts") }}</button>
                     </li>
                     {% endif %}
-                    {% set second_tab = False %}
                     {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=network.project) %}
-                    {% set second_tab = True %}
-                    {% if first_tab %}
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues" type="button" role="tab" aria-controls="home"
                         aria-selected="false"><i class="{{ models.Issue.Meta.icon }}"></i> {{ _("Related issues") }}</button>
                     </li>
-                    {% else %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="issues-tab" data-bs-toggle="tab" data-bs-target="#issues" type="button" role="tab" aria-controls="home"
-                        aria-selected="true"><i class="{{ models.Issue.Meta.icon }}"></i> {{ _("Related issues") }}</button>
-                    </li>
-                    {% endif %}
                     {% endif %}
                     {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=network.project) %}
-                    {% if first_tab or second_tab %}
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab" aria-controls="home"
                         aria-selected="false"><i class="{{ models.ProjectTask.Meta.icon }}"></i> {{ _("Related tasks") }}</button>
                     </li>
-                    {% else %}
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab" aria-controls="home"
-                        aria-selected="true"><i class="{{ models.ProjectTask.Meta.icon }}"></i> {{ _("Related tasks") }}</button>
-                    </li>
-                    {% endif %}
                     {% endif %}
                 </ul>
             </div>
             <div class="card-body">
-                <div class="tab-content" id="commentsTabContent">
+                <div class="tab-content" id="NetworkAttributesTabContent">
+                    <div class="tab-pane fade show active" id="avaliable_networks" role="tabpanel" aria-labelledby="avaliable_networks-tab">
+                        <table class="table" id="avaliable_networks-table" data-page-size="5"
+                                             data-pagination="true"
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true"
+                                             data-filter-control="true"
+                                             data-buttons-class="primary"
+                                             data-cookie="true"
+                                             data-cookie-id-table="AvaliableNetworksByNetworkShow"
+                                             data-cookie-storage="localStorage">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Network.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Network.title.info["label"] }}</th>
+                                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Network.description.info["label"] }}</th>
+                                    <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Network.ip_address.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for net in network.can_see_network %}
+                                <tr>
+                                    <td>{{ net.id }}</td>
+                                    <td>{{ net.title|safe|default("", True) }}</td>
+                                    <td>{{ sanitizer.pure_text(net.description) }}</td>
+                                    <td>{{ net.ip_address }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                     {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=network.project) %}
-                    <div class="tab-pane fade show active" id="hosts" role="tabpanel" aria-labelledby="hosts-tab">
+                    <div class="tab-pane fade" id="hosts" role="tabpanel" aria-labelledby="hosts-tab">
                         <div id="hosts-toolbar">
                         {% if roles.project_role_can_make_action(current_user, models.Host(), 'create', project=network.project) %}
                         <a href="{{ url_for('networks.host_new', project_id=network.project_id, from_network_id=network.id) }}" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" title="Добавить хост"><i class="fa-solid fa-square-plus"></i></a>
@@ -124,11 +144,7 @@
                     </div>
                     {% endif %}
                     {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=network.project) %}
-                    {% if first_tab %}
                     <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                    {% else %}
-                    <div class="tab-pane fade show active" id="issues" role="tabpanel" aria-labelledby="issues-tab">
-                    {% endif %}
                         <table class="table" id="issues-table" data-page-size="5"
                                              data-pagination="true"
                                              data-search="true"
@@ -163,11 +179,7 @@
                     </div>
                     {% endif %}
                     {% if roles.project_role_can_make_action(current_user, models.ProjectTask(), 'index', project=network.project) %}
-                    {% if first_tab or second_tab %}
                     <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
-                    {% else %}
-                    <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
-                    {% endif %}
                         <table class="table" id="tasks-table"
                                              data-page-size="5"
                                              data-pagination="true"
@@ -271,6 +283,7 @@
     {{ super() }}
     {{ load_bootstrap_table_js("issues-table", "issues.issue_show", "issue_id") }}
     {{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
+    {{ load_bootstrap_table_js("avaliable_networks-table", "networks.network_show", "network_id") }}
     <script nonce="{{ csp_nonce() }}">
         $('#hosts-table').bootstrapTable({
             filterControl: true,

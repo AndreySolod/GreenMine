@@ -63,7 +63,7 @@ def get_select2_service_data():
     query = request.args.get('term') if request.args.get('term') else ''
     data = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True).join(models.Service.transport_level_protocol, isouter=True)
                               .where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False,
-                                             (sa.cast(models.Host.ip_address, sa.String) + ':' + sa.cast(models.Service.port, sa.String) + "/" + sa.func.ifnull(models.ServiceTransportLevelProtocol.title, "") + " " + sa.func.ifnull(models.Service.title, "")).ilike('%' + query + '%')))
+                                             (sa.cast(models.Host.ip_address, sa.String) + ':' + sa.cast(models.Service.port, sa.String) + "/" + sa.func.coalesce(models.ServiceTransportLevelProtocol.title, "") + " " + sa.func.coalesce(models.Service.title, "")).ilike('%' + query + '%')))
                                              .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
                               .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
     more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
@@ -85,13 +85,20 @@ def get_select2_host_data():
         project = db.session.scalars(sa.select(models.Project).where(models.Project.id == project_id)).one()
     except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
         abort(400)
+    with_excluded = request.args.get('with_excluded') == '1'
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     query = request.args.get('term') if request.args.get('term') else ''
-    data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
-                                                                                                  models.Network.project_id == project_id,
-                                                                                                  models.Host.excluded == False))
-                                                    .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
-                                                    .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    if with_excluded:
+        data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.coalesce(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
+                                                                                                    models.Network.project_id == project_id))
+                                                        .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                                                        .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    else:
+        data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.coalesce(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
+                                                                                                    models.Network.project_id == project_id,
+                                                                                                    models.Host.excluded == False))
+                                                        .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                                                        .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
     more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host on project #{project_id} via select2-data")
     result = {'results': [{'id': i.id, 'text': i.treeselecttitle} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
@@ -114,7 +121,7 @@ def get_select2_all_host_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     query = request.args.get('term') if request.args.get('term') else ''
-    data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.ifnull(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
+    data = db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(("«" + sa.func.coalesce(models.Host.title, "") + "»: " + models.Host.ip_address).ilike('%' + query + '%'),
                                                                                                   models.Network.project_id == project_id))
                                                     .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
                                                     .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
