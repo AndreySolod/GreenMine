@@ -8,6 +8,7 @@ from app.extensions.moment import moment
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
+from app import sanitizer
 
 
 bp = Blueprint('issues', __name__, url_prefix='/issues')
@@ -83,7 +84,11 @@ def environment(obj, action, **kwargs):
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('issues.issue_delete', issue_id=obj.id), confirm=_l("Are you sure you want to delete this issue?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=obj.created_by.title, date=str(moment(obj.created_at).fromNow()))), actions=acts)
+        if obj.created_by is not None:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))
+        else:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link="", created_by=_l("Removed user"), date=str(moment(obj.created_at).fromNow())))
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=co_subtitle, actions=acts)
     elif action == 'new':
         title = _l("Add new issue")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=obj.project.fulltitle)

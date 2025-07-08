@@ -90,6 +90,7 @@ class HostForm(FlaskForm):
                                            validators=[validators.Optional()])
     device_model_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.device_model_id.info["label"]),
                                           validators=[validators.Optional()])
+    compromised = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Host.compromised.info["label"]), validators=[validators.Optional()], description=models.Host.compromised.info["description"])
 
     def validate_ip_address(form, field):
         netw = int(form.from_network_id.data)

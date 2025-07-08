@@ -31,7 +31,7 @@ def project_additional_parameter_index(project_id):
     db.session.commit()
     # Теперь берём все поля, сгруппированные по ProjectAdditionalFieldGroup, и вместе с ними рендерим шаблон:
     fields = db.session.scalars(sa.select(models.ProjectAdditionalFieldData).join(models.ProjectAdditionalFieldData.field_type, isouter=True)
-                                .join(models.ProjectAdditionalField.group, isouter=True).where(models.ProjectAdditionalFieldData.project_id == project_id)
+                                .join(models.ProjectAdditionalField.group, isouter=True).where(models.ProjectAdditionalFieldData.project_id == sa.cast(project_id, sa.Integer))
                                 .order_by(models.ProjectAdditionalFieldGroup.order_number.asc())).all()
     grouped_fields = {i: [] for i in all_groups}
     for f in fields:

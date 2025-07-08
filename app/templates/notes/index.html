@@ -36,9 +36,15 @@
             <div id="collapseAccordion{{ note.id }}" class="accordion-collapse collapse"
               data-bs-parent="#NotesAccordion">
               <div class="accordion-body">
+                {% if note.created_by != none %}
                 <p class="text-muted">{{ _("Added by") }} <a
                     href="{{ url_for('users.user_show', user_id=note.created_by_id) }}">{{ note.created_by.title }}</a>
                   {{ moment(note.created_at).fromNow() }}</p>
+                {% else %}
+                <p class="text-muted">{{ _("Added by") }} <a
+                    href="">{{ _("Removed user") }}</a>
+                  {{ moment(note.created_at).fromNow() }}</p>
+                {% endif %}
                 <p class="text-muted" id="p-accordion-note-updated-by-{{ note.id }}">
                   {% if note.updated_by_id != none %}
                   {{ _("Changed by") }} <a href="{{ url_for('users.user_show', user_id=note.updated_by_id) }}">{{

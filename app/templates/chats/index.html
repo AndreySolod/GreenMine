@@ -23,7 +23,10 @@
                         {% endif %}
                             <div class="chats-avatar">
                                 <img src="{{ url_for('files.download_file', file_id=message.created_by.avatar_id) }}" alt="Avatar for {{ message.created_by.title }}">
+                                {% if message.created_by != none %}
                                 <div class="chats-name">{{ message.created_by.title }}</div>
+                                {% else %}
+                                <div class="chats-name">{{ _("Removed user") }}</div>
                             </div>
                             <div class="chats-text info">
                                 {{ message.text|safe }}

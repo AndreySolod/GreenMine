@@ -185,13 +185,23 @@
 {%  macro comment_text(comment, moment, current_user) %}
 <div class="comment" id="comment-{{ comment.id }}">
   <div class="d-flex flex-start align-items-center">
+    {% if comment.created_by != none %}
     <img class="rounded-circle shadow-1-strong me-3"
       src="{{ url_for('files.download_file', file_id=comment.created_by.avatar_id) }}" alt="avatar" width="60"
       height="60" />
+    {% else %}
+    <img src="" alt="avatar" width="60" height="60">
+    {% endif %}
     <div class="media-body">
+      {% if comment.created_by != none %}
       <h5 class="mt-0 media-heading"><a href="{{ url_for('users.user_show', user_id=comment.created_by.id) }}">{{ comment.created_by.title }}</a> <span class="date">{{ moment(comment.created_at).fromNow() }}</span></h5>
+      {% else %}
+      <h5 class="mt-0 media-heading"><a href="#">{{ _("Removed user") }}</a> <span class="date">{{ moment(comment.created_at).fromNow() }}</span></h5>
+      {% endif %}
       <p class="text-muted small mb-0">
+        {% if comment.created_by != none %}
         {{ comment.created_by.position.title }}
+        {% endif %}
       </p>
     </div>
   </div>

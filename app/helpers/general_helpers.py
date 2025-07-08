@@ -464,7 +464,11 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
             where_filter.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + val_a + '%'))
         elif a in rels or a in rels_uselist:
             # a - записывается как атрибут 'id' данного отношения, и поэтому интерпретируется соответствующе
-            where_filter.append(getattr(obj, a + '_id') == val_a)
+            try:
+                val_a = int(val_a)
+            except (ValueError, TypeError):
+                continue
+            where_filter.append(getattr(obj, a + '_id') == sa.cast(val_a, sa.Integer))
         else:
             # a - это сложное отношение (например, атрибут атрибута). Он может принимать 2 состояния: "input" и "select", записывается как path.to.attr-input
             try:
@@ -474,7 +478,11 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
                 if a.split('-')[1] == 'input':
                     where_filter.append(sa.cast(now_attr, sa.String).ilike('%' + val_a + '%'))
                 elif a.split('-')[1] == 'select':
-                    where_filter.append(now_attr == val_a)
+                    try:
+                        val_a = int(val_a)
+                    except (ValueError, TypeError):
+                        continue
+                    where_filter.append(now_attr == sa.cast(val_a, sa.Integer))
             except KeyError:
                 abort(400)
     where_all = sa.and_(sa.or_(*where_search), sa.and_(*where_filter))

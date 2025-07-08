@@ -1,6 +1,5 @@
 __pycache__
 app.db
-migrations
 messages.pot
 logs/*
 postgres

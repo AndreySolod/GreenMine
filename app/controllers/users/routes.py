@@ -99,14 +99,16 @@ def user_edit(user_id):
         if form.avatar.data:
             if user.avatar is not None:
                 db.session.delete(user.avatar)
+                db.session.commit()
             avatar = FileData()
             filename = secure_filename(form.avatar.data.filename)
             avatar.title = filename
             avatar.extension = filename.split(".")[-1]
             avatar.description = str(_l("Avatar for %(login)s", login=user.login))
             avatar.data = request.files[form.avatar.name].read()
-            user.avatar = avatar
             db.session.add(avatar)
+            db.session.commit()
+            user.avatar = avatar
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit user #{user.id}")
         flash(_l("User «%(title)s» successfully changed", title=user.title), 'success')
         db.session.commit()

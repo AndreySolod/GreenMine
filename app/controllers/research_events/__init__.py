@@ -73,7 +73,11 @@ def environment(obj, action, **kwargs):
                 if project_role_can_make_action(current_user, obj, 'delete'):
                     act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('pentest_events.researcher_event_delete', event_id=obj.id), confirm=_l("Are you sure you want to delete these event?"), btn_class='btn-danger', method='DELETE')
                     acts.append(act2)
-                current_object = CurrentObjectInfo(_l("Event %(event_title)s", event_title=obj.title), obj.Meta.icon, subtitle=sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow()))), actions=acts)
+                if obj.created_by is not None:
+                    co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))
+                else:
+                    co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link="", created_by=_l("Removed user"), date=str(moment(obj.created_at).fromNow())))
+                current_object = CurrentObjectInfo(_l("Event %(event_title)s", event_title=obj.title), obj.Meta.icon, subtitle=co_subtitle, actions=acts)
             case 'edit':
                 title = _l("Edit research event #%(event_id)s", event_id=obj.id)
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)
@@ -102,7 +106,11 @@ def environment(obj, action, **kwargs):
                 if project_role_can_make_action(current_user, obj, 'delete'):
                     act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('pentest_events.organization_detection_event_delete', event_id=obj.id), confirm=_l("Are you sure you want to delete these event?"), btn_class='btn-danger', method='DELETE')
                     acts.append(act2)
-                current_object = CurrentObjectInfo(_l("Organization detection event %(event_id)s", event_id=obj.id), obj.Meta.icon, subtitle=sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow()))), actions=acts)
+                if obj.created_by is not None:
+                    co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))
+                else:
+                    co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link="", created_by=_l("Removed user"), date=str(moment(obj.created_at).fromNow())))
+                current_object = CurrentObjectInfo(_l("Organization detection event %(event_id)s", event_id=obj.id), obj.Meta.icon, subtitle=co_subtitle, actions=acts)
             case 'edit':
                 title = _l("Edit organization detection event event #%(event_id)s", event_id=obj.id)
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen", subtitle=obj.project.fulltitle)

@@ -243,6 +243,7 @@ class Host(HasComment, db.Model, HasHistory):
     interfaces: so.Mapped[Set["Host"]] = so.relationship(secondary=HostAnotherInterface.__table__, primaryjoin=id==HostAnotherInterface.first_interface_id,
                                                          secondaryjoin=HostAnotherInterface.second_interface_id==id, lazy='select', info={'label': _l("Another IP addresses")})
     excluded: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Excluded from the study")})
+    compromised: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Already compromised"), "description" :_l("If true, the host has been completely compromised")}, server_default=sa.false())
     issues: so.Mapped[Set[Issue]] = so.relationship(secondary="issue_has_host",
                                                     primaryjoin="Host.id==IssueHasHost.host_id",
                                                     secondaryjoin="Issue.id==IssueHasHost.host_id",

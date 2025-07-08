@@ -8,6 +8,7 @@ from flask_babel import lazy_gettext as _l, pgettext
 from flask_login import current_user, login_required
 from app.helpers.roles import project_role_can_make_action
 from typing import Optional
+from app import sanitizer
 
 
 bp = Blueprint('networks', __name__, url_prefix='/')
@@ -114,7 +115,11 @@ def environment_network(obj, action, **kwargs):
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('networks.network_delete', network_id=obj.id), confirm=_l("Are you sure you want to delete this network?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=obj.created_by.title, date=str(moment(obj.created_at).fromNow()))), actions=acts)
+        if obj.created_by is not None:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))
+        else:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link="", created_by=_l("Removed user"), date=str(moment(obj.created_at).fromNow())))
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=co_subtitle, actions=acts)
     elif action == 'new':
         title = _l("Add new network")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=obj.project.fulltitle)
@@ -158,6 +163,11 @@ def environment_host(obj, action, **kwargs):
             else:
                 act3 = CurrentObjectAction(_l("Exclude from research"), "icon-no-target", url_for('networks.exclude_host_from_research', host_id=obj.id), btn_class="btn-warning", method='POST')
             acts.append(act3)
+            if obj.compromised:
+                act4 = CurrentObjectAction(_l("Mark as not compromised"), "fa-solid fa-square-plus", url_for('networks.unmark_host_as_compromised', host_id=obj.id), btn_class="btn-info", method="POST")
+            else:
+                act4 = CurrentObjectAction(_l("Mark as compromised"), "fa-solid fa-square-minus", url_for('networks.mark_host_as_compromised', host_id=obj.id), btn_class="btn-info", method="POST")
+            acts.append(act4)
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('networks.host_delete', host_id=obj.id), confirm=_l("Are you sure you want to delete this host?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
@@ -167,8 +177,11 @@ def environment_host(obj, action, **kwargs):
         else:
             link = url_for('users.user_show', user_id=obj.created_by.id)
             created_by_title = obj.created_by.title
-        subtitle = Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=link, created_by=created_by_title, date=str(moment(obj.created_at).fromNow())))
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=subtitle, actions=acts)
+        if obj.created_by is not None:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))
+        else:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link="", created_by=_l("Removed user"), date=str(moment(obj.created_at).fromNow())))
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=co_subtitle, actions=acts)
     elif action == 'new':
         title = _l("Add new host")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=proj.fulltitle)
@@ -211,7 +224,11 @@ def environment_service(obj, action, **kwargs):
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('networks.service_delete', service_id=obj.id), confirm=_l("Are you sure you want to delete this service?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=obj.created_by.title, date=str(moment(obj.created_at).fromNow()))), actions=acts)
+        if obj.created_by is not None:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))
+        else:
+            co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link="", created_by=_l("Removed user"), date=str(moment(obj.created_at).fromNow())))
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=co_subtitle, actions=acts)
     elif action == 'new':
         title = _l("Add new service")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=proj.fulltitle)

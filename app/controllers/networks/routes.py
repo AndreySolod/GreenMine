@@ -420,6 +420,7 @@ def add_host_to_research(host_id: int):
     host.excluded = False
     db.session.add(host)
     db.session.commit()
+    flash(_l("Host %(host_name)s include to current research", host_name=host.fulltitle), 'success')
     return redirect(url_for('networks.host_show', host_id=host.id))
 
 
@@ -430,6 +431,29 @@ def exclude_host_from_research(host_id: int):
     host.excluded = True
     db.session.add(host)
     db.session.commit()
+    flash(_l("Host %(host_name)s excluded from research", host_name=host.fulltitle), 'success')
+    return redirect(url_for('networks.host_show', host_id=host.id))
+
+
+@bp.route('/hosts/<int:host_id>/mark-as-compromised', methods=["POST"])
+def mark_host_as_compromised(host_id: int):
+    host = db.get_or_404(models.Host, host_id)
+    project_role_can_make_action_or_abort(current_user, host, 'update')
+    host.compromised = True
+    db.session.add(host)
+    db.session.commit()
+    flash(_l("Host %(host_name)s marked as compromised", host_name=host.fulltitle), 'success')
+    return redirect(url_for('networks.host_show', host_id=host.id))
+
+
+@bp.route('/hosts/<int:host_id>/unmark-as-compromised', methods=["POST"])
+def unmark_host_as_compromised(host_id: int):
+    host = db.get_or_404(models.Host, host_id)
+    project_role_can_make_action_or_abort(current_user, host, 'update')
+    host.compromised = False
+    db.session.add(host)
+    db.session.commit()
+    flash(_l("The compromised tag has been removed from the host %(host_id)s"), 'success')
     return redirect(url_for('networks.host_show', host_id=host.id))
 
 

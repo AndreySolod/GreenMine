@@ -241,6 +241,8 @@ def add_hosts_to_network_graph():
         if host.operation_system_family and host.operation_system_family.icon:
             new_node["icon"] = {"face": "FontAwesome", "code": binascii.unhexlify(host.operation_system_family.icon.encode()).decode()} # to convert: make fontawesome code (like f17c), then binascii.hexlify("\uf17c".encode())
             new_node["shape"] = "icon"
+        if host.compromised:
+            new_node["color"] = current_user.theme_style.compromised_host_color
         nodes.append(new_node)
         edges.append({'from': 'network_' + str(network.id), 'to': 'host_' + str(host.id)})
         for iface in host.interfaces:
