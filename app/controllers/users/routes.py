@@ -174,6 +174,7 @@ def user_logout():
 
 
 @bp.route("/<user_id>/change-password", methods=["GET", "POST"])
+@login_required
 def user_change_password_callback(user_id):
     try:
         user = db.session.scalars(sa.select(User).where(User.id == int(user_id))).one()

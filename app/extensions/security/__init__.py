@@ -108,10 +108,11 @@ class PasswordPolicyManager:
         if not self.change_password_callback:
             return None
         
-        @app.before_request
-        @self.need_change_password
-        def check_if_need_change_password_before_request():
-            return None
+        if app.config["ACTIVATE_PASSWORD_POLICY"]:
+            @app.before_request
+            @self.need_change_password
+            def check_if_need_change_password_before_request():
+                return None
     
     def need_change_password(self, func):
         return check_user_need_change_password(self.change_password_callback, self.exempt_endpoint, self.exempt_bp)(func)

@@ -110,16 +110,19 @@ def socketio_add_reaction(data):
         logger.error(f'Error when adding reaction. This project role cannot make this action!')
         return None
     check = db.session.scalars(sa.select(models.Reaction).where(sa.and_(models.Reaction.created_by_id==current_user.id, models.Reaction.to_comment_id==int(data['comment_id'])))).first()
+    r = None
     if check is not None and check.is_positive == is_positive:
         db.session.delete(check)
         is_positive = None
+        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' added a reaction #{check.id}")
     elif check is not None:
         check.is_positive = is_positive
     else:
         r = models.Reaction(is_positive=is_positive, created_by_id=current_user.id, to_comment=to_comment)
         db.session.add(r)
     db.session.commit()
-    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' added a reaction #{r.id}")
+    if r is not None:
+        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' added a reaction #{r.id}")
     emit('reaction added', {'to_comment': to_comment.id, 'positive_count': to_comment.positive_reactions_count(), 'negative_count': to_comment.negative_reactions_count(),
                             'added_by_id': current_user.id, 'is_positive': is_positive}, namespace='/generic', to=current_room)
 

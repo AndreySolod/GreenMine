@@ -24,12 +24,8 @@ class DevelopmentConfig:
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or 'redis://localhost:6379/0'
     CELERY_TASK_IGNORE_RESULT = False if os.environ.get("CELERY_TASK_IGNORE_RESULT") == 'False' else True
-    CSP_ENABLED = False if os.environ.get("CSP_ENABLED") else True
-    try:
-        CELERY_WORKERS_COUNT = int(os.environ.get('CELERY_WORKERS_COUNT') or 0)
-    except (ValueError, TypeError):
-        CELERY_WORKERS_COUNT = 1
-    CELERY_WORKERS_CONCURRENCY_COUNT = int(os.environ.get("CELERY_WORKERS_CONCURRENCY_COUNT") or 4)
+    CSP_ENABLED = False if os.environ.get("CSP_ENABLED") == 'False' else True
+    ACTIVATE_PASSWORD_POLICY = False if os.environ.get('ACTIVATE_PASSWORD_POLICY') == 'False' else True
     DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE') or 'ru'
     try:
         USER_ACTION_LOGGING_ON_STDOUT = bool(os.environ.get("USER_ACTION_LOGGING_ON_STDOUT")) or True
@@ -65,5 +61,5 @@ class ProductionConfig(DevelopmentConfig):
 
 class TestConfig(DevelopmentConfig):
     SECRET_KEY = 'secret'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test_database.db' + '?mode=memory&cache=shared')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test_database.db')
     WTF_CSRF_ENABLED = False
