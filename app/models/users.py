@@ -268,6 +268,7 @@ class UserThemeStyle(db.Model):
     archived_main_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#000000")
     archived_secondary_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#7d7d7d")
     archived_neightboring_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#ccb6b6")
+    normal_host_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#0000ff")
     compromised_host_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#ff0000")
     
 

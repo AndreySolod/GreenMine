@@ -23,9 +23,8 @@ def app_parameters() -> Generator[Tuple[FlaskClient, int]]:
     basedir = str(Path(__file__).parent)
     if not os.path.isdir(basedir + '/tmp'):
         os.mkdir(basedir + '/tmp')
-    shutil.copy(TestConfig.SQLALCHEMY_DATABASE_URI.split("://", 2)[1].split("?", 2)[0], basedir + tmpfile)
-    new_sqlalchemy_database_uri = TestConfig.SQLALCHEMY_DATABASE_URI.split("://", 2)[0] + "://" + basedir + tmpfile
-    print('new_sqlalchemy_database_uri:', new_sqlalchemy_database_uri)
+    shutil.copy(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0], tmpfile)
+    new_sqlalchemy_database_uri = TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[0] + ":///" + tmpfile
     if len(TestConfig.SQLALCHEMY_DATABASE_URI.split("?", 2)) == 2:
         new_sqlalchemy_database_uri += "?" + TestConfig.SQLALCHEMY_DATABASE_URI.split("?", 2)[1]
     class CurrentTestConfig(TestConfig):
