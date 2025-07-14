@@ -383,7 +383,10 @@ class DefaultPortAndTransportProto(db.Model):
     access_protocol: so.Mapped["AccessProtocol"] = so.relationship(lazy='select', back_populates='default_port', info={'label': _l("Application Layer Protocol")})
 
     def __repr__(self):
-        return f"<DefaultPortAndTransportProtocol with id={self.id}, port={self.port} and transport_level_protocol={self.transport_level_protocol.title}>"
+        if not self.transport_level_protocol:
+            return f"<DefaultPortAndTransportProtocol with id={self.id}, port={self.port}>"
+        else:
+            return f"<DefaultPortAndTransportProtocol with id={self.id}, port={self.port} and transport_level_protocol={self.transport_level_protocol.title}>"
 
     @validates("port")
     def validates_default_port(self, key, port):

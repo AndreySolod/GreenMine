@@ -344,7 +344,7 @@ def paginate(select, model, page: int, page_size: int):
 
 
 def bootstrap_table_argument_parsing(request: Request) -> Tuple[str, str, str, Optional[int], Optional[int], dict, List]:
-    search = request.args.get('search')
+    search = request.args.get('search') or ''
     sort = request.args.get('sort')
     order = request.args.get('order')
     if order not in ['asc', 'desc', None]:
@@ -461,7 +461,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     for a, val_a in filter_data.items():
         if a in simple_attrs:
             # a - простой атрибут
-            where_filter.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + val_a + '%'))
+            where_filter.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + str(val_a) + '%'))
         elif a in rels or a in rels_uselist:
             # a - записывается как атрибут 'id' данного отношения, и поэтому интерпретируется соответствующе
             try:
@@ -485,7 +485,7 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
                     where_filter.append(now_attr == sa.cast(val_a, sa.Integer))
             except KeyError:
                 abort(400)
-    where_all = sa.and_(sa.or_(*where_search), sa.and_(*where_filter))
+    where_all = sa.and_(True, sa.or_(*where_search), sa.and_(True, *where_filter))
     # Добавляем эти условия в sql:
     sql = sql.where(where_all)
     sql_count = sql_count.where(where_all)

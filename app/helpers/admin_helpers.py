@@ -5,11 +5,12 @@ from app import db
 from sqlalchemy.inspection import inspect
 import app.models as models
 from flask_babel import lazy_gettext as _l
+from typing import Any, List
 import functools
 
 
-enumerated_object_list = []  # This is a list of all the enumerations that can be processed in the /admin panel
-status_object_list = []  # This is a list of all objects of the "Status" type - that is, the attributes of the object for which the conditions for transition from one state to another are defined.
+enumerated_object_list: List[Any] = []  # This is a list of all the enumerations that can be processed in the /admin panel
+status_object_list: List[Any] = []  # This is a list of all objects of the "Status" type - that is, the attributes of the object for which the conditions for transition from one state to another are defined.
 
 
 def register_enumerated_object(*obj):
@@ -22,7 +23,7 @@ def register_status_object(*obj):
     status_object_list.extend(obj)
 
 
-def project_enumerated_object(obj):
+def project_enumerated_object(obj: Any):
     global enumerated_object_list
     if not hasattr(obj, 'Meta'):
         raise AttributeError("Project enumerated object must have an 'Meta' attribute")

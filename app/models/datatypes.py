@@ -128,6 +128,7 @@ class JSONType(types.TypeDecorator):
 class LimitedLengthString(types.TypeDecorator):
     impl = types.String
     python_type = str
+    cache_ok = True
 
     def process_bind_param(self, value, dialect):
         return value[:self.impl.length]

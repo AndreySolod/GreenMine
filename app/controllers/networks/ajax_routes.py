@@ -272,7 +272,7 @@ def add_services_to_network_graph():
     edges = []
     for service in host.services:
         service_title = str(service.port) + ": " + service.title if service.title else str(service.port)
-        nodes.append({'id': 'service_' + str(service.id), 'label': service_title, 'color': 'yellow'})
+        nodes.append({'id': 'service_' + str(service.id), 'label': service_title, 'color': current_user.theme_style.service_on_graph_color})
         edges.append({'from': 'host_' + str(host.id), 'to': 'service_' + str(service.id)})
         for accessible_host in service.accessible_from_hosts:
             edges.append({'from': 'host_' + str(accessible_host.id), 'to': 'service_' + str(service.id), 'arrows': 'to'})

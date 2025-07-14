@@ -255,7 +255,7 @@ def object_type_edit(object_type, object_id):
             db.session.add(obj)
             db.session.commit()
         except Exception as e:
-            flash(_l("Error when create object: %(error)s. Try again", error=str(e)))
+            flash(_l("Error when edit object: %(error)s. Try again", error=str(e)), 'error')
             db.session.rollback()
         else:
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit enumerated object '{object_type}' #{obj.id}: '{obj.title}'")

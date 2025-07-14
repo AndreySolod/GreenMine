@@ -638,7 +638,7 @@ def network_graph():
     nodes = []
     edges = []
     for network in networks:
-        nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.main_color, 'font': {'color': current_user.theme_style.main_text_color}})
+        nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.main_color, 'font': {'color': current_user.theme_style.network_on_graph_color}})
         for accessible_network in network.can_see_network:
             edge_exist = False
             for e in edges:

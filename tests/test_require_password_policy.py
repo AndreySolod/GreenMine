@@ -41,7 +41,7 @@ def app_parameters() -> Generator[Tuple[FlaskClient, int]]:
     app.setting_custom_attributes_for_application()
     client = app.test_client()
     # authorization
-    admin_id = db.session.scalars(sa.select(models.User).where(models.User.login == 'admin')).one()
+    admin_id = db.session.scalars(sa.select(models.User).where(models.User.login == 'admin')).one().id
     response_with_cookie = client.post(url_for('users.user_login', _external=False), data={'login': 'admin', 'password': 'admin'})
     yield (client, admin_id)
 
