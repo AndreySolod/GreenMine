@@ -1,15 +1,17 @@
 import os
+from pathlib import Path
+from typing import Dict, Any
 
 
 class ImportDefaultData:
     def __init__(self):
         self.is_complex = False
 
-    def data(self, app, cls, db):
-        path = os.path.join(app.root_path, 'static', 'js', 'highlight', 'styles')
+    def data(self, app, cls, db, GLOBAL_UPDATED_OBJECT_DICT: Dict[Any, Dict[str, Any]]):
+        path = Path(app.root_path) / "static" / "js" / "highlight" / "styles"
         obj_list = []
         for current_dir, dirs, files in os.walk(path):
-            current_dir = current_dir[len(path)::]
+            current_dir = current_dir[len(str(path))::]
             for f in files:
                 if f.endswith(".css"):
                     if current_dir == '':

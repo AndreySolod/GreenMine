@@ -5,6 +5,7 @@ from wtforms.form import FormMeta
 import wtforms.validators as validators
 from sqlalchemy.inspection import inspect
 from flask_babel import lazy_gettext as _l
+import sqlalchemy as sa
 
 
 def validate_unique(form, field):
@@ -28,6 +29,13 @@ class ObjectFormMeta(FormMeta):
                 valids.append(validators.DataRequired(message=_l("This field is mandatory!")))
             if col.type.__class__.__name__ == 'String' and col.type.length is not None:
                 valids.append(validators.length(max=col.type.length, message=_l('This field must not exceed %(length)s characters in length', length=col.type.length)))
+            if col.unique:
+                validate_name = 'validate_' + col.name
+                def validate_func(form, field):
+                    another_object = db.session.scalars(sa.select(obj).where(getattr(obj, col.name) == field.data.strip())).first()
+                    if another_object is not None:
+                        raise validators.ValidationError(_l("Object with specified field value already exist in database"))
+                attrs.update({validate_name: validate_func})
             # Обработка полей
             if 'form' in col.info:
                 nf = col.info['form'](_l("%(field_name)s:", field_name=col.info['label']), validators=valids)

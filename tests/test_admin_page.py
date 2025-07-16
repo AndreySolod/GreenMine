@@ -15,7 +15,7 @@ import sqlalchemy as sa
 from typing import Tuple, Generator
 from flask.testing import FlaskClient
 from pathlib import Path
-from app.helpers.admin_helpers import get_enumerated_objects
+from app.helpers.admin_helpers import get_enumerated_objects, get_status_objects
 import json
 from sqlalchemy.inspection import inspect
 import datetime
@@ -24,10 +24,15 @@ from xml.etree import ElementTree
 
 @pytest.fixture(scope="module")
 def client() -> Generator[Tuple[FlaskClient, int]]:
+    if not os.path.exists(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0]):
+        another_app = create_app(TestConfig)
+        with another_app.app_context():
+            register_cli(another_app)
+            another_app.testing = True
+            upgrade()
+            with click.Context(another_app.cli.commands['greenmine-command'].commands['update-database-value']):
+                another_app.cli.commands['greenmine-command'].commands['update-database-value'].callback()
     tmpfile = tempfile.mktemp()
-    basedir = str(Path(__file__).parent)
-    if not os.path.isdir(basedir + '/tmp'):
-        os.mkdir(basedir + '/tmp')
     shutil.copy(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0], tmpfile)
     new_sqlalchemy_database_uri = TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[0] + ":///" + tmpfile
     if len(TestConfig.SQLALCHEMY_DATABASE_URI.split("?", 2)) == 2:
@@ -57,6 +62,12 @@ def test_open_pages(client: FlaskClient):
     assert main_page_setting_edit.status_code == 200, f"Admin page - main page settings status code is {main_page_setting_edit.status_code}"
     object_index = client.get(url_for('admin.object_index', _external=False))
     assert object_index.status_code == 200, f"Admin page - enumerated object index status code is {object_index.status_code}"
+    status_index = client.get(url_for('admin.status_index', _external=False))
+    assert status_index.status_code == 200, f"Admin page - cannot open status_index page. Status code is {status_index.status_code}"
+    issue_template_index = client.get(url_for('admin.issue_template_index', _external=False))
+    assert issue_template_index.status_code == 200, f"Admin page - cannot open issue_template index page. Status code is {issue_template_index.status_code}"
+    object_template_list = client.get(url_for('admin.object_template_list', _external=False))
+    assert object_template_list.status_code == 200, f"Admin page - cannot open object with template list page. Status code is {object_template_list.status_code}"
 
 
 def test_open_all_object_type_index(client: FlaskClient):
@@ -123,7 +134,7 @@ def test_create_new_object_type(client: FlaskClient):
                 continue
             if not rel.uselist:
                 # Это простая ссылка - т. е. не список. Тогда создаём простой SelectField:
-                options[rel_name] = '0'
+                options[rel_name] = '1'
             else:
                 options[rel_name] = []
         good_create_request = client.post(url_for('admin.object_type_new', _external=False, object_type=object_type.__name__), follow_redirects=True,
@@ -135,7 +146,7 @@ def test_create_new_object_type(client: FlaskClient):
             new_objects = db.session.scalars(sa.select(object_type).where(object_type.string_slug == 'test_add_new')).all()
             assert len(new_objects) == 1, f"Length of new created object for {object_type.__name__} is {len(new_objects)}. Options: {options}"
             for option_name, option_value in options.items():
-                if option_value == '0' or option_value == []:
+                if option_value == '1' or option_value == []:
                     continue
                 assert getattr(new_objects[0], option_name) == option_value, f"Cannot create attribute {option_name} with value {option_value} on object {object_type.__name__}. Current value: {getattr(new_objects[0], option_name)}"
 
@@ -167,7 +178,7 @@ def test_edit_new_object_type(client: FlaskClient):
             if 'on_form' in rel.info and not rel.info['on_form']:
                 continue
             if not rel.uselist:
-                options[rel_name] = '0'
+                options[rel_name] = '2'
             else:
                 options[rel_name] = []
         # test edit our created object
@@ -181,7 +192,7 @@ def test_edit_new_object_type(client: FlaskClient):
             new_curr_obj = db.session.scalars(sa.select(object_type).where(object_type.string_slug == 'test_edit_new')).first()
             assert new_curr_obj is not None, f"Cannot find current object of type {object_type.__name__} after edit request"
             for option_name, option_value in options.items():
-                if option_value == '0' or option_value == []:
+                if option_value == '2' or option_value == []:
                     continue
                 assert getattr(new_curr_obj, option_name) == option_value, f"Cannot change attribute {option_name} to {option_value} to object {object_type.__name__}"
         else:
@@ -194,7 +205,7 @@ def test_edit_new_object_type(client: FlaskClient):
             new_curr_obj = db.session.scalars(sa.select(object_type).where(object_type.id == curr_obj.id)).first()
             assert new_curr_obj is not None, f"Cannot find current object of type {object_type.__name__} after edit request without string_slug. ID: {curr_obj.id}"
             for option_name, option_value in options.items():
-                if option_value == '0' or option_value == []:
+                if option_value == '2' or option_value == []:
                     continue
                 assert getattr(new_curr_obj, option_name) == option_value, f"Cannot change attribute {option_name} to {option_value} to object {object_type.__name__}"
 
@@ -210,3 +221,56 @@ def test_delete_object_type(client: FlaskClient):
         assert urlparse(resp.request.url).path == url_for('admin.object_type_index', _external=False, object_type=object_type.__name__), f"Redirect url after delete object {object_type.__name__} is not to object index: {urlparse(resp.request.url).path}"
         obj = db.session.get(object_type, obj_id)
         assert obj is None, f"Object {object_type.__name__} with ID {obj_id} was not deleted from database"
+
+
+def test_status_objects_open_edit_transits(client: FlaskClient):
+    for object_type in get_status_objects():
+        edit_transits_page = client.get(url_for('admin.status_type_transits', _external=False, object_type=object_type.__name__))
+        assert edit_transits_page.status_code == 200, f"Cannot open Edit transits page for status object {object_type.__name__}: status code is {edit_transits_page.status_code}"
+
+def test_issue_template_new(client: FlaskClient):
+    get_req = client.get(url_for('admin.issue_template_new', _external=False))
+    assert get_req.status_code == 200, "Admin page - can't open Issue template new page"
+    templ_data = {'title': 'Test error', 'string_slug': 'test_error', 'description': 'Test template error',
+                  'issue_title': 'New error in application', 'issue_description': 'An error occured in application', 'issue_fix': 'More Money!',
+                  'issue_technical': 'Need more Money!', 'issue_riscs': 'IS only', 'issue_references': 'On me', 'issue_cvss': 3.1415, 'issue_cve_id': 0}
+    create_req = client.post(url_for('admin.issue_template_new', _external=False), follow_redirects=True, data=templ_data)
+    assert create_req.status_code == 200, f"Cannot make request to create issue template"
+    new_issue_template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'test_error')).first()
+    assert new_issue_template is not None, f"Cannot create new issue template in database"
+    assert urlparse(create_req.request.url).path == url_for('admin.issue_template_show', _external=False, template_id = new_issue_template.id), f"Redirect after create issue template is not on show issue template page"
+    assert len(create_req.history) == 1, "Not valid redirects count after create new issue_template"
+    for keys, values in templ_data.items():
+        if keys == 'issue_cve_id' and values == 0 and new_issue_template.issue_cve_id is None:
+            continue
+        assert getattr(new_issue_template, keys) == values, f"Cannot set attribute {keys} to {values} when create issue template"
+
+
+def test_issue_template_edit(client: FlaskClient):
+    template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'test_error')).first()
+    assert template is not None, "Cannot find new issue template with string_slug 'test_error' in database"
+    get_req = client.get(url_for('admin.issue_template_edit', _external=False, template_id=template.id))
+    assert get_req.status_code == 200, "Cannot open Issue template edit page"
+    templ_data = {'title': 'Real error', 'string_slug': 'real_error', 'description': 'Real template error',
+                  'issue_title': 'Real error in application', 'issue_description': 'A real error occured in application', 'issue_fix': 'More Money! Only more money!',
+                  'issue_technical': 'Need more and more and more Money!', 'issue_riscs': 'Ka-Boom!', 'issue_references': "Yes, that's the way it is. I'm responsible for the bazaar", 'issue_cvss': 9.9, 'issue_cve_id': 0}
+    edit_req = client.post(url_for('admin.issue_template_edit', _external=False, template_id=template.id), follow_redirects=True, data=templ_data)
+    assert edit_req.status_code == 200, f"Cannot edit issue template"
+    assert len(edit_req.history) == 1, f"Not valid redirects count after edit issue template"
+    assert urlparse(edit_req.request.url).path == url_for('admin.issue_template_show', _external=False, template_id=template.id), f"Redirect after edit issue template is not to show page"
+    db.session.refresh(template)
+    for key, value in templ_data.items():
+        if key == 'issue_cve_id' and value == 0 and template.issue_cve_id is None:
+            continue
+        assert getattr(template, key) == value, f"Cannot set attribute '{key}' to '{value}' when edit issue template"
+
+
+def test_issue_template_delete(client: FlaskClient):
+    template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'real_error')).first()
+    assert template is not None, "Cannot find new issue template with string_slug 'real_error' in database"
+    delete_template = client.post(url_for('admin.issue_template_delete', _external=False, template_id=template.id), follow_redirects=True)
+    assert delete_template.status_code == 200, f"Cannot delete issue template"
+    assert len(delete_template.history) == 1, f"Not valid redirects count after delete issue template"
+    assert urlparse(delete_template.request.url).path == url_for('admin.issue_template_index', _external=False), f"Redirect after delete template request is not to Issue template index page"
+    template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'real_error')).first()
+    assert template is None, f"Cannot delete issue template from database"

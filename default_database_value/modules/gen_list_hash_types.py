@@ -1,16 +1,19 @@
-import requests
 import json
+from pathlib import Path
+from typing import Dict, Any
 
 
 class ImportDefaultData:
     def __init__(self):
         self.is_complex = True
 
-    def data(self, app, cls, db):
-        req = requests.get('https://raw.githubusercontent.com/noraj/haiti/master/data/prototypes.json').text
-        hashes = json.loads(req)
-        req = requests.get('https://raw.githubusercontent.com/noraj/haiti/master/data/commons.json').text
-        populars = json.loads(req)
+    def data(self, app, cls, db, GLOBAL_UPDATED_OBJECT_DICT: Dict[Any, Dict[str, Any]]):
+        with open(Path(__file__).parent / "hash_prototypes.json", 'r', encoding="utf8") as f:
+            hashes_data = f.read().strip()
+        hashes = json.loads(hashes_data)
+        with open(Path(__file__).parent / "hash_common.json", 'r', encoding="utf8") as f:
+            common_data = f.read().strip()
+        populars = json.loads(common_data)
         hashinfo_list = []
         for p in hashes:
             for m in p['modes']:
@@ -33,7 +36,7 @@ class ImportDefaultData:
         self.hashinfo_list = hashinfo_list
         db.session.commit()
 
-    def complex_data(self, app, db, models):
+    def complex_data(self, app, db, models, GLOBAL_UPDATED_OBJECT_DICT: Dict[Any, Dict[str, Any]]):
         for ht in self.hashinfo_list:
             for regex in ht._regex:
                 ht.regexs.add(db.session.scalars(db.select(models.HashPrototype).where(models.HashPrototype.regex==regex)).one())

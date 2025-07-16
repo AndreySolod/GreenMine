@@ -4,6 +4,8 @@ from app.models import IssueTemplate, Issue, CriticalVulnerability
 import wtforms
 import wtforms.validators as validators
 from flask_babel import lazy_gettext as _l
+import sqlalchemy as sa
+import app.models as models
 
 
 def required_validators(column):
@@ -32,6 +34,11 @@ class IssueTemplateForm(FlaskForm):
     issue_references = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.issue_references.info["label"]), validators=required_validators(Issue.references))
     issue_cvss = wtforms.FloatField(_l("%(field_name)s:", field_name=IssueTemplate.issue_cvss.info["label"]), validators=required_validators(Issue.cvss))
     issue_cve_id = wtforms.SelectField(_l("%(field_name)s:", field_name=IssueTemplate.issue_cve_id.info["label"]), validators=required_validators(Issue.cve_id))
+
+    def validate_string_slug(form, field):
+        another_issue_template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == field.data.strip())).first()
+        if another_issue_template is not None:
+            raise validators.ValidationError(_l("Issue template with the specified string slug has already been registered"))
 
 
 class IssueTemplateCreateForm(IssueTemplateForm):

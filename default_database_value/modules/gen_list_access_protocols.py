@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict, Any
 
 
 class NetworkError(Exception):
@@ -10,11 +11,13 @@ class ImportDefaultData:
     def __init__(self):
         self.is_complex = False
 
-    def data(self, app, cls, db):
+    def data(self, app, cls, db, GLOBAL_UPDATED_OBJECT_DICT: Dict[Any, Dict[str, Any]]):
         with open(Path(__file__).parent / "nmap-services.txt") as f:
             self.nmap_port_file = f.read()
         port_strings = self.nmap_port_file.split('\n')
         slugs = []
+        if cls not in GLOBAL_UPDATED_OBJECT_DICT:
+            GLOBAL_UPDATED_OBJECT_DICT[cls] = {}
         for ps in port_strings:
             if ps.startswith('#'):
                 continue
@@ -29,5 +32,4 @@ class ImportDefaultData:
             np.string_slug = slug
             np.comment = " ".join(spl[3::])
             slugs.append(slug)
-            db.session.add(np)
-        db.session.commit()
+            GLOBAL_UPDATED_OBJECT_DICT[cls][slug] = np

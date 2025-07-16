@@ -69,6 +69,10 @@ UserThemeStyle:
         archived_main_text_color: "#000000"
         archived_secondary_main_color: "#7d7d7d"
         archived_neightboring_main_color: "#ccb6b6"
+        network_on_graph_color: "#008000"
+        normal_host_color: "#0000ff"
+        compromised_host_color: "#ff0000"
+        service_on_graph_color: "#FFFF00"
     - classic_blue:
         title: "Классический голубой"
         is_default: false
@@ -93,6 +97,10 @@ UserThemeStyle:
         archived_main_text_color: "#000000"
         archived_secondary_main_color: "#7d7d7d"
         archived_neightboring_main_color: "#ccb6b6"
+        network_on_graph_color: "#008000"
+        normal_host_color: "#0000ff"
+        compromised_host_color: "#ff0000"
+        service_on_graph_color: "#FFFF00"
     - right_green:
         title: "Правый зелёный"
         is_default: false
@@ -117,6 +125,10 @@ UserThemeStyle:
         archived_main_text_color: "#000000"
         archived_secondary_main_color: "#7d7d7d"
         archived_neightboring_main_color: "#ccb6b6"
+        network_on_graph_color: "#008000"
+        normal_host_color: "#0000ff"
+        compromised_host_color: "#ff0000"
+        service_on_graph_color: "#FFFF00"
     - right_blue:
         title: "Правый голубой"
         is_default: false
@@ -141,6 +153,10 @@ UserThemeStyle:
         archived_main_text_color: "#000000"
         archived_secondary_main_color: "#7d7d7d"
         archived_neightboring_main_color: "#ccb6b6"
+        network_on_graph_color: "#008000"
+        normal_host_color: "#0000ff"
+        compromised_host_color: "#ff0000"
+        service_on_graph_color: "#FFFF00"
     - fixed_green_left:
         title: "Фиксированный левый зелёный"
         is_default: false
@@ -165,6 +181,10 @@ UserThemeStyle:
         archived_main_text_color: "#000000"
         archived_secondary_main_color: "#7d7d7d"
         archived_neightboring_main_color: "#ccb6b6"
+        network_on_graph_color: "#008000"
+        normal_host_color: "#0000ff"
+        compromised_host_color: "#ff0000"
+        service_on_graph_color: "#FFFF00"
     - fixed_green_right:
         title: "Фиксированный правый зелёный"
         main_color: "30a7700"
@@ -188,6 +208,10 @@ UserThemeStyle:
         archived_main_text_color: "#000000"
         archived_secondary_main_color: "#7d7d7d"
         archived_neightboring_main_color: "#ccb6b6"
+        network_on_graph_color: "#008000"
+        normal_host_color: "#0000ff"
+        compromised_host_color: "#ff0000"
+        service_on_graph_color: "#FFFF00"
 
 ProgrammingLanguageClass:
     - imperative:

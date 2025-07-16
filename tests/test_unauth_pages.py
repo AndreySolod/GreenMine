@@ -21,11 +21,6 @@ def app():
     app.app_context().push()
     register_cli(app)
     app.testing = True
-    if not os.path.exists(TestConfig.SQLALCHEMY_DATABASE_URI.split(':///', 1)[1].split('?', 1)[0]):
-        conn = sqlite3(TestConfig.SQLALCHEMY_DATABASE_URI.split(':///', 1)[1].split('?', 1)[0])
-        cur = conn.cursor()
-        cur.execute(''' CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL, CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num));''')
-        conn.close()
     upgrade()
     with click.Context(app.cli.commands['greenmine-command'].commands['update-database-value']):
         app.cli.commands['greenmine-command'].commands['update-database-value'].callback()

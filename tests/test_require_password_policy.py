@@ -19,10 +19,15 @@ from pathlib import Path
 
 @pytest.fixture(scope="module")
 def app_parameters() -> Generator[Tuple[FlaskClient, int]]:
+    if not os.path.exists(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0]):
+        another_app = create_app(TestConfig)
+        with another_app.app_context():
+            register_cli(another_app)
+            another_app.testing = True
+            upgrade()
+            with click.Context(another_app.cli.commands['greenmine-command'].commands['update-database-value']):
+                another_app.cli.commands['greenmine-command'].commands['update-database-value'].callback()
     tmpfile = tempfile.mktemp()
-    basedir = str(Path(__file__).parent)
-    if not os.path.isdir(basedir + '/tmp'):
-        os.mkdir(basedir + '/tmp')
     shutil.copy(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0], tmpfile)
     new_sqlalchemy_database_uri = TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[0] + ":///" + tmpfile
     if len(TestConfig.SQLALCHEMY_DATABASE_URI.split("?", 2)) == 2:

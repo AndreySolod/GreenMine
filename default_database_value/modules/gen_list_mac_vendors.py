@@ -1,14 +1,15 @@
 import csv
-import os
+from pathlib import Path
+from typing import Dict, Any
 
 
 class ImportDefaultData:
     def __init__(self):
         self.is_complex = False
     
-    def data(self, app, cls, db):
-        file_vendors = os.path.join(os.path.dirname(__file__), "mac-vendors-export.csv")
-        app.logger.info("open file: " + file_vendors)
+    def data(self, app, cls, db, GLOBAL_UPDATED_OBJECT_DICT: Dict[Any, Dict[str, Any]]):
+        file_vendors = Path(__file__).parent / "mac-vendors-export.csv"
+        app.logger.info("open file: " + str(file_vendors))
         with open(file_vendors, 'r') as f:
             reader = csv.DictReader(f, delimiter=',')
             for line in reader:

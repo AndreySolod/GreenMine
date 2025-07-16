@@ -377,9 +377,9 @@ class DefaultPortAndTransportProto(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), info={'label': _l("Title"), 'on_form': False})
     port: so.Mapped[int] = so.mapped_column(info={'label': _l("Port")})
-    transport_level_protocol_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ServiceTransportLevelProtocol.id, ondelete='CASCADE'), info={'label': _l("Transport layer protocol")})
+    transport_level_protocol_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ServiceTransportLevelProtocol.id, ondelete='CASCADE'), info={'label': _l("Transport layer protocol")})
     transport_level_protocol: so.Mapped["ServiceTransportLevelProtocol"] = so.relationship(lazy='joined', info={'label': _l("Transport Layer Protocol")})
-    access_protocol_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('access_protocol.id', ondelete='CASCADE'), info={'label': _l("Application Layer Protocol")})
+    access_protocol_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('access_protocol.id', ondelete='CASCADE'), info={'label': _l("Application Layer Protocol")})
     access_protocol: so.Mapped["AccessProtocol"] = so.relationship(lazy='select', back_populates='default_port', info={'label': _l("Application Layer Protocol")})
 
     def __repr__(self):

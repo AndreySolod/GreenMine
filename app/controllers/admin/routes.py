@@ -215,9 +215,11 @@ def object_type_new(object_type):
         try:
             db.session.add(o)
             db.session.commit()
-        except Exception as e:
-            flash(_l("Error when create object: %(error)s. Try again", error=str(e)))
+        except exc.IntegrityError:
+            flash(_l("Integrity error when create object. Looks like object with those unique attribute (like Slug) already exist in database. Try again"))
             db.session.rollback()
+        except Exception as e:
+            flash(_l("Something went wrong. Please report this error to GitVerse"))
         else:
             flash(_l('Object «%(title)s» successfully added', title=o.title), 'success')
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new enumerated object '{object_type}' #{o.id}: '{o.title}")

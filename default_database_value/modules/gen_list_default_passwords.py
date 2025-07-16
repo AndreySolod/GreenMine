@@ -1,13 +1,14 @@
 from app import sanitizer
 from pathlib import Path
 import csv
+from typing import Dict, Any
 
 
 class ImportDefaultData:
     def __init__(self):
         self.is_complex = False
     
-    def data(self, app, cls, db):
+    def data(self, app, cls, db, GLOBAL_UPDATED_OBJECT_DICT: Dict[Any, Dict[str, Any]]):
         file_default_creds = Path(__file__).parent / "DefaultCreds-Cheat-Sheet.csv"
         with open(file_default_creds, 'r') as f:
             reader = csv.DictReader(f, delimiter=",")

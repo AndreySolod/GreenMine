@@ -3,5 +3,4 @@ app.db
 messages.pot
 logs/*
 postgres
-test_database.db
 .pytest_cache
