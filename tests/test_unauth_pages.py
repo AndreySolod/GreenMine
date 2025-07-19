@@ -22,8 +22,8 @@ def app():
     register_cli(app)
     app.testing = True
     upgrade()
-    with click.Context(app.cli.commands['greenmine-command'].commands['update-database-value']):
-        app.cli.commands['greenmine-command'].commands['update-database-value'].callback()
+    with click.Context(app.cli.commands['greenmine'].commands['update-database-value']):
+        app.cli.commands['greenmine'].commands['update-database-value'].callback()
     app.setting_custom_attributes_for_application()
     admin_id = db.session.scalars(sa.select(models.User.id).where(models.User.login == 'admin')).one()
     yield app

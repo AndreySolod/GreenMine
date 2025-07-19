@@ -25,6 +25,11 @@ class CredentialImportTemplateForm(FlaskForm):
     static_check_wordlist_id = wtforms.SelectField(_l("%(field_name)s:", field_name=CredentialImportTemplate.static_check_wordlist_id.info["label"]), validators=[validators.Optional()])
     static_description = wtforms.StringField(_l("%(field_name)s:", field_name=CredentialImportTemplate.static_description.info["label"]), validators=[validators.Optional()])
 
+    def validate_string_slug(form, field):
+        another_credential_template = db.session.scalars(sa.select(CredentialImportTemplate).where(CredentialImportTemplate.string_slug == field.data.strip())).first()
+        if another_credential_template is not None:
+            raise validators.ValidationError(_l("Credential import template with the specified string slug has already been registered"))
+
 
 class CredentialImportTemplateFormCreate(CredentialImportTemplateForm):
     submit = wtforms.SubmitField(_l("Create"))

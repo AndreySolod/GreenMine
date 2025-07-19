@@ -25,8 +25,8 @@ def app_parameters() -> Generator[Tuple[FlaskClient, int]]:
             register_cli(another_app)
             another_app.testing = True
             upgrade()
-            with click.Context(another_app.cli.commands['greenmine-command'].commands['update-database-value']):
-                another_app.cli.commands['greenmine-command'].commands['update-database-value'].callback()
+            with click.Context(another_app.cli.commands['greenmine'].commands['update-database-value']):
+                another_app.cli.commands['greenmine'].commands['update-database-value'].callback()
     tmpfile = tempfile.mktemp()
     shutil.copy(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0], tmpfile)
     new_sqlalchemy_database_uri = TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[0] + ":///" + tmpfile

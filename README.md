@@ -125,30 +125,30 @@ sudo apt install google-chrome-stable
 ## Основные команды
 
 После установки параметров приложения необходимо проинициализировать базу данных приложения. Для этого используются следующие команды:
-- `FLASK_APP=GreenMine flask greenmine-command db-init` - инициирует новую базу данных (даже если она не существовала ранее, как, например, с sqlite). Этот этап можно пропустить - база данных может быть создана на этапе внесения изменений;
+- `FLASK_APP=GreenMine flask greenmine db-init` - инициирует новую базу данных (даже если она не существовала ранее, как, например, с sqlite). Этот этап можно пропустить - база данных может быть создана на этапе внесения изменений;
 - `FLASK_APP=GreenMine flask db migrate` - создаёт новые скрипты миграции для записи данных в базу данных. Этот этап можно пропустить - миграции будут идти вместе с приложением;
 - `FLASK_APP=GreenMine flask db upgrade` - вносит изменения в базу данных;
-- `FLASK_APP=GreenMine flask greenmine-command load-default-database` - загружает данные по умолчанию в базу данных. Если данные по умолчанию не были внесены на этапе обновления - они будут внесены при первом запуске приложения;
+- `FLASK_APP=GreenMine flask greenmine load-default-database` - загружает данные по умолчанию в базу данных. Если данные по умолчанию не были внесены на этапе обновления - они будут внесены при первом запуске приложения;
 
 При обновлении базы данных (например, при обновлении проекта) используются следующие команды:
 - `FLASK_APP=GreenMine flask db migrate` - создаёт новые скрипты миграции;
 - `FLASK_APP=GreenMine flask db upgrade` - вносит изменения в базу данных;
-- `FLASK_APP=GreenMine flask greenmine-command update-database-value` - заполняет только что созданные таблицы в базе данных значениями из файла `initial_database_value.yml`;
+- `FLASK_APP=GreenMine flask greenmine update-database-value` - заполняет только что созданные таблицы в базе данных значениями из файла `initial_database_value.yml`;
 
 А при пересоздании базы данных:
-- `FLASK_APP=GreenMine flask greenmine-command reset-database` - полностью пересоздаёт существующую базу данных, заполняя её данными из файла `initial_database_value.yml`;
-- `FLASK_APP=GreenMine flask greenmine-command recreate-table --table <table_name>` - пересоздаёт указанную таблицу в базе данных (сперва удаляет, потом заново создаёт).
+- `FLASK_APP=GreenMine flask greenmine reset-database` - полностью пересоздаёт существующую базу данных, заполняя её данными из файла `initial_database_value.yml`;
+- `FLASK_APP=GreenMine flask greenmine recreate-table --table <table_name>` - пересоздаёт указанную таблицу в базе данных (сперва удаляет, потом заново создаёт).
 
 Дополнительно, если были введены новые таблицы с данными по умолчанию, можно использовать команду:
 ```bash
-FLASK_APP=GreenMine flask greenmine-command update-database-value
+FLASK_APP=GreenMine flask greenmine update-database-value
 ```
 
 Которая загрузит в пустые таблицы значения из файла `initial_database_value.yml`.
 
 А для пересоздания таблицы и заполнения её значениями из файла `initial_database_value.yml` можно использовать команду:
 ```bash
-FLASK_APP=GreenMine flask greenmine-command recreate-table --table <table_name> 
+FLASK_APP=GreenMine flask greenmine recreate-table --table <table_name> 
 ```
 
 Значение `<table_name>` задаётся в том виде, в котором таблица описана в файле `default_database_value.yml`.
@@ -187,10 +187,10 @@ python -m venv ./venv
 source ./venv/bin/activate
 pip install -r ./requirements.txt
 # Создаём и инициируем начальными значениями БД:
-FLASK_APP=GreenMine flask greenmine-command db-init
+FLASK_APP=GreenMine flask greenmine db-init
 flask db migrate
 flask db upgrade
-FLASK_APP=GreenMine flask greenmine-command load-default-database
+FLASK_APP=GreenMine flask greenmine load-default-database
 # Теперь мы можем запустить приложение
 ./GreenMine.py
 ```

@@ -224,7 +224,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
             db.technical_session.rollback()
             error_logger.error(error)
             ctx = MainPageEnvironment('main_page', 'show')()
-            error_message = _l("Internal server error. Please report on GitLens about this issue (log file in %(config)s)",  config=config_class.ERROR_LOGGING_FILE)
+            error_message = _l("Internal server error. Please report on GitVerse about this issue (log file in %(config)s)",  config=config_class.ERROR_LOGGING_FILE)
             return render_template('errors/500.html', **ctx, error_message=error_message), 500
 
     return app

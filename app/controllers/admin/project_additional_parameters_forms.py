@@ -5,6 +5,7 @@ import wtforms.validators as validators
 from app.controllers.forms import FlaskForm, WysiwygField
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
+import app.models as models
 
 
 class ProjectAdditionalParameterForm(FlaskForm):
@@ -18,6 +19,11 @@ class ProjectAdditionalParameterForm(FlaskForm):
     description = WysiwygField(_l("%(field_name)s:", field_name=ProjectAdditionalField.description.info["label"]), validators=[validators.Optional()])
     field_type = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectAdditionalField.field_type.info["label"]), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
     group_id = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectAdditionalField.group_id.info["label"]), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
+
+    def validate_string_slug(form, field):
+        elem = db.session.scalars(sa.select(models.ProjectAdditionalField).where(models.ProjectAdditionalField.string_slug == field.data)).first()
+        if elem is not None:
+            raise validators.ValidationError(_l("Object with specified field value already exist in database"))
 
 
 class ProjectAdditionalParameterCreateForm(ProjectAdditionalParameterForm):

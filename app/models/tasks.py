@@ -369,6 +369,12 @@ class ProjectTaskTemplate(db.Model):
     task_priority: so.Mapped[ProjectTaskPriority] = so.relationship(lazy='select', info={'label': _l("Task priority")})
     task_estimation_time_cost: so.Mapped[Optional[datetime.timedelta]] = so.mapped_column(info={'label': _l("Task time cost estimation")})
 
+    def create_task_by_template(self):
+        task = ProjectTask(title=self.task_title, description=self.task_description, tracker=self.task_tracker)
+        task.priority = self.task_priority
+        task.estimation_time_cost = self.task_estimation_time_cost
+        return task
+
     class Meta:
         verbose_name = _l('Project task template')
         verbose_name_plural = _l('Project task templates')

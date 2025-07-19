@@ -19,6 +19,7 @@
                 <tr>
                     <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTaskTemplate.id.info["label"] }}</th>
                     <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.title.info["label"] }}</th>
+                    <th data-field="string_slug" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTaskTemplate.string_slug.info["label"] }}</th>
                     <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.description.info["label"] }}</th>
                     <th data-field="task_title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.task_title.info["label"] }}</th>
                     <th data-field="task_description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.task_description.info["label"] }}</th>
@@ -32,6 +33,7 @@
                 <tr style="cursor:pointer">
                     <td>{{ template.id }}</td>
                     <td>{{ template.title }}</td>
+                    <td>{{ template.string_slug }}</td>
                     {% if template.description == none %}
                     <td></td>
                     {% else %}

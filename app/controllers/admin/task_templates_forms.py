@@ -14,12 +14,18 @@ class TaskTemplateForm(FlaskForm):
         self.task_tracker_id.choices = [('0', '---')] + db.session.execute(sa.select(models.ProjectTaskTracker.id, models.ProjectTaskTracker.title)).all()
         self.task_priority_id.choices = [('0', '---')] + db.session.execute(sa.select(models.ProjectTaskPriority.id, models.ProjectTaskPriority.title)).all()
     title = wtforms.StringField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=ProjectTaskTemplate.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(ProjectTaskTemplate.title.type.length)))])
+    string_slug = wtforms.StringField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.string_slug.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=ProjectTaskTemplate.string_slug.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(ProjectTaskTemplate.string_slug.type.length)))])
     description = WysiwygField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.description.info["label"]), validators=[validators.Optional()])
     task_title = wtforms.StringField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_title.info["label"]), validators=[validators.Length(min=0, max=ProjectTaskTemplate.task_title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(ProjectTaskTemplate.task_title.type.length)))])
     task_description = WysiwygField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_description.info["label"]), validators=[validators.Optional()])
     task_tracker_id = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_tracker_id.info["label"]), validators=[validators.Optional()])
     task_priority_id = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_priority_id.info["label"]), validators=[validators.Optional()])
     task_estimation_time_cost = wtforms.IntegerField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_estimation_time_cost.info["label"]), validators=[validators.Optional()])
+
+    def validate_string_slug(form, field):
+        elem = db.session.scalars(sa.select(models.ProjectTaskTemplate).where(models.ProjectTaskTemplate.string_slug == field.data)).first()
+        if elem is not None:
+            raise validators.ValidationError(_l("Object with specified field value already exist in database"))
 
 
 class TaskTemplateCreateForm(TaskTemplateForm):

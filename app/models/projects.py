@@ -109,7 +109,7 @@ class ProjectRole(db.Model):
     string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
     title: so.Mapped[str] = so.mapped_column(sa.String(35), info={'label': _l("Title")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
-    actions: so.Mapped[List["RoleHasProjectObjectAction"]] = so.relationship(lazy='select', back_populates="role", info={'label': _l("Actions on project objects"), 'on_form': False})
+    actions: so.Mapped[List["RoleHasProjectObjectAction"]] = so.relationship(lazy='select', back_populates="role", cascade="all,delete-orphan", info={'label': _l("Actions on project objects"), 'on_form': False})
 
     class Meta:
         verbose_name = _l("Project role")
