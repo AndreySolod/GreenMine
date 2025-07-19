@@ -19,11 +19,10 @@ from app.helpers.admin_helpers import get_enumerated_objects, get_status_objects
 import json
 from sqlalchemy.inspection import inspect
 import datetime
-from xml.etree import ElementTree
 
 
 @pytest.fixture(scope="module")
-def client() -> Generator[Tuple[FlaskClient, int]]:
+def client() -> FlaskClient:
     if not os.path.exists(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0]):
         another_app = create_app(TestConfig)
         with another_app.app_context():
@@ -52,7 +51,7 @@ def client() -> Generator[Tuple[FlaskClient, int]]:
     client = app.test_client()
     # authorization
     response_with_cookie = client.post(url_for('users.user_login', _external=False), data={'login': 'admin', 'password': 'admin'})
-    yield client
+    return client
 
 
 def test_open_pages(client: FlaskClient):

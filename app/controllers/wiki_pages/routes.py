@@ -26,7 +26,7 @@ def pagedirectory_ajax_new():
     dir_title = request.form.get('title') or ''
     dir_description = request.form.get('description') or ''
     try:
-        parent_dir_id = request.form.get('parent_dir_id')
+        parent_dir_id = int(request.form.get('parent_dir_id'))
     except (ValueError, TypeError):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to create wiki directory with non-integer parent_dir_id {request.form.get('parent_dir_id')}")
         abort(404)
