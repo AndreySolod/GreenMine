@@ -38,6 +38,10 @@ class CriticalVulnerabilityForm(FlaskForm):
         current_year = (datetime.datetime.now(datetime.UTC).year)
         if int(field.data) < 1970 or int(field.data) > current_year:
             raise validators.ValidationError(_l("The year cannot be less than 1970 and more than the current year!"))
+    
+    def validate_cvss(form, field):
+        if field.data < 0 or field.data > 10:
+            raise validators.ValidationError(_l("The CVSS value must be between 0 and 10"))
 
 
 class CriticalVulnerabilityCreateForm(CriticalVulnerabilityForm):

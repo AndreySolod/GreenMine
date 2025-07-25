@@ -10,8 +10,7 @@ import sqlalchemy.orm as so
 from sqlalchemy.ext.hybrid import hybrid_property
 import wtforms
 from app.controllers.forms import PickrColorField
-from sqlalchemy import event
-from sqlalchemy.orm.session import Session as SessionBase
+from sqlalchemy.orm import validates
 from flask_babel import lazy_gettext as _l
 
 
@@ -68,6 +67,13 @@ class CriticalVulnerability(HasComment, db.Model, HasHistory):
     wikipage: so.Mapped["WikiPage"] = so.relationship(lazy='select', info={'label': _l("Page in Wiki")}) # type: ignore
 
     __table_args__ = (sa.UniqueConstraint('year', 'identifier', name='_unique_year_and_identifier_together'),)
+
+    @validates("cvss")
+    def validate_cvss(self, key, value):
+        if value is not None:
+            if value < 0 or value > 10:
+                raise ValueError("CVSS must be between 0 and 10")
+            return value
 
     class Meta:
         verbose_name = _l('Critical vulnerability')
