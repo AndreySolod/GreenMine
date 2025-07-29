@@ -27,7 +27,7 @@ class DefaultSidebar:
         sel55 = SidebarElementSublink(_l("Add new team"), url_for('users.team_new'), act=='team_new')
         se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj in ['User', 'Team'], [sel51, sel52, sel53, sel54, sel55])
         self.se = [se1, se2, se3, se4, se5]
-        if not current_user.is_anonymous and current_user.is_administrator:
+        if not current_user.is_anonymous and current_user.position.is_administrator:
             sel61 = SidebarElementSublink(_l("The Admin Panel"), url_for('admin.index'), obj=='admin')
             sel62 = SidebarElementSublink(_l("Enumeration objects"), url_for('admin.object_index'), obj=='admin')
             sel63 = SidebarElementSublink(_l("State objects"), url_for('admin.status_index'), obj=='admin')
@@ -97,7 +97,7 @@ class DefaultEnvironment:
             title = _l("Edit critical vulnerability «CVE-%(year)s-%(identifier)s»", year=kwargs['obj_val'].year, identifier=kwargs['obj_val'].identifier)
         # Users
         elif obj == 'User' and op == 'index':
-            if not current_user.is_anonymous and current_user.is_administrator:
+            if not current_user.is_anonymous and current_user.position.is_administrator:
                 act1 = CurrentObjectAction(_l("Add new user"), 'fa-solid fa-user-plus', url_for('users.user_new'))
                 acts = [act1]
             else:
@@ -111,7 +111,7 @@ class DefaultEnvironment:
         elif obj == 'Team' and op == 'team_index':
             title = _l("All teams")
             acts = []
-            if not current_user.is_anonymous and current_user.is_administrator:
+            if not current_user.is_anonymous and current_user.position.is_administrator:
                 act1 = CurrentObjectAction(_l("Add new team"), "fa-solid fa-square-plus", url_for('users.team_new'))
                 acts.append(act1)
             current_object = CurrentObjectInfo(_l("Team list"), models.Team.Meta.icon, subtitle=models.Team.Meta.description, actions=acts)

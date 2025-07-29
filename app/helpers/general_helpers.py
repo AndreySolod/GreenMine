@@ -677,7 +677,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             ''' Checks default values in database and add default value if they not exist '''
             # admin - at least one person
             models = importlib.import_module('app.models')
-            u = db.session.scalars(sa.select(models.User).where(models.User.is_administrator == True)).all()
+            u = db.session.scalars(sa.select(models.User).join(models.User.position, isouter=True).where(models.UserPosition.is_administrator == True)).all()
             if len(u) == 0:
                 logger.warning('admin user is not exist.')
                 a = db.session.scalars(sa.select(models.User).where(models.User.login == 'admin')).first()
@@ -688,7 +688,12 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                     a.set_password('admin')
                 else:
                     logger.warning("Administrator rights have been added to the existing user 'admin'")
-                    a.is_administrator=True
+                    position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.is_administrator == True)).first()
+                    if position is None:
+                        logger.warning('Created new position "administrator"')
+                        position = models.UserPosition(title="administrator", string_slug="administrator", is_administrator=True, is_default=False)
+                        db.session.add(position)
+                    a.position = position
                 db.session.add(a)
                 db.session.commit()
                 logger.warning('Changes have been made to the database')
@@ -705,6 +710,16 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             for u in users:
                 if u.preferred_language is None:
                     u.preferred_language = db.session.scalars(sa.select(ApplicationLanguage).where(ApplicationLanguage.string_slug == 'auto')).one()
+                if u.position is None:
+                    pos = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.is_default == True)).first()
+                    if pos is None:
+                        pos = db.session.scalars(sa.select(models.UserPosition)).first()
+                        if pos is None:
+                            logger.warning("No default position found. Created new position")
+                            pos = models.UserPosition(title="Administrator", string_slug="administrator", is_administrator=True, is_default=False)
+                            db.session.add(pos)
+                            db.session.commit()
+                    u.position = pos
         
         def create_issue_templates():
             ''' Check if all issue templates are exist in database, and if not exist - create them '''

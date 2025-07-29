@@ -19,7 +19,7 @@ class UserRole:
 def administrator_only(func):
     @functools.wraps(func)
     def wrapped(*args, **kwargs):
-        if not current_user.is_anonymous and current_user.is_administrator:
+        if not current_user.is_anonymous and current_user.position.is_administrator:
             return func(*args, **kwargs)
         abort(403)
     return wrapped
@@ -28,7 +28,7 @@ def administrator_only(func):
 def has_user_role(role_list: List, obj) -> bool:
     if current_user.is_anonymous:
         return False # Пользователь ещё не вошёл в систему
-    if current_user.is_administrator:
+    if current_user.position.is_administrator:
         return True # Администратор обладает всеми ролями
     has_role = False
     for role in role_list:
@@ -103,8 +103,8 @@ class UserHimself(UserRole):
     description = 'Если пользователь смотрит на свою карточку, то он обладает этой ролью. В противном случае - нет'
 
     def calc(user: models.User, current_object) -> bool:
-        if current_object.__class__.__name__ == 'User':
-            return user.is_administrator or current_object.id == user.id
+        if isinstance(current_object, models.User):
+            return user.position.is_administrator or current_object.id == user.id
         return False
     
 

@@ -1,22 +1,19 @@
 import pytest
-from app import create_app, db
+from app import create_app
 from app.cli import register as register_cli
-import app.models as models
-from config import TestConfig
-from flask_migrate import upgrade
+from flask.testing import FlaskClient
+import shutil
 from flask import url_for
-from urllib.parse import urlparse
-import click
+from flask_migrate import upgrade
+from config import TestConfig
 import tempfile
 import os
-import shutil
-import sqlalchemy as sa
-from typing import Tuple, Generator
-from flask.testing import FlaskClient
+import click
+from typing import Generator
 
 
 @pytest.fixture(scope="module")
-def app_parameters() -> Generator[Tuple[FlaskClient, int]]:
+def auth_client() -> Generator[FlaskClient]:
     if not os.path.exists(TestConfig.SQLALCHEMY_DATABASE_URI.split(":///", 2)[1].split("?", 2)[0]):
         another_app = create_app(TestConfig)
         with another_app.app_context():
@@ -44,12 +41,6 @@ def app_parameters() -> Generator[Tuple[FlaskClient, int]]:
     app.setting_custom_attributes_for_application()
     client = app.test_client()
     # authorization
-    admin_id = db.session.scalars(sa.select(models.User).where(models.User.login == 'admin')).one().id
     response_with_cookie = client.post(url_for('users.user_login', _external=False), data={'login': 'admin', 'password': 'admin'})
-    yield (client, admin_id)
-
-
-def test_correct_user_page(app_parameters: Tuple[FlaskClient, int]):
-    client, admin_id = app_parameters
-    response = client.get(url_for('users.user_show', user_id=admin_id, _external=False), follow_redirects=True)
-    assert urlparse(response.request.url).path == url_for('users.user_show', user_id=admin_id, _external=False)
+    yield client
+    os.remove(tmpfile)

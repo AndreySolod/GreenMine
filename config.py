@@ -41,6 +41,7 @@ class DevelopmentConfig:
     METASPLOIT_HOST = os.environ.get("METASPLOIT_HOST") or "127.0.0.1"
     METASPLOIT_PORT = os.environ.get("METASPLOIT_PORT") or "55553"
     METASPLOIT_PASSWORD = os.environ.get("METASPLOIT_PASSWORD") or "secret"
+    METASPLOIT_VERIFY_SSL = os.environ.get("METASPLOIT_VERIFY_SSL") == "True"
 
 
 class ProductionConfig(DevelopmentConfig):

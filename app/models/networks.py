@@ -47,6 +47,7 @@ class Network(HasComment, db.Model, HasHistory):
                                                                  primaryjoin="Network.id==MutualNetworkVisibility.to_network_id",
                                                                  secondaryjoin="MutualNetworkVisibility.from_network_id==Network.id", back_populates="can_see_network",
                                                                  lazy='select', info={'label': _l("It can be observed from the network"), "description": _l("List of networks from which the devices in this networkc are accessible")})
+    vlan_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("VLAN number")})
 
     @property
     def fulltitle(self):

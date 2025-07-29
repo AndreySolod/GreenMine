@@ -27,6 +27,7 @@ class NetworkForm(FlaskForm):
                                         validators=[validators.Optional(),
                                                     validators.Length(min=0, max=models.Network.connect_cmd.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Network.connect_cmd.type.length))])
     can_see_network = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Network.can_see_network.info["label"]), description=models.Network.can_see_network.info["description"])
+    vlan_number = wtforms.IntegerField(_l("%(field_name)s:", field_name=models.Network.vlan_number.info["label"]), validators=[validators.Optional()])
 
     def validate_ip_address(self, field):
         ns = [str(i) for i in db.session.scalars(sa.select(models.Network.ip_address).where(models.Network.project_id==int(self.project_id)))]

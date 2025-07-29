@@ -29,3 +29,4 @@ docxtpl
 packaging
 gostcrypto
 git+https://gitverse.ru/NekiyUser/CVE-2022-1026
+git+https://gitverse.ru/NekiyUser/pymetasploit

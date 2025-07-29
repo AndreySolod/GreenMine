@@ -13,31 +13,23 @@
                     <tbody>
                         <tr>
                             <td>{{ models.Network.ip_address.info["label"] }}:</td>
-                            <td>{{ network.ip_address }}</td>
+                            <td>{{ network.ip_address|suppress_none }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Network.vlan_number.info["label"] }}:</td>
+                            <td>{{ network.vlan_number|suppress_none }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Network.internal_ip.info["label"] }}:</td>
-                            {% if network.internal_ip != none %}
-                            <td>{{ network.internal_ip }}</td>
-                            {% else %}
-                            <td></td>
-                            {% endif %}
+                            <td>{{ network.internal_ip|suppress_none }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Network.asn.info["label"] }}:</td>
-                            {% if network.asn != none %}
                             <td>{{ network.asn|safe }}</td>
-                            {% else %}
-                            <td></td>
-                            {% endif %}
                         </tr>
                         <tr>
                             <td>{{ models.Network.connect_cmd.info["label"] }}:</td>
-                            {% if network_cmd != none %}
-                            <td>{{ network.connect_cmd|safe }}</td>
-                            {% else %}
-                            <td></td>
-                            {% endif %}
+                            <td>{{ network.connect_cmd|suppress_none|safe }}</td>
                         </tr>
                     </tbody>
                 </table>

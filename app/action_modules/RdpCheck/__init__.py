@@ -1,5 +1,4 @@
-from pymetasploit3.msfrpc import MsfRpcClient
-from pymetasploit3.msfconsole import MsfRpcConsole
+from pymetasploit import MsfRpcClient, MsfRpcConsole
 from typing import Dict, Optional
 from app.controllers.forms import FlaskForm, TreeSelectMultipleField
 import wtforms
@@ -18,11 +17,8 @@ import logging
 logger = logging.getLogger("Module RDP Check")
 
 
-CONSOLE_BUSY=False
 RDP_PROPS = None
 def console_read(console_data):
-    global CONSOLE_BUSY, RDP_PROPS
-    CONSOLE_BUSY = True
     for line in console_data['data'].split('\n'):
         if "Detected RDP on" in line: #Detected RDP on 10.0.0.1:3389     (name:SOME-NAME) (domain:SOME-DOMAIN) (domain_fqdn:SOME-FQDN) (server_fqdn:SOME-FQDN) (os_version:10.0.19041) (Requires NLA: Yes)
             rdp_props = re.findall(r".*?- Detected RDP on .*?\(name:(.*?)\) \(domain:(.*?)\) \(domain_fqdn:(.*?)\) \(server_fqdn:(.*?)\) \(os_version:(.*?)\) \(Requires NLA: (.*?)\)", line)
@@ -34,29 +30,34 @@ def console_read(console_data):
 
 
 def action_run(target: models.Service, running_user_id: int, session: Session, console: Optional[MsfRpcConsole]=None) -> Dict[str, str]:
-    require_close_console = False
-    if console is None:
-        require_close_console = True
-        client = MsfRpcClient(current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'], server=current_app.config['METASPLOIT_HOST'], ssl=True)
-        console = MsfRpcConsole(client, cb=console_read)
-        console.execute('use auxiliary/scanner/rdp/rdp_scanner')
-    console.execute('set RHOSTS {}'.format(target.host.ip_address))
-    console.execute('set THREADS 1')
-    console.execute('set RPORT '+ str(target.port))
-    console.execute('run')
-    time.sleep(3)
-    while CONSOLE_BUSY:
-        time.sleep(3)
+    console.write('set RHOSTS {}'.format(target.host.ip_address))
+    console.write('set THREADS 1')
+    console.write('set RPORT '+ str(target.port))
+    _garbage = console.read()
+    rdp_data = console.read_all()
+    RDP_PROPS = None
+    for line in rdp_data.decode("utf8").split('\n').strip():
+        line = line.strip()
+        pattern = r".*?- Detected RDP on .*?(\(name:(.*?)\) )?(\(domain:(.*?)\) )?(\(domain_fqdn:(.*?)\) )?(\(server_fqdn:(.*?)\) )?(\(os_version:(.*?)\) )?\(Requires NLA: (.*?)\)"
+        if "Detected RDP on" in line: #Detected RDP on 10.0.0.1:3389     (name:SOME-NAME) (domain:SOME-DOMAIN) (domain_fqdn:SOME-FQDN) (server_fqdn:SOME-FQDN) (os_version:10.0.19041) (Requires NLA: Yes)
+            rdp_props = re.findall(pattern, line)
+            if len(rdp_props) == 0:
+                logger.warning(f"Error when parse rdp props. String: {line}")
+                continue
+            RDP_PROPS = rdp_props[0]
     if not target.host.title:
-        target.host.title = RDP_PROPS[0]
+        target.host.title = RDP_PROPS[1]
     if target.description is None:
         target.description = ""
     if target.host.description is None:
         target.host.description = ""
-    target.description += f"<p>Name: {RDP_PROPS[0]}<br>Domain:{RDP_PROPS[1]}<br>Domain FQDN:{RDP_PROPS[2]}<br>Server FQDN:{RDP_PROPS[3]}<br>OS Version:{RDP_PROPS[4]}<br>Requires NLA:{RDP_PROPS[5]}</p>"
-    target.host.description += f"<p>RDP Data:</p><p>Name: {RDP_PROPS[0]}<br>Domain:{RDP_PROPS[1]}<br>Domain FQDN:{RDP_PROPS[2]}<br>Server FQDN:{RDP_PROPS[3]}"
-    target.host.operation_system_gen = RDP_PROPS[4].strip()
-    if RDP_PROPS[5] == "No":
+    target.description += f"<p>Name: {RDP_PROPS[1]}<br>Domain:{RDP_PROPS[3]}" \
+        "<br>Domain FQDN:{RDP_PROPS[5]}<br>Server FQDN:{RDP_PROPS[7]}<br>" \
+            "OS Version:{RDP_PROPS[9]}<br>Requires NLA:{RDP_PROPS[10]}</p>"
+    target.host.description += f"<p>RDP Data:</p><p>Name: {RDP_PROPS[1]}<br>Domain:{RDP_PROPS[3]}<br>" \
+        "Domain FQDN:{RDP_PROPS[5]}<br>Server FQDN:{RDP_PROPS[7]}"
+    target.host.operation_system_gen = RDP_PROPS[9].strip()
+    if RDP_PROPS[10] == "No":
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == target.host.from_network.project_id, models.Issue.by_template_slug == 'rdp_without_nla'))).first()
         if not issue:
             issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'rdp_without_nla')).first()
@@ -71,26 +72,20 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
         if issue:
             issue.services.add(target)
     session.add(target)
-    if require_close_console:
-        console.console.destroy()
-    return {"Name": RDP_PROPS[0], "Domain":RDP_PROPS[1], "Domain FQDN":RDP_PROPS[2], "Server FQDN":RDP_PROPS[3], "OS Version":RDP_PROPS[4], "Requires NLA":RDP_PROPS[5]}
+    return {"Name": RDP_PROPS[1], "Domain":RDP_PROPS[3], "Domain FQDN":RDP_PROPS[5], "Server FQDN":RDP_PROPS[7], "OS Version":RDP_PROPS[9], "Requires NLA":RDP_PROPS[10] == 'Yes'}
 
 
 def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str, project_id: int) -> None:
     logger.info("Running module RDP Check")
-    client = MsfRpcClient(current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'], server=current_app.config['METASPLOIT_HOST'], ssl=True)
-    console = MsfRpcConsole(client, cb=console_read)
-    console.execute('use auxiliary/scanner/rdp/rdp_scanner')
-    with so.sessionmaker(db.engine, autoflush=False)() as session:
+    client = MsfRpcClient(password=current_app.config['METASPLOIT_PASSWORD'], port=current_app.config['METASPLOIT_PORT'],
+                          host=current_app.config['METASPLOIT_HOST'], ssl=True, verify_ssl=current_app.config["METASPLOIT_VERIFY_SSL"])
+    with so.sessionmaker(db.engine, autoflush=False)() as session, client.create_console() as console:
+        console.write('use auxiliary/scanner/rdp/rdp_scanner')
         for target in filled_form['targets']:
             target = session.scalars(sa.select(models.Service).where(models.Service.id == int(target))).one()
             logger.info("Trying to exploit " + str(target))
             action_run(target, running_user_id, session, console)
         session.commit()
-        try:
-            console.console.destroy()
-        except:
-            pass
 
 
 class ModuleInitForm(FlaskForm):

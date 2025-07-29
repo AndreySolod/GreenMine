@@ -1,8 +1,8 @@
-"""Добавлены стили графа сети
+"""Стили графа сети, VLAN ID, изменения User Position
 
-Revision ID: 07f7d8ea487d
+Revision ID: a8e7a2ec87f6
 Revises: f47e0bd8f56a
-Create Date: 2025-07-15 01:09:09.607227
+Create Date: 2025-07-26 11:51:42.911343
 
 """
 from alembic import op
@@ -11,7 +11,7 @@ import app
 
 
 # revision identifiers, used by Alembic.
-revision = '07f7d8ea487d'
+revision = 'a8e7a2ec87f6'
 down_revision = 'f47e0bd8f56a'
 branch_labels = None
 depends_on = None
@@ -27,6 +27,12 @@ def upgrade():
                existing_type=sa.INTEGER(),
                nullable=False)
 
+    with op.batch_alter_table('network', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('vlan_number', sa.Integer(), nullable=True))
+
+    with op.batch_alter_table('user_position', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('is_administrator', sa.Boolean(), server_default=sa.false(), nullable=False))
+
     with op.batch_alter_table('user_theme_style', schema=None) as batch_op:
         batch_op.add_column(sa.Column('network_on_graph_color', sa.String(length=40), server_default='green', nullable=False))
         batch_op.add_column(sa.Column('normal_host_color', sa.String(length=40), server_default='#0000ff', nullable=False))
@@ -41,6 +47,12 @@ def downgrade():
         batch_op.drop_column('service_on_graph_color')
         batch_op.drop_column('normal_host_color')
         batch_op.drop_column('network_on_graph_color')
+
+    with op.batch_alter_table('user_position', schema=None) as batch_op:
+        batch_op.drop_column('is_administrator')
+
+    with op.batch_alter_table('network', schema=None) as batch_op:
+        batch_op.drop_column('vlan_number')
 
     with op.batch_alter_table('default_port_and_transport_proto', schema=None) as batch_op:
         batch_op.alter_column('access_protocol_id',

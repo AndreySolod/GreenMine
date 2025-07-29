@@ -49,7 +49,7 @@ def network_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index network with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Network(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Network, 'column_index': ['id', 'title', 'description', 'ip_address', 'internal_ip', 'asn', 'connect_cmd'],
+    additional_params = {'obj': models.Network, 'column_index': ['id', 'title', 'description', 'ip_address', 'vlan_number', 'internal_ip', 'asn', 'connect_cmd'],
                          'base_select': lambda x: x.where(models.Network.project_id == project_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index network on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)

@@ -41,7 +41,7 @@ def user_show(user_id):
         else:
             act5 = CurrentObjectAction(_l("Unarchive"), "fa-solid fa-box-archive", url_for('users.archive_user', user_id=u.id), btn_class="btn-light", method="POST")
         acts = [act1, act2]
-        if current_user.is_administrator:
+        if current_user.position.is_administrator:
             acts.append(act4)
             acts.append(act5)
         acts.append(act3)

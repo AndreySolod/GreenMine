@@ -27,6 +27,7 @@
                                 <div class="chats-name">{{ message.created_by.title }}</div>
                                 {% else %}
                                 <div class="chats-name">{{ _("Removed user") }}</div>
+                                {% endif %}
                             </div>
                             <div class="chats-text info">
                                 {{ message.text|safe }}

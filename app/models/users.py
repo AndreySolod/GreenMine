@@ -32,6 +32,7 @@ class UserPosition(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(35), info={'label': _l("Title")})
     string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
     is_default: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Default")})
+    is_administrator: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Is an administrator")}, server_default=sa.false())
 
     def __repr__(self):
         return f"<UserPosition '{self.title}', is_default={self.is_default}>"
@@ -154,7 +155,6 @@ class User(UserMixin, db.Model):
     first_name: so.Mapped[str] = so.mapped_column(sa.String(20), default='', info={'label': _l("First Name")})
     last_name: so.Mapped[str] = so.mapped_column(sa.String(30), default='', info={'label': _l("Last Name")})
     middle_name: so.Mapped[str] = so.mapped_column(sa.String(30), default='', info={'label': _l("Patronymic")})
-    is_administrator: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Is an administrator")})
     avatar_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='CASCADE'), info={'label': _l("Avatar")})
     avatar: so.Mapped["FileData"] = so.relationship(lazy='select', foreign_keys=[avatar_id], info={'label': _l("Avatar")})
     manager_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Immediate supervisor")})
