@@ -9,8 +9,9 @@ import app.models as models
 
 
 class ProjectAdditionalParameterForm(FlaskForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, current_parameter=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.current_parameter = current_parameter
         self.field_type.choices = [(str(key), str(value)) for key, value in ProjectAdditionalField.get_all_field_names().items()]
         self.group_id.choices = [(str(i), t) for i, t in db.session.execute(sa.select(ProjectAdditionalFieldGroup.id, ProjectAdditionalFieldGroup.title))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=ProjectAdditionalField.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=ProjectAdditionalField.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(ProjectAdditionalField.title.type.length)))])
@@ -21,6 +22,8 @@ class ProjectAdditionalParameterForm(FlaskForm):
     group_id = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectAdditionalField.group_id.info["label"]), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
 
     def validate_string_slug(form, field):
+        if form.current_parameter is not None and form.current_parameter.string_slug == field.data:
+            return None
         elem = db.session.scalars(sa.select(models.ProjectAdditionalField).where(models.ProjectAdditionalField.string_slug == field.data)).first()
         if elem is not None:
             raise validators.ValidationError(_l("Object with specified field value already exist in database"))

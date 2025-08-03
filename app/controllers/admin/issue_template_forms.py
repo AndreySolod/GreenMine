@@ -20,9 +20,10 @@ def required_validators(column):
 
 
 class IssueTemplateForm(FlaskForm):
-    def __init__(self, session, *args, **kwargs):
+    def __init__(self, template=None, *args, **kwargs):
         super(IssueTemplateForm, self).__init__(*args, **kwargs)
-        self.issue_cve_id.choices = [('0', '')] + session.execute(db.select(CriticalVulnerability.id, CriticalVulnerability.title)).all()
+        self.issue_template = template
+        self.issue_cve_id.choices = [('0', '')] + db.session.execute(db.select(CriticalVulnerability.id, CriticalVulnerability.title)).all()
     title = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=IssueTemplate.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(IssueTemplate.title.type.length)))])
     string_slug = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.string_slug.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=IssueTemplate.string_slug.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(IssueTemplate.string_slug.type.length)))])
     description = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.description.info["label"]), validators=[validators.Optional()])
@@ -37,6 +38,8 @@ class IssueTemplateForm(FlaskForm):
 
     def validate_string_slug(form, field):
         another_issue_template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == field.data.strip())).first()
+        if form.issue_template is not None and form.issue_template.string_slug == field.data:
+            return None
         if another_issue_template is not None:
             raise validators.ValidationError(_l("Issue template with the specified string slug has already been registered"))
 

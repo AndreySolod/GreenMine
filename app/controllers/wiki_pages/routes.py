@@ -5,7 +5,7 @@ from flask import request, render_template, url_for, redirect, flash, abort, jso
 from app.models import WikiPage, WikiDirectory
 from app.helpers.general_helpers import get_or_404
 from app.helpers.main_page_helpers import DefaultEnvironment
-import sqlalchemy
+from app.helpers.roles import user_position_can_make_action_or_abort
 import sqlalchemy.exc as exc
 from .forms import WikiDirectoryNewForm, WikiPageNewForm, WikiPageEditForm
 from flask_babel import lazy_gettext as _l
@@ -13,6 +13,7 @@ from flask_babel import lazy_gettext as _l
 
 @bp.route('/wikidirectory/index')
 def pagedirectory_index():
+    user_position_can_make_action_or_abort(current_user, WikiDirectory, 'index')
     directories = db.session.scalars(db.select(WikiDirectory).where(WikiDirectory.parent_directory_id == None)).all()
     pages = db.session.scalars(db.select(WikiPage).where(WikiPage.directory_id == None)).all()
     ctx = DefaultEnvironment('WikiPage', 'index')()
@@ -23,6 +24,7 @@ def pagedirectory_index():
 
 @bp.route('/wikidirectory/ajax-new', methods=["POST"])
 def pagedirectory_ajax_new():
+    user_position_can_make_action_or_abort(current_user, WikiDirectory, 'create')
     dir_title = request.form.get('title') or ''
     dir_description = request.form.get('description') or ''
     try:
@@ -43,6 +45,7 @@ def pagedirectory_ajax_new():
 
 @bp.route('/wikidirectory/new', methods=['GET', 'POST'])
 def pagedirectory_new():
+    user_position_can_make_action_or_abort(current_user, WikiDirectory, 'create')
     form = WikiDirectoryNewForm(db.session)
     if form.validate_on_submit():
         directory = WikiDirectory()
@@ -61,6 +64,7 @@ def pagedirectory_new():
 
 @bp.route('/wikidirectory/<wikidirectory_id>/edit', methods=["POST"])
 def pagedirectory_edit(wikidirectory_id):
+    user_position_can_make_action_or_abort(current_user, WikiDirectory, 'update')
     try:
         wikidirectory_id = int(wikidirectory_id)
     except (ValueError, TypeError):
@@ -83,6 +87,7 @@ def pagedirectory_edit(wikidirectory_id):
 
 @bp.route('/wikidirectory/<wikidirectory_id>/delete', methods=["POST"])
 def pagedirectory_delete(wikidirectory_id):
+    user_position_can_make_action_or_abort(current_user, WikiDirectory, 'delete')
     try:
         directory_id = int(wikidirectory_id)
     except (ValueError, TypeError):
@@ -114,6 +119,7 @@ def wikipage_show(wikipage_id):
 
 @bp.route('/wikipage/new', methods=["GET", "POST"])
 def wikipage_new():
+    user_position_can_make_action_or_abort(current_user, WikiPage, 'create')
     form = WikiPageNewForm(db.session)
     if form.validate_on_submit():
         wp = WikiPage()
@@ -132,6 +138,7 @@ def wikipage_new():
 
 @bp.route('/wikipage/ajax-new', methods=["POST"])
 def wikipage_ajax_new():
+    user_position_can_make_action_or_abort(current_user, WikiPage, 'create')
     parent_dir_id = request.form.get('parent_dir_id') or ''
     try:
         parent_dir_id = int(parent_dir_id)
@@ -148,6 +155,7 @@ def wikipage_ajax_new():
 
 @bp.route('/wikipage/<wikipage_id>/edit', methods=["GET", "POST"])
 def wikipage_edit(wikipage_id):
+    user_position_can_make_action_or_abort(current_user, WikiPage, 'update')
     try:
         wikipage_id = int(wikipage_id)
     except (ValueError, TypeError):
@@ -173,6 +181,7 @@ def wikipage_edit(wikipage_id):
 
 @bp.route('/wikipage/ajax-edit', methods=["POST"])
 def wikipage_ajax_edit():
+    user_position_can_make_action_or_abort(current_user, WikiPage, 'update')
     title = request.form.get('title') or ''
     description = request.form.get('description') or ''
     page_id = request.form.get('page_id') or ''
@@ -193,6 +202,7 @@ def wikipage_ajax_edit():
 
 @bp.route('/wikipage/ajax-delete', methods=["POST"])
 def wikipage_ajax_delete():
+    user_position_can_make_action_or_abort(current_user, WikiPage, 'delete')
     page_id = request.form.get('page_id') or None
     try:
         page_id = int(page_id)
@@ -208,6 +218,7 @@ def wikipage_ajax_delete():
 
 @bp.route('/wikipage/<wikipage_id>/delete', methods=["POST", "DELETE"])
 def wikipage_delete(wikipage_id):
+    user_position_can_make_action_or_abort(current_user, WikiPage, 'delete')
     try:
         wikipage_id = int(wikipage_id)
     except (ValueError, TypeError):
@@ -223,6 +234,7 @@ def wikipage_delete(wikipage_id):
 
 @bp.route('/tree-wikistruct')
 def wiki_ajax_struct():
+    user_position_can_make_action_or_abort(current_user, WikiDirectory, 'index')
     if 'id' not in request.args or request.args['id'] == '#':
         dir_id = None
     else:

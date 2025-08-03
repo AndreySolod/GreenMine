@@ -62,7 +62,7 @@ def project_additional_parameters_edit(parameter_id):
     except (ValueError, TypeError):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to edit project parameter data with non-integer parameter_id: {parameter_id}")
         abort(400)
-    form = forms.ProjectAdditionalParameterEditForm()
+    form = forms.ProjectAdditionalParameterEditForm(param)
     if form.validate_on_submit():
         form.populate_obj(db.session, param)
         db.session.add(param)

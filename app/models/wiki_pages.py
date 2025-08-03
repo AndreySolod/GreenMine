@@ -36,6 +36,8 @@ class WikiPage(db.Model):
         verbose_name = _l("Wiki Page")
         verbose_name_plural = _l("Wiki Pages")
         icon = "fa-brands fa-wikipedia-w"
+        global_permission_actions = {"show": _l("Show object card"), "update": _l("Update object"), "delete": _l("Delete object"),
+                                     "create": _l("Create object")}
 
 
 class WikiDirectory(db.Model):
@@ -66,4 +68,6 @@ class WikiDirectory(db.Model):
         verbose_name = _l("Directory of Wiki pages")
         verbose_name_plural = _l("Directories of Wiki pages")
         icon = 'fa-solid fa-folder'
+        global_permission_actions = {"show": _l("Show object card"), "update": _l("Update object"), "delete": _l("Delete object"),
+                                     "create": _l("Create object"), "index": "Show object list"}
 

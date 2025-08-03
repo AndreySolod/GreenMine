@@ -445,3 +445,38 @@ def test_password_policy(auth_client: FlaskClient):
     gs = db.session.scalars(sa.select(models.GlobalSettings)).first()
     for key, value in post_data.items():
         assert getattr(gs, key) == value, f"Cannot set attribute {key} to password policy in global settings"
+
+
+def test_user_position_actions(auth_client: FlaskClient):
+    page = auth_client.get(url_for('admin.user_positions_index', _external=False))
+    assert page.status_code == 200, f"Cannot open user positions page. Status code: {page.status_code}"
+    # create position
+    create_get = auth_client.get(url_for('admin.user_positions_new', _external=False))
+    assert create_get.status_code == 200, f"Cannot open user positions create form. Status code: {create_get.status_code}"
+    post_data = {'string_slug': 'new_position', 'title': 'New position', 'is_default': True, 'is_administrator': True}
+    position_post = auth_client.post(url_for('admin.user_positions_new', _external=False), follow_redirects=True, data=post_data)
+    assert position_post.status_code == 200, f"Cannot create new user position. Status code: {position_post.status_code}"
+    assert len(position_post.history) == 1, f"Incorrect count of redirect history after create user position: {len(position_post.history)}"
+    assert urlparse(position_post.request.url).path == url_for('admin.user_positions_index', _external=False), f"Redirect after create user position is not to user positions index page"
+    position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.string_slug == 'new_position')).first()
+    assert position is not None, f"Cannot create new user position in database"
+    # Edit position
+    edit_get = auth_client.get(url_for('admin.user_positions_edit', _external=False, position_id=position.id))
+    assert edit_get.status_code == 200, f"Cannot open user position edit form. Status code: {edit_get.status_code}"
+    edit_data = {'string_slug': 'new_position', 'title': 'Edit position'}
+    edit_post = auth_client.post(url_for('admin.user_positions_edit', _external=False, position_id=position.id), follow_redirects=True, data=edit_data)
+    assert edit_post.status_code == 200, f"Cannot change user position. Status code: {edit_post.status_code}"
+    assert len(edit_post.history) == 1, f"Incorrect count of redirect history after edit user position: {len(edit_post.history)}"
+    assert urlparse(edit_post.request.url).path == url_for('admin.user_positions_index', _external=False), f"Redirect after edit user position is not to user positions index page"
+    db.session.refresh(position)
+    assert position is not None, f"Cannot edit user position in database"
+    # Delete position
+    delete_post = auth_client.post(url_for('admin.user_positions_delete', _external=False, position_id=position.id), follow_redirects=True)
+    assert delete_post.status_code == 200, f"Cannot delete user position. Status code: {delete_post.status_code}"
+    assert len(delete_post.history) == 1, f"Incorrect count of redirect history after delete user position: {len(delete_post.history)}"
+    assert urlparse(delete_post.request.url).path == url_for('admin.user_positions_index', _external=False), f"Redirect after delete user position is not to user positions index page"
+    position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.string_slug == 'new_position')).first()
+    assert position is None, f"Cannot delete user position from database"
+    # Edit permissions
+    edit_permissions_get = auth_client.get(url_for('admin.user_positions_permissions', _external=False))
+    assert edit_permissions_get.status_code == 200, f"Cannot open user position edit permissions form. Status code: {edit_permissions_get.status_code}"

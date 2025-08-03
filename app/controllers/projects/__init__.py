@@ -57,7 +57,9 @@ def environment(obj, action, **kwargs):
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('projects.project_delete', project_id=obj.id), confirm=_l("Are you sure you want to delete this project?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
-        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=obj.created_by.title, date=str(moment(obj.created_at).fromNow()))), actions=acts)
+        created_by_id = obj.created_by_id if obj.created_by_id is not None else 0
+        created_by_title = obj.created_by.title if obj.created_by is not None else _l("Removed user")
+        current_object = CurrentObjectInfo(obj.fulltitle, obj.Meta.icon, subtitle=Markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=created_by_id), created_by=created_by_title, date=str(moment(obj.created_at).fromNow()))), actions=acts)
     elif action == 'new':
         title = _l("Add new project")
         current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus")

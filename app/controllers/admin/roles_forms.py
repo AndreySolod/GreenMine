@@ -11,6 +11,9 @@ from typing import List
 
 
 class ProjectRoleForm(FlaskForm):
+    def __init__(self, project_role=None, *args, **kwargs):
+        super(ProjectRoleForm, self).__init__(*args, **kwargs)
+        self.project_role = project_role
     title = wtforms.StringField(_l("%(field_name)s:", field_name=ProjectRole.title.info["label"]),
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=ProjectRole.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(ProjectRole.title.type.length)))])
@@ -24,6 +27,8 @@ class ProjectRoleCreateForm(ProjectRoleForm):
     submit = wtforms.SubmitField(_l("Create"))
     
     def validate_string_slug(form, field):
+        if form.project_role is not None and field.data == form.project_role.string_slug:
+            return None
         r = db.session.scalars(sa.select(ProjectRole).where(ProjectRole.string_slug == field.data)).first()
         if r is not None:
             raise wtforms.ValidationError(_l("This Slug is already exist!"))
@@ -49,7 +54,6 @@ class ProjectRolePermissionFormMeta(FormMeta):
                     if ra is None:
                         ra = RoleHasProjectObjectAction(role_id=role.id, object_class_name=o.__name__, action=a, is_granted=False)
                         db.session.add(ra)
-                        db.session.commit()
                     role_name = 'role_' + str(role.id) 
                     now_name = role_name + '____' + o.__name__ + '____' + a
                     nf = wtforms.BooleanField(_l("%(action_name)s:", action_name=o.Meta.project_permission_actions[a]), default=ra.is_granted)
@@ -57,6 +61,7 @@ class ProjectRolePermissionFormMeta(FormMeta):
                     name_lst.append(now_name)
                 role_name_lst.append(name_lst)
             attr_names.append(role_name_lst)
+        db.session.commit()
         instance = super(ProjectRolePermissionFormMeta, cls).__new__(cls, name, bases, attrs)
         instance.attr_names = attr_names
         instance.project_role = role

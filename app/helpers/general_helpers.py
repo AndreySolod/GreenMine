@@ -679,7 +679,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             models = importlib.import_module('app.models')
             u = db.session.scalars(sa.select(models.User).join(models.User.position, isouter=True).where(models.UserPosition.is_administrator == True)).all()
             if len(u) == 0:
-                logger.warning('admin user is not exist.')
+                logger.warning('User with administrator role is not exist.')
                 a = db.session.scalars(sa.select(models.User).where(models.User.login == 'admin')).first()
                 if a is None:
                     logger.warning('Created new admin user with login "admin" and password "admin"')
@@ -690,8 +690,11 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                     logger.warning("Administrator rights have been added to the existing user 'admin'")
                     position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.is_administrator == True)).first()
                     if position is None:
-                        logger.warning('Created new position "administrator"')
-                        position = models.UserPosition(title="administrator", string_slug="administrator", is_administrator=True, is_default=False)
+                        position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.string_slug == 'admin')).first()
+                        if position is None:
+                            logger.warning('Created new position "administrator"')
+                            position = models.UserPosition(title="Administrator", string_slug="admin", is_default=False)
+                        position.is_administrator = True
                         db.session.add(position)
                     a.position = position
                 db.session.add(a)
@@ -793,3 +796,9 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
         
         # issue templates
         create_issue_templates()
+
+
+def get_global_objects_with_permissions():
+    models = filter(lambda x: hasattr(x, 'Meta') and hasattr(x.Meta, 'global_permission_actions'), [i.class_ for i in db.Model.registry.mappers])
+    for i in models:
+        yield i

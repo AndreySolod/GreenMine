@@ -6,36 +6,41 @@
 {% block page_content %}
 <div class="row gutters">
     <div class="col-12">
-        <table class="table" id="roles-table"
-               data-pagination="true"
-               data-show-columns="true"
-               data-show-toggle="true"
-               data-show-export="true"
-               data-show-multi-sort="true"
-               data-filter-control="true"
-               data-buttons-class="primary"
-               data-cookie="true"
-               data-cookie-id-table="AdminProjectRoleIndex"
-               data-cookie-storage="localStorage">
-            <thead>
-                <tr>
-                    <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectRole.id.info["label"] }}</th>
-                    <th data-field="string_slug" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.string_slug.info["label"] }}</th>
-                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.title.info['label'] }}</th>
-                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.description.info['label'] }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for pr in project_roles %}
-                <tr class="with-context-menu">
-                    <td>{{ pr.id }}</td>
-                    <td>{{ pr.string_slug }}</td>
-                    <td>{{ pr.title }}</td>
-                    <td>{{ pr.description }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="card">
+            <div class="card-body">
+                <table class="table" id="roles-table"
+                        data-pagination="true"
+                        data-show-columns="true"
+                        data-show-toggle="true"
+                        data-show-export="true"
+                        data-show-multi-sort="true"
+                        data-filter-control="true"
+                        data-buttons-class="primary"
+                        data-cookie="true"
+                        data-cookie-id-table="AdminProjectRoleIndex"
+                        data-cookie-storage="localStorage">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectRole.id.info["label"] }}</th>
+                            <th data-field="string_slug" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.string_slug.info["label"] }}</th>
+                            <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.title.info['label'] }}</th>
+                            <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectRole.description.info['label'] }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pr in project_roles %}
+                        <tr class="with-context-menu">
+                            <td>{{ pr.id }}</td>
+                            <td>{{ pr.string_slug }}</td>
+                            <td>{{ pr.title }}</td>
+                            <td>{{ pr.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
     </div>
 </div>
 <form id="{{ form_id }}" action="" method="POST" style="opacity:0">

@@ -37,7 +37,10 @@ class EditUserPasswordForm(FlaskForm):
 class UserForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
-        self.position.choices = [(p[0], p[1]) for p in db.session.execute(db.select(models.UserPosition.id, models.UserPosition.title)).all()]
+        if current_user.position.is_administrator:
+            self.position.choices = [(p[0], p[1]) for p in db.session.execute(db.select(models.UserPosition.id, models.UserPosition.title)).all()]
+        else:
+            self.position.choices = [(p[0], p[1]) for p in db.session.execute(db.select(models.UserPosition.id, models.UserPosition.title).where(models.UserPosition.is_administrator == False)).all()]
         self.manager.choices = [(p.id, p.title) for p in db.session.scalars(db.select(models.User)).all()]
         self.programming_language_theme.choices = [(p[0], p[1]) for p in db.session.execute(db.select(models.ProgrammingLanguageTheme.id, models.ProgrammingLanguageTheme.title))]
         self.theme_style.choices = [(p[0], p[1]) for p in db.session.execute(db.select(models.UserThemeStyle.id, models.UserThemeStyle.title))]
@@ -82,6 +85,10 @@ class UserFormCreate(UserForm):
 
 
 class UserFormEdit(UserForm):
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not current_user.position.is_administrator:
+            self.position.choices = [(str(user.position.id), user.position.title)]
     submit = wtforms.SubmitField(_l("Save"))
 
 

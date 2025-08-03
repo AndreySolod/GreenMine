@@ -33,6 +33,8 @@ class ObjectFormMeta(FormMeta):
                 validate_name = 'validate_' + col.name
                 def validate_func(form, field):
                     another_object = db.session.scalars(sa.select(obj).where(getattr(obj, col.name) == field.data.strip())).first()
+                    if hasattr(form, 'current_object_value') and form.current_object_value is not None and getattr(form.current_object_value, col.name) == field.data:
+                        return None
                     if another_object is not None:
                         raise validators.ValidationError(_l("Object with specified field value already exist in database"))
                 attrs.update({validate_name: validate_func})
@@ -73,7 +75,9 @@ class ObjectFormMeta(FormMeta):
 
 
 class ObjectForm(FlaskForm, metaclass=ObjectFormMeta):
-    pass
+    def __init__(self, current_object_value=None, *args, **kwargs):
+        super(ObjectForm, self).__init__(*args, **kwargs)
+        self.current_object_value = current_object_value
 
 
 def get_object_create_form(obj, session):

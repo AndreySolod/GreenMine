@@ -92,6 +92,7 @@ class Project(db.Model):
         project_permission_actions = {'show': _l("Show object card"), 'update': _l("Edit and update object"), 'delete': _l("Delete object"),
                                       'edit_participants': _l("Edit participants of project"), "archive": _l("Archive project"), 'show_charts': _l("View status charts"),
                                       'show_additional_parameters': _l("Show additional parameters"), 'edit_additional_parameters': _l("Edit additional parameters")}
+        global_permission_actions = {'index': _l("Show object list"), 'create': _l("Create object")}
 
 
 @event.listens_for(SessionBase, 'before_commit')

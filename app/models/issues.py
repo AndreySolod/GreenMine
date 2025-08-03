@@ -78,6 +78,8 @@ class CriticalVulnerability(HasComment, db.Model, HasHistory):
     class Meta:
         verbose_name = _l('Critical vulnerability')
         verbose_name_plural = _l('Critical vulnerabilities')
+        global_permission_actions = {"show": _l("Show object card"), "update": _l("Update object"), "delete": _l("Delete object"),
+                                     "create": _l("Create object"), "index": "Show object list"}
 
 
 class ProofOfConcept(db.Model):

@@ -12,7 +12,7 @@ from .forms import EditUserPasswordForm, UserFormCreate, UserFormEdit, LoginForm
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
 import sqlalchemy.exc as exc
-from app.helpers.roles import UserHimself, has_user_role, administrator_only, only_for_roles
+from app.helpers.roles import UserHimself, has_user_role, administrator_only, user_position_can_make_action_or_abort
 import datetime
 
 
@@ -31,6 +31,7 @@ def user_index():
 @login_required
 def user_show(user_id):
     u = db.get_or_404(User, user_id)
+    user_position_can_make_action_or_abort(current_user, u, 'show')
     if has_user_role([UserHimself], u):
         act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-user-pen", url_for('users.user_edit', user_id=u.id))
         act2 = CurrentObjectAction(_l("Change password"), "fa-solid fa-key", url_for('users.user_change_password_callback', user_id=user_id))
@@ -59,6 +60,7 @@ def user_show(user_id):
 @login_required
 @administrator_only
 def user_new():
+    user_position_can_make_action_or_abort(current_user, User, 'create')
     form = UserFormCreate()
     ctx = MainPageEnvironment('User', 'new')()
     if form.validate_on_submit():
@@ -89,9 +91,10 @@ def user_new():
 @login_required
 def user_edit(user_id):
     user = get_or_404(db.session, User, user_id)
+    user_position_can_make_action_or_abort(current_user, user, 'update')
     if not has_user_role([UserHimself], user):
         abort(403)
-    form = UserFormEdit()
+    form = UserFormEdit(user)
     sidebar_data = UserSidebar(user, 'user_edit')()
     current_object = CurrentObjectInfo(_l("Edit user #%(user_id)s", user_id=user.id), "fa-solid fa-user-pen")
     if form.validate_on_submit():
@@ -128,6 +131,7 @@ def user_delete():
     if fd.validate_on_submit():
         is_current_user = current_user.id == int(fd.user_id.data)
         user = get_or_404(db.session, User, int(fd.user_id.data))
+        user_position_can_make_action_or_abort(current_user, user, 'delete')
         if not has_user_role([UserHimself], user):
             abort(403)
         uid = user.id
@@ -181,6 +185,7 @@ def user_change_password_callback(user_id):
     except (exc.MultipleResultsFound, exc.NoResultFound, ValueError, TypeError):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request change password with non-integer user_id {user_id} or non-exist user.")
         abort(400)
+    user_position_can_make_action_or_abort(current_user, user, 'change_password')
     if not has_user_role([UserHimself], current_user):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request to change password from user {user.login}, which he has no rights to.")
         abort(403)
@@ -210,6 +215,7 @@ def require_user_password_change(user_id):
         user = db.session.scalars(sa.select(User).where(User.id == user_id)).one()
     except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
         abort(400)
+    user_position_can_make_action_or_abort(current_user, user, 'force_password_change')
     user.is_password_expired = True
     db.session.add(user)
     db.session.commit()
@@ -223,6 +229,7 @@ def archive_user(user_id):
         user = db.session.scalars(sa.select(User).where(User.id == int(user_id))).one()
     except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
         abort(400)
+    user_position_can_make_action_or_abort(current_user, user, 'archive')
     user.archived = not user.archived
     db.session.add(user)
     db.session.commit()

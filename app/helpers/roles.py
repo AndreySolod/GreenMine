@@ -19,7 +19,7 @@ class UserRole:
 def administrator_only(func):
     @functools.wraps(func)
     def wrapped(*args, **kwargs):
-        if not current_user.is_anonymous and current_user.position.is_administrator:
+        if not current_user.is_anonymous and current_user.position and current_user.position.is_administrator:
             return func(*args, **kwargs)
         abort(403)
     return wrapped
@@ -69,7 +69,7 @@ def project_role_can_make_action(user: models.User, obj, action: str, **kwargs) 
         project = kwargs['project']
     else:
         project = db.session.scalars(sa.select(models.Project).where(models.Project.id == project_id)).one()
-    if has_user_role([ProjectManager], project): # ProjectManager has all rights to project
+    if has_user_role([ProjectManager], project): # ProjectManager has all rights to project. Also check on admininstrator - they have all roles
         return True
     # all current user roles on project
     all_roles = db.session.scalars(sa.select(models.UserRoleHasProject.role_id).where(sa.and_(models.UserRoleHasProject.user_id == user.id,
@@ -95,6 +95,34 @@ def project_role_can_make_action_or_abort(user: models.User, obj, action: str, *
             obj_id = obj.id
             project_id = kwargs.get('project_id') or getattr(kwargs.get('project'), 'id', 'None')
         logger.warning(f"User '{getattr(user, 'title', 'Anonymous')}' trying to exist action '{action}' on object {class_name} with id=#{obj_id} on project '{project_id}' which he has no rights to")
+        abort(403)
+
+
+def user_position_can_make_action(user: models.User, obj, action: str, **kwargs) -> bool:
+    ''' For gained current user, object on project and action check permissions - can user make this action, and return true if yes and False otherwise '''
+    if obj.__class__.__name__ == 'DefaultMeta':
+        class_name = obj.__name__
+    else:
+        class_name = obj.__class__.__name__
+    if not hasattr(obj, 'Meta') or not hasattr(obj.Meta, 'global_permission_actions'):
+        raise ValueError(f'Object {class_name} has no global_permission_actions in Meta information')
+    if action not in obj.Meta.global_permission_actions.keys():
+        raise ValueError(f'Action {action} on object {class_name} is not registered in Meta information')
+    if current_user.position is not None and current_user.position.is_administrator: # Administrator have all rights
+        return True
+    if obj.__class__.__name__ == 'User' and obj.id == user.id: # User have all right on himself
+        return True
+    elif obj.__class__.__name__ == 'Team' and user.id == obj.leader_id: # Team leader have all rights on team
+        return True
+    granted_action = db.session.scalars(sa.select(models.UserPositionHasObjectAction).where(sa.and_(models.UserPositionHasObjectAction.object_class_name == class_name,
+                                                                                                    models.UserPositionHasObjectAction.action == action,
+                                                                                                    models.UserPositionHasObjectAction.position_id == user.position_id))).first()
+    return granted_action is not None and granted_action.is_granted
+
+
+def user_position_can_make_action_or_abort(user: models.User, obj, action: str, **kwargs) -> None:
+    ''' Check if current user can make action on current object and raise 403 error if they can't'''
+    if not user_position_can_make_action(user, obj, action, **kwargs):
         abort(403)
 
 

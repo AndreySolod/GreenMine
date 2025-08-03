@@ -9,8 +9,9 @@ from flask_babel import lazy_gettext as _l
 
 
 class TaskTemplateForm(FlaskForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, template=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.task_template = template
         self.task_tracker_id.choices = [('0', '---')] + db.session.execute(sa.select(models.ProjectTaskTracker.id, models.ProjectTaskTracker.title)).all()
         self.task_priority_id.choices = [('0', '---')] + db.session.execute(sa.select(models.ProjectTaskPriority.id, models.ProjectTaskPriority.title)).all()
     title = wtforms.StringField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=ProjectTaskTemplate.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(ProjectTaskTemplate.title.type.length)))])
@@ -23,6 +24,8 @@ class TaskTemplateForm(FlaskForm):
     task_estimation_time_cost = wtforms.IntegerField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_estimation_time_cost.info["label"]), validators=[validators.Optional()])
 
     def validate_string_slug(form, field):
+        if form.task_template is not None and form.task_template.string_slug == field.data:
+            return None
         elem = db.session.scalars(sa.select(models.ProjectTaskTemplate).where(models.ProjectTaskTemplate.string_slug == field.data)).first()
         if elem is not None:
             raise validators.ValidationError(_l("Object with specified field value already exist in database"))

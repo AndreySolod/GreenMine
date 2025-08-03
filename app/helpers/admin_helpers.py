@@ -60,11 +60,19 @@ PROJECT_OBJECTS = set()
 def register_new_project_object(obj):
     ''' Added new project object to list '''
     global PROJECT_OBJECTS
+    if not hasattr(obj, 'Meta'):
+        raise AttributeError("Project object must have an 'Meta' attribute")
+    if not hasattr(obj.Meta, 'project_permission_actions'):
+        raise AttributeError("Project object Meta must have an 'project_permission_actions' attribute")
     PROJECT_OBJECTS.add(obj)
 
 
 def project_object_with_permissions(obj):
     global PROJECT_OBJECTS
+    if not hasattr(obj, 'Meta'):
+        raise AttributeError("Project object must have an 'Meta' attribute")
+    if not hasattr(obj.Meta, 'project_permission_actions'):
+        raise AttributeError("Project object Meta must have an 'project_permission_actions' attribute")
     PROJECT_OBJECTS.add(obj)
     return obj
 
@@ -77,6 +85,7 @@ def get_all_project_objects():
 
 class DefaultSidebar:
     def __init__(self, address: str, obj=None):
+        # TODO: import inspect; inspect.stack()[1].function
         global enumerated_object_list, status_object_list
         sel11 = SidebarElementSublink(_l("List of tools"), url_for('admin.index'), address=='index')
         sel12 = SidebarElementSublink(_l("Title page"), url_for('admin.admin_main_info_edit'), address=='admin_main_info_edit')
@@ -102,10 +111,13 @@ class DefaultSidebar:
         sel61 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), address=='background_tasks_index')
         sel62 = SidebarElementSublink(_l("Background task options"), url_for('admin.background_tasks_options_index'), address=='background_tasks_options_index')
         se6 = SidebarElement(_l("Background tasks"), url_for('admin.background_tasks_index'), "fa-solid fa-bars-progress", address in ['background_tasks_index', 'background_tasks_options_index'], [sel61, sel62])
-        sel71 = SidebarElementSublink(_l("Project roles list"), url_for('admin.project_role_index'), address=='project_role_index')
+        sel71 = SidebarElementSublink(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), address=='project_role_index')
         sel72 = SidebarElementSublink(_l("Add new project role"), url_for('admin.project_role_new'), address=='project_role_new')
         sel73 = SidebarElementSublink(_l("Edit role permissions"), url_for('admin.project_role_permissions'), address=='project_role_permissions')
-        se7 = SidebarElement(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address.startswith('project_role_'), [sel71, sel72, sel73])
+        sel74 = SidebarElementSublink(models.UserPosition.Meta.verbose_name_plural, url_for('admin.user_positions_index'), address=='user_positions_index')
+        sel75 = SidebarElementSublink(_l("Add new user position"), url_for('admin.user_positions_new'), address=='user_positions_new')
+        sel76 = SidebarElementSublink(_l("Edit user position permissions"), url_for('admin.user_positions_permissions'), address=='user_positions_permissions')
+        se7 = SidebarElement(_l("Permissions"), url_for('admin.project_role_index'), models.ProjectRole.Meta.icon, address.startswith('project_role_') or address.startswith("user_positions_"), [sel71, sel72, sel73, sel74, sel75, sel76])
         sel81 = SidebarElementSublink(_l("Password Policy"), url_for('admin.authentication_password_policy_settings'), address=='authentication_password_policy_settings')
         se8 = SidebarElement(_l("Authentication"), url_for('admin.authentication_password_policy_settings'), "fa-solid fa-person-hiking", address.startswith('authentication_'), [sel81])
         sel91 = SidebarElementSublink(models.ProjectAdditionalField.Meta.verbose_name_plural, url_for('admin.project_additional_parameters_index'), address=='project_additional_parameters_index')
@@ -183,6 +195,20 @@ class DefaultEnvironment:
             case 'project_role_permissions':
                 title = _l("Edit permissions for roles")
                 current_object = CurrentObjectInfo(title, "fa-solid fa-person-walking-arrow-loop-left", subtitle="List of actions available for this role on the project")
+            case 'user_positions_index':
+                title = _l("User positions")
+                act1 = CurrentObjectAction(_l("Add new position"), "fa-solid fa-square-plus", url_for('admin.user_positions_new'))
+                act2 = CurrentObjectAction(_l("Edit permissions for positions"), "fa-solid fa-person-walking-arrow-loop-left", url_for('admin.user_positions_permissions'))
+                current_object = CurrentObjectInfo(title, models.UserPosition.Meta.icon, actions=[act1, act2])
+            case 'user_positions_new':
+                title = _l("Add new position")
+                current_object = CurrentObjectInfo(title, models.UserPosition.Meta.icon)
+            case 'user_positions_edit':
+                title = _l("Edit position #%(position_id)s", position_id=obj.id)
+                current_object = CurrentObjectInfo(title, models.UserPosition.Meta.icon)
+            case 'user_positions_permissions':
+                title = _l("Edit permissions for user positions")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-person-walking-arrow-loop-left", subtitle="List of actions available for this position on the project")
             case 'task_template_index':
                 title = models.ProjectTaskTemplate.Meta.verbose_name_plural
                 act1 = CurrentObjectAction(_l("Add new template"), "fa-solid fa-square-plus", url_for('admin.task_template_new'))

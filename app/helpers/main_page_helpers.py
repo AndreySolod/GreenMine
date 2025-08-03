@@ -9,24 +9,57 @@ from flask_babel import lazy_gettext as _l
 
 class DefaultSidebar:
     def __init__(self, obj: str, act: str):
+        from app.helpers.roles import user_position_can_make_action
+        ses = []
         sel11 = SidebarElementSublink(_l("Home page"), url_for('main_page.main_page'), obj=='main_page' and act=='show')
         se1 = SidebarElement(_l("Home page"), url_for('main_page.main_page'), "fa fa-home", obj=='main_page', [sel11])
-        sel21 = SidebarElementSublink(_l("All projects"), url_for('projects.project_index'), obj=='Project' and act=='index')
-        sel22 = SidebarElementSublink(_l("Add new project"), url_for('projects.project_new'), obj=='Project' and act=='new')
-        se2 = SidebarElement(_l("List of projects"), url_for('projects.project_index'), "fa-solid fa-list-check", obj=='Project', [sel21, sel22])
-        sel31 = SidebarElementSublink(_l("Root directory"), url_for('wiki_pages.pagedirectory_index', directory_id=0), obj=='WikiPage' and act=='index')
-        sel32 = SidebarElementSublink(_l("Add new directory"), url_for('wiki_pages.pagedirectory_new'), obj=='WikiDirectory' and act=='new_dir')
-        sel33 = SidebarElementSublink(_l("Add new page"), url_for('wiki_pages.wikipage_new'), obj=='WikiPage' and act=='new_page')
-        se3 = SidebarElement(_l("Knowledge base"), url_for('wiki_pages.pagedirectory_index', directory_id=0), "fa-brands fa-wikipedia-w", obj=='WikiPage', [sel31, sel32, sel33])
-        sel41 = SidebarElementSublink(_l("CVE pages"), url_for('cves.cve_index'), obj=='CriticalVulnerability' and act=='index')
-        se4 = SidebarElement(_l("CVE"), url_for('cves.cve_index'), 'fa-solid fa-droplet', obj=='CriticalVulnerability', [sel41])
+        ses.append(se1)
+        sels = []
+        if user_position_can_make_action(current_user, models.Project, 'index'):
+            sel21 = SidebarElementSublink(_l("All projects"), url_for('projects.project_index'), obj=='Project' and act=='index')
+            sels.append(sel21)
+        if user_position_can_make_action(current_user, models.Project, 'create'):
+            sel22 = SidebarElementSublink(_l("Add new project"), url_for('projects.project_new'), obj=='Project' and act=='new')
+            sels.append(sel22)
+        if len(sels) > 0:
+            se2 = SidebarElement(_l("List of projects"), url_for('projects.project_index'), "fa-solid fa-list-check", obj=='Project', sels)
+            ses.append(se2)
+        sels_wiki = []
+        if user_position_can_make_action(current_user, models.WikiDirectory, 'index'):
+            sel31 = SidebarElementSublink(_l("Root directory"), url_for('wiki_pages.pagedirectory_index', directory_id=0), obj=='WikiPage' and act=='index')
+            sels_wiki.append(sel31)
+        if user_position_can_make_action(current_user, models.WikiDirectory, 'create'):
+            sel32 = SidebarElementSublink(_l("Add new directory"), url_for('wiki_pages.pagedirectory_new'), obj=='WikiDirectory' and act=='new_dir')
+            sels_wiki.append(sel32)
+        if user_position_can_make_action(current_user, models.WikiPage, 'create'):
+            sel33 = SidebarElementSublink(_l("Add new page"), url_for('wiki_pages.wikipage_new'), obj=='WikiPage' and act=='new_page')
+            sels_wiki.append(sel33)
+        if len(sels_wiki) > 0:
+            se3 = SidebarElement(_l("Knowledge base"), url_for('wiki_pages.pagedirectory_index', directory_id=0), "fa-brands fa-wikipedia-w", obj=='WikiPage', sels_wiki)
+            ses.append(se3)
+        sels_cve = []
+        if user_position_can_make_action(current_user, models.CriticalVulnerability, 'index'):
+            sel41 = SidebarElementSublink(_l("CVE pages"), url_for('cves.cve_index'), obj=='CriticalVulnerability' and act=='index')
+            sels_cve.append(sel41)
+        if len(sels_cve) > 0:
+            se4 = SidebarElement(_l("CVE"), url_for('cves.cve_index'), 'fa-solid fa-droplet', obj=='CriticalVulnerability', sels_cve)
+            ses.append(se4)
+        sels_users = []
         sel51 = SidebarElementSublink(_l("List of users"), url_for('users.user_index'), obj=='User' and act=='index')
+        sels_users.append(sel51)
         sel52 = SidebarElementSublink(_l("My page"), url_for('users.user_show', user_id=current_user.id), obj=='User' and act=='show')
-        sel53 = SidebarElementSublink(_l("Add new user"), url_for('users.user_new'), obj=='User' and act == 'new')
+        sels_users.append(sel52)
+        if user_position_can_make_action(current_user, models.User, 'create'):
+            sel53 = SidebarElementSublink(_l("Add new user"), url_for('users.user_new'), obj=='User' and act == 'new')
+            sels_users.append(sel53)
         sel54 = SidebarElementSublink(models.Team.Meta.verbose_name_plural, url_for('users.team_index'), act=='team_index')
-        sel55 = SidebarElementSublink(_l("Add new team"), url_for('users.team_new'), act=='team_new')
-        se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj in ['User', 'Team'], [sel51, sel52, sel53, sel54, sel55])
-        self.se = [se1, se2, se3, se4, se5]
+        sels_users.append(sel54)
+        if user_position_can_make_action(current_user, models.Team, 'create'):
+            sel55 = SidebarElementSublink(_l("Add new team"), url_for('users.team_new'), act=='team_new')
+            sels_users.append(sel55)
+        se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj in ['User', 'Team'], sels_users)
+        ses.append(se5)
+        self.se = ses
         if not current_user.is_anonymous and current_user.position.is_administrator:
             sel61 = SidebarElementSublink(_l("The Admin Panel"), url_for('admin.index'), obj=='admin')
             sel62 = SidebarElementSublink(_l("Enumeration objects"), url_for('admin.object_index'), obj=='admin')

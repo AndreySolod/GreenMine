@@ -67,17 +67,17 @@ def task_template_edit(template_id):
         template_id = int(template_id)
     except (ValueError, TypeError):
         abort(400)
-    templ = get_or_404(db.session, models.ProjectTaskTemplate, template_id)
-    form = forms.TaskTemplateEditForm()
+    template = get_or_404(db.session, models.ProjectTaskTemplate, template_id)
+    form = forms.TaskTemplateEditForm(template)
     if form.validate_on_submit():
-        form.populate_obj(db.session, templ)
+        form.populate_obj(db.session, template)
         db.session.commit()
-        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit project task template #{templ.id}: '{templ.title}'")
+        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit project task template #{template.id}: '{template.title}'")
         flash(_l("Task template successfully updated"), 'success')
-        return redirect(url_for('admin.task_template_show', template_id=templ.id))
+        return redirect(url_for('admin.task_template_show', template_id=template.id))
     elif request.method == "GET":
-        form.load_exist_value(templ)
-    ctx = DefaultEnvironment('task_template_edit', templ)()
+        form.load_exist_value(template)
+    ctx = DefaultEnvironment('task_template_edit', template)()
     context = {'form': form, 'need_ckeditor': True}
     return render_template('task_templates/new.html', **ctx, **context)
 

@@ -59,7 +59,7 @@ class TeamsForm(TeamMemberForm):
     title = wtforms.StringField(_l("%(field_name)s", field_name=models.Team.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                                                                                               validators.Length(max=models.Team.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Team.title.type.length))])
     description = wtforms.TextAreaField(_l("%(field_name)s", field_name=models.Team.description.info["label"]), validators=[validators.Optional()])
-    leader_id = wtforms.SelectField(_l("%(field_name)s", field_name=models.Team.leader_id.info["label"]), coerce=int)
+    leader_id = wtforms.SelectField(_l("%(field_name)s", field_name=models.Team.leader_id.info["label"]))
 
     def populate_obj(self, session, o, current_user=None):
         super().populate_obj(session, o, current_user)

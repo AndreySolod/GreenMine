@@ -1,0 +1,50 @@
+{% extends 'layout/base.html' %}
+
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            {% for obj in objs %}
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ obj.Meta.verbose_name_plural }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    {% for position in positions %}
+                                    <th>{{ position.title }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for perm_key, perm_value in obj.Meta.global_permission_actions.items() %}
+                                <tr>
+                                    <th>{{ perm_value }}</th>
+                                    {% for position in positions %}
+                                    <th>{{ position_permissions[obj][perm_key][position] }}</th>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="col-12">
+                <div class="row justify-content-end">
+                    <div class="col-3">
+                        {{ form.submit(class='btn btn-primary') }}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

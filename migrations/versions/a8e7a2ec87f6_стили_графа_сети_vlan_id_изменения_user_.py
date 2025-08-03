@@ -37,6 +37,23 @@ def upgrade():
         batch_op.add_column(sa.Column('network_on_graph_color', sa.String(length=40), server_default='green', nullable=False))
         batch_op.add_column(sa.Column('normal_host_color', sa.String(length=40), server_default='#0000ff', nullable=False))
         batch_op.add_column(sa.Column('service_on_graph_color', sa.String(length=40), server_default='yellow', nullable=False))
+    
+    with op.batch_alter_table("user", schema=None) as batch_op:
+        batch_op.drop_column("is_administrator")
+    
+    with op.batch_alter_table('user_has_team', schema=None) as batch_op:
+        batch_op.drop_constraint("pk_user_has_team", type_='primary')
+        batch_op.create_primary_key("pk_user_has_team", ["user_id", "team_id", "role_id"])
+    
+    op.create_table('user_position_has_object_action',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('position_id', sa.Integer(), nullable=False),
+    sa.Column('object_class_name', sa.String(length=40), nullable=False),
+    sa.Column('action', sa.String(length=40), nullable=False),
+    sa.Column('is_granted', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['position_id'], ['user_position.id'], name=op.f('fk_user_position_has_object_action_position_id_user_position'), ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id', name=op.f('pk_user_position_has_object_action'))
+    )
 
     # ### end Alembic commands ###
 
@@ -50,6 +67,9 @@ def downgrade():
 
     with op.batch_alter_table('user_position', schema=None) as batch_op:
         batch_op.drop_column('is_administrator')
+    
+    with op.batch_alter_table("user", schema=None) as batch_op:
+        batch_op.add_column(sa.Column("is_administrator", sa.BOOLEAN(), server_default=sa.false(), nullable=False))
 
     with op.batch_alter_table('network', schema=None) as batch_op:
         batch_op.drop_column('vlan_number')
@@ -61,5 +81,11 @@ def downgrade():
         batch_op.alter_column('transport_level_protocol_id',
                existing_type=sa.INTEGER(),
                nullable=True)
+    
+    with op.batch_alter_table('user_has_team', schema=None) as batch_op:
+        batch_op.drop_constraint('pk_user_has_team', type_='primary')
+        batch_op.create_primary_key("pk_user_has_team", ["user_id", "team_id"])
+    
+    op.drop_table('user_position_has_object_action')
 
     # ### end Alembic commands ###

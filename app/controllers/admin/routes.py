@@ -246,7 +246,7 @@ def object_type_edit(object_type, object_id):
         obj = db.session.scalars(sa.select(obj_type).where(obj_type.id==object_id)).one()
     except exc.NoResultFound:
         abort(404)
-    form = get_object_edit_form(obj_type, db.session)()
+    form = get_object_edit_form(obj_type, db.session)(current_object_value=obj)
     form_attributes = [getattr(form, i) for i in form.inspected_columns]
     form_attrs = []
     for i in form_attributes:
@@ -343,7 +343,7 @@ def issue_template_index():
 
 @bp.route('/issues/templates/new', methods=["GET", "POST"])
 def issue_template_new():
-    form = issue_template_forms.IssueTemplateCreateForm(db.session)
+    form = issue_template_forms.IssueTemplateCreateForm()
     if form.validate_on_submit():
         templ = models.IssueTemplate()
         form.populate_obj(db.session, templ, current_user)
@@ -379,17 +379,17 @@ def issue_template_edit(template_id):
         template_id = int(template_id)
     except (ValueError, TypeError):
         abort(400)
-    templ = get_or_404(db.session, models.IssueTemplate, template_id)
-    form = issue_template_forms.IssueTemplateEditForm(db.session)
+    template = get_or_404(db.session, models.IssueTemplate, template_id)
+    form = issue_template_forms.IssueTemplateEditForm(template)
     if form.validate_on_submit():
-        form.populate_obj(db.session, templ)
+        form.populate_obj(db.session, template)
         db.session.commit()
-        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' update issue template #{templ.id}: '{templ.title}'")
+        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' update issue template #{template.id}: '{template.title}'")
         flash(_l("Issue template successfully updated"), 'success')
-        return redirect(url_for('admin.issue_template_show', template_id=templ.id))
+        return redirect(url_for('admin.issue_template_show', template_id=template.id))
     elif request.method == "GET":
-        form.load_exist_value(templ)
-    ctx = DefaultEnvironment('issue_template_edit', templ)()
+        form.load_exist_value(template)
+    ctx = DefaultEnvironment('issue_template_edit', template)()
     context = {'form': form, "ckeditor_height": "100px"}
     return render_template('issue_templates/new.html', **ctx, **context)
 

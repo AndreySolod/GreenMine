@@ -40,6 +40,7 @@ class UserPosition(db.Model):
     class Meta:
         verbose_name = _l("Position")
         verbose_name_plural = _l("Positions")
+        icon = "fa-solid fa-map-pin"
         title_new = _l("Add new position")
         column_index = ['id', 'string_slug', 'title', 'is_default']
 
@@ -132,6 +133,7 @@ class UserHasTeam(db.Model):
     team: so.Mapped["Team"] = so.relationship(back_populates='members', info={'label': _l("Team")})
     user: so.Mapped["User"] = so.relationship(back_populates='teams', info={'label': _l("User")})
     role: so.Mapped[ProjectRole] = so.relationship(lazy='joined', info={'label': _l("Role")})
+
 
 
 def default_user_string_slug(context):
@@ -234,6 +236,9 @@ class User(UserMixin, db.Model):
     class Meta:
         verbose_name = _l("User")
         verbose_name_plural = _l("Users")
+        global_permission_actions = {"show": _l("Show object card"), "update": _l("Update object"), "delete": _l("Delete object"),
+                                     "create": _l("Create object"), "change_password": _l("Manually change the password"), 
+                                     "force_password_change": _l("Force password change")}
 
 
 class UserThemeStyle(db.Model):
@@ -383,3 +388,17 @@ class Team(db.Model):
         verbose_name_plural = _l("Teams")
         description = _l("A team is a group of users whose creation simplifies the assignment of roles on a project")
         icon = "fa-solid fa-users-rays"
+        global_permission_actions = {"show": _l("Show object card"), "update": _l("Update object"), "delete": _l("Delete object"),
+                                     "create": _l("Create object"), "index": "Show object list"}
+
+
+class UserPositionHasObjectAction(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    position_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(UserPosition.id, ondelete='CASCADE'), info={'label': _l("Position")})
+    position: so.Mapped[UserPosition] = so.relationship(lazy='joined')
+    object_class_name: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Object class name")})
+    action: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Object action")})
+    is_granted: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=False, info={'label': _l("Is granted")})
+
+    def __repr__(self):
+        return f"UserPositionHasObjectAction(position_id={self.position_id}, object_class_name={self.object_class_name}, action_name={self.action_name})"

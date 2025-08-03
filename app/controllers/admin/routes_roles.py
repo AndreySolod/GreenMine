@@ -50,7 +50,7 @@ def project_role_edit(role_id):
         pr = db.session.scalars(sa.select(models.ProjectRole).where(models.ProjectRole.id == role_id)).one()
     except (exc.MultipleResultsFound, exc.NoResultFound):
         abort(404)
-    form = forms.ProjectRoleEditForm()
+    form = forms.ProjectRoleEditForm(project_role=pr)
     if form.validate_on_submit():
         form.populate_obj(db.session, pr, current_user)
         db.session.add(pr)

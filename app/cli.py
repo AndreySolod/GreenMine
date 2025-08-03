@@ -26,7 +26,6 @@ def register(app):
         nonlocal GLOBAL_UPDATED_OBJECT_DICT
         for value in GLOBAL_UPDATED_OBJECT_DICT.values():
             for changed_object in value.values():
-                print('changed object:', changed_object)
                 db.session.add(changed_object)
         db.session.commit()
 

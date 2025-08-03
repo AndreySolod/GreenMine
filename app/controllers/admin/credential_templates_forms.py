@@ -9,8 +9,9 @@ from wtforms import validators
 
 
 class CredentialImportTemplateForm(FlaskForm):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, credential_template=None, *args, **kwargs):
         super(CredentialImportTemplateForm, self).__init__(*args, **kwargs)
+        self.credential_template = credential_template
         self.static_check_wordlist_id.choices = [('0', '---')] + [(i[0], i[1]) for i in db.session.execute(sa.select(models.CheckWordlist.id, models.CheckWordlist.title))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=CredentialImportTemplate.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=CredentialImportTemplate.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(CredentialImportTemplate.title.type.length)))])
     string_slug = wtforms.StringField(_l("%(field_name)s:", field_name=CredentialImportTemplate.string_slug.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=CredentialImportTemplate.string_slug.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(CredentialImportTemplate.string_slug.type.length)))])
@@ -26,6 +27,8 @@ class CredentialImportTemplateForm(FlaskForm):
     static_description = wtforms.StringField(_l("%(field_name)s:", field_name=CredentialImportTemplate.static_description.info["label"]), validators=[validators.Optional()])
 
     def validate_string_slug(form, field):
+        if form.credential_template is not None and form.credential_template.string_slug == field.data:
+            return None
         another_credential_template = db.session.scalars(sa.select(CredentialImportTemplate).where(CredentialImportTemplate.string_slug == field.data.strip())).first()
         if another_credential_template is not None:
             raise validators.ValidationError(_l("Credential import template with the specified string slug has already been registered"))

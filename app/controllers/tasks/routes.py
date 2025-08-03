@@ -175,9 +175,9 @@ def projecttask_new():
     form = forms.ProjectTaskCreateForm(project_id)
     if form.validate_on_submit():
         task = ProjectTask()
-        form.populate_obj(db.session, task, current_user)
-        task.project_id = project_id
         db.session.add(task)
+        project.tasks.append(task)
+        form.populate_obj(db.session, task, current_user)
         db.session.commit()
         for f in form.related_files.data:
             if f.content_length == 0 and f.content_type == 'application/octet-stream' and f.filename == '' and f.mimetype == 'application/octet-stream':

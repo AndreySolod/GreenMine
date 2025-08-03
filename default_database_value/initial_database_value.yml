@@ -34,9 +34,11 @@ UserPosition:
     - admin:
         title: "Администратор"
         is_default: false
+        is_administrator: true
     - worker:
         title: "Раб бесправный"
         is_default: true
+        is_administrator: false
 
 UserThemeStyle:
     - classic_green:

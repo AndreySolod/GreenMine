@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-07-29 15:56+1000\n"
-"PO-Revision-Date: 2025-07-29 16:19+1000\n"
+"PO-Revision-Date: 2025-08-01 23:20+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -371,7 +371,7 @@ msgstr ""
 
 #: app/action_modules/Import_from_nmap/__init__.py:246
 msgid "Automatically add mutual visibility of networks"
-msgstr "Автоматически добавлять взаимную видимость сетей."
+msgstr "Автоматически добавлять взаимную видимость сетей"
 
 #: app/action_modules/Import_from_nmap/__init__.py:247
 #: app/action_modules/Import_from_zmap/__init__.py:95
@@ -4659,7 +4659,7 @@ msgstr "Лидер команды"
 
 #: app/models/users.py:359
 msgid "Team members"
-msgstr "Члены команду"
+msgstr "Члены команды"
 
 #: app/models/users.py:383
 msgid "Teams"

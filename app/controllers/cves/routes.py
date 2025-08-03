@@ -8,10 +8,12 @@ from app.helpers.main_page_helpers import DefaultEnvironment
 from .forms import CriticalVulnerabilityCreateForm, CriticalVulnerabilityEditForm
 import json
 from flask_babel import lazy_gettext as _l
+from app.helpers.roles import user_position_can_make_action_or_abort
 
 
 @bp.route('/index')
 def cve_index():
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'index')
     filters = {}
     for obj in [VulnerableEnvironmentType, ProgrammingLanguage]:
         now_obj = {}
@@ -25,6 +27,7 @@ def cve_index():
 
 @bp.route('/index-data')
 def cve_index_data():
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'index')
     additional_params = {'obj': CriticalVulnerability, 'column_index': ['id', 'title', 'description', 'vulnerable_environment_type', 'proof_of_concept_language'],
                          'base_select': lambda x: x.where(CriticalVulnerability.archived == False)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all cves")
@@ -34,6 +37,7 @@ def cve_index_data():
 
 @bp.route('/new', methods=["GET", "POST"])
 def cve_new():
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'create')
     form = CriticalVulnerabilityCreateForm(db.session)
     if form.validate_on_submit():
         cve = CriticalVulnerability()
@@ -52,6 +56,7 @@ def cve_new():
 
 @bp.route('/<cve_id>/edit', methods=["GET", "POST"])
 def cve_edit(cve_id):
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'update')
     try:
         cve_id = int(cve_id)
     except (ValueError, TypeError):
@@ -74,6 +79,7 @@ def cve_edit(cve_id):
 
 @bp.route('/<cve_id>/show')
 def cve_show(cve_id):
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'show')
     try:
         cve_id = int(cve_id)
     except (ValueError, TypeError):
@@ -87,6 +93,7 @@ def cve_show(cve_id):
 
 @bp.route('/<cve_id>/delete', methods=["POST", 'DELETE'])
 def cve_delete(cve_id):
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'delete')
     try:
         cve_id = int(cve_id)
     except (ValueError, TypeError):

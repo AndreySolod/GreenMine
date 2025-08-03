@@ -54,7 +54,7 @@ def credential_template_edit(template_id):
     except (ValueError, TypeError):
         abort(400)
     template = db.get_or_404(models.CredentialImportTemplate, template_id)
-    form = forms.CredentialImportTemplateFormEdit()
+    form = forms.CredentialImportTemplateFormEdit(template)
     if form.validate_on_submit():
         form.populate_obj(db.session, template, current_user)
         db.session.add(template)

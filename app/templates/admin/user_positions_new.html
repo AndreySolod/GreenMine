@@ -1,0 +1,31 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action="" method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-12">
+                                {{ form_element(form, form.string_slug, inline=True) }}
+                                {{ form_element(form, form.title, inline=True) }}
+                                {{ form_element(form, form.is_default, inline=True) }}
+                                {{ form_element(form, form.is_administrator, inline=True) }}
+                            </div>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col-3">
+                                {{ form.submit(class="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

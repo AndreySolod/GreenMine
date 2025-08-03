@@ -19,6 +19,7 @@
                         <p class="text-center text-muted">{{ pgettext("they", "(Missing)") }}</p>
                         {% else %}
                         {% for team in teams %}
+                        {% if roles.user_position_can_make_action(current_user, team, 'index') %}
                         <li class="team-item">
                             <div class="team-thumb"><img src="{{ url_for('files.download_file', file_id=team.leader.avatar_id) }}"></div>
                             <div class="team-description">
@@ -32,6 +33,7 @@
                                 </p>
                             </div>
                         </li>
+                        {% endif %}
                         {% endfor %}
                         {% endif %}
                     </ul>
