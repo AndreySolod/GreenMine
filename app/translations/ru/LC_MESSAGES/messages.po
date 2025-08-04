@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-04 15:54+1000\n"
-"PO-Revision-Date: 2025-08-04 15:59+1000\n"
+"POT-Creation-Date: 2025-08-04 18:30+1000\n"
+"PO-Revision-Date: 2025-08-04 18:33+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -107,8 +107,10 @@ msgstr ""
 #: app/controllers/credentials/forms.py:27 app/controllers/cves/forms.py:16
 #: app/controllers/cves/forms.py:18 app/controllers/cves/forms.py:26
 #: app/controllers/issues/forms.py:26 app/controllers/issues/forms.py:71
-#: app/controllers/networks/forms.py:20 app/controllers/networks/forms.py:151
-#: app/controllers/networks/forms.py:157 app/controllers/networks/forms.py:220
+#: app/controllers/networks/forms.py:21 app/controllers/networks/forms.py:152
+#: app/controllers/networks/forms.py:158 app/controllers/networks/forms.py:221
+#: app/controllers/networks/forms.py:269 app/controllers/networks/forms.py:270
+#: app/controllers/networks/forms.py:276 app/controllers/networks/forms.py:277
 #: app/controllers/notes/forms.py:14 app/controllers/notes/forms.py:27
 #: app/controllers/projects/forms.py:20 app/controllers/projects/forms.py:23
 #: app/controllers/projects/forms.py:25 app/controllers/projects/forms.py:27
@@ -283,30 +285,30 @@ msgstr "Обрабатывать данные об операционной си
 #: app/controllers/issues/forms.py:68 app/controllers/issues/forms.py:70
 #: app/controllers/issues/forms.py:71 app/controllers/issues/forms.py:73
 #: app/controllers/issues/forms.py:74 app/controllers/issues/forms.py:75
-#: app/controllers/networks/forms.py:19 app/controllers/networks/forms.py:22
-#: app/controllers/networks/forms.py:23 app/controllers/networks/forms.py:24
-#: app/controllers/networks/forms.py:25 app/controllers/networks/forms.py:26
-#: app/controllers/networks/forms.py:29 app/controllers/networks/forms.py:30
-#: app/controllers/networks/forms.py:76 app/controllers/networks/forms.py:79
-#: app/controllers/networks/forms.py:80 app/controllers/networks/forms.py:81
-#: app/controllers/networks/forms.py:82 app/controllers/networks/forms.py:83
-#: app/controllers/networks/forms.py:85 app/controllers/networks/forms.py:88
-#: app/controllers/networks/forms.py:90 app/controllers/networks/forms.py:92
-#: app/controllers/networks/forms.py:94 app/controllers/networks/forms.py:114
-#: app/controllers/networks/forms.py:145 app/controllers/networks/forms.py:148
-#: app/controllers/networks/forms.py:150 app/controllers/networks/forms.py:152
-#: app/controllers/networks/forms.py:153 app/controllers/networks/forms.py:154
-#: app/controllers/networks/forms.py:156 app/controllers/networks/forms.py:158
-#: app/controllers/networks/forms.py:159 app/controllers/networks/forms.py:161
-#: app/controllers/networks/forms.py:164 app/controllers/networks/forms.py:166
-#: app/controllers/networks/forms.py:169 app/controllers/networks/forms.py:170
-#: app/controllers/networks/forms.py:171 app/controllers/networks/forms.py:172
-#: app/controllers/networks/forms.py:213 app/controllers/networks/forms.py:214
-#: app/controllers/networks/forms.py:215 app/controllers/networks/forms.py:219
-#: app/controllers/networks/forms.py:222 app/controllers/networks/forms.py:234
-#: app/controllers/networks/forms.py:250 app/controllers/networks/forms.py:253
-#: app/controllers/networks/forms.py:255 app/controllers/networks/forms.py:257
-#: app/controllers/networks/forms.py:259 app/controllers/networks/forms.py:262
+#: app/controllers/networks/forms.py:20 app/controllers/networks/forms.py:23
+#: app/controllers/networks/forms.py:24 app/controllers/networks/forms.py:25
+#: app/controllers/networks/forms.py:26 app/controllers/networks/forms.py:27
+#: app/controllers/networks/forms.py:30 app/controllers/networks/forms.py:31
+#: app/controllers/networks/forms.py:77 app/controllers/networks/forms.py:80
+#: app/controllers/networks/forms.py:81 app/controllers/networks/forms.py:82
+#: app/controllers/networks/forms.py:83 app/controllers/networks/forms.py:84
+#: app/controllers/networks/forms.py:86 app/controllers/networks/forms.py:89
+#: app/controllers/networks/forms.py:91 app/controllers/networks/forms.py:93
+#: app/controllers/networks/forms.py:95 app/controllers/networks/forms.py:115
+#: app/controllers/networks/forms.py:146 app/controllers/networks/forms.py:149
+#: app/controllers/networks/forms.py:151 app/controllers/networks/forms.py:153
+#: app/controllers/networks/forms.py:154 app/controllers/networks/forms.py:155
+#: app/controllers/networks/forms.py:157 app/controllers/networks/forms.py:159
+#: app/controllers/networks/forms.py:160 app/controllers/networks/forms.py:162
+#: app/controllers/networks/forms.py:165 app/controllers/networks/forms.py:167
+#: app/controllers/networks/forms.py:170 app/controllers/networks/forms.py:171
+#: app/controllers/networks/forms.py:172 app/controllers/networks/forms.py:173
+#: app/controllers/networks/forms.py:214 app/controllers/networks/forms.py:215
+#: app/controllers/networks/forms.py:216 app/controllers/networks/forms.py:220
+#: app/controllers/networks/forms.py:223 app/controllers/networks/forms.py:235
+#: app/controllers/networks/forms.py:251 app/controllers/networks/forms.py:254
+#: app/controllers/networks/forms.py:256 app/controllers/networks/forms.py:258
+#: app/controllers/networks/forms.py:260 app/controllers/networks/forms.py:263
 #: app/controllers/notes/forms.py:13 app/controllers/notes/forms.py:16
 #: app/controllers/notes/forms.py:17 app/controllers/notes/forms.py:26
 #: app/controllers/notes/forms.py:29 app/controllers/notes/forms.py:30
@@ -439,8 +441,8 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/admin/task_templates_forms.py:39
 #: app/controllers/credentials/forms.py:44 app/controllers/cves/forms.py:52
 #: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:52
-#: app/controllers/networks/forms.py:57 app/controllers/networks/forms.py:123
-#: app/controllers/networks/forms.py:196 app/controllers/notes/forms.py:31
+#: app/controllers/networks/forms.py:58 app/controllers/networks/forms.py:124
+#: app/controllers/networks/forms.py:197 app/controllers/notes/forms.py:31
 #: app/controllers/projects/forms.py:50 app/controllers/projects/forms.py:93
 #: app/controllers/projects/forms.py:154
 #: app/controllers/research_events/forms.py:70
@@ -635,8 +637,9 @@ msgstr "Разрешены только файлы .txt!"
 
 #: app/action_modules/Mass_import_creds/__init__.py:125
 #: app/action_modules/Mass_import_scan_data/__init__.py:67
-#: app/helpers/admin_helpers.py:148 app/templates/chats/index.html:45
-#: app/templates/hosts/show.html:472 app/templates/hosts/show.html:497
+#: app/controllers/networks/forms.py:278 app/helpers/admin_helpers.py:148
+#: app/templates/chats/index.html:45 app/templates/hosts/show.html:472
+#: app/templates/hosts/show.html:497
 msgid "Add"
 msgstr "Добавить"
 
@@ -667,14 +670,17 @@ msgstr ""
 "соответствии с указанным разделителем"
 
 #: app/action_modules/Mass_import_scan_data/__init__.py:60
+#: app/controllers/networks/forms.py:270
 msgid "IP address position:"
 msgstr "Позиция IP-адреса:"
 
 #: app/action_modules/Mass_import_scan_data/__init__.py:61
+#: app/controllers/networks/forms.py:269
 msgid "Title position:"
 msgstr "Позиция заголовка:"
 
 #: app/action_modules/Mass_import_scan_data/__init__.py:62
+#: app/controllers/networks/forms.py:272
 msgid "Description position:"
 msgstr "Позиция описания:"
 
@@ -733,9 +739,9 @@ msgid "Select an option"
 msgstr "Выберите опцию"
 
 #: app/controllers/forms.py:426 app/controllers/forms.py:451
-#: app/controllers/forms.py:453 app/helpers/projects_helpers.py:223
-#: app/helpers/projects_helpers.py:225 app/helpers/projects_helpers.py:232
-#: app/helpers/projects_helpers.py:234
+#: app/controllers/forms.py:453 app/helpers/projects_helpers.py:305
+#: app/helpers/projects_helpers.py:307 app/helpers/projects_helpers.py:328
+#: app/helpers/projects_helpers.py:330
 msgid "Not a valid choice."
 msgstr "Не является корректным выбором."
 
@@ -801,12 +807,12 @@ msgstr "Шаблон импорта учётных данных успешно �
 #: app/controllers/credentials/forms.py:27 app/controllers/credentials/forms.py:32
 #: app/controllers/cves/forms.py:19 app/controllers/cves/forms.py:22
 #: app/controllers/issues/forms.py:27 app/controllers/issues/forms.py:72
-#: app/controllers/networks/forms.py:21 app/controllers/networks/forms.py:28
-#: app/controllers/networks/forms.py:77 app/controllers/networks/forms.py:86
-#: app/controllers/networks/forms.py:146 app/controllers/networks/forms.py:162
-#: app/controllers/networks/forms.py:167 app/controllers/networks/forms.py:221
-#: app/controllers/networks/forms.py:224 app/controllers/networks/forms.py:251
-#: app/controllers/networks/forms.py:260 app/controllers/notes/forms.py:15
+#: app/controllers/networks/forms.py:22 app/controllers/networks/forms.py:29
+#: app/controllers/networks/forms.py:78 app/controllers/networks/forms.py:87
+#: app/controllers/networks/forms.py:147 app/controllers/networks/forms.py:163
+#: app/controllers/networks/forms.py:168 app/controllers/networks/forms.py:222
+#: app/controllers/networks/forms.py:225 app/controllers/networks/forms.py:252
+#: app/controllers/networks/forms.py:261 app/controllers/notes/forms.py:15
 #: app/controllers/notes/forms.py:28 app/controllers/projects/forms.py:21
 #: app/controllers/research_events/forms.py:32
 #: app/controllers/research_events/forms.py:39
@@ -842,8 +848,8 @@ msgstr "Шаблон импорта учётных данных с указан�
 #: app/controllers/admin/task_templates_forms.py:35
 #: app/controllers/credentials/forms.py:39 app/controllers/cves/forms.py:48
 #: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:47
-#: app/controllers/networks/forms.py:49 app/controllers/networks/forms.py:115
-#: app/controllers/networks/forms.py:189 app/controllers/notes/forms.py:18
+#: app/controllers/networks/forms.py:50 app/controllers/networks/forms.py:116
+#: app/controllers/networks/forms.py:190 app/controllers/notes/forms.py:18
 #: app/controllers/projects/forms.py:46 app/controllers/research_events/forms.py:63
 #: app/controllers/research_events/forms.py:108 app/controllers/tasks/forms.py:62
 #: app/controllers/users/forms.py:79 app/controllers/users/teams_forms.py:70
@@ -869,17 +875,17 @@ msgstr "Такой слаг уже зарегистрирован!"
 
 #: app/controllers/admin/forms_global_permission_actions.py:41
 #: app/controllers/credentials/__init__.py:70 app/controllers/issues/__init__.py:82
-#: app/controllers/networks/__init__.py:113
-#: app/controllers/networks/__init__.py:159
-#: app/controllers/networks/__init__.py:222 app/controllers/projects/__init__.py:52
+#: app/controllers/networks/__init__.py:115
+#: app/controllers/networks/__init__.py:164
+#: app/controllers/networks/__init__.py:227 app/controllers/projects/__init__.py:52
 #: app/controllers/projects/__init__.py:74
 #: app/controllers/research_events/__init__.py:71
 #: app/controllers/research_events/__init__.py:104
 #: app/controllers/tasks/__init__.py:77 app/controllers/users/routes.py:36
 #: app/helpers/admin_helpers.py:171 app/helpers/admin_helpers.py:223
 #: app/helpers/admin_helpers.py:241 app/helpers/admin_helpers.py:256
-#: app/helpers/main_page_helpers.py:105 app/helpers/main_page_helpers.py:124
-#: app/helpers/main_page_helpers.py:156 app/helpers/users_helpers.py:58
+#: app/helpers/main_page_helpers.py:114 app/helpers/main_page_helpers.py:139
+#: app/helpers/main_page_helpers.py:175 app/helpers/users_helpers.py:58
 #: app/templates/admin/object_type_index.html:69
 #: app/templates/admin/project_role_index.html:63
 #: app/templates/admin/user_positions_index.html:73
@@ -1008,7 +1014,6 @@ msgid "User position deleted successfully"
 msgstr "Должность успешно удалена"
 
 #: app/controllers/admin/routes_global_permission_actions.py:83
-#, python-format
 msgid "User position permissions edited successfully"
 msgstr "Успешно изменены разрешения должностей"
 
@@ -1100,16 +1105,16 @@ msgid "«%(login)s» login credentials"
 msgstr "Учётные данные для логина «%(login)s»"
 
 #: app/controllers/credentials/__init__.py:73 app/controllers/issues/__init__.py:85
-#: app/controllers/networks/__init__.py:116
-#: app/controllers/networks/__init__.py:172
-#: app/controllers/networks/__init__.py:225 app/controllers/projects/__init__.py:58
+#: app/controllers/networks/__init__.py:118
+#: app/controllers/networks/__init__.py:177
+#: app/controllers/networks/__init__.py:230 app/controllers/projects/__init__.py:58
 #: app/controllers/research_events/__init__.py:74
 #: app/controllers/research_events/__init__.py:107
 #: app/controllers/tasks/__init__.py:80 app/controllers/users/routes.py:39
 #: app/helpers/admin_helpers.py:172 app/helpers/admin_helpers.py:224
 #: app/helpers/admin_helpers.py:242 app/helpers/admin_helpers.py:257
-#: app/helpers/main_page_helpers.py:106 app/helpers/main_page_helpers.py:125
-#: app/helpers/main_page_helpers.py:157
+#: app/helpers/main_page_helpers.py:117 app/helpers/main_page_helpers.py:142
+#: app/helpers/main_page_helpers.py:178
 #: app/templates/admin/object_type_index.html:70
 #: app/templates/admin/project_role_index.html:64
 #: app/templates/admin/user_positions_index.html:74
@@ -1125,12 +1130,12 @@ msgstr "Вы действительно уверены в том, что хот�
 
 #: app/controllers/credentials/__init__.py:76
 #: app/controllers/credentials/__init__.py:78 app/controllers/issues/__init__.py:88
-#: app/controllers/issues/__init__.py:90 app/controllers/networks/__init__.py:119
-#: app/controllers/networks/__init__.py:121
-#: app/controllers/networks/__init__.py:181
-#: app/controllers/networks/__init__.py:183
-#: app/controllers/networks/__init__.py:228
-#: app/controllers/networks/__init__.py:230 app/controllers/projects/__init__.py:62
+#: app/controllers/issues/__init__.py:90 app/controllers/networks/__init__.py:121
+#: app/controllers/networks/__init__.py:123
+#: app/controllers/networks/__init__.py:186
+#: app/controllers/networks/__init__.py:188
+#: app/controllers/networks/__init__.py:233
+#: app/controllers/networks/__init__.py:235 app/controllers/projects/__init__.py:62
 #: app/controllers/research_events/__init__.py:77
 #: app/controllers/research_events/__init__.py:79
 #: app/controllers/research_events/__init__.py:110
@@ -1142,9 +1147,9 @@ msgstr "Создал(а) <a href=\"%(link)s\">%(created_by)s</a> %(date)s"
 
 #: app/controllers/credentials/__init__.py:78
 #: app/controllers/generics/websockets.py:173 app/controllers/issues/__init__.py:90
-#: app/controllers/networks/__init__.py:121
-#: app/controllers/networks/__init__.py:183
-#: app/controllers/networks/__init__.py:230 app/controllers/projects/__init__.py:61
+#: app/controllers/networks/__init__.py:123
+#: app/controllers/networks/__init__.py:188
+#: app/controllers/networks/__init__.py:235 app/controllers/projects/__init__.py:61
 #: app/controllers/research_events/__init__.py:79
 #: app/controllers/research_events/__init__.py:112
 #: app/controllers/tasks/__init__.py:85 app/templates/chats/index.html:29
@@ -1172,7 +1177,7 @@ msgid "The dictionary for which the verification was performed/is planned"
 msgstr "Словарь, по которому была выполнена/планируется к выполнению проверка"
 
 #: app/controllers/credentials/forms.py:40 app/controllers/issues/forms.py:48
-#: app/controllers/networks/forms.py:50 app/controllers/networks/forms.py:116
+#: app/controllers/networks/forms.py:51 app/controllers/networks/forms.py:117
 #: app/controllers/tasks/forms.py:63
 msgid "Create and add another one"
 msgstr "Создать и добавить ещё"
@@ -1299,220 +1304,257 @@ msgstr "Проблема #%(issue_id)s успешно изменена"
 msgid "Issue #%(issue_id)s has been successfully deleted"
 msgstr "Проблема #%(issue_id)s успешно удалена"
 
-#: app/controllers/networks/__init__.py:38 app/controllers/networks/__init__.py:103
-#: app/controllers/networks/__init__.py:108
+#: app/controllers/networks/__init__.py:38 app/controllers/networks/__init__.py:105
+#: app/controllers/networks/__init__.py:110
 msgid "All networks"
 msgstr "Все сети"
 
-#: app/controllers/networks/__init__.py:41 app/controllers/networks/__init__.py:106
-#: app/controllers/networks/__init__.py:124
+#: app/controllers/networks/__init__.py:41 app/controllers/networks/__init__.py:108
+#: app/controllers/networks/__init__.py:126
 msgid "Add new network"
 msgstr "Добавить новую сеть"
 
-#: app/controllers/networks/__init__.py:44 app/controllers/networks/__init__.py:131
+#: app/controllers/networks/__init__.py:43
+msgid "Multiple add network"
+msgstr "Множественное добавление сетей"
+
+#: app/controllers/networks/__init__.py:46 app/controllers/networks/__init__.py:133
 msgid "Network graph"
 msgstr "Карта сети"
 
-#: app/controllers/networks/__init__.py:48 app/models/networks.py:79
+#: app/controllers/networks/__init__.py:50 app/models/networks.py:79
 #: app/models/projects.py:36
 msgid "Networks"
 msgstr "Сети"
 
-#: app/controllers/networks/__init__.py:61 app/controllers/networks/__init__.py:142
-#: app/controllers/networks/__init__.py:147 app/templates/hosts/index.html:9
+#: app/controllers/networks/__init__.py:63 app/controllers/networks/__init__.py:147
+#: app/controllers/networks/__init__.py:152 app/templates/hosts/index.html:9
 msgid "All hosts"
 msgstr "Все конечные устройства"
 
-#: app/controllers/networks/__init__.py:62 app/controllers/networks/__init__.py:149
-#: app/controllers/networks/__init__.py:154
+#: app/controllers/networks/__init__.py:64 app/controllers/networks/__init__.py:154
+#: app/controllers/networks/__init__.py:159
 msgid "Excluded hosts"
 msgstr "Исключённые конечные устройства"
 
-#: app/controllers/networks/__init__.py:66 app/controllers/networks/__init__.py:145
-#: app/controllers/networks/__init__.py:186
+#: app/controllers/networks/__init__.py:68 app/controllers/networks/__init__.py:150
+#: app/controllers/networks/__init__.py:191
 msgid "Add new host"
 msgstr "Добавить новое конечное устройство"
 
-#: app/controllers/networks/__init__.py:68
+#: app/controllers/networks/__init__.py:70
 msgid "Multiple import"
 msgstr "Множественный импорт"
 
-#: app/controllers/networks/__init__.py:72 app/models/networks.py:336
+#: app/controllers/networks/__init__.py:74 app/models/networks.py:336
 msgid "Hosts"
 msgstr "Конечные устройства"
 
-#: app/controllers/networks/__init__.py:85
+#: app/controllers/networks/__init__.py:87
 msgid "All servicves"
 msgstr "Все службы"
 
-#: app/controllers/networks/__init__.py:87
+#: app/controllers/networks/__init__.py:89
 msgid "Services by port"
 msgstr "Службы по портам"
 
-#: app/controllers/networks/__init__.py:90 app/controllers/networks/__init__.py:207
-#: app/controllers/networks/__init__.py:214
-#: app/controllers/networks/__init__.py:233 app/templates/hosts/show.html:208
+#: app/controllers/networks/__init__.py:92 app/controllers/networks/__init__.py:212
+#: app/controllers/networks/__init__.py:219
+#: app/controllers/networks/__init__.py:238 app/templates/hosts/show.html:208
 msgid "Add new service"
 msgstr "Добавить новую службу"
 
-#: app/controllers/networks/__init__.py:93 app/controllers/networks/__init__.py:239
+#: app/controllers/networks/__init__.py:95 app/controllers/networks/__init__.py:244
 msgid "Inventory of services"
 msgstr "Инвентаризация служб"
 
-#: app/controllers/networks/__init__.py:97 app/models/networks.py:537
+#: app/controllers/networks/__init__.py:99 app/models/networks.py:537
 msgid "Services"
 msgstr "Службы"
 
-#: app/controllers/networks/__init__.py:110
+#: app/controllers/networks/__init__.py:112
 #, python-format
 msgid "Network «%(ip_addr)s»"
 msgstr "Сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:116 app/templates/networks/index.html:314
+#: app/controllers/networks/__init__.py:118 app/templates/networks/index.html:314
 msgid "Are you sure you want to delete this network?"
 msgstr "Вы уверены в том, что хотите удалить эту сеть?"
 
-#: app/controllers/networks/__init__.py:127
+#: app/controllers/networks/__init__.py:129
 #, python-format
 msgid "Edit network «%(ip_addr)s»"
 msgstr "Редактировать сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:130
+#: app/controllers/networks/__init__.py:132
 #, python-format
 msgid "Project #%(project_id)s: Network graph"
 msgstr "Карта сети проекта #%(project_id)s"
 
-#: app/controllers/networks/__init__.py:131
+#: app/controllers/networks/__init__.py:133
 msgid "Graph of connections between subnets"
 msgstr "Граф соединений между подсетями"
 
-#: app/controllers/networks/__init__.py:152
+#: app/controllers/networks/__init__.py:135
+msgid "Add multiple networks"
+msgstr "Добавить множество сетей"
+
+#: app/controllers/networks/__init__.py:157
 msgid "Add new excluded host"
 msgstr "Добавить новое исключённое конечное устройство"
 
-#: app/controllers/networks/__init__.py:156
+#: app/controllers/networks/__init__.py:161
 #, python-format
 msgid "Host «%(ip_addr)s»"
 msgstr "Конечное устройство «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:162
+#: app/controllers/networks/__init__.py:167
 #: app/templates/hosts/excluded-index.html:118
 msgid "Include to research"
 msgstr "Включить в исследование"
 
-#: app/controllers/networks/__init__.py:164
+#: app/controllers/networks/__init__.py:169
 msgid "Exclude from research"
 msgstr "Исключить из исследования"
 
-#: app/controllers/networks/__init__.py:167
+#: app/controllers/networks/__init__.py:172
 msgid "Mark as not compromised"
 msgstr "Пометить как не скомпрометированный"
 
-#: app/controllers/networks/__init__.py:169
+#: app/controllers/networks/__init__.py:174
 msgid "Mark as compromised"
 msgstr "Пометить как скомпрометированный"
 
-#: app/controllers/networks/__init__.py:172 app/templates/hosts/index.html:300
+#: app/controllers/networks/__init__.py:177 app/templates/hosts/index.html:300
 msgid "Are you sure you want to delete this host?"
 msgstr "Вы уверены в том, что хотите удалить это конечное устройство?"
 
-#: app/controllers/networks/__init__.py:176
+#: app/controllers/networks/__init__.py:181
 msgctxt "man"
 msgid "Anonymous"
 msgstr "Анонимный"
 
-#: app/controllers/networks/__init__.py:189
+#: app/controllers/networks/__init__.py:194
 #, python-format
 msgid "Edit host «%(ip_addr)s»"
 msgstr "Редактировать конечное устройство «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:192
+#: app/controllers/networks/__init__.py:197
 msgid "Multiple import hosts"
 msgstr "Множественный импорт конечных устройств"
 
-#: app/controllers/networks/__init__.py:204
-#: app/controllers/networks/__init__.py:209 app/templates/services/index.html:9
+#: app/controllers/networks/__init__.py:209
+#: app/controllers/networks/__init__.py:214 app/templates/services/index.html:9
 msgid "All services"
 msgstr "Все службы"
 
-#: app/controllers/networks/__init__.py:211
 #: app/controllers/networks/__init__.py:216
+#: app/controllers/networks/__init__.py:221
 msgid "Services, splitted by ports"
 msgstr "Службы, разбитые по портам"
 
-#: app/controllers/networks/__init__.py:219
+#: app/controllers/networks/__init__.py:224
 #, python-format
 msgid "Service «%(ip_addr)s:%(port)s»"
 msgstr "Служба «%(ip_addr)s:%(port)s»"
 
-#: app/controllers/networks/__init__.py:225
+#: app/controllers/networks/__init__.py:230
 msgid "Are you sure you want to delete this service?"
 msgstr "Вы уверены в том, что хотите удалить эту службу?"
 
-#: app/controllers/networks/__init__.py:236
+#: app/controllers/networks/__init__.py:241
 #, python-format
 msgid "Edit service «%(ip_addr)s:%(port)s»"
 msgstr "Редактировать службу «%(ip_addr)s:%(port)s»"
 
-#: app/controllers/networks/__init__.py:240
+#: app/controllers/networks/__init__.py:245
 #, python-format
 msgid "Inventory of services on project #%(project_id)s"
 msgstr "Инвентаризация служб на проекте #%(project_id)s"
 
-#: app/controllers/networks/__init__.py:240
+#: app/controllers/networks/__init__.py:245
 msgid "A page that allows you to quickly fill in basic data for hosts/services"
 msgstr ""
 "Страница, позволяющая быстро заполнить основные данные конечных устройств/служб"
 
-#: app/controllers/networks/forms.py:37 app/controllers/networks/forms.py:45
+#: app/controllers/networks/forms.py:38 app/controllers/networks/forms.py:46
 msgid "Specify the correct IP address with a mask"
 msgstr "Укажите корректный IP-адрес с маской"
 
-#: app/controllers/networks/forms.py:39
+#: app/controllers/networks/forms.py:40
 msgid "Such a network has already been registered"
 msgstr "Указанная сеть уже зарегистрирована"
 
-#: app/controllers/networks/forms.py:64 app/controllers/networks/forms.py:102
-#: app/controllers/networks/forms.py:130
+#: app/controllers/networks/forms.py:65 app/controllers/networks/forms.py:103
+#: app/controllers/networks/forms.py:131
 msgid "Specify the correct IP address"
 msgstr "Укажите корректный IP-адрес"
 
-#: app/controllers/networks/forms.py:104 app/controllers/networks/forms.py:107
+#: app/controllers/networks/forms.py:105 app/controllers/networks/forms.py:108
 msgid "The host with the specified IP address has already been registered"
 msgstr "Конечное устройство с указанным IP-адресом уже зарегистрировано"
 
-#: app/controllers/networks/forms.py:155
+#: app/controllers/networks/forms.py:156
 msgid "The reason why such a condition is installed on board"
 msgstr "Причина, по которой порт установлен в это состояние"
 
-#: app/controllers/networks/forms.py:160 app/controllers/networks/forms.py:165
+#: app/controllers/networks/forms.py:161 app/controllers/networks/forms.py:166
 #: app/controllers/users/forms.py:59
 msgid "Only images!"
 msgstr "Только изображения!"
 
-#: app/controllers/networks/forms.py:176
+#: app/controllers/networks/forms.py:177
 msgid "Specify the host for this port"
 msgstr "Укажите конечное устройство для данного порта"
 
-#: app/controllers/networks/forms.py:250
+#: app/controllers/networks/forms.py:251
 msgid "Host title"
 msgstr "Заголовок конечного устройства"
 
-#: app/controllers/networks/forms.py:253
+#: app/controllers/networks/forms.py:254
 msgid "Host description"
 msgstr "Описание конечного устройства"
 
-#: app/controllers/networks/forms.py:259
+#: app/controllers/networks/forms.py:260
 msgid "Service title"
 msgstr "Заголовок службы"
 
-#: app/controllers/networks/forms.py:262
+#: app/controllers/networks/forms.py:263
 msgid "Service description"
 msgstr "Описание службы"
 
-#: app/controllers/networks/forms.py:264
+#: app/controllers/networks/forms.py:265
 msgid "Update"
 msgstr "Обновить"
+
+#: app/controllers/networks/forms.py:271
+msgid "VLAN number position:"
+msgstr "Позиция номера VLAN:"
+
+#: app/controllers/networks/forms.py:273
+msgid "Internal IP position:"
+msgstr "Позиция внутреннего IP-адреса:"
+
+#: app/controllers/networks/forms.py:274
+msgid "Connect command position:"
+msgstr "Позиция команды подключения:"
+
+#: app/controllers/networks/forms.py:275
+msgid "ASN position:"
+msgstr "Позиция ASN:"
+
+#: app/controllers/networks/forms.py:276
+msgid "Separator:"
+msgstr "Разделитель:"
+
+#: app/controllers/networks/forms.py:277
+msgid "Data:"
+msgstr "Данные:"
+
+#: app/controllers/networks/forms.py:284
+#, python-format
+msgid "Incorrect IP address format: %(error)s"
+msgstr "Некорректный формат IP-адреса: %(error)s"
 
 #: app/controllers/networks/routes.py:93
 #, python-format
@@ -1592,6 +1634,11 @@ msgstr "Служба #%(service_id)s успешно удалена"
 msgid "The hosts import module has been successfully launched"
 msgstr "Модуль импорта конечных устройств успешно запущен"
 
+#: app/controllers/networks/routes.py:673
+#, python-format
+msgid "Networks have been successfully added"
+msgstr "Сети были успешно добавлены"
+
 #: app/controllers/notes/__init__.py:32 app/controllers/notes/__init__.py:43
 #: app/controllers/notes/__init__.py:47
 msgid "All notes"
@@ -1643,8 +1690,8 @@ msgid "Are you sure you want to delete this project?"
 msgstr "Вы уверены в том, что хотите удалить этот проект?"
 
 #: app/controllers/projects/__init__.py:64 app/helpers/main_page_helpers.py:22
-#: app/helpers/main_page_helpers.py:89 app/helpers/main_page_helpers.py:93
-#: app/helpers/main_page_helpers.py:94
+#: app/helpers/main_page_helpers.py:92 app/helpers/main_page_helpers.py:97
+#: app/helpers/main_page_helpers.py:98
 msgid "Add new project"
 msgstr "Добавить новый проект"
 
@@ -1933,22 +1980,27 @@ msgstr "Загрузить связанные файлы:"
 msgid "Readiness should be in the range from 0 to 100%"
 msgstr "Готовность должна лежать в пределах от 0 до 100%"
 
-#: app/controllers/tasks/routes.py:186 app/controllers/tasks/routes.py:245
+#: app/controllers/tasks/routes.py:183 app/controllers/tasks/routes.py:185
+#: app/controllers/tasks/routes.py:248 app/controllers/tasks/routes.py:250
+msgid "Tasks files"
+msgstr "Файлы задач"
+
+#: app/controllers/tasks/routes.py:191 app/controllers/tasks/routes.py:256
 #, python-format
 msgid "File for Project Task #%(task_id)s"
 msgstr "Файлы для задачи проекта #%(task_id)s"
 
-#: app/controllers/tasks/routes.py:191
+#: app/controllers/tasks/routes.py:197
 #, python-format
 msgid "Task #%(task_id)s has been successfully added"
 msgstr "Задача #%(task_id)s успешно добавлена"
 
-#: app/controllers/tasks/routes.py:250
+#: app/controllers/tasks/routes.py:262
 #, python-format
 msgid "Task #%(task_id)s successfully changed"
 msgstr "Задача #%(task_id)s успешно изменена"
 
-#: app/controllers/tasks/routes.py:266
+#: app/controllers/tasks/routes.py:278
 #, python-format
 msgid "Task #%(task_id)s successfully deleted"
 msgstr "Задача #%(task_id)s успешно удалена"
@@ -2191,7 +2243,7 @@ msgstr ""
 msgid "List of tools"
 msgstr "Список инструментов"
 
-#: app/helpers/admin_helpers.py:90 app/helpers/main_page_helpers.py:86
+#: app/helpers/admin_helpers.py:90 app/helpers/main_page_helpers.py:88
 #: app/templates/admin/index.html:13
 msgid "Title page"
 msgstr "Титульная страница"
@@ -2591,7 +2643,7 @@ msgstr "Анонимная"
 msgid "Home page"
 msgstr "Домашняя страница"
 
-#: app/helpers/main_page_helpers.py:19 app/helpers/main_page_helpers.py:91
+#: app/helpers/main_page_helpers.py:19 app/helpers/main_page_helpers.py:95
 msgid "All projects"
 msgstr "Все проекты"
 
@@ -2603,16 +2655,16 @@ msgstr "Список проектов"
 msgid "Root directory"
 msgstr "Корневая директория"
 
-#: app/helpers/main_page_helpers.py:32 app/helpers/main_page_helpers.py:98
-#: app/helpers/main_page_helpers.py:113
+#: app/helpers/main_page_helpers.py:32 app/helpers/main_page_helpers.py:105
+#: app/helpers/main_page_helpers.py:125
 msgid "Add new directory"
 msgstr "Добавить новую директорию"
 
-#: app/helpers/main_page_helpers.py:35 app/helpers/main_page_helpers.py:97
+#: app/helpers/main_page_helpers.py:35 app/helpers/main_page_helpers.py:102
 msgid "Add new page"
 msgstr "Добавить новую страницу"
 
-#: app/helpers/main_page_helpers.py:38 app/helpers/main_page_helpers.py:100
+#: app/helpers/main_page_helpers.py:38 app/helpers/main_page_helpers.py:108
 msgid "Knowledge base"
 msgstr "База знаний"
 
@@ -2633,13 +2685,13 @@ msgstr "Список пользователей"
 msgid "My page"
 msgstr "Моя страница"
 
-#: app/helpers/main_page_helpers.py:53 app/helpers/main_page_helpers.py:134
-#: app/helpers/main_page_helpers.py:141 app/helpers/main_page_helpers.py:142
+#: app/helpers/main_page_helpers.py:53 app/helpers/main_page_helpers.py:152
+#: app/helpers/main_page_helpers.py:159 app/helpers/main_page_helpers.py:160
 msgid "Add new user"
 msgstr "Добавить нового пользователя"
 
-#: app/helpers/main_page_helpers.py:58 app/helpers/main_page_helpers.py:148
-#: app/helpers/main_page_helpers.py:152
+#: app/helpers/main_page_helpers.py:58 app/helpers/main_page_helpers.py:166
+#: app/helpers/main_page_helpers.py:170
 msgid "Add new team"
 msgstr "Добавить новую команду"
 
@@ -2659,121 +2711,121 @@ msgstr "Роли на проектах"
 msgid "Admin"
 msgstr "Администрирование"
 
-#: app/helpers/main_page_helpers.py:90
+#: app/helpers/main_page_helpers.py:94
 msgid "List of all projects"
 msgstr "Список всех проектов"
 
-#: app/helpers/main_page_helpers.py:90
+#: app/helpers/main_page_helpers.py:94
 msgid "Projects, created in PCF"
 msgstr "Проекты, созданные в PCF"
 
-#: app/helpers/main_page_helpers.py:99
+#: app/helpers/main_page_helpers.py:107
 msgid "Wiki pages"
 msgstr "Страницы базы знаний"
 
-#: app/helpers/main_page_helpers.py:102
+#: app/helpers/main_page_helpers.py:110
 msgid "Add new Wiki page"
 msgstr "Добавить новую страницу базы знаний"
 
-#: app/helpers/main_page_helpers.py:103
+#: app/helpers/main_page_helpers.py:111
 msgid "Add a page to the knowledge base"
 msgstr "Добавить новую страницу в базу знаний"
 
-#: app/helpers/main_page_helpers.py:106 app/templates/wiki_pages/index.html:215
+#: app/helpers/main_page_helpers.py:117 app/templates/wiki_pages/index.html:215
 msgid "Are you sure you want to delete this page?"
 msgstr "Вы уверены, что хотите удалить эту страницу?"
 
-#: app/helpers/main_page_helpers.py:107
+#: app/helpers/main_page_helpers.py:119
 msgid "Knowledge Base Page"
 msgstr "Страница базы знаний"
 
-#: app/helpers/main_page_helpers.py:110 app/helpers/main_page_helpers.py:111
+#: app/helpers/main_page_helpers.py:122 app/helpers/main_page_helpers.py:123
 msgid "Editing the knowledge base page"
 msgstr "Редактирование страницы базы знаний"
 
-#: app/helpers/main_page_helpers.py:114
+#: app/helpers/main_page_helpers.py:126
 msgid "Add new directory to knowledge base"
 msgstr "Добавить новую директорию в базу знаний"
 
-#: app/helpers/main_page_helpers.py:117 app/helpers/main_page_helpers.py:122
+#: app/helpers/main_page_helpers.py:130 app/helpers/main_page_helpers.py:136
 msgid "Add new critical vulnerability"
 msgstr "Добавить новую критическую уязвимость"
 
-#: app/helpers/main_page_helpers.py:118
+#: app/helpers/main_page_helpers.py:132
 msgid "CVE list"
 msgstr "Список CVE"
 
-#: app/helpers/main_page_helpers.py:119 app/models/issues.py:80
+#: app/helpers/main_page_helpers.py:133 app/models/issues.py:80
 msgid "Critical vulnerabilities"
 msgstr "Критические уязвимости"
 
-#: app/helpers/main_page_helpers.py:121
+#: app/helpers/main_page_helpers.py:135
 msgid "Add a new entry about a critical vulnerability"
 msgstr "Добавить новую запиь о критической уязвимости"
 
-#: app/helpers/main_page_helpers.py:125
+#: app/helpers/main_page_helpers.py:142
 msgid "Are you sure you want to delete this Critical Vulnerability?"
 msgstr "Вы уверены в том, что хотите удалить эту критическую уязвимость?"
 
-#: app/helpers/main_page_helpers.py:126
+#: app/helpers/main_page_helpers.py:144
 #, python-format
 msgid "Critical vulnerability «%(title)s»"
 msgstr "Критическая уязвимость «%(title)s»"
 
-#: app/helpers/main_page_helpers.py:127
+#: app/helpers/main_page_helpers.py:145
 #, python-format
 msgid "Critical vulnerability «CVE-%(year)s-%(identifier)s»"
 msgstr "Критическая уязвимость «CVE-%(year)s-%(identifier)s»"
 
-#: app/helpers/main_page_helpers.py:129
+#: app/helpers/main_page_helpers.py:147
 msgid "Edit critical vulnerability"
 msgstr "Редактировать критическую уязвимость"
 
-#: app/helpers/main_page_helpers.py:130
+#: app/helpers/main_page_helpers.py:148
 #, python-format
 msgid "Edit critical vulnerability «CVE-%(year)s-%(identifier)s»"
 msgstr "Редактировать критическую уязвимость «CVE-%(year)s-%(identifier)s»"
 
-#: app/helpers/main_page_helpers.py:138
+#: app/helpers/main_page_helpers.py:156
 msgid "User list"
 msgstr "Список пользователей"
 
-#: app/helpers/main_page_helpers.py:139
+#: app/helpers/main_page_helpers.py:157
 msgid "All users"
 msgstr "Все пользователи"
 
-#: app/helpers/main_page_helpers.py:145
+#: app/helpers/main_page_helpers.py:163
 msgid "All teams"
 msgstr "Все команды"
 
-#: app/helpers/main_page_helpers.py:150 app/templates/teams/index.html:14
+#: app/helpers/main_page_helpers.py:168 app/templates/teams/index.html:14
 msgid "Team list"
 msgstr "Список команд"
 
-#: app/helpers/main_page_helpers.py:155
+#: app/helpers/main_page_helpers.py:173
 #, python-format
 msgid "Team #%(team_id)s"
 msgstr "Команда #%(team_id)s"
 
-#: app/helpers/main_page_helpers.py:157
+#: app/helpers/main_page_helpers.py:178
 msgid "Are you sure you want to delete this team?"
 msgstr "Вы уверены, что хотите удалить эту команду?"
 
-#: app/helpers/main_page_helpers.py:158
+#: app/helpers/main_page_helpers.py:180
 #, python-format
 msgid "Team #%(team_id)s: «%(team_title)s»"
 msgstr "Команда #%(team_id)s: «%(team_title)s»"
 
-#: app/helpers/main_page_helpers.py:160
+#: app/helpers/main_page_helpers.py:182
 #, python-format
 msgid "Edit team #%(team_id)s"
 msgstr "Редактировать команду #%(team_id)s"
 
-#: app/helpers/projects_helpers.py:248
+#: app/helpers/projects_helpers.py:360
 msgid "Reply to comment"
 msgstr "Ответить"
 
-#: app/helpers/projects_helpers.py:335 app/templates/issues/carousel.html:13
+#: app/helpers/projects_helpers.py:447 app/templates/issues/carousel.html:13
 #: app/templates/issues/show.html:85 app/templates/issues/show.html:115
 #: app/templates/issues/show.html:131 app/templates/layout/_macrosses.html:139
 #: app/templates/layout/_macrosses.html:276 app/templates/notes/index.html:23
@@ -5242,6 +5294,18 @@ msgstr "Список всех относящихся IP-адресов"
 #: app/templates/networks/index.html:325
 msgid "Copy IP Address"
 msgstr "Копировать IP-адрес"
+
+#: app/templates/networks/multiple_add.html:12
+msgid "Import parameters"
+msgstr "Параметры импорта"
+
+#: app/templates/networks/multiple_add.html:13
+msgid "Note, that the first element has an index of '0'"
+msgstr "Помните, что первый элемент имеет индекс '0'"
+
+#: app/templates/networks/multiple_add.html:29
+msgid "Import data"
+msgstr "Данные импорта"
 
 #: app/templates/networks/show.html:50
 msgid "Availables networks"

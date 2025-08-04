@@ -13,6 +13,9 @@ import wtforms
 from flask_babel import lazy_gettext as _l
 from flask_login import current_user
 from flask_babel import force_locale, gettext, pgettext
+import io
+import csv
+import ipaddress
 
 
 class EnvironmentObjectAttrs:
@@ -56,7 +59,19 @@ def register_environment(element: EnvironmentObjectAttrs, after: str | None):
 
 
 def check_if_same_type(object_class):
-    # A decorator for environmental objects is needed to simplify writing code
+    """
+    Decorator to check if the current object is of the specified type before executing the function.
+
+    This decorator is used to simplify writing code for environmental objects. It checks if the first argument
+    passed to the decorated function (current_object) is an instance of the specified object_class. If not,
+    it returns an empty dictionary.
+
+    Args:
+        object_class (type): The class type to check the current_object against.
+
+    Returns:
+        function: A decorated function that performs the type check before execution.
+    """
     def decorated(func):
         @functools.wraps(func)
         def wrapped(current_object, action, **kwargs):
@@ -68,6 +83,23 @@ def check_if_same_type(object_class):
 
 
 def get_default_environment(current_object, action: str, **kwargs):
+    """
+    Generates a default environment context with sidebar data for a given object and action.
+
+    This function iterates over global `environment_elements`, collects sidebar data from each element,
+    and updates the context with environment data. Sidebar data can be either a list (which gets extended)
+    or a single item (which gets appended). The context is then updated with environment data from each element.
+
+    Args:
+        current_object: The object for which the environment is being generated.
+        action (str): The action being performed on the object.
+        **kwargs: Additional keyword arguments to pass to sidebar and environment methods.
+
+    Returns:
+        dict: A context dictionary containing:
+            - sidebar_data: List of sidebar items collected from environment elements
+            - Any additional data from environment element updates
+    """
     global environment_elements
     context = {"sidebar_data": []}
     for i in environment_elements:
@@ -81,8 +113,16 @@ def get_default_environment(current_object, action: str, **kwargs):
 
 
 def get_current_room() -> Optional[Tuple[int, str]]:
-    ''' Try to get current room, to which connect client (default room number is object id) and returned it (as int(current_room), current_room)
-     Otherwise returned None '''
+    """
+    Attempts to get the current room to which the client is connected.
+
+    This function tries to retrieve the current room number and name. The default room number is the object ID.
+    If successful, returns a tuple of (current_room: int, current_room_name: str). 
+    If any errors occur during retrieval (ValueError, TypeError, IndexError), logs an error and returns None.
+
+    Returns:
+        Optional[Tuple[int, str]]: A tuple containing the room number and name if successful, None otherwise.
+    """
     try:
         # Trying to get current_room (object_id)
         current_room = int(rooms()[0])
@@ -98,8 +138,35 @@ def get_current_room() -> Optional[Tuple[int, str]]:
 
 
 def create_history(session: Session, object_elements: List[Any]) -> None:
-    ''' Created history element for all objects in input that has attribute 'history' (gain all changes for object from session and create element).
-     Also filled field 'updated_at' if it exist '''
+    """
+    Creates history elements for all objects in the input list that have the 'history' attribute.
+
+    This function processes each object in the input list, tracking changes made to the object's attributes,
+    columns, and relationships, and creates corresponding history records. The function handles:
+    - Simple attribute changes
+    - Relationship changes (both single and many-to-many)
+    - Updates to the 'updated_at' field if it exists
+
+    Args:
+        session (Session): SQLAlchemy session object
+        object_elements (List[Any]): List of objects to create history for
+
+    The function examines various types of changes:
+    - Column attribute changes (including foreign key relationships)
+    - Single relationships (non-list)
+    - Many-to-many relationships
+    - Updates to the 'updated_by' and 'created_by' fields
+
+    For each change detected, a history record is created containing:
+    - Action type (add, modify, delete)
+    - Attribute name and label
+    - Old and new values (where applicable)
+    - Relationship information for M2M relationships
+
+    Note:
+        The function skips objects without IDs and handles string sanitization for text values.
+        Uses 'en' locale for consistency in parameter naming.
+    """
     for obj in object_elements:
         if obj.id is None:
             continue
@@ -217,6 +284,21 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
 
 
 def validate_service(project_id, field) -> None:
+    """
+    Validates that the selected services belong to the specified project.
+
+    This function checks if the number of services selected in the form field matches the count of services
+    that actually belong to the project, ensuring data consistency. It raises a validation error if:
+    - The counts don't match
+    - Any database-related errors occur (ValueError, TypeError, MultipleResultsFound, NoResultFound)
+
+    Args:
+        project_id: The ID of the project to validate services against.
+        field: The form field containing service selections to validate.
+
+    Raises:
+        wtforms.ValidationError: If validation fails for any reason.
+    """
     try:
         if not db.session.scalars(sa.select(sa.func.count(models.Service.id)).join(models.Service.host).join(models.Host.from_network)
                            .where(sa.and_(models.Network.project_id == project_id, models.Service.id.in_([field.coerce(i) for i in field.data])))).one() == len(field.data):
@@ -226,6 +308,20 @@ def validate_service(project_id, field) -> None:
 
 
 def validate_host(project_id, field) -> None:
+    """
+    Validates that the selected hosts belong to the specified project.
+
+    This function checks if all the selected host IDs in the given field actually belong to the project identified by project_id.
+    If not, or if any error occurs during the validation (ValueError, TypeError, MultipleResultsFound, NoResultFound),
+    a ValidationError with the message "Not a valid choice" is raised.
+
+    Args:
+        project_id: The ID of the project to validate hosts against.
+        field: The field containing host IDs to validate.
+
+    Raises:
+        wtforms.ValidationError: If any host doesn't belong to the project or if any error occurs during validation.
+    """
     try:
         if not db.session.scalars(sa.select(sa.func.count(models.Host.id)).join(models.Host.from_network)
                            .where(sa.and_(models.Network.project_id == project_id, models.Host.id.in_([field.coerce(i) for i in field.data])))).one() == len(field.data):
@@ -235,7 +331,23 @@ def validate_host(project_id, field) -> None:
 
 
 def load_comment_script(comment_form, object_with_comments) -> str:
-    ''' Added a script to edit coments via websocket to side_libraries scripts '''
+    """
+    Generates and loads JavaScript script for handling comments via WebSocket.
+
+    This function creates a JavaScript script that:
+    1. Sets up WebSocket connection for real-time comments
+    2. Handles comment submission via modal form
+    3. Manages comment replies and reactions
+    4. Dynamically updates comment display
+    5. Handles real-time reaction updates
+
+    Args:
+        comment_form: The comment form object containing form field IDs
+        object_with_comments: The object that comments are associated with
+
+    Returns:
+        str: Empty string (script is loaded via side_libraries.require_script)
+    """
     script = '''
     const addCommentModal = document.getElementById('addCommentModal')
         if (addCommentModal) {
@@ -403,8 +515,21 @@ def load_comment_script(comment_form, object_with_comments) -> str:
     return ''
 
 
+
 def load_history_script(object_with_history) -> str:
-    ''' load history websocket script to side_libraries '''
+    """
+    Loads and injects a WebSocket history script for the given object with history.
+
+    This function generates and injects a JavaScript script that establishes a WebSocket connection for handling history elements.
+    The script includes event handlers for connection establishment and history element addition, dynamically creating DOM elements
+    to display history entries. The script is added to the side libraries for execution.
+
+    Args:
+        object_with_history: An object that has history tracking, used to generate a unique room identifier.
+
+    Returns:
+        str: An empty string, as the script is injected rather than returned.
+    """
     script = '''
     let generic_ws_defined = typeof(generic_websocket) === 'undefined';
     var generic_websocket = generic_websocket || io('/generic');
@@ -478,3 +603,63 @@ def add_team_users_to_project(project, teams: List) -> None:
         for user in users:
             p = models.UserRoleHasProject(user=user, project=project, role=role)
             db.session.add(p)
+
+def load_network_from_csv(form):
+    """
+    Loads network data from a CSV-formatted string.
+
+    Parses CSV data from a form submission and converts it into a list of network dictionaries.
+    Each row in the CSV is processed according to specified column positions in the form.
+
+    Args:
+        form: Form object containing CSV data and field position information.
+            - network_data.data: CSV-formatted string containing network data
+            - separator.data: CSV delimiter character
+            - title_position.data: Column index for network title
+            - description_position.data: Column index for description (optional)
+            - ip_address_position.data: Column index for IP address
+            - vlan_number_position.data: Column index for VLAN number (optional)
+            - internal_ip_position.data: Column index for internal IP (optional)
+            - connect_cmd_position.data: Column index for connection command (optional)
+            - asn_position.data: Column index for ASN (optional)
+
+    Returns:
+        list: A list of dictionaries where each dictionary represents a network with keys:
+            - title: Network title
+            - description: Network description (empty string if not provided)
+            - ip_address: IPv4Network object for the primary IP
+            - vlan_number: VLAN number (None if not provided)
+            - internal_ip: IPv4Network object for internal IP (None if not provided)
+            - connect_cmd: Connection command (None if not provided)
+            - asn: ASN number (None if not provided)
+
+    Raises:
+        ValueError: If IP address fields contain invalid IPv4 network data
+    """
+    network_list = []
+    file_data = io.StringIO(form.network_data.data)
+    for row in csv.reader(file_data, delimiter=form.separator.data, lineterminator="\n"):
+        title = row[form.title_position.data]
+        if form.description_position.data not in [None, '']:
+            description = row[form.description_position.data]
+        else:
+            description = ""
+        ip_address = ipaddress.IPv4Network(row[form.ip_address_position.data])
+        if form.vlan_number_position.data not in [None, '']:
+            vlan_number = row[form.vlan_number_position.data]
+        else:
+            vlan_number = None
+        if form.internal_ip_position.data not in [None, '']:
+            internal_ip = ipaddress.IPv4Network(row[form.internal_ip_position.data])
+        else:
+            internal_ip = None
+        if form.connect_cmd_position.data not in [None, '']:
+            connect_cmd = row[form.connect_cmd_position.data]
+        else:
+            connect_cmd = None
+        if form.asn_position.data not in [None, '']:
+            asn = row[form.asn_position.data]
+        else:
+            asn = None
+        network_list.append({"title": title, "description": description, "ip_address": ip_address, "vlan_number": vlan_number, "internal_ip": internal_ip, "connect_cmd": connect_cmd, "asn": asn})
+    return network_list

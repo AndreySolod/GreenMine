@@ -40,6 +40,8 @@ def sidebar_network(current_object, act: str, **kwargs) -> Optional[SidebarEleme
     if project_role_can_make_action(current_user, Network(), 'create', project=proj):
         sel32 = SidebarElementSublink(_l("Add new network"), url_for('networks.network_new', project_id=proj.id), con=="Network" and act=='new')
         sels.append(sel32)
+        sel34 = SidebarElementSublink(_l("Multiple add network"), url_for('networks.multiple_add_network', project_id=proj.id), con=='Network' and act=='multiple_add')
+        sels.append(sel34)
     if project_role_can_make_action(current_user, Network(), 'show_graph', project=proj):
         sel33 = SidebarElementSublink(_l("Network graph"), url_for('networks.network_graph', project_id=proj.id), con=='Network' and act=='show_graph')
         sels.append(sel33)
@@ -129,6 +131,9 @@ def environment_network(obj, action, **kwargs):
     elif action == 'show_graph':
         title = _l("Project #%(project_id)s: Network graph", project_id=obj.project.id)
         current_object = CurrentObjectInfo(_l("Network graph"), "fa-solid fa-hexagon-nodes", subtitle=_l("Graph of connections between subnets"))
+    elif action == 'multiple_add':
+        title = _l("Add multiple networks")
+        current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus", subtitle=obj.project.fulltitle)
     return {'title': title, 'current_object': current_object, 'archived': obj.project.archived}
 
 

@@ -35,9 +35,6 @@ def console_command(message):
     Returns:
         str: The sanitized output of the command execution, with newlines replaced by HTML line breaks. Returns None if the user
             is not an administrator.
-
-    Raises:
-        None: Errors during command execution are caught and returned as part of the output string.
     """
     if not current_user.position.is_administrator:
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' tried to execute console command as non-administrator")

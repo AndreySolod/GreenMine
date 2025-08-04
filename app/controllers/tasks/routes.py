@@ -179,11 +179,17 @@ def projecttask_new():
         project.tasks.append(task)
         form.populate_obj(db.session, task, current_user)
         db.session.commit()
+        project_parent_dir = db.session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.project_id==project_id, models.FileDirectory.parent_dir_id==None))).one()
+        task_file_directory = db.session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.parent_dir_id==project_parent_dir.id, models.FileDirectory.title==str(_l("Tasks files"))))).first()
+        if task_file_directory is None:
+            task_file_directory = models.FileDirectory(title=str(_l("Tasks files")), parent_dir_id=project_parent_dir.id, project_id=project_id)
+            db.session.add(task_file_directory)
         for f in form.related_files.data:
             if f.content_length == 0 and f.content_type == 'application/octet-stream' and f.filename == '' and f.mimetype == 'application/octet-stream':
                 continue
             fn = f.filename
             nf = models.FileData(title=fn, extension=fn.split('.')[-1], data=f.read(), description=str(_l("File for Project Task #%(task_id)s", task_id=task.id)))
+            nf.directory = task_file_directory
             task.related_files.append(nf)
             db.session.add(nf)
         db.session.commit()
@@ -238,11 +244,17 @@ def projecttask_edit(projecttask_id):
     if form.validate_on_submit():
         form.populate_obj(db.session, task)
         task.updated_by_id = current_user.id
+        project_parent_dir = db.session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.project_id==task.project_id, models.FileDirectory.parent_dir_id==None))).one()
+        task_file_directory = db.session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.parent_dir_id==project_parent_dir.id, models.FileDirectory.title==str(_l("Tasks files"))))).first()
+        if task_file_directory is None:
+            task_file_directory = models.FileDirectory(title=str(_l("Tasks files")), parent_dir_id=project_parent_dir.id, project_id=task.project_id)
+            db.session.add(task_file_directory)
         for f in form.related_files.data:
             if f.content_length == 0 and f.content_type == 'application/octet-stream' and f.filename == '' and f.mimetype == 'application/octet-stream':
                 continue
             fn = f.filename
             nf = models.FileData(title=fn, extension=fn.split('.')[-1], data=f.read(), description=str(_l("File for Project Task #%(task_id)s", task_id=task.id)))
+            nf.directory = task_file_directory
             db.session.add(nf)
             task.related_files.append(nf)
         db.session.commit()

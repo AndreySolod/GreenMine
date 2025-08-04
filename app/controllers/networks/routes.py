@@ -652,3 +652,26 @@ def network_graph():
     context = {'nodes': json.dumps(nodes), 'edges': json.dumps(edges)}
     side_libraries.library_required('visjs')
     return render_template('networks/graph.html', **ctx, **context)
+
+
+@bp.route('/networks/multiple-add', methods=['GET', 'POST'])
+def multiple_add_network():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to multiple add networks with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, models.Network(), 'create', project=project)
+    form = forms.NetworkMultipleAddForm()
+    if form.validate_on_submit():
+        for nw in form.parsed_network:
+            network = models.Network(title=nw["title"], description=nw["description"], project=project, ip_address=nw["ip_address"],
+                                     vlan_number=nw["vlan_number"], internal_ip=nw["internal_ip"], connect_cmd=nw["connect_cmd"], asn=nw["asn"])
+            db.session.add(network)
+        db.session.commit()
+        flash(_l("Networks have been successfully added"), 'success')
+        return redirect(url_for('networks.network_index', project_id=project_id))
+    ctx = get_default_environment(models.Network(project=project), 'multiple_add', proj=project)
+    context = {'form': form}
+    return render_template('networks/multiple_add.html', **ctx, **context)

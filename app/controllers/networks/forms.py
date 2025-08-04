@@ -5,6 +5,7 @@ import flask_wtf.file as wtfile
 from app import db
 from app.controllers.forms import WysiwygField, FlaskForm, TreeSelectSingleField, Select2Field, TreeSelectMultipleField, Select2MultipleField
 from app.helpers.general_helpers import validates_port, validates_mac
+from app.helpers.projects_helpers import load_network_from_csv
 import app.models as models
 from flask_babel import lazy_gettext as _l
 from flask import g, url_for
@@ -262,3 +263,23 @@ class InventoryForm(FlaskForm):
     service_description = WysiwygField(_l("%(field_name)s:", field_name=_l("Service description")),
                                 validators=[validators.Optional()])
     submit = wtforms.SubmitField(_l("Update"))
+
+
+class NetworkMultipleAddForm(FlaskForm):
+    title_position = wtforms.IntegerField(_l("Title position:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
+    ip_address_position = wtforms.IntegerField(_l("IP address position:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
+    vlan_number_position = wtforms.IntegerField(_l("VLAN number position:"), validators=[validators.Optional()])
+    description_position = wtforms.IntegerField(_l("Description position:"), validators=[validators.Optional()])
+    internal_ip_position = wtforms.IntegerField(_l("Internal IP position:"), validators=[validators.Optional()])
+    connect_cmd_position = wtforms.IntegerField(_l("Connect command position:"), validators=[validators.Optional()])
+    asn_position = wtforms.IntegerField(_l("ASN position:"), validators=[validators.Optional()])
+    separator = wtforms.StringField(_l("Separator:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))], default=",")
+    network_data = wtforms.TextAreaField(_l("Data:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
+    submit = wtforms.SubmitField(_l("Add"))
+
+    def validate_network_data(form, field):
+        try:
+            parsed_network = load_network_from_csv(form)
+        except ValueError as e:
+            raise validators.ValidationError(_l("Incorrect IP address format: %(error)s", error=e))
+        form.parsed_network = parsed_network

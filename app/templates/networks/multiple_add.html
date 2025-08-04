@@ -1,0 +1,45 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row gutters">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ _("Import parameters") }}</h5>
+                        <p class="card-subtitle">{{ _("Note, that the first element has an index of '0'") }}</p>
+                    </div>
+                    <div class="card-body">
+                        {{ form_element(form, form.title_position, inline=True) }}
+                        {{ form_element(form, form.ip_address_position, inline=True) }}
+                        {{ form_element(form, form.vlan_number_position, inline=True) }}
+                        {{ form_element(form, form.description_position, inline=True) }}
+                        {{ form_element(form, form.internal_ip_position, inline=True) }}
+                        {{ form_element(form, form.connect_cmd_position, inline=True) }}
+                        {{ form_element(form, form.asn_position, inline=True) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">{{ _("Import data") }}</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_element(form, form.separator, inline=True) }}
+                        {{ form_element(form, form.network_data) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
