@@ -29,5 +29,5 @@ def authentication_password_policy_settings():
     elif request.method == 'GET':
         form.load_exist_value(gs)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('authentication_password_policy_settings')()
+    ctx = DefaultEnvironment()()
     return render_template('admin/authentication_password_policy_settings.html', **ctx, form=form, global_settings=current_app.config["GlobalSettings"])

@@ -21,7 +21,7 @@ from flask_babel import lazy_gettext as _l
 @bp.route('/index')
 def index():
     ''' Displayed a list of admin tools '''
-    ctx = DefaultEnvironment('index')()
+    ctx = DefaultEnvironment()()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' get index page")
     return render_template('admin/index.html', **ctx)
 
@@ -91,7 +91,7 @@ def admin_main_info_edit():
     text_form.text_main_page.data = current_app.config["GlobalSettings"].text_main_page
     main_parameters_form = main_settings_forms.MainParameterForm()
     main_parameters_form.load_exist_value(current_app.config["GlobalSettings"])
-    ctx = DefaultEnvironment('admin_main_info_edit')()
+    ctx = DefaultEnvironment()()
     context = {'global_settings': current_app.config["GlobalSettings"], "name_form": name_form, "text_form": text_form,
                'main_parameters_form': main_parameters_form}
     return render_template('admin/main_settings_edit.html', **ctx, **context)
@@ -101,7 +101,7 @@ def admin_main_info_edit():
 def object_index():
     ''' Handles paths for enumeration classes. In general, it just returns a page with a list of all possible enumeration objects. '''
     objs = get_enumerated_objects()
-    ctx = DefaultEnvironment('object_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' requested all enumerated object index")
     return render_template('admin/object_index.html', objs=objs, **ctx)
@@ -156,7 +156,7 @@ def object_type_index(object_type):
         abort(404)
     if obj_type not in get_enumerated_objects():
         abort(400)
-    ctx = DefaultEnvironment('object_type_index', obj_type)()
+    ctx = DefaultEnvironment(obj_type)()
     attr_name = [] # Attribute titles. Substituted in the data-field
     attr_field_types = [] # Attribute types. Substituted in the data-filter-control
     attr_field_values = [] # Possible values for fields of the type select
@@ -226,7 +226,7 @@ def object_type_new(object_type):
             return redirect(url_for('admin.object_type_index', object_type=object_type))
     elif request.method == 'GET':
         form.load_default_data(db.session, obj_type)
-    ctx = DefaultEnvironment('object_type_new', obj_type)()
+    ctx = DefaultEnvironment(obj_type)()
     return render_template('admin/object_type_new.html', form=form,
                            form_attrs=form_attrs, **ctx)
 
@@ -265,7 +265,7 @@ def object_type_edit(object_type, object_id):
             return redirect(url_for('admin.object_type_index', object_type=object_type))
     elif request.method == 'GET':
         form.load_exist_value(obj)
-    ctx = DefaultEnvironment('object_type_index', obj_type)()
+    ctx = DefaultEnvironment(obj_type)()
     return render_template('admin/object_type_new.html', form=form,
                            form_attrs=form_attrs, **ctx)
 
@@ -297,7 +297,7 @@ def object_type_delete(object_type):
 def status_index():
     ''' Returns a list of all possible state objects '''
     objs = get_status_objects()
-    ctx = DefaultEnvironment('status_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all status objects")
     return render_template('admin/status_index.html', objs=objs, **ctx)
@@ -327,7 +327,7 @@ def status_type_transits(object_type: str):
         return redirect(url_for('admin.status_index'))
     elif request.method == 'GET':
         form.load_exist_statuses()
-    ctx = DefaultEnvironment('status_type_transits', obj_type)()
+    ctx = DefaultEnvironment(obj_type)()
     return render_template('admin/status_type_transits.html', **ctx,
                            form=form, form_attrs=form_attrs,
                            all_objs=form.all_objs)
@@ -335,7 +335,7 @@ def status_type_transits(object_type: str):
 @bp.route('/issues/templates/index')
 def issue_template_index():
     templs = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.archived == False)).all()
-    ctx = DefaultEnvironment('issue_template_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all issue templates")
     return render_template('issue_templates/index.html', **ctx, templates=templs)
@@ -355,7 +355,7 @@ def issue_template_new():
     elif request.method == 'GET':
         form.load_default_data(db.session, models.IssueTemplate)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('issue_template_new')()
+    ctx = DefaultEnvironment()()
     context = {'form': form, "ckeditor_height": "100px"}
     return render_template('issue_templates/new.html', **ctx, **context)
 
@@ -366,10 +366,10 @@ def issue_template_show(template_id):
         template_id = int(template_id)
     except (ValueError, TypeError):
         abort(400)
-    templ = get_or_404(db.session, models.IssueTemplate, template_id)
-    ctx = DefaultEnvironment('issue_template_show', templ)()
-    context = {'template': templ}
-    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request issue template #{templ.id}")
+    template = get_or_404(db.session, models.IssueTemplate, template_id)
+    ctx = DefaultEnvironment(template)()
+    context = {'template': template}
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request issue template #{template.id}")
     return render_template('issue_templates/show.html', **ctx, **context)
 
 
@@ -389,7 +389,7 @@ def issue_template_edit(template_id):
         return redirect(url_for('admin.issue_template_show', template_id=template.id))
     elif request.method == "GET":
         form.load_exist_value(template)
-    ctx = DefaultEnvironment('issue_template_edit', template)()
+    ctx = DefaultEnvironment(template)()
     context = {'form': form, "ckeditor_height": "100px"}
     return render_template('issue_templates/new.html', **ctx, **context)
 
@@ -411,6 +411,6 @@ def issue_template_delete(template_id):
 
 @bp.route('/templates/object-template-list')
 def object_template_list():
-    ctx = DefaultEnvironment('object_template_list')()
+    ctx = DefaultEnvironment()()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request object template list")
     return render_template('admin/object_template_list.html', **ctx)

@@ -13,7 +13,7 @@ from flask_login import current_user
 
 @bp.route('/files/index')
 def admin_file_index():
-    ctx = DefaultEnvironment('admin_file_index')()
+    ctx = DefaultEnvironment()()
     filters = {}
     users = {i: t for i, t in db.session.execute(sa.select(models.User.id, models.User.title))}
     filters["users"] = json.dumps(users)

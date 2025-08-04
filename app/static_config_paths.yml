@@ -23,8 +23,9 @@ libraries:
   ckeditor:
     css:
       - "css/ckeditor.css"
+      - "js/ckeditor5/ckeditor5.css"
     js:
-      - "js/ckeditor5/build/ckeditor.js"
+    #  - "js/ckeditor5/ckeditor5.js"
   bootstrap_table:
     css:
       - "npm/node_modules/bootstrap-table/dist/bootstrap-table.min.css"
@@ -72,3 +73,10 @@ libraries:
       - "npm/node_modules/vis-network/dist/dist/vis-network.min.css"
     js:
       - "npm/node_modules/vis-network/dist/vis-network.min.js"
+  ace:
+    css:
+      - "js/ace/css/theme/monokai.css"
+    js:
+      - "js/ace/src/ace.js"
+      - "js/ace/src/mode-python.js"
+      - "js/ace/src/theme-monokai.js"

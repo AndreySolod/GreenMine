@@ -12,7 +12,7 @@ from flask_babel import lazy_gettext as _l
 @bp.route('/credentials/templates/index')
 def credential_template_index():
     templs = db.session.scalars(sa.select(models.CredentialImportTemplate)).all()
-    ctx = DefaultEnvironment('credential_template_index')()
+    ctx = DefaultEnvironment()()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all credential templates")
     side_libraries.library_required('bootstrap_table')
     return render_template('credential_import_templates/index.html', **ctx, templates=templs)
@@ -32,7 +32,7 @@ def credential_template_new():
     elif request.method == 'GET':
         form.load_default_data(db.session, models.CredentialImportTemplate)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('credential_template_new')()
+    ctx = DefaultEnvironment()()
     return render_template('credential_import_templates/new.html', **ctx, form=form)
 
 
@@ -43,7 +43,7 @@ def credential_template_show(template_id):
     except (ValueError, TypeError):
         abort(400)
     template = db.get_or_404(models.CredentialImportTemplate, template_id)
-    ctx = DefaultEnvironment('credential_template_show', template)()
+    ctx = DefaultEnvironment(template)()
     return render_template('credential_import_templates/show.html', **ctx, template=template)
 
 
@@ -66,7 +66,7 @@ def credential_template_edit(template_id):
         print('template:', template)
         print('template.static_hash_type:', template.static_hash_type)
         form.load_exist_value(template)
-    ctx = DefaultEnvironment('credential_template_edit', template)()
+    ctx = DefaultEnvironment(template)()
     return render_template('credential_import_templates/edit.html', **ctx, form=form)
 
 

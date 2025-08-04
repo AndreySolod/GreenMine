@@ -1,0 +1,108 @@
+{% extends 'layout/base.html' %}
+
+
+{% block styles %}
+{{ super() }}
+<style nonce="{{ csp_nonce() }}">
+    #console-wrapper {
+        height: 30vh;
+        width: 100%;
+    }
+    #console {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("Console") }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="console-wrapper">
+                                <div id="console"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col-4">
+                            <button class="btn btn-primary" id="run-console-code" data-bs-toggle="modal" data-bs-target="#modalShowCommandResult">{{ _("Run (Ctrl + Enter)") }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# modal window to show command command result #}
+<div class="modal fade modal-xl" id="modalShowCommandResult" tabindex="-1" aria-labelledby="modalShowCommandResultLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalShowCommandResultLabel">{{ _("Execution command result") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+              <div id="command-result">
+                <div class="spinner-border text-secondary" role="status">
+                    <span class="visually-hidden">{{ _("Loading...") }}</span>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="close_command_result_window" class="btn btn-primary">{{ _("Ok") }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    var python_console = ace.edit("console");
+    python_console.session.setMode("ace/mode/python");
+    python_console.setTheme("ace/theme/monokai");
+
+    const code_io = io("/admin")
+
+    document.getElementById("run-console-code").addEventListener("click", function() {
+        var code = python_console.getValue();
+        bootstrap.Modal.getInstance(document.getElementById('modalShowCommandResult')).show();
+        code_io.emit("console command", code, data => {
+            document.getElementById("command-result").innerHTML = "<p>" + data + "</p>";
+        })
+    });
+    document.getElementById("close_command_result_window").addEventListener("click", function() {
+        span_inner_spinner = document.createElement("span");
+        span_inner_spinner.classList.add("visually-hidden");
+        span_inner_spinner.innerText = "{{ _('Loading...') }}";
+        spinner_outer_div = document.createElement("div");
+        spinner_outer_div.classList.add("spinner-border", "text-secondary");
+        spinner_outer_div.setAttribute("role", "status");
+        spinner_outer_div.appendChild(span_inner_spinner);
+        document.getElementById("command-result").removeChild(document.getElementById("command-result").firstChild);
+        document.getElementById("command-result").appendChild(spinner_outer_div);
+        bootstrap.Modal.getInstance(document.getElementById('modalShowCommandResult')).hide();
+    });
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && (event.keyCode == 10 || event.keyCode == 13)) {
+            document.getElementById("run-console-code").click();
+        }
+    });
+</script>
+{% endblock %}

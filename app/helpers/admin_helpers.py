@@ -2,11 +2,10 @@ from flask import url_for
 from .general_helpers import SidebarElement, SidebarElementSublink
 from .general_helpers import CurrentObjectAction, CurrentObjectInfo
 from app import db
-from sqlalchemy.inspection import inspect
 import app.models as models
 from flask_babel import lazy_gettext as _l
 from typing import Any, List
-import functools
+import inspect as python_inspect
 
 
 enumerated_object_list: List[Any] = []  # This is a list of all the enumerations that can be processed in the /admin panel
@@ -123,14 +122,17 @@ class DefaultSidebar:
         sel91 = SidebarElementSublink(models.ProjectAdditionalField.Meta.verbose_name_plural, url_for('admin.project_additional_parameters_index'), address=='project_additional_parameters_index')
         sel92 = SidebarElementSublink(_l("Add new project additional field"), url_for('admin.project_additional_parameters_new'), address=='project_additional_parameters_new')
         se9 = SidebarElement(_l("Project parameters"), url_for('admin.project_additional_parameters_index'), "fa-solid fa-building-columns", address.startswith('project_additional_parameters'), [sel91, sel92])
-        self.se = [se1, se2, se3, se4, se5, se6, se7, se8, se9]
+        sel101 = SidebarElementSublink(_l("Console"), url_for('admin.console'), address=='console')
+        se10 = SidebarElement(_l("Low-level operations"), url_for('admin.console'), "fa-solid fa-terminal", address in ['console'], [sel101])
+        self.se = [se1, se2, se3, se4, se5, se6, se7, se8, se9, se10]
 
     def __call__(self):
         return self.se
 
 
 class DefaultEnvironment:
-    def __init__(self, address: str, obj=None):
+    def __init__(self, obj=None):
+        address = python_inspect.stack()[1].function
         match address:
             case 'index':
                 title = _l("Administration")
@@ -271,6 +273,9 @@ class DefaultEnvironment:
             case 'project_additional_parameters_edit':
                 title = _l("Edit project additional field #%(field_id)s", field_id=obj.id)
                 current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+            case 'console':
+                title = _l("Console")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-terminal")
 
         sidebar_data = DefaultSidebar(address, obj)()
         self.context = {'title': title, 'current_object': current_object,

@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask import request, redirect, url_for, render_template, flash, abort, jsonify, send_file, g
 from flask_login import current_user
 import app.models as models
-from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, get_complementary_color
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.networks.forms as forms
 from flask_babel import lazy_gettext as _l
@@ -638,7 +638,7 @@ def network_graph():
     nodes = []
     edges = []
     for network in networks:
-        nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.main_color, 'font': {'color': current_user.theme_style.network_on_graph_color}})
+        nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.network_on_graph_color, 'font': {'color': get_complementary_color(current_user.theme_style.network_on_graph_color)}})
         for accessible_network in network.can_see_network:
             edge_exist = False
             for e in edges:

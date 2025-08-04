@@ -13,7 +13,7 @@ from app.helpers.general_helpers import find_data_by_request_params
 @bp.route('/project-parameters/index')
 def project_additional_parameters_index():
     param_groups = db.session.scalars(sa.select(models.ProjectAdditionalFieldGroup).order_by(models.ProjectAdditionalFieldGroup.order_number.asc())).all()
-    ctx = DefaultEnvironment('project_additional_parameters_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
     return render_template('project_additional_parameters/admin_index.html', **ctx, param_groups=param_groups)
@@ -51,7 +51,7 @@ def project_additional_parameters_new():
     elif request.method == 'GET':
         form.load_default_data(db.session, models.ProjectAdditionalField)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('project_additional_parameters_new')()
+    ctx = DefaultEnvironment()()
     return render_template('project_additional_parameters/admin_new.html', **ctx, form=form)
 
 
@@ -73,7 +73,7 @@ def project_additional_parameters_edit(parameter_id):
     elif request.method == 'GET':
         form.load_exist_value(param)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('project_additional_parameters_edit', param)()
+    ctx = DefaultEnvironment(param)()
     return render_template('project_additional_parameters/admin_edit.html', **ctx, form=form)
 
 

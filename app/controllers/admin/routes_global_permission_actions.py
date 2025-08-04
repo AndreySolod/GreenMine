@@ -13,7 +13,7 @@ from flask_login import current_user
 @bp.route('/user-positions/index')
 def user_positions_index():
     all_positions = db.session.scalars(sa.select(models.UserPosition)).all()
-    ctx = DefaultEnvironment('user_positions_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
     return render_template('admin/user_positions_index.html', **ctx, positions=all_positions)
@@ -33,7 +33,7 @@ def user_positions_new():
     elif request.method == "GET":
         form.load_default_data(db.session, models.UserPosition)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('user_positions_new')()
+    ctx = DefaultEnvironment()()
     return render_template("admin/user_positions_new.html", form=form, **ctx)
 
 
@@ -54,7 +54,7 @@ def user_positions_edit(position_id):
     elif request.method == "GET":
         form.load_exist_value(position)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('user_positions_edit', position)()
+    ctx = DefaultEnvironment(position)()
     return render_template("admin/user_positions_edit.html", form=form, **ctx)
 
 
@@ -89,6 +89,6 @@ def user_positions_permissions():
             position_permissions[o][a] = {}
             for r in all_positions:
                 position_permissions[o][a][r] = getattr(form, 'position_' + str(r.id) + '____' + o.__name__ + '____' + a)
-    ctx = DefaultEnvironment('user_positions_permissions')()
+    ctx = DefaultEnvironment()()
     context = {'positions': all_positions, 'form': form, 'objs': get_global_objects_with_permissions(), 'position_permissions': position_permissions}
     return render_template("admin/user_positions_permissions.html", **ctx, **context)

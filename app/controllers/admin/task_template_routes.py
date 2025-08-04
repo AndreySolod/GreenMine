@@ -18,7 +18,7 @@ def task_template_index():
     trackers = {i: t for i, t in db.session.execute(sa.select(models.ProjectTaskTracker.id, models.ProjectTaskTracker.title))}
     priorities = {i: t for i, t in db.session.execute(sa.select(models.ProjectTaskPriority.id, models.ProjectTaskPriority.title))}
     filters = {'ProjectTaskTracker': json.dumps(trackers), 'ProjectTaskPriority': json.dumps(priorities)}
-    ctx = DefaultEnvironment('task_template_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     context = {'templates': templs, 'filters': filters}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all project task templates")
@@ -35,7 +35,7 @@ def task_template_show(template_id):
         templ = db.session.scalars(sa.select(models.ProjectTaskTemplate).where(models.ProjectTaskTemplate.id == template_id)).one()
     except (exc.MultipleResultsFound, exc.NoResultFound):
         abort(404)
-    ctx = DefaultEnvironment('task_template_show', templ)()
+    ctx = DefaultEnvironment(templ)()
     context = {'template': templ}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request project task template #{templ.id}")
     return render_template('task_templates/show.html', **ctx, **context)
@@ -55,7 +55,7 @@ def task_template_new():
     elif request.method == 'GET':
         form.load_default_data(db.session, models.ProjectTaskTemplate)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('task_template_new')()
+    ctx = DefaultEnvironment()()
     context = {'form': form, 'need_ckeditor': True}
     return render_template('task_templates/new.html', **ctx, **context)
 
@@ -77,7 +77,7 @@ def task_template_edit(template_id):
         return redirect(url_for('admin.task_template_show', template_id=template.id))
     elif request.method == "GET":
         form.load_exist_value(template)
-    ctx = DefaultEnvironment('task_template_edit', template)()
+    ctx = DefaultEnvironment(template)()
     context = {'form': form, 'need_ckeditor': True}
     return render_template('task_templates/new.html', **ctx, **context)
 

@@ -1,0 +1,6605 @@
+{
+  "custom_fields": [
+      {
+          "id": 2,
+          "name": "Backupd version",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 4,
+          "name": "是否无效",
+          "description": null,
+          "customized_type": "issue",
+          "field_format": "bool",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "0",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "1",
+                  "label": "是"
+              },
+              {
+                  "value": "0",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 30,
+          "name": "Backupd OS",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "Ubuntu 20.04",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "Ubuntu 11.10",
+                  "label": "Ubuntu 11.10"
+              },
+              {
+                  "value": "Ubuntu 12.04",
+                  "label": "Ubuntu 12.04"
+              },
+              {
+                  "value": "Ubuntu 12.10",
+                  "label": "Ubuntu 12.10"
+              },
+              {
+                  "value": "Ubuntu 13.04",
+                  "label": "Ubuntu 13.04"
+              },
+              {
+                  "value": "Ubuntu 13.10",
+                  "label": "Ubuntu 13.10"
+              },
+              {
+                  "value": "Ubuntu 14.04",
+                  "label": "Ubuntu 14.04"
+              },
+              {
+                  "value": "Ubuntu 16.04",
+                  "label": "Ubuntu 16.04"
+              },
+              {
+                  "value": "Ubuntu 18.04",
+                  "label": "Ubuntu 18.04"
+              },
+              {
+                  "value": "Ubuntu 20.04",
+                  "label": "Ubuntu 20.04"
+              },
+              {
+                  "value": "Ubuntu 22.04",
+                  "label": "Ubuntu 22.04"
+              },
+              {
+                  "value": "UOS",
+                  "label": "UOS"
+              },
+              {
+                  "value": "Debian 7.0(loongson)",
+                  "label": "Debian 7.0(loongson)"
+              },
+              {
+                  "value": "SUSE 11.4",
+                  "label": "SUSE 11.4"
+              },
+              {
+                  "value": "Synology_arm",
+                  "label": "Synology_arm"
+              },
+              {
+                  "value": "Synology_i686",
+                  "label": "Synology_i686"
+              },
+              {
+                  "value": "Red Hat 4.0",
+                  "label": "Red Hat 4.0"
+              },
+              {
+                  "value": "Red Hat 5.0",
+                  "label": "Red Hat 5.0"
+              },
+              {
+                  "value": "Red Hat 6.0",
+                  "label": "Red Hat 6.0"
+              },
+              {
+                  "value": "Red Hat 7.0",
+                  "label": "Red Hat 7.0"
+              },
+              {
+                  "value": "CentOS 5.0",
+                  "label": "CentOS 5.0"
+              },
+              {
+                  "value": "CentOS 6.0",
+                  "label": "CentOS 6.0"
+              },
+              {
+                  "value": "CentOS 6.6",
+                  "label": "CentOS 6.6"
+              },
+              {
+                  "value": "CentOS 7.0",
+                  "label": "CentOS 7.0"
+              },
+              {
+                  "value": "NeoKylin 3.2.2",
+                  "label": "NeoKylin 3.2.2"
+              },
+              {
+                  "value": "NeoKylin 7(SW)",
+                  "label": "NeoKylin 7(SW)"
+              },
+              {
+                  "value": "NeoKylin 6(loongson)",
+                  "label": "NeoKylin 6(loongson)"
+              },
+              {
+                  "value": "NeoKylin 7(loongson)",
+                  "label": "NeoKylin 7(loongson)"
+              },
+              {
+                  "value": "NeoKylin 4(feiteng)",
+                  "label": "NeoKylin 4(feiteng)"
+              },
+              {
+                  "value": "Kylin 4.0.2 (FT1500)",
+                  "label": "Kylin 4.0.2 (FT1500)"
+              },
+              {
+                  "value": "Kylin 4.0.2(FT2000)",
+                  "label": "Kylin 4.0.2(FT2000)"
+              },
+              {
+                  "value": "Kylin 4.0.2(FT2000+)",
+                  "label": "Kylin 4.0.2(FT2000+)"
+              },
+              {
+                  "value": "Kylin V10",
+                  "label": "Kylin V10"
+              },
+              {
+                  "value": "Neokylin Linux Server 5.4",
+                  "label": "Neokylin Linux Server 5.4"
+              },
+              {
+                  "value": "Neokylin Linux Server 5.6",
+                  "label": "Neokylin Linux Server 5.6"
+              },
+              {
+                  "value": "Neokylin Linux Server 6.0",
+                  "label": "Neokylin Linux Server 6.0"
+              },
+              {
+                  "value": "Windows 2003",
+                  "label": "Windows 2003"
+              },
+              {
+                  "value": "Windows 2008",
+                  "label": "Windows 2008"
+              },
+              {
+                  "value": "Windows 2012",
+                  "label": "Windows 2012"
+              },
+              {
+                  "value": "Ubuntu 11.04",
+                  "label": "Ubuntu 11.04"
+              },
+              {
+                  "value": "Windows 2008 R2",
+                  "label": "Windows 2008 R2"
+              },
+              {
+                  "value": "Windows XP SP3",
+                  "label": "Windows XP SP3"
+              },
+              {
+                  "value": "Windows 2003 SP2",
+                  "label": "Windows 2003 SP2"
+              },
+              {
+                  "value": "Windows 7",
+                  "label": "Windows 7"
+              },
+              {
+                  "value": "Ubuntu 10.04",
+                  "label": "Ubuntu 10.04"
+              },
+              {
+                  "value": "Ubuntu 10.10",
+                  "label": "Ubuntu 10.10"
+              },
+              {
+                  "value": "Red Flag Asianux 2",
+                  "label": "Red Flag Asianux 2"
+              },
+              {
+                  "value": "Red Flag Asianux 3",
+                  "label": "Red Flag Asianux 3"
+              },
+              {
+                  "value": "Red Flag Asianux 3 SP4",
+                  "label": "Red Flag Asianux 3 SP4"
+              },
+              {
+                  "value": "申威",
+                  "label": "申威"
+              },
+              {
+                  "value": "Fusion OS 22",
+                  "label": "Fusion OS 22"
+              },
+              {
+                  "value": "-",
+                  "label": "-"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 31,
+          "name": "Agent version",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 32,
+          "name": "Agent OS",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "无",
+                  "label": "无"
+              },
+              {
+                  "value": "Windows 2000 SP4",
+                  "label": "Windows 2000 SP4"
+              },
+              {
+                  "value": "Windows 2003",
+                  "label": "Windows 2003"
+              },
+              {
+                  "value": "Windows 2003 SP2",
+                  "label": "Windows 2003 SP2"
+              },
+              {
+                  "value": "Windows 2003 R2",
+                  "label": "Windows 2003 R2"
+              },
+              {
+                  "value": "Windows 2008",
+                  "label": "Windows 2008"
+              },
+              {
+                  "value": "Windows 2008 R2",
+                  "label": "Windows 2008 R2"
+              },
+              {
+                  "value": "Windows 2012",
+                  "label": "Windows 2012"
+              },
+              {
+                  "value": "Windows 2012 R2",
+                  "label": "Windows 2012 R2"
+              },
+              {
+                  "value": "Windows 2016",
+                  "label": "Windows 2016"
+              },
+              {
+                  "value": "Windows 2019",
+                  "label": "Windows 2019"
+              },
+              {
+                  "value": "Windows 2022",
+                  "label": "Windows 2022"
+              },
+              {
+                  "value": "Windows XP SP3",
+                  "label": "Windows XP SP3"
+              },
+              {
+                  "value": "Windows 7",
+                  "label": "Windows 7"
+              },
+              {
+                  "value": "Windows 8",
+                  "label": "Windows 8"
+              },
+              {
+                  "value": "Windows 10",
+                  "label": "Windows 10"
+              },
+              {
+                  "value": "Ubuntu 11.10",
+                  "label": "Ubuntu 11.10"
+              },
+              {
+                  "value": "Ubuntu 12.04",
+                  "label": "Ubuntu 12.04"
+              },
+              {
+                  "value": "Ubuntu 12.10",
+                  "label": "Ubuntu 12.10"
+              },
+              {
+                  "value": "Ubuntu 13.04",
+                  "label": "Ubuntu 13.04"
+              },
+              {
+                  "value": "Ubuntu 14.04",
+                  "label": "Ubuntu 14.04"
+              },
+              {
+                  "value": "Ubuntu 16.04",
+                  "label": "Ubuntu 16.04"
+              },
+              {
+                  "value": "Ubuntu 18.04",
+                  "label": "Ubuntu 18.04"
+              },
+              {
+                  "value": "Ubuntu 20.04",
+                  "label": "Ubuntu 20.04"
+              },
+              {
+                  "value": "Ubuntu 22.04",
+                  "label": "Ubuntu 22.04"
+              },
+              {
+                  "value": "Ubuntu 24.04",
+                  "label": "Ubuntu 24.04"
+              },
+              {
+                  "value": "UOS",
+                  "label": "UOS"
+              },
+              {
+                  "value": "Debian 6.0",
+                  "label": "Debian 6.0"
+              },
+              {
+                  "value": "Debian 7.0",
+                  "label": "Debian 7.0"
+              },
+              {
+                  "value": "Debian 8.0",
+                  "label": "Debian 8.0"
+              },
+              {
+                  "value": "Debian 9.0",
+                  "label": "Debian 9.0"
+              },
+              {
+                  "value": "Debian 7.5(loongson)",
+                  "label": "Debian 7.5(loongson)"
+              },
+              {
+                  "value": "Debian 11",
+                  "label": "Debian 11"
+              },
+              {
+                  "value": "Debian 12",
+                  "label": "Debian 12"
+              },
+              {
+                  "value": "SUSE 9",
+                  "label": "SUSE 9"
+              },
+              {
+                  "value": "SUSE 10",
+                  "label": "SUSE 10"
+              },
+              {
+                  "value": "SUSE 11",
+                  "label": "SUSE 11"
+              },
+              {
+                  "value": "SUSE 12",
+                  "label": "SUSE 12"
+              },
+              {
+                  "value": "SUSE 15",
+                  "label": "SUSE 15"
+              },
+              {
+                  "value": "TurboLinux 7.1",
+                  "label": "TurboLinux 7.1"
+              },
+              {
+                  "value": "Red Flag Asianux 2",
+                  "label": "Red Flag Asianux 2"
+              },
+              {
+                  "value": "Red Flag Asianux 3",
+                  "label": "Red Flag Asianux 3"
+              },
+              {
+                  "value": "Red Flag Asianux 4",
+                  "label": "Red Flag Asianux 4"
+              },
+              {
+                  "value": "Red Flag Asianux 5",
+                  "label": "Red Flag Asianux 5"
+              },
+              {
+                  "value": "Red Flag Asianux 7",
+                  "label": "Red Flag Asianux 7"
+              },
+              {
+                  "value": "Red Flag DC 4.1",
+                  "label": "Red Flag DC 4.1"
+              },
+              {
+                  "value": "Red Flag DC 5.0",
+                  "label": "Red Flag DC 5.0"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 3",
+                  "label": "Red Hat Enterprise Linux 3"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 4",
+                  "label": "Red Hat Enterprise Linux 4"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 5",
+                  "label": "Red Hat Enterprise Linux 5"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 6",
+                  "label": "Red Hat Enterprise Linux 6"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 7",
+                  "label": "Red Hat Enterprise Linux 7"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 8",
+                  "label": "Red Hat Enterprise Linux 8"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 9",
+                  "label": "Red Hat Enterprise Linux 9"
+              },
+              {
+                  "value": "Red Hat 8",
+                  "label": "Red Hat 8"
+              },
+              {
+                  "value": "Red Hat 9",
+                  "label": "Red Hat 9"
+              },
+              {
+                  "value": "NeoKylin 3.2.2",
+                  "label": "NeoKylin 3.2.2"
+              },
+              {
+                  "value": "Neokylin Linux Server 5.4",
+                  "label": "Neokylin Linux Server 5.4"
+              },
+              {
+                  "value": "Neokylin Linux Server 5.6",
+                  "label": "Neokylin Linux Server 5.6"
+              },
+              {
+                  "value": "Neokylin Linux Server 6.0",
+                  "label": "Neokylin Linux Server 6.0"
+              },
+              {
+                  "value": "NeoKylin 7(SW)",
+                  "label": "NeoKylin 7(SW)"
+              },
+              {
+                  "value": "NeoKylin Desktop 7.0",
+                  "label": "NeoKylin Desktop 7.0"
+              },
+              {
+                  "value": "NeoKylin 7(loongson)",
+                  "label": "NeoKylin 7(loongson)"
+              },
+              {
+                  "value": "NeoKylin 6(loongson)",
+                  "label": "NeoKylin 6(loongson)"
+              },
+              {
+                  "value": "普华 3.0(loongson)",
+                  "label": "普华 3.0(loongson)"
+              },
+              {
+                  "value": "普华 4.0",
+                  "label": "普华 4.0"
+              },
+              {
+                  "value": "普华 5.0",
+                  "label": "普华 5.0"
+              },
+              {
+                  "value": "普华 5.0(loongson)",
+                  "label": "普华 5.0(loongson)"
+              },
+              {
+                  "value": "NeoKylin 4 (FT)",
+                  "label": "NeoKylin 4 (FT)"
+              },
+              {
+                  "value": "Kylin 4.02 (FT1500)",
+                  "label": "Kylin 4.02 (FT1500)"
+              },
+              {
+                  "value": "Kylin 4.02",
+                  "label": "Kylin 4.02"
+              },
+              {
+                  "value": "Kylin10 SP1",
+                  "label": "Kylin10 SP1"
+              },
+              {
+                  "value": "Kylin10 SP2",
+                  "label": "Kylin10 SP2"
+              },
+              {
+                  "value": "Kylin10 SP3",
+                  "label": "Kylin10 SP3"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 4",
+                  "label": "Oracle Enterprise Linux 4"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 5",
+                  "label": "Oracle Enterprise Linux 5"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 6",
+                  "label": "Oracle Enterprise Linux 6"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 7",
+                  "label": "Oracle Enterprise Linux 7"
+              },
+              {
+                  "value": "CentOS 3",
+                  "label": "CentOS 3"
+              },
+              {
+                  "value": "CentOS 4",
+                  "label": "CentOS 4"
+              },
+              {
+                  "value": "CentOS 5",
+                  "label": "CentOS 5"
+              },
+              {
+                  "value": "CentOS 6",
+                  "label": "CentOS 6"
+              },
+              {
+                  "value": "CentOS 7",
+                  "label": "CentOS 7"
+              },
+              {
+                  "value": "CentOS 8",
+                  "label": "CentOS 8"
+              },
+              {
+                  "value": "SUSE 11.4",
+                  "label": "SUSE 11.4"
+              },
+              {
+                  "value": "Solaris SPARC 9",
+                  "label": "Solaris SPARC 9"
+              },
+              {
+                  "value": "Solaris SPARC 10",
+                  "label": "Solaris SPARC 10"
+              },
+              {
+                  "value": "Solaris SPARC 11",
+                  "label": "Solaris SPARC 11"
+              },
+              {
+                  "value": "Solaris 9",
+                  "label": "Solaris 9"
+              },
+              {
+                  "value": "Solaris 10",
+                  "label": "Solaris 10"
+              },
+              {
+                  "value": "Solaris 11",
+                  "label": "Solaris 11"
+              },
+              {
+                  "value": "AIX 5.1",
+                  "label": "AIX 5.1"
+              },
+              {
+                  "value": "AIX 5.2",
+                  "label": "AIX 5.2"
+              },
+              {
+                  "value": "AIX 5.3",
+                  "label": "AIX 5.3"
+              },
+              {
+                  "value": "AIX 6.1",
+                  "label": "AIX 6.1"
+              },
+              {
+                  "value": "AIX 7.1",
+                  "label": "AIX 7.1"
+              },
+              {
+                  "value": "HP-UX 11.11",
+                  "label": "HP-UX 11.11"
+              },
+              {
+                  "value": "HP-UX 11.23",
+                  "label": "HP-UX 11.23"
+              },
+              {
+                  "value": "HP-UX 11.31",
+                  "label": "HP-UX 11.31"
+              },
+              {
+                  "value": "HP-UX",
+                  "label": "HP-UX"
+              },
+              {
+                  "value": "Andriod 2.2",
+                  "label": "Andriod 2.2"
+              },
+              {
+                  "value": "Andriod 2.3",
+                  "label": "Andriod 2.3"
+              },
+              {
+                  "value": "Andriod 3.2",
+                  "label": "Andriod 3.2"
+              },
+              {
+                  "value": "Andriod 4.0",
+                  "label": "Andriod 4.0"
+              },
+              {
+                  "value": "Andriod 4.1",
+                  "label": "Andriod 4.1"
+              },
+              {
+                  "value": "Andriod 4.4",
+                  "label": "Andriod 4.4"
+              },
+              {
+                  "value": "VM OS",
+                  "label": "VM OS"
+              },
+              {
+                  "value": "麒麟 V10",
+                  "label": "麒麟 V10"
+              },
+              {
+                  "value": "中科方德",
+                  "label": "中科方德"
+              },
+              {
+                  "value": "Euler 2.9",
+                  "label": "Euler 2.9"
+              },
+              {
+                  "value": "OpenEuler 20.03",
+                  "label": "OpenEuler 20.03"
+              },
+              {
+                  "value": "OpenEuler 22.03",
+                  "label": "OpenEuler 22.03"
+              },
+              {
+                  "value": "OpenEuler 24.03",
+                  "label": "OpenEuler 24.03"
+              },
+              {
+                  "value": "OEL67:Oracle11g",
+                  "label": "OEL67:Oracle11g"
+              },
+              {
+                  "value": "Fusion OS 22",
+                  "label": "Fusion OS 22"
+              },
+              {
+                  "value": "Alibaba Cloud Linux 3",
+                  "label": "Alibaba Cloud Linux 3"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 34,
+          "name": "Backupd_64位",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "bool",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "1",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "1",
+                  "label": "是"
+              },
+              {
+                  "value": "0",
+                  "label": "否"
+              }
+          ],
+          "trackers": [],
+          "roles": []
+      },
+      {
+          "id": 35,
+          "name": "Agent_64位",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "bool",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "1",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "1",
+                  "label": "是"
+              },
+              {
+                  "value": "0",
+                  "label": "否"
+              }
+          ],
+          "trackers": [],
+          "roles": []
+      },
+      {
+          "id": 36,
+          "name": "Data",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "无",
+                  "label": "无"
+              },
+              {
+                  "value": "AntDB-PG",
+                  "label": "AntDB-PG"
+              },
+              {
+                  "value": "AntDB-MySQL",
+                  "label": "AntDB-MySQL"
+              },
+              {
+                  "value": "Active Directory",
+                  "label": "Active Directory"
+              },
+              {
+                  "value": "Cache 2010",
+                  "label": "Cache 2010"
+              },
+              {
+                  "value": "Cache 2015",
+                  "label": "Cache 2015"
+              },
+              {
+                  "value": "Cache 2016",
+                  "label": "Cache 2016"
+              },
+              {
+                  "value": "Cache 2017",
+                  "label": "Cache 2017"
+              },
+              {
+                  "value": "Cache 2018",
+                  "label": "Cache 2018"
+              },
+              {
+                  "value": "CNware",
+                  "label": "CNware"
+              },
+              {
+                  "value": "Citrix XenServer",
+                  "label": "Citrix XenServer"
+              },
+              {
+                  "value": "DB2 8.1",
+                  "label": "DB2 8.1"
+              },
+              {
+                  "value": "DB2 8.2",
+                  "label": "DB2 8.2"
+              },
+              {
+                  "value": "DB2 9.1",
+                  "label": "DB2 9.1"
+              },
+              {
+                  "value": "DB2 9.5",
+                  "label": "DB2 9.5"
+              },
+              {
+                  "value": "DB2 9.7",
+                  "label": "DB2 9.7"
+              },
+              {
+                  "value": "DB2 10.1",
+                  "label": "DB2 10.1"
+              },
+              {
+                  "value": "DB2 10.5",
+                  "label": "DB2 10.5"
+              },
+              {
+                  "value": "DB2 11.1",
+                  "label": "DB2 11.1"
+              },
+              {
+                  "value": "DB2 11.5",
+                  "label": "DB2 11.5"
+              },
+              {
+                  "value": "DM 6.0",
+                  "label": "DM 6.0"
+              },
+              {
+                  "value": "DM 7.1",
+                  "label": "DM 7.1"
+              },
+              {
+                  "value": "DM 7.6",
+                  "label": "DM 7.6"
+              },
+              {
+                  "value": "DM 8.0",
+                  "label": "DM 8.0"
+              },
+              {
+                  "value": "Domino 7.0",
+                  "label": "Domino 7.0"
+              },
+              {
+                  "value": "Domino 8.5",
+                  "label": "Domino 8.5"
+              },
+              {
+                  "value": "Domino 9.0",
+                  "label": "Domino 9.0"
+              },
+              {
+                  "value": "EMC NDMP",
+                  "label": "EMC NDMP"
+              },
+              {
+                  "value": "Exchange 2000 SP3",
+                  "label": "Exchange 2000 SP3"
+              },
+              {
+                  "value": "Exchange 2003",
+                  "label": "Exchange 2003"
+              },
+              {
+                  "value": "Exchange 2007",
+                  "label": "Exchange 2007"
+              },
+              {
+                  "value": "Exchange 2010",
+                  "label": "Exchange 2010"
+              },
+              {
+                  "value": "Exchange 2013",
+                  "label": "Exchange 2013"
+              },
+              {
+                  "value": "Exchange 2016",
+                  "label": "Exchange 2016"
+              },
+              {
+                  "value": "Exchange 2019",
+                  "label": "Exchange 2019"
+              },
+              {
+                  "value": "Exchange Online",
+                  "label": "Exchange Online"
+              },
+              {
+                  "value": "Files",
+                  "label": "Files"
+              },
+              {
+                  "value": "FusionSphere",
+                  "label": "FusionSphere"
+              },
+              {
+                  "value": "FusionCloud",
+                  "label": "FusionCloud"
+              },
+              {
+                  "value": "FusionDB",
+                  "label": "FusionDB"
+              },
+              {
+                  "value": "FusionDB 22",
+                  "label": "FusionDB 22"
+              },
+              {
+                  "value": "GaussDB for openGauss 503",
+                  "label": "GaussDB for openGauss 503"
+              },
+              {
+                  "value": "GaussDB for openGauss 505",
+                  "label": "GaussDB for openGauss 505"
+              },
+              {
+                  "value": "GBase 8a",
+                  "label": "GBase 8a"
+              },
+              {
+                  "value": "GBase 8t",
+                  "label": "GBase 8t"
+              },
+              {
+                  "value": "GBase 8s",
+                  "label": "GBase 8s"
+              },
+              {
+                  "value": "GaussDB 100",
+                  "label": "GaussDB 100"
+              },
+              {
+                  "value": "GaussDB 200",
+                  "label": "GaussDB 200"
+              },
+              {
+                  "value": "GaussDB 8.0.1",
+                  "label": "GaussDB 8.0.1"
+              },
+              {
+                  "value": "GaussDB(DWS) 8.1.1",
+                  "label": "GaussDB(DWS) 8.1.1"
+              },
+              {
+                  "value": "GaussDB(DWS) 8.1.3",
+                  "label": "GaussDB(DWS) 8.1.3"
+              },
+              {
+                  "value": "GoldenDB V5",
+                  "label": "GoldenDB V5"
+              },
+              {
+                  "value": "GoldenDB V6",
+                  "label": "GoldenDB V6"
+              },
+              {
+                  "value": "GoldenDB V6.1.03.04",
+                  "label": "GoldenDB V6.1.03.04"
+              },
+              {
+                  "value": "Hadoop 3.1.0",
+                  "label": "Hadoop 3.1.0"
+              },
+              {
+                  "value": "Hadoop 3.0.2",
+                  "label": "Hadoop 3.0.2"
+              },
+              {
+                  "value": "Hadoop 2.9.0",
+                  "label": "Hadoop 2.9.0"
+              },
+              {
+                  "value": "Hadoop 2.8.3",
+                  "label": "Hadoop 2.8.3"
+              },
+              {
+                  "value": "Hadoop 2.7.6",
+                  "label": "Hadoop 2.7.6"
+              },
+              {
+                  "value": "Hadoop 2.6.5",
+                  "label": "Hadoop 2.6.5"
+              },
+              {
+                  "value": "Hadoop 2.10.1",
+                  "label": "Hadoop 2.10.1"
+              },
+              {
+                  "value": "Hadoop 3.2.2",
+                  "label": "Hadoop 3.2.2"
+              },
+              {
+                  "value": "Hadoop 3.3.4",
+                  "label": "Hadoop 3.3.4"
+              },
+              {
+                  "value": "Hadoop 3.3.5",
+                  "label": "Hadoop 3.3.5"
+              },
+              {
+                  "value": "HighGo",
+                  "label": "HighGo"
+              },
+              {
+                  "value": "Hive 3",
+                  "label": "Hive 3"
+              },
+              {
+                  "value": "Hive 4",
+                  "label": "Hive 4"
+              },
+              {
+                  "value": "Huawei NDMP",
+                  "label": "Huawei NDMP"
+              },
+              {
+                  "value": "Hyper-V",
+                  "label": "Hyper-V"
+              },
+              {
+                  "value": "H3C CAS",
+                  "label": "H3C CAS"
+              },
+              {
+                  "value": "Informix 11.5",
+                  "label": "Informix 11.5"
+              },
+              {
+                  "value": "Informix 11.7",
+                  "label": "Informix 11.7"
+              },
+              {
+                  "value": "Informix 12.0",
+                  "label": "Informix 12.0"
+              },
+              {
+                  "value": "Informix 14.10",
+                  "label": "Informix 14.10"
+              },
+              {
+                  "value": "InCloud Sphere",
+                  "label": "InCloud Sphere"
+              },
+              {
+                  "value": "Kingbase 7.1",
+                  "label": "Kingbase 7.1"
+              },
+              {
+                  "value": "Kingbase 8.0",
+                  "label": "Kingbase 8.0"
+              },
+              {
+                  "value": "K8S",
+                  "label": "K8S"
+              },
+              {
+                  "value": "KVM",
+                  "label": "KVM"
+              },
+              {
+                  "value": "MySQL 4.x",
+                  "label": "MySQL 4.x"
+              },
+              {
+                  "value": "MySQL 5.5",
+                  "label": "MySQL 5.5"
+              },
+              {
+                  "value": "MySQL 5.6",
+                  "label": "MySQL 5.6"
+              },
+              {
+                  "value": "MySQL 5.7",
+                  "label": "MySQL 5.7"
+              },
+              {
+                  "value": "MySQL 8.0",
+                  "label": "MySQL 8.0"
+              },
+              {
+                  "value": "MySQL 8.4",
+                  "label": "MySQL 8.4"
+              },
+              {
+                  "value": "MariaDB 10.0",
+                  "label": "MariaDB 10.0"
+              },
+              {
+                  "value": "MariaDB 10.1",
+                  "label": "MariaDB 10.1"
+              },
+              {
+                  "value": "MariaDB 10.3",
+                  "label": "MariaDB 10.3"
+              },
+              {
+                  "value": "MariaDB 10.4",
+                  "label": "MariaDB 10.4"
+              },
+              {
+                  "value": "MariaDB 10.5",
+                  "label": "MariaDB 10.5"
+              },
+              {
+                  "value": "MariaDB 10.6",
+                  "label": "MariaDB 10.6"
+              },
+              {
+                  "value": "MariaDB 10.11",
+                  "label": "MariaDB 10.11"
+              },
+              {
+                  "value": "MariaDB 11.4",
+                  "label": "MariaDB 11.4"
+              },
+              {
+                  "value": "MongoDB 2.2",
+                  "label": "MongoDB 2.2"
+              },
+              {
+                  "value": "MongoDB 2.4",
+                  "label": "MongoDB 2.4"
+              },
+              {
+                  "value": "MongoDB 2.6",
+                  "label": "MongoDB 2.6"
+              },
+              {
+                  "value": "MongoDB 3.0",
+                  "label": "MongoDB 3.0"
+              },
+              {
+                  "value": "MongoDB 3.0.3",
+                  "label": "MongoDB 3.0.3"
+              },
+              {
+                  "value": "MongoDB 3.2",
+                  "label": "MongoDB 3.2"
+              },
+              {
+                  "value": "MongoDB 3.4",
+                  "label": "MongoDB 3.4"
+              },
+              {
+                  "value": "MongoDB 4.0",
+                  "label": "MongoDB 4.0"
+              },
+              {
+                  "value": "MongoDB 5.0.13",
+                  "label": "MongoDB 5.0.13"
+              },
+              {
+                  "value": "MogDB",
+                  "label": "MogDB"
+              },
+              {
+                  "value": "NetApp NDMP",
+                  "label": "NetApp NDMP"
+              },
+              {
+                  "value": "OS",
+                  "label": "OS"
+              },
+              {
+                  "value": "OBS",
+                  "label": "OBS"
+              },
+              {
+                  "value": "Oracle 8i",
+                  "label": "Oracle 8i"
+              },
+              {
+                  "value": "Oracle 9i",
+                  "label": "Oracle 9i"
+              },
+              {
+                  "value": "Oracle 10g",
+                  "label": "Oracle 10g"
+              },
+              {
+                  "value": "Oracle 11g",
+                  "label": "Oracle 11g"
+              },
+              {
+                  "value": "Oracle 12c",
+                  "label": "Oracle 12c"
+              },
+              {
+                  "value": "Oracle 18c",
+                  "label": "Oracle 18c"
+              },
+              {
+                  "value": "Oracle 19c",
+                  "label": "Oracle 19c"
+              },
+              {
+                  "value": "Oracle 21c",
+                  "label": "Oracle 21c"
+              },
+              {
+                  "value": "Oracle 23ai",
+                  "label": "Oracle 23ai"
+              },
+              {
+                  "value": "OpenStack",
+                  "label": "OpenStack"
+              },
+              {
+                  "value": "OpenGauss 1.0.0",
+                  "label": "OpenGauss 1.0.0"
+              },
+              {
+                  "value": "OpenGauss 2.1.0",
+                  "label": "OpenGauss 2.1.0"
+              },
+              {
+                  "value": "OpenGauss 3.0.0",
+                  "label": "OpenGauss 3.0.0"
+              },
+              {
+                  "value": "OpenGauss 5.0.0",
+                  "label": "OpenGauss 5.0.0"
+              },
+              {
+                  "value": "OceanBase 3",
+                  "label": "OceanBase 3"
+              },
+              {
+                  "value": "OceanBase 4",
+                  "label": "OceanBase 4"
+              },
+              {
+                  "value": "Other NDMP",
+                  "label": "Other NDMP"
+              },
+              {
+                  "value": "PostgreSQL 8.1",
+                  "label": "PostgreSQL 8.1"
+              },
+              {
+                  "value": "PostgreSQL 8.4",
+                  "label": "PostgreSQL 8.4"
+              },
+              {
+                  "value": "PostgreSQL 9.2",
+                  "label": "PostgreSQL 9.2"
+              },
+              {
+                  "value": "PostgreSQL 9.3",
+                  "label": "PostgreSQL 9.3"
+              },
+              {
+                  "value": "PostgreSQL 9.4",
+                  "label": "PostgreSQL 9.4"
+              },
+              {
+                  "value": "PostgreSQL 10",
+                  "label": "PostgreSQL 10"
+              },
+              {
+                  "value": "PostgreSQL 11",
+                  "label": "PostgreSQL 11"
+              },
+              {
+                  "value": "PostgreSQL 12",
+                  "label": "PostgreSQL 12"
+              },
+              {
+                  "value": "PostgreSQL 13",
+                  "label": "PostgreSQL 13"
+              },
+              {
+                  "value": "PostgreSQL 14",
+                  "label": "PostgreSQL 14"
+              },
+              {
+                  "value": "PostgreSQL 15",
+                  "label": "PostgreSQL 15"
+              },
+              {
+                  "value": "PostgreSQL 16",
+                  "label": "PostgreSQL 16"
+              },
+              {
+                  "value": "PolarDB 2.3.2",
+                  "label": "PolarDB 2.3.2"
+              },
+              {
+                  "value": "Proxmox",
+                  "label": "Proxmox"
+              },
+              {
+                  "value": "PanWeiDB 1.0.0",
+                  "label": "PanWeiDB 1.0.0"
+              },
+              {
+                  "value": "PanWeiDB 2.0.2",
+                  "label": "PanWeiDB 2.0.2"
+              },
+              {
+                  "value": "RHV",
+                  "label": "RHV"
+              },
+              {
+                  "value": "SAP HANA 2.00.060",
+                  "label": "SAP HANA 2.00.060"
+              },
+              {
+                  "value": "SAP HANA 2.00.078",
+                  "label": "SAP HANA 2.00.078"
+              },
+              {
+                  "value": "SmartX",
+                  "label": "SmartX"
+              },
+              {
+                  "value": "SQL Server 2000",
+                  "label": "SQL Server 2000"
+              },
+              {
+                  "value": "SQL Server 2005",
+                  "label": "SQL Server 2005"
+              },
+              {
+                  "value": "SQL Server 2008",
+                  "label": "SQL Server 2008"
+              },
+              {
+                  "value": "SQL Server 2012",
+                  "label": "SQL Server 2012"
+              },
+              {
+                  "value": "SQL Server 2014",
+                  "label": "SQL Server 2014"
+              },
+              {
+                  "value": "SQL Server 2016",
+                  "label": "SQL Server 2016"
+              },
+              {
+                  "value": "SQL Server 2017",
+                  "label": "SQL Server 2017"
+              },
+              {
+                  "value": "SQL Server 2019",
+                  "label": "SQL Server 2019"
+              },
+              {
+                  "value": "SQL Server 2022",
+                  "label": "SQL Server 2022"
+              },
+              {
+                  "value": "SharePoint 2010",
+                  "label": "SharePoint 2010"
+              },
+              {
+                  "value": "SharePoint 2013",
+                  "label": "SharePoint 2013"
+              },
+              {
+                  "value": "SharePoint 2016",
+                  "label": "SharePoint 2016"
+              },
+              {
+                  "value": "SharePoint 2019",
+                  "label": "SharePoint 2019"
+              },
+              {
+                  "value": "Sybase 12.5",
+                  "label": "Sybase 12.5"
+              },
+              {
+                  "value": "Sybase 15.7",
+                  "label": "Sybase 15.7"
+              },
+              {
+                  "value": "Sybase 16.0",
+                  "label": "Sybase 16.0"
+              },
+              {
+                  "value": "Sybase IQ 15.4",
+                  "label": "Sybase IQ 15.4"
+              },
+              {
+                  "value": "Sybase IQ 16.0",
+                  "label": "Sybase IQ 16.0"
+              },
+              {
+                  "value": "Sybase IQ 16.1",
+                  "label": "Sybase IQ 16.1"
+              },
+              {
+                  "value": "ShenTong 7.0",
+                  "label": "ShenTong 7.0"
+              },
+              {
+                  "value": "SequoiaDB 3.4.0",
+                  "label": "SequoiaDB 3.4.0"
+              },
+              {
+                  "value": "TBase",
+                  "label": "TBase"
+              },
+              {
+                  "value": "TDSQL MySQL",
+                  "label": "TDSQL MySQL"
+              },
+              {
+                  "value": "TDSQL PG",
+                  "label": "TDSQL PG"
+              },
+              {
+                  "value": "TiDB",
+                  "label": "TiDB"
+              },
+              {
+                  "value": "TiDB 7.5.0",
+                  "label": "TiDB 7.5.0"
+              },
+              {
+                  "value": "TiDB 8.3.0",
+                  "label": "TiDB 8.3.0"
+              },
+              {
+                  "value": "UxDB",
+                  "label": "UxDB"
+              },
+              {
+                  "value": "VM",
+                  "label": "VM"
+              },
+              {
+                  "value": "VMWare",
+                  "label": "VMWare"
+              },
+              {
+                  "value": "Vastbase",
+                  "label": "Vastbase"
+              },
+              {
+                  "value": "Xen",
+                  "label": "Xen"
+              },
+              {
+                  "value": "YashanDB 23.2.3.100",
+                  "label": "YashanDB 23.2.3.100"
+              },
+              {
+                  "value": "Zstack",
+                  "label": "Zstack"
+              },
+              {
+                  "value": "CloudOS",
+                  "label": "CloudOS"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 37,
+          "name": "严重级别",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "Critical",
+                  "label": "Critical"
+              },
+              {
+                  "value": "Major",
+                  "label": "Major"
+              },
+              {
+                  "value": "Normal",
+                  "label": "Normal"
+              },
+              {
+                  "value": "Minor",
+                  "label": "Minor"
+              },
+              {
+                  "value": "Enhancement",
+                  "label": "Enhancement"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 24,
+                  "name": "IQC"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 39,
+          "name": "Data version",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 41,
+          "name": "Storage测试类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "标准存储池",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "标准存储池",
+                  "label": "标准存储池"
+              },
+              {
+                  "value": "本地存储池",
+                  "label": "本地存储池"
+              },
+              {
+                  "value": "磁带库池",
+                  "label": "磁带库池"
+              },
+              {
+                  "value": "重删存储池",
+                  "label": "重删存储池"
+              },
+              {
+                  "value": "块设备去重池",
+                  "label": "块设备去重池"
+              },
+              {
+                  "value": "文件合成池",
+                  "label": "文件合成池"
+              },
+              {
+                  "value": "数据库合成池",
+                  "label": "数据库合成池"
+              },
+              {
+                  "value": "实时备份池",
+                  "label": "实时备份池"
+              },
+              {
+                  "value": "LAN-Free 池",
+                  "label": "LAN-Free 池"
+              },
+              {
+                  "value": "光盘塔存储池",
+                  "label": "光盘塔存储池"
+              },
+              {
+                  "value": "对象存储池",
+                  "label": "对象存储池"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 42,
+          "name": "Storaged version",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 43,
+          "name": "Storaged OS",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "Ubuntu 20.04",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "Windows 2003",
+                  "label": "Windows 2003"
+              },
+              {
+                  "value": "Windows 2003 SP2",
+                  "label": "Windows 2003 SP2"
+              },
+              {
+                  "value": "Windows 2008",
+                  "label": "Windows 2008"
+              },
+              {
+                  "value": "Windows 2008 R2",
+                  "label": "Windows 2008 R2"
+              },
+              {
+                  "value": "Windows 2012",
+                  "label": "Windows 2012"
+              },
+              {
+                  "value": "Ubuntu 11.10",
+                  "label": "Ubuntu 11.10"
+              },
+              {
+                  "value": "Ubuntu 12.04",
+                  "label": "Ubuntu 12.04"
+              },
+              {
+                  "value": "Ubuntu 12.10",
+                  "label": "Ubuntu 12.10"
+              },
+              {
+                  "value": "Ubuntu 13.04",
+                  "label": "Ubuntu 13.04"
+              },
+              {
+                  "value": "Ubuntu 14.04",
+                  "label": "Ubuntu 14.04"
+              },
+              {
+                  "value": "Ubuntu 16.04",
+                  "label": "Ubuntu 16.04"
+              },
+              {
+                  "value": "Ubuntu 18.04",
+                  "label": "Ubuntu 18.04"
+              },
+              {
+                  "value": "Ubuntu 20.04",
+                  "label": "Ubuntu 20.04"
+              },
+              {
+                  "value": "Ubuntu 22.04",
+                  "label": "Ubuntu 22.04"
+              },
+              {
+                  "value": "Ubuntu 24.04",
+                  "label": "Ubuntu 24.04"
+              },
+              {
+                  "value": "Debian 7.5(loongson)",
+                  "label": "Debian 7.5(loongson)"
+              },
+              {
+                  "value": "SUSE 9",
+                  "label": "SUSE 9"
+              },
+              {
+                  "value": "SUSE 10",
+                  "label": "SUSE 10"
+              },
+              {
+                  "value": "SUSE 11",
+                  "label": "SUSE 11"
+              },
+              {
+                  "value": "Red Flag Asianux 2",
+                  "label": "Red Flag Asianux 2"
+              },
+              {
+                  "value": "Red Flag Asianux 3",
+                  "label": "Red Flag Asianux 3"
+              },
+              {
+                  "value": "Red Flag Asianux 3 SP4",
+                  "label": "Red Flag Asianux 3 SP4"
+              },
+              {
+                  "value": "Red Flag DC 4.1",
+                  "label": "Red Flag DC 4.1"
+              },
+              {
+                  "value": "Red Flag DC 5.0",
+                  "label": "Red Flag DC 5.0"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 3",
+                  "label": "Red Hat Enterprise Linux 3"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 4",
+                  "label": "Red Hat Enterprise Linux 4"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 5",
+                  "label": "Red Hat Enterprise Linux 5"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 6",
+                  "label": "Red Hat Enterprise Linux 6"
+              },
+              {
+                  "value": "Red Hat 9",
+                  "label": "Red Hat 9"
+              },
+              {
+                  "value": "NeoKylin 3.2.2",
+                  "label": "NeoKylin 3.2.2"
+              },
+              {
+                  "value": "NeoKylin 6",
+                  "label": "NeoKylin 6"
+              },
+              {
+                  "value": "NeoKylin 7(SW)",
+                  "label": "NeoKylin 7(SW)"
+              },
+              {
+                  "value": "NeoKylin 6(loongson)",
+                  "label": "NeoKylin 6(loongson)"
+              },
+              {
+                  "value": "NeoKylin 7(loongson)",
+                  "label": "NeoKylin 7(loongson)"
+              },
+              {
+                  "value": "NeoKylin 4(feiteng)",
+                  "label": "NeoKylin 4(feiteng)"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 4",
+                  "label": "Oracle Enterprise Linux 4"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 5",
+                  "label": "Oracle Enterprise Linux 5"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 6",
+                  "label": "Oracle Enterprise Linux 6"
+              },
+              {
+                  "value": "CentOS 3",
+                  "label": "CentOS 3"
+              },
+              {
+                  "value": "CentOS 4",
+                  "label": "CentOS 4"
+              },
+              {
+                  "value": "CentOS 5",
+                  "label": "CentOS 5"
+              },
+              {
+                  "value": "CentOS 6",
+                  "label": "CentOS 6"
+              },
+              {
+                  "value": "CentOS 7",
+                  "label": "CentOS 7"
+              },
+              {
+                  "value": "SUSE 11.4",
+                  "label": "SUSE 11.4"
+              },
+              {
+                  "value": "Solaris SPARC 9",
+                  "label": "Solaris SPARC 9"
+              },
+              {
+                  "value": "Solaris SPARC 10",
+                  "label": "Solaris SPARC 10"
+              },
+              {
+                  "value": "Solaris 9",
+                  "label": "Solaris 9"
+              },
+              {
+                  "value": "Solaris 10",
+                  "label": "Solaris 10"
+              },
+              {
+                  "value": "AIX 5.1",
+                  "label": "AIX 5.1"
+              },
+              {
+                  "value": "AIX 5.2",
+                  "label": "AIX 5.2"
+              },
+              {
+                  "value": "AIX 5.3",
+                  "label": "AIX 5.3"
+              },
+              {
+                  "value": "HP-UX 11.23",
+                  "label": "HP-UX 11.23"
+              },
+              {
+                  "value": "麒麟 v10",
+                  "label": "麒麟 v10"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 44,
+          "name": "虚拟化平台",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "VMware EXSI 4.0",
+                  "label": "VMware EXSI 4.0"
+              },
+              {
+                  "value": "VMware EXSI 4.1",
+                  "label": "VMware EXSI 4.1"
+              },
+              {
+                  "value": "VMware EXSI 5.0",
+                  "label": "VMware EXSI 5.0"
+              },
+              {
+                  "value": "VMware EXSI 5.1",
+                  "label": "VMware EXSI 5.1"
+              },
+              {
+                  "value": "VMware EXSI 5.5",
+                  "label": "VMware EXSI 5.5"
+              },
+              {
+                  "value": "VMware EXSI 6.0",
+                  "label": "VMware EXSI 6.0"
+              },
+              {
+                  "value": "VMware EXSI 6.5",
+                  "label": "VMware EXSI 6.5"
+              },
+              {
+                  "value": "VMware EXSI 6.7",
+                  "label": "VMware EXSI 6.7"
+              },
+              {
+                  "value": "VMware vCenter 4.0",
+                  "label": "VMware vCenter 4.0"
+              },
+              {
+                  "value": "VMware vCenter 4.1",
+                  "label": "VMware vCenter 4.1"
+              },
+              {
+                  "value": "VMware vCenter 5.0",
+                  "label": "VMware vCenter 5.0"
+              },
+              {
+                  "value": "VMware vCenter 5.1",
+                  "label": "VMware vCenter 5.1"
+              },
+              {
+                  "value": "VMware vCenter 5.5",
+                  "label": "VMware vCenter 5.5"
+              },
+              {
+                  "value": "VMware vCenter 6.0",
+                  "label": "VMware vCenter 6.0"
+              },
+              {
+                  "value": "VMware vCenter 6.5",
+                  "label": "VMware vCenter 6.5"
+              },
+              {
+                  "value": "VMware vCenter 6.7",
+                  "label": "VMware vCenter 6.7"
+              },
+              {
+                  "value": "Citrix XenServer 6.0.2",
+                  "label": "Citrix XenServer 6.0.2"
+              },
+              {
+                  "value": "Citrix XenServer 6.2",
+                  "label": "Citrix XenServer 6.2"
+              },
+              {
+                  "value": "Citrix XenServer 6.5",
+                  "label": "Citrix XenServer 6.5"
+              },
+              {
+                  "value": "Citrix XenServer 7.0",
+                  "label": "Citrix XenServer 7.0"
+              },
+              {
+                  "value": "Citrix XenServer 7.1",
+                  "label": "Citrix XenServer 7.1"
+              },
+              {
+                  "value": "Citrix XenServer 7.2",
+                  "label": "Citrix XenServer 7.2"
+              },
+              {
+                  "value": "Citrix XenServer 7.3",
+                  "label": "Citrix XenServer 7.3"
+              },
+              {
+                  "value": "Citrix XenServer 7.4",
+                  "label": "Citrix XenServer 7.4"
+              },
+              {
+                  "value": "KVM",
+                  "label": "KVM"
+              },
+              {
+                  "value": "Xen",
+                  "label": "Xen"
+              },
+              {
+                  "value": "FusionSphere 5.0",
+                  "label": "FusionSphere 5.0"
+              },
+              {
+                  "value": "FusionSphere 5.1",
+                  "label": "FusionSphere 5.1"
+              },
+              {
+                  "value": "FusionSphere 6.0",
+                  "label": "FusionSphere 6.0"
+              },
+              {
+                  "value": "FusionSphere 6.1",
+                  "label": "FusionSphere 6.1"
+              },
+              {
+                  "value": "FusionCloud 6.1",
+                  "label": "FusionCloud 6.1"
+              },
+              {
+                  "value": "FusionCloud 6.3",
+                  "label": "FusionCloud 6.3"
+              },
+              {
+                  "value": "FusionCloud 6.3.1",
+                  "label": "FusionCloud 6.3.1"
+              },
+              {
+                  "value": "FusionCloud 6.5",
+                  "label": "FusionCloud 6.5"
+              },
+              {
+                  "value": "FusionCloud 6.5.1",
+                  "label": "FusionCloud 6.5.1"
+              },
+              {
+                  "value": "H3C CAS E0222",
+                  "label": "H3C CAS E0222"
+              },
+              {
+                  "value": "H3C CAS E0225",
+                  "label": "H3C CAS E0225"
+              },
+              {
+                  "value": "H3C CAS E0301",
+                  "label": "H3C CAS E0301"
+              },
+              {
+                  "value": "H3C CAS E0303",
+                  "label": "H3C CAS E0303"
+              },
+              {
+                  "value": "H3C CAS E0306",
+                  "label": "H3C CAS E0306"
+              },
+              {
+                  "value": "H3C CAS E0511",
+                  "label": "H3C CAS E0511"
+              },
+              {
+                  "value": "Hyper-V Server 2012",
+                  "label": "Hyper-V Server 2012"
+              },
+              {
+                  "value": "Hyper-V Server 2012 R2",
+                  "label": "Hyper-V Server 2012 R2"
+              },
+              {
+                  "value": "Hyper-V ~ Hosted Architecture",
+                  "label": "Hyper-V ~ Hosted Architecture"
+              },
+              {
+                  "value": "CNware 6.0",
+                  "label": "CNware 6.0"
+              },
+              {
+                  "value": "CNware 6.1",
+                  "label": "CNware 6.1"
+              },
+              {
+                  "value": "CNware 7.0",
+                  "label": "CNware 7.0"
+              },
+              {
+                  "value": "OpenStack Liberty",
+                  "label": "OpenStack Liberty"
+              },
+              {
+                  "value": "OpenStack Mitaka",
+                  "label": "OpenStack Mitaka"
+              },
+              {
+                  "value": "OpenStack Newton",
+                  "label": "OpenStack Newton"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 47,
+          "name": "磁带库类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "虚拟带库",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "物理带库",
+                  "label": "物理带库"
+              },
+              {
+                  "value": "虚拟带库",
+                  "label": "虚拟带库"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 48,
+          "name": "磁带库版本",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "1.5-2",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "1.5-2",
+                  "label": "1.5-2"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 49,
+          "name": "Standby version",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [],
+          "roles": []
+      },
+      {
+          "id": 50,
+          "name": "VM Agent环境",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "Windows 2003",
+                  "label": "Windows 2003"
+              },
+              {
+                  "value": "Windows 2008",
+                  "label": "Windows 2008"
+              },
+              {
+                  "value": "Windows 2008 R2",
+                  "label": "Windows 2008 R2"
+              },
+              {
+                  "value": "Ubuntu 12.04",
+                  "label": "Ubuntu 12.04"
+              },
+              {
+                  "value": "Ubuntu 14.04",
+                  "label": "Ubuntu 14.04"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 51,
+          "name": "VM Agent测试版本",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 52,
+          "name": "VM Agent x86_64",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "bool",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "1",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "1",
+                  "label": "是"
+              },
+              {
+                  "value": "0",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 53,
+          "name": "问题类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "数据库环境问题",
+                  "label": "数据库环境问题"
+              },
+              {
+                  "value": "操作系统环境问题",
+                  "label": "操作系统环境问题"
+              },
+              {
+                  "value": "网络环境问题",
+                  "label": "网络环境问题"
+              },
+              {
+                  "value": "现场环境问题-迪备",
+                  "label": "现场环境问题-迪备"
+              },
+              {
+                  "value": "现场环境问题-客户环境",
+                  "label": "现场环境问题-客户环境"
+              },
+              {
+                  "value": "环境兼容问题",
+                  "label": "环境兼容问题"
+              },
+              {
+                  "value": "操作/配置问题",
+                  "label": "操作/配置问题"
+              },
+              {
+                  "value": "许可/授权管理",
+                  "label": "许可/授权管理"
+              },
+              {
+                  "value": "HA集群问题",
+                  "label": "HA集群问题"
+              },
+              {
+                  "value": "硬件故障",
+                  "label": "硬件故障"
+              },
+              {
+                  "value": "未知产品缺陷",
+                  "label": "未知产品缺陷"
+              },
+              {
+                  "value": "已知产品缺陷",
+                  "label": "已知产品缺陷"
+              },
+              {
+                  "value": "产品优化",
+                  "label": "产品优化"
+              },
+              {
+                  "value": "用户需求",
+                  "label": "用户需求"
+              },
+              {
+                  "value": "技术咨询",
+                  "label": "技术咨询"
+              },
+              {
+                  "value": "版本升级",
+                  "label": "版本升级"
+              },
+              {
+                  "value": "安全问题",
+                  "label": "安全问题"
+              },
+              {
+                  "value": "续保前软硬件健康评估",
+                  "label": "续保前软硬件健康评估"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 54,
+          "name": "发现版本",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "8.0-NextVersion",
+                  "label": "8.0-NextVersion"
+              },
+              {
+                  "value": "8.0-Planning",
+                  "label": "8.0-Planning"
+              },
+              {
+                  "value": "8.0.22894",
+                  "label": "8.0.22894"
+              },
+              {
+                  "value": "8.0.22042",
+                  "label": "8.0.22042"
+              },
+              {
+                  "value": "8.0.20457",
+                  "label": "8.0.20457"
+              },
+              {
+                  "value": "8.0.19694",
+                  "label": "8.0.19694"
+              },
+              {
+                  "value": "8.0.19317",
+                  "label": "8.0.19317"
+              },
+              {
+                  "value": "8.0.17452",
+                  "label": "8.0.17452"
+              },
+              {
+                  "value": "8.0.17177",
+                  "label": "8.0.17177"
+              },
+              {
+                  "value": "8.0",
+                  "label": "8.0"
+              },
+              {
+                  "value": "7.2",
+                  "label": "7.2"
+              },
+              {
+                  "value": "7.1",
+                  "label": "7.1"
+              },
+              {
+                  "value": "7.0",
+                  "label": "7.0"
+              },
+              {
+                  "value": "6.3",
+                  "label": "6.3"
+              },
+              {
+                  "value": "6.2",
+                  "label": "6.2"
+              },
+              {
+                  "value": "6.1",
+                  "label": "6.1"
+              },
+              {
+                  "value": "6.0",
+                  "label": "6.0"
+              },
+              {
+                  "value": "5.2",
+                  "label": "5.2"
+              },
+              {
+                  "value": "5.1",
+                  "label": "5.1"
+              },
+              {
+                  "value": "5.0",
+                  "label": "5.0"
+              },
+              {
+                  "value": "4.0",
+                  "label": "4.0"
+              },
+              {
+                  "value": "3.1",
+                  "label": "3.1"
+              },
+              {
+                  "value": "3.0",
+                  "label": "3.0"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 56,
+          "name": "分支名称",
+          "description": "版本库对应的分支名称",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 28,
+                  "name": "Regression"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 59,
+          "name": "Standby OS",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "无",
+                  "label": "无"
+              },
+              {
+                  "value": "Windows 2000 SP4",
+                  "label": "Windows 2000 SP4"
+              },
+              {
+                  "value": "Windows 2003",
+                  "label": "Windows 2003"
+              },
+              {
+                  "value": "Windows 2003 SP2",
+                  "label": "Windows 2003 SP2"
+              },
+              {
+                  "value": "Windows 2003 R2",
+                  "label": "Windows 2003 R2"
+              },
+              {
+                  "value": "Windows 2008",
+                  "label": "Windows 2008"
+              },
+              {
+                  "value": "Windows 2008 R2",
+                  "label": "Windows 2008 R2"
+              },
+              {
+                  "value": "Windows 2012",
+                  "label": "Windows 2012"
+              },
+              {
+                  "value": "Windows 2012 R2",
+                  "label": "Windows 2012 R2"
+              },
+              {
+                  "value": "Windows XP SP3",
+                  "label": "Windows XP SP3"
+              },
+              {
+                  "value": "Windows 7",
+                  "label": "Windows 7"
+              },
+              {
+                  "value": "Windows 8",
+                  "label": "Windows 8"
+              },
+              {
+                  "value": "Ubuntu 11.10",
+                  "label": "Ubuntu 11.10"
+              },
+              {
+                  "value": "Ubuntu 12.04",
+                  "label": "Ubuntu 12.04"
+              },
+              {
+                  "value": "Ubuntu 12.10",
+                  "label": "Ubuntu 12.10"
+              },
+              {
+                  "value": "Ubuntu 13.04",
+                  "label": "Ubuntu 13.04"
+              },
+              {
+                  "value": "Ubuntu 14.04",
+                  "label": "Ubuntu 14.04"
+              },
+              {
+                  "value": "Ubuntu 16.04",
+                  "label": "Ubuntu 16.04"
+              },
+              {
+                  "value": "Debian 6.0",
+                  "label": "Debian 6.0"
+              },
+              {
+                  "value": "Debian 7.0",
+                  "label": "Debian 7.0"
+              },
+              {
+                  "value": "Debian 8.0",
+                  "label": "Debian 8.0"
+              },
+              {
+                  "value": "Debian 9.0",
+                  "label": "Debian 9.0"
+              },
+              {
+                  "value": "Debian 7.5(loongson)",
+                  "label": "Debian 7.5(loongson)"
+              },
+              {
+                  "value": "SUSE 9",
+                  "label": "SUSE 9"
+              },
+              {
+                  "value": "SUSE 10",
+                  "label": "SUSE 10"
+              },
+              {
+                  "value": "SUSE 11",
+                  "label": "SUSE 11"
+              },
+              {
+                  "value": "TurboLinux 7.1",
+                  "label": "TurboLinux 7.1"
+              },
+              {
+                  "value": "Red Flag Asianux 2",
+                  "label": "Red Flag Asianux 2"
+              },
+              {
+                  "value": "Red Flag Asianux 3",
+                  "label": "Red Flag Asianux 3"
+              },
+              {
+                  "value": "Red Flag Asianux 4",
+                  "label": "Red Flag Asianux 4"
+              },
+              {
+                  "value": "Red Flag Asianux 5",
+                  "label": "Red Flag Asianux 5"
+              },
+              {
+                  "value": "Red Flag Asianux 7",
+                  "label": "Red Flag Asianux 7"
+              },
+              {
+                  "value": "Red Flag DC 4.1",
+                  "label": "Red Flag DC 4.1"
+              },
+              {
+                  "value": "Red Flag DC 5.0",
+                  "label": "Red Flag DC 5.0"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 3",
+                  "label": "Red Hat Enterprise Linux 3"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 4",
+                  "label": "Red Hat Enterprise Linux 4"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 5",
+                  "label": "Red Hat Enterprise Linux 5"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 6",
+                  "label": "Red Hat Enterprise Linux 6"
+              },
+              {
+                  "value": "Red Hat Enterprise Linux 7",
+                  "label": "Red Hat Enterprise Linux 7"
+              },
+              {
+                  "value": "Red Hat 9",
+                  "label": "Red Hat 9"
+              },
+              {
+                  "value": "NeoKylin 3.2.2",
+                  "label": "NeoKylin 3.2.2"
+              },
+              {
+                  "value": "Neokylin Linux Server 5.4",
+                  "label": "Neokylin Linux Server 5.4"
+              },
+              {
+                  "value": "Neokylin Linux Server 5.6",
+                  "label": "Neokylin Linux Server 5.6"
+              },
+              {
+                  "value": "Neokylin Linux Server 6.0",
+                  "label": "Neokylin Linux Server 6.0"
+              },
+              {
+                  "value": "NeoKylin Desktop 7.0",
+                  "label": "NeoKylin Desktop 7.0"
+              },
+              {
+                  "value": "NeoKylin 7(loongson)",
+                  "label": "NeoKylin 7(loongson)"
+              },
+              {
+                  "value": "NeoKylin 6(loongson)",
+                  "label": "NeoKylin 6(loongson)"
+              },
+              {
+                  "value": "普华 3.0(loongson)",
+                  "label": "普华 3.0(loongson)"
+              },
+              {
+                  "value": "普华 4.0",
+                  "label": "普华 4.0"
+              },
+              {
+                  "value": "普华 5.0",
+                  "label": "普华 5.0"
+              },
+              {
+                  "value": "普华 5.0(loongson)",
+                  "label": "普华 5.0(loongson)"
+              },
+              {
+                  "value": "NeoKylin 4 (FT)",
+                  "label": "NeoKylin 4 (FT)"
+              },
+              {
+                  "value": "Kylin 4.02 (FT1500)",
+                  "label": "Kylin 4.02 (FT1500)"
+              },
+              {
+                  "value": "Kylin 4.02",
+                  "label": "Kylin 4.02"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 4",
+                  "label": "Oracle Enterprise Linux 4"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 5",
+                  "label": "Oracle Enterprise Linux 5"
+              },
+              {
+                  "value": "Oracle Enterprise Linux 6",
+                  "label": "Oracle Enterprise Linux 6"
+              },
+              {
+                  "value": "CentOS 3",
+                  "label": "CentOS 3"
+              },
+              {
+                  "value": "CentOS 4",
+                  "label": "CentOS 4"
+              },
+              {
+                  "value": "CentOS 5",
+                  "label": "CentOS 5"
+              },
+              {
+                  "value": "CentOS 6",
+                  "label": "CentOS 6"
+              },
+              {
+                  "value": "CentOS 7",
+                  "label": "CentOS 7"
+              },
+              {
+                  "value": "SUSE 11.4",
+                  "label": "SUSE 11.4"
+              },
+              {
+                  "value": "Solaris SPARC 9",
+                  "label": "Solaris SPARC 9"
+              },
+              {
+                  "value": "Solaris SPARC 10",
+                  "label": "Solaris SPARC 10"
+              },
+              {
+                  "value": "Solaris SPARC 11",
+                  "label": "Solaris SPARC 11"
+              },
+              {
+                  "value": "Solaris 9",
+                  "label": "Solaris 9"
+              },
+              {
+                  "value": "Solaris 10",
+                  "label": "Solaris 10"
+              },
+              {
+                  "value": "Solaris 11",
+                  "label": "Solaris 11"
+              },
+              {
+                  "value": "AIX 5.1",
+                  "label": "AIX 5.1"
+              },
+              {
+                  "value": "AIX 5.2",
+                  "label": "AIX 5.2"
+              },
+              {
+                  "value": "AIX 5.3",
+                  "label": "AIX 5.3"
+              },
+              {
+                  "value": "AIX 6.1",
+                  "label": "AIX 6.1"
+              },
+              {
+                  "value": "AIX 7.1",
+                  "label": "AIX 7.1"
+              },
+              {
+                  "value": "HP-UX",
+                  "label": "HP-UX"
+              },
+              {
+                  "value": "HP-UX 11.11",
+                  "label": "HP-UX 11.11"
+              },
+              {
+                  "value": "HP-UX 11.23",
+                  "label": "HP-UX 11.23"
+              },
+              {
+                  "value": "HP-UX 11.31",
+                  "label": "HP-UX 11.31"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 60,
+          "name": "Master DB",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "无",
+                  "label": "无"
+              },
+              {
+                  "value": "OS",
+                  "label": "OS"
+              },
+              {
+                  "value": "Oracle 8i",
+                  "label": "Oracle 8i"
+              },
+              {
+                  "value": "Oracle 9i",
+                  "label": "Oracle 9i"
+              },
+              {
+                  "value": "Oracle 10g",
+                  "label": "Oracle 10g"
+              },
+              {
+                  "value": "Oracle 11g",
+                  "label": "Oracle 11g"
+              },
+              {
+                  "value": "Oracle 12c",
+                  "label": "Oracle 12c"
+              },
+              {
+                  "value": "SQL Server 2000",
+                  "label": "SQL Server 2000"
+              },
+              {
+                  "value": "SQL Server 2005",
+                  "label": "SQL Server 2005"
+              },
+              {
+                  "value": "SQL Server 2008",
+                  "label": "SQL Server 2008"
+              },
+              {
+                  "value": "SQL Server 2012",
+                  "label": "SQL Server 2012"
+              },
+              {
+                  "value": "SQL Server 2014",
+                  "label": "SQL Server 2014"
+              },
+              {
+                  "value": "SQL Server 2016",
+                  "label": "SQL Server 2016"
+              },
+              {
+                  "value": "MySQL 4",
+                  "label": "MySQL 4"
+              },
+              {
+                  "value": "MySQL 5",
+                  "label": "MySQL 5"
+              },
+              {
+                  "value": "MySQL 6",
+                  "label": "MySQL 6"
+              },
+              {
+                  "value": "MySQL 8",
+                  "label": "MySQL 8"
+              },
+              {
+                  "value": "Mariadb 10.0",
+                  "label": "Mariadb 10.0"
+              },
+              {
+                  "value": "Mariadb 10.1",
+                  "label": "Mariadb 10.1"
+              },
+              {
+                  "value": "DB2 9.1",
+                  "label": "DB2 9.1"
+              },
+              {
+                  "value": "DB2 9.5",
+                  "label": "DB2 9.5"
+              },
+              {
+                  "value": "DB2 9.7",
+                  "label": "DB2 9.7"
+              },
+              {
+                  "value": "DB2 10.1",
+                  "label": "DB2 10.1"
+              },
+              {
+                  "value": "DB2 10.5",
+                  "label": "DB2 10.5"
+              },
+              {
+                  "value": "DB2 11.1",
+                  "label": "DB2 11.1"
+              },
+              {
+                  "value": "Informix 11.5",
+                  "label": "Informix 11.5"
+              },
+              {
+                  "value": "Informix 11.7",
+                  "label": "Informix 11.7"
+              },
+              {
+                  "value": "Informix 12.0",
+                  "label": "Informix 12.0"
+              },
+              {
+                  "value": "Sybase 12.5",
+                  "label": "Sybase 12.5"
+              },
+              {
+                  "value": "Sybase 15.7",
+                  "label": "Sybase 15.7"
+              },
+              {
+                  "value": "Sybase 16.0",
+                  "label": "Sybase 16.0"
+              },
+              {
+                  "value": "PostgreSQL 8.1",
+                  "label": "PostgreSQL 8.1"
+              },
+              {
+                  "value": "PostgreSQL 8.4",
+                  "label": "PostgreSQL 8.4"
+              },
+              {
+                  "value": "PostgreSQL 9.2",
+                  "label": "PostgreSQL 9.2"
+              },
+              {
+                  "value": "PostgreSQL 9.3",
+                  "label": "PostgreSQL 9.3"
+              },
+              {
+                  "value": "PostgreSQL 9.4",
+                  "label": "PostgreSQL 9.4"
+              },
+              {
+                  "value": "MongoDB 2.2",
+                  "label": "MongoDB 2.2"
+              },
+              {
+                  "value": "MongoDB 2.4",
+                  "label": "MongoDB 2.4"
+              },
+              {
+                  "value": "MongoDB 2.6",
+                  "label": "MongoDB 2.6"
+              },
+              {
+                  "value": "MongoDB 3.0",
+                  "label": "MongoDB 3.0"
+              },
+              {
+                  "value": "MongoDB 3.2",
+                  "label": "MongoDB 3.2"
+              },
+              {
+                  "value": "DM 6.0",
+                  "label": "DM 6.0"
+              },
+              {
+                  "value": "DM 7.1",
+                  "label": "DM 7.1"
+              },
+              {
+                  "value": "Kingbase 7.1",
+                  "label": "Kingbase 7.1"
+              },
+              {
+                  "value": "Kingbase 8.0",
+                  "label": "Kingbase 8.0"
+              },
+              {
+                  "value": "ShenTong 7.0",
+                  "label": "ShenTong 7.0"
+              },
+              {
+                  "value": "GBase 8a",
+                  "label": "GBase 8a"
+              },
+              {
+                  "value": "GBase 8t",
+                  "label": "GBase 8t"
+              },
+              {
+                  "value": "GBase 8s",
+                  "label": "GBase 8s"
+              },
+              {
+                  "value": "Domino 7.0",
+                  "label": "Domino 7.0"
+              },
+              {
+                  "value": "Domino 8.5",
+                  "label": "Domino 8.5"
+              },
+              {
+                  "value": "Domino 9.0",
+                  "label": "Domino 9.0"
+              },
+              {
+                  "value": "Exchange 2000 SP3",
+                  "label": "Exchange 2000 SP3"
+              },
+              {
+                  "value": "Exchange 2003",
+                  "label": "Exchange 2003"
+              },
+              {
+                  "value": "Exchange 2007",
+                  "label": "Exchange 2007"
+              },
+              {
+                  "value": "Exchange 2010",
+                  "label": "Exchange 2010"
+              },
+              {
+                  "value": "Exchange 2013",
+                  "label": "Exchange 2013"
+              },
+              {
+                  "value": "SharePoint 2010",
+                  "label": "SharePoint 2010"
+              },
+              {
+                  "value": "SharePoint 2013",
+                  "label": "SharePoint 2013"
+              },
+              {
+                  "value": "SharePoint 2016",
+                  "label": "SharePoint 2016"
+              },
+              {
+                  "value": "Active Directory",
+                  "label": "Active Directory"
+              },
+              {
+                  "value": "Files",
+                  "label": "Files"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 61,
+          "name": "Standby DB",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "无",
+                  "label": "无"
+              },
+              {
+                  "value": "OS",
+                  "label": "OS"
+              },
+              {
+                  "value": "Oracle 8i",
+                  "label": "Oracle 8i"
+              },
+              {
+                  "value": "Oracle 9i",
+                  "label": "Oracle 9i"
+              },
+              {
+                  "value": "Oracle 10g",
+                  "label": "Oracle 10g"
+              },
+              {
+                  "value": "Oracle 11g",
+                  "label": "Oracle 11g"
+              },
+              {
+                  "value": "Oracle 12c",
+                  "label": "Oracle 12c"
+              },
+              {
+                  "value": "SQL Server 2000",
+                  "label": "SQL Server 2000"
+              },
+              {
+                  "value": "SQL Server 2005",
+                  "label": "SQL Server 2005"
+              },
+              {
+                  "value": "SQL Server 2008",
+                  "label": "SQL Server 2008"
+              },
+              {
+                  "value": "SQL Server 2012",
+                  "label": "SQL Server 2012"
+              },
+              {
+                  "value": "SQL Server 2014",
+                  "label": "SQL Server 2014"
+              },
+              {
+                  "value": "SQL Server 2016",
+                  "label": "SQL Server 2016"
+              },
+              {
+                  "value": "MySQL 4",
+                  "label": "MySQL 4"
+              },
+              {
+                  "value": "MySQL 5",
+                  "label": "MySQL 5"
+              },
+              {
+                  "value": "MySQL 6",
+                  "label": "MySQL 6"
+              },
+              {
+                  "value": "MySQL 8",
+                  "label": "MySQL 8"
+              },
+              {
+                  "value": "Mariadb 10.0",
+                  "label": "Mariadb 10.0"
+              },
+              {
+                  "value": "Mariadb 10.1",
+                  "label": "Mariadb 10.1"
+              },
+              {
+                  "value": "DB2 9.1",
+                  "label": "DB2 9.1"
+              },
+              {
+                  "value": "DB2 9.5",
+                  "label": "DB2 9.5"
+              },
+              {
+                  "value": "DB2 9.7",
+                  "label": "DB2 9.7"
+              },
+              {
+                  "value": "DB2 10.1",
+                  "label": "DB2 10.1"
+              },
+              {
+                  "value": "DB2 10.5",
+                  "label": "DB2 10.5"
+              },
+              {
+                  "value": "DB2 11.1",
+                  "label": "DB2 11.1"
+              },
+              {
+                  "value": "Informix 11.5",
+                  "label": "Informix 11.5"
+              },
+              {
+                  "value": "Informix 11.7",
+                  "label": "Informix 11.7"
+              },
+              {
+                  "value": "Informix 12.0",
+                  "label": "Informix 12.0"
+              },
+              {
+                  "value": "Sybase 12.5",
+                  "label": "Sybase 12.5"
+              },
+              {
+                  "value": "Sybase 15.7",
+                  "label": "Sybase 15.7"
+              },
+              {
+                  "value": "Sybase 16.0",
+                  "label": "Sybase 16.0"
+              },
+              {
+                  "value": "PostgreSQL 8.1",
+                  "label": "PostgreSQL 8.1"
+              },
+              {
+                  "value": "PostgreSQL 8.4",
+                  "label": "PostgreSQL 8.4"
+              },
+              {
+                  "value": "PostgreSQL 9.2",
+                  "label": "PostgreSQL 9.2"
+              },
+              {
+                  "value": "PostgreSQL 9.3",
+                  "label": "PostgreSQL 9.3"
+              },
+              {
+                  "value": "PostgreSQL 9.4",
+                  "label": "PostgreSQL 9.4"
+              },
+              {
+                  "value": "MongoDB 2.2",
+                  "label": "MongoDB 2.2"
+              },
+              {
+                  "value": "MongoDB 2.4",
+                  "label": "MongoDB 2.4"
+              },
+              {
+                  "value": "MongoDB 2.6",
+                  "label": "MongoDB 2.6"
+              },
+              {
+                  "value": "MongoDB 3.0",
+                  "label": "MongoDB 3.0"
+              },
+              {
+                  "value": "MongoDB 3.2",
+                  "label": "MongoDB 3.2"
+              },
+              {
+                  "value": "DM 6.0",
+                  "label": "DM 6.0"
+              },
+              {
+                  "value": "DM 7.1",
+                  "label": "DM 7.1"
+              },
+              {
+                  "value": "Kingbase 7.1",
+                  "label": "Kingbase 7.1"
+              },
+              {
+                  "value": "Kingbase 8.0",
+                  "label": "Kingbase 8.0"
+              },
+              {
+                  "value": "ShenTong 7.0",
+                  "label": "ShenTong 7.0"
+              },
+              {
+                  "value": "GBase 8a",
+                  "label": "GBase 8a"
+              },
+              {
+                  "value": "GBase 8t",
+                  "label": "GBase 8t"
+              },
+              {
+                  "value": "GBase 8s",
+                  "label": "GBase 8s"
+              },
+              {
+                  "value": "Domino 7.0",
+                  "label": "Domino 7.0"
+              },
+              {
+                  "value": "Domino 8.5",
+                  "label": "Domino 8.5"
+              },
+              {
+                  "value": "Domino 9.0",
+                  "label": "Domino 9.0"
+              },
+              {
+                  "value": "Exchange 2000 SP3",
+                  "label": "Exchange 2000 SP3"
+              },
+              {
+                  "value": "Exchange 2003",
+                  "label": "Exchange 2003"
+              },
+              {
+                  "value": "Exchange 2007",
+                  "label": "Exchange 2007"
+              },
+              {
+                  "value": "Exchange 2010",
+                  "label": "Exchange 2010"
+              },
+              {
+                  "value": "Exchange 2013",
+                  "label": "Exchange 2013"
+              },
+              {
+                  "value": "SharePoint 2010",
+                  "label": "SharePoint 2010"
+              },
+              {
+                  "value": "SharePoint 2013",
+                  "label": "SharePoint 2013"
+              },
+              {
+                  "value": "SharePoint 2016",
+                  "label": "SharePoint 2016"
+              },
+              {
+                  "value": "Active Directory",
+                  "label": "Active Directory"
+              },
+              {
+                  "value": "Files",
+                  "label": "Files"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 62,
+          "name": "产品",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "DBackup",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "DBackup",
+                  "label": "DBackup"
+              },
+              {
+                  "value": "AnBay",
+                  "label": "AnBay"
+              },
+              {
+                  "value": "DRO",
+                  "label": "DRO"
+              },
+              {
+                  "value": "InfoSmper",
+                  "label": "InfoSmper"
+              },
+              {
+                  "value": "InfoSync",
+                  "label": "InfoSync"
+              },
+              {
+                  "value": "InfoStorage DFS",
+                  "label": "InfoStorage DFS"
+              },
+              {
+                  "value": "DistributedDB",
+                  "label": "DistributedDB"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 24,
+                  "name": "IQC"
+              },
+              {
+                  "id": 26,
+                  "name": "Change"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 63,
+          "name": "Module",
+          "description": "所在的功能模块",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "备份",
+                  "label": "备份"
+              },
+              {
+                  "value": "虚拟机管理-备份",
+                  "label": "虚拟机管理-备份"
+              },
+              {
+                  "value": "Windows OS-备份",
+                  "label": "Windows OS-备份"
+              },
+              {
+                  "value": "恢复",
+                  "label": "恢复"
+              },
+              {
+                  "value": "恢复-即时恢复",
+                  "label": "恢复-即时恢复"
+              },
+              {
+                  "value": "挂载",
+                  "label": "挂载"
+              },
+              {
+                  "value": "副本管理",
+                  "label": "副本管理"
+              },
+              {
+                  "value": "虚拟机管理-恢复",
+                  "label": "虚拟机管理-恢复"
+              },
+              {
+                  "value": "Windows OS-恢复",
+                  "label": "Windows OS-恢复"
+              },
+              {
+                  "value": "数据库复制",
+                  "label": "数据库复制"
+              },
+              {
+                  "value": "备份一体机-升级\u0026内核",
+                  "label": "备份一体机-升级\u0026内核"
+              },
+              {
+                  "value": "备份一体机-组件",
+                  "label": "备份一体机-组件"
+              },
+              {
+                  "value": "备份一体机-开源组件",
+                  "label": "备份一体机-开源组件"
+              },
+              {
+                  "value": "备份一体机-ZFS内核",
+                  "label": "备份一体机-ZFS内核"
+              },
+              {
+                  "value": "备份一体机-安全",
+                  "label": "备份一体机-安全"
+              },
+              {
+                  "value": "安装界面",
+                  "label": "安装界面"
+              },
+              {
+                  "value": "功能界面",
+                  "label": "功能界面"
+              },
+              {
+                  "value": "许可证",
+                  "label": "许可证"
+              },
+              {
+                  "value": "向导",
+                  "label": "向导"
+              },
+              {
+                  "value": "概览",
+                  "label": "概览"
+              },
+              {
+                  "value": "作业",
+                  "label": "作业"
+              },
+              {
+                  "value": "历史作业",
+                  "label": "历史作业"
+              },
+              {
+                  "value": "历史",
+                  "label": "历史"
+              },
+              {
+                  "value": "警报-警报",
+                  "label": "警报-警报"
+              },
+              {
+                  "value": "警报-订阅",
+                  "label": "警报-订阅"
+              },
+              {
+                  "value": "警报-日志",
+                  "label": "警报-日志"
+              },
+              {
+                  "value": "存储-存储池",
+                  "label": "存储-存储池"
+              },
+              {
+                  "value": "存储-块设备副本池",
+                  "label": "存储-块设备副本池"
+              },
+              {
+                  "value": "存储-复制作业",
+                  "label": "存储-复制作业"
+              },
+              {
+                  "value": "存储-备份集",
+                  "label": "存储-备份集"
+              },
+              {
+                  "value": "存储-SCSI Target",
+                  "label": "存储-SCSI Target"
+              },
+              {
+                  "value": "存储-磁带库控制器",
+                  "label": "存储-磁带库控制器"
+              },
+              {
+                  "value": "存储-阵列卡",
+                  "label": "存储-阵列卡"
+              },
+              {
+                  "value": "设置",
+                  "label": "设置"
+              },
+              {
+                  "value": "审批",
+                  "label": "审批"
+              },
+              {
+                  "value": "统计",
+                  "label": "统计"
+              },
+              {
+                  "value": "报表",
+                  "label": "报表"
+              },
+              {
+                  "value": "升级",
+                  "label": "升级"
+              },
+              {
+                  "value": "资源",
+                  "label": "资源"
+              },
+              {
+                  "value": "用户",
+                  "label": "用户"
+              },
+              {
+                  "value": "帮助",
+                  "label": "帮助"
+              },
+              {
+                  "value": "高可用",
+                  "label": "高可用"
+              },
+              {
+                  "value": "CDP",
+                  "label": "CDP"
+              },
+              {
+                  "value": "虚拟机管理-注册中心",
+                  "label": "虚拟机管理-注册中心"
+              },
+              {
+                  "value": "虚拟机管理-作业",
+                  "label": "虚拟机管理-作业"
+              },
+              {
+                  "value": "虚拟机管理-虚拟机分组",
+                  "label": "虚拟机管理-虚拟机分组"
+              },
+              {
+                  "value": "虚拟机管理-系统日志",
+                  "label": "虚拟机管理-系统日志"
+              },
+              {
+                  "value": "虚拟机管理-作业日志",
+                  "label": "虚拟机管理-作业日志"
+              },
+              {
+                  "value": "虚拟机管理-挂载点管理",
+                  "label": "虚拟机管理-挂载点管理"
+              },
+              {
+                  "value": "虚拟机管理-项目配置",
+                  "label": "虚拟机管理-项目配置"
+              },
+              {
+                  "value": "虚拟机管理-存储配置",
+                  "label": "虚拟机管理-存储配置"
+              },
+              {
+                  "value": "Windows OS-作业",
+                  "label": "Windows OS-作业"
+              },
+              {
+                  "value": "Windows OS-挂载点管理",
+                  "label": "Windows OS-挂载点管理"
+              },
+              {
+                  "value": "Windows OS-系统日志",
+                  "label": "Windows OS-系统日志"
+              },
+              {
+                  "value": "Windows OS-作业日志",
+                  "label": "Windows OS-作业日志"
+              },
+              {
+                  "value": "审计日志",
+                  "label": "审计日志"
+              },
+              {
+                  "value": "恢复光盘",
+                  "label": "恢复光盘"
+              },
+              {
+                  "value": "安装",
+                  "label": "安装"
+              },
+              {
+                  "value": "卸载",
+                  "label": "卸载"
+              },
+              {
+                  "value": "OEM",
+                  "label": "OEM"
+              },
+              {
+                  "value": "登录",
+                  "label": "登录"
+              },
+              {
+                  "value": "代理端",
+                  "label": "代理端"
+              },
+              {
+                  "value": "备份服务器",
+                  "label": "备份服务器"
+              },
+              {
+                  "value": "存储服务器",
+                  "label": "存储服务器"
+              },
+              {
+                  "value": "集群",
+                  "label": "集群"
+              },
+              {
+                  "value": "其他",
+                  "label": "其他"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 28,
+                  "name": "Regression"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 64,
+          "name": "缺陷类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "功能",
+                  "label": "功能"
+              },
+              {
+                  "value": "安全",
+                  "label": "安全"
+              },
+              {
+                  "value": "性能",
+                  "label": "性能"
+              },
+              {
+                  "value": "接口",
+                  "label": "接口"
+              },
+              {
+                  "value": "界面",
+                  "label": "界面"
+              },
+              {
+                  "value": "环境",
+                  "label": "环境"
+              },
+              {
+                  "value": "自动化",
+                  "label": "自动化"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 66,
+          "name": "(DFS)分支名称",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "test-for-3.0.4.0-1-20190510",
+                  "label": "test-for-3.0.4.0-1-20190510"
+              },
+              {
+                  "value": "test-for-3.0.3.0-1-20180927",
+                  "label": "test-for-3.0.3.0-1-20180927"
+              },
+              {
+                  "value": "develop",
+                  "label": "develop"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 67,
+          "name": "(DFS)Module",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "登录",
+                  "label": "登录"
+              },
+              {
+                  "value": "概览",
+                  "label": "概览"
+              },
+              {
+                  "value": "节点管理",
+                  "label": "节点管理"
+              },
+              {
+                  "value": "磁盘管理",
+                  "label": "磁盘管理"
+              },
+              {
+                  "value": "卷管理",
+                  "label": "卷管理"
+              },
+              {
+                  "value": "用户管理",
+                  "label": "用户管理"
+              },
+              {
+                  "value": "NAS共享",
+                  "label": "NAS共享"
+              },
+              {
+                  "value": "iSCSI共享",
+                  "label": "iSCSI共享"
+              },
+              {
+                  "value": "故障域",
+                  "label": "故障域"
+              },
+              {
+                  "value": "任务列表",
+                  "label": "任务列表"
+              },
+              {
+                  "value": "系统监控",
+                  "label": "系统监控"
+              },
+              {
+                  "value": "日志管理",
+                  "label": "日志管理"
+              },
+              {
+                  "value": "负载均衡",
+                  "label": "负载均衡"
+              },
+              {
+                  "value": "邮箱设置",
+                  "label": "邮箱设置"
+              },
+              {
+                  "value": "AD域配置",
+                  "label": "AD域配置"
+              },
+              {
+                  "value": "时间同步配置",
+                  "label": "时间同步配置"
+              },
+              {
+                  "value": "许可证管理",
+                  "label": "许可证管理"
+              },
+              {
+                  "value": "配置向导",
+                  "label": "配置向导"
+              },
+              {
+                  "value": "界面",
+                  "label": "界面"
+              },
+              {
+                  "value": "集群安装",
+                  "label": "集群安装"
+              },
+              {
+                  "value": "升级",
+                  "label": "升级"
+              },
+              {
+                  "value": "OS相关",
+                  "label": "OS相关"
+              },
+              {
+                  "value": "Gluster文件系统",
+                  "label": "Gluster文件系统"
+              },
+              {
+                  "value": "其他",
+                  "label": "其他"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 68,
+          "name": "变更等级",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "高",
+                  "label": "高"
+              },
+              {
+                  "value": "中",
+                  "label": "中"
+              },
+              {
+                  "value": "低",
+                  "label": "低"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 69,
+          "name": "变更来源类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "业务需求",
+                  "label": "业务需求"
+              },
+              {
+                  "value": "软件需求",
+                  "label": "软件需求"
+              },
+              {
+                  "value": "计划",
+                  "label": "计划"
+              },
+              {
+                  "value": "设计",
+                  "label": "设计"
+              },
+              {
+                  "value": "研发",
+                  "label": "研发"
+              },
+              {
+                  "value": "缺陷",
+                  "label": "缺陷"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 70,
+          "name": "变更内容",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "text",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 71,
+          "name": "不变更的影响",
+          "description": "主要描述影响的范围、进度、质量、工作量",
+          "customized_type": "issue",
+          "field_format": "text",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 72,
+          "name": "变更的影响",
+          "description": "主要描述影响的范围、进度、质量、工作量",
+          "customized_type": "issue",
+          "field_format": "text",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 73,
+          "name": "变更预计完成时间",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "date",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 74,
+          "name": "变更方案",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "text",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 75,
+          "name": "客户名称",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 76,
+          "name": "咨询方向",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "售后",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "售前",
+                  "label": "售前"
+              },
+              {
+                  "value": "售后",
+                  "label": "售后"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 77,
+          "name": "合同编号",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 78,
+          "name": "机器序列号",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 79,
+          "name": "询问者身份",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "客户",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "客户",
+                  "label": "客户"
+              },
+              {
+                  "value": "经销商",
+                  "label": "经销商"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 80,
+          "name": "软硬件",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "软件",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "软件",
+                  "label": "软件"
+              },
+              {
+                  "value": "硬件",
+                  "label": "硬件"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 81,
+          "name": "是否已回访",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "否",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是",
+                  "label": "是"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 82,
+          "name": "是否回溯",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是，已回溯",
+                  "label": "是，已回溯"
+              },
+              {
+                  "value": "是，未回溯",
+                  "label": "是，未回溯"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [],
+          "roles": []
+      },
+      {
+          "id": 88,
+          "name": "所属产品/项目",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "迪备",
+                  "label": "迪备"
+              },
+              {
+                  "value": "安备",
+                  "label": "安备"
+              },
+              {
+                  "value": "Aurreum",
+                  "label": "Aurreum"
+              },
+              {
+                  "value": "华为一体机",
+                  "label": "华为一体机"
+              },
+              {
+                  "value": "华为BaaS",
+                  "label": "华为BaaS"
+              },
+              {
+                  "value": "OEM",
+                  "label": "OEM"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 90,
+          "name": "实际完成日期",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "date",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 91,
+          "name": "兼容性测试",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是",
+                  "label": "是"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 5,
+                  "name": "Test"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 92,
+          "name": "咨询问题分类",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": false,
+          "multiple": true,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "OEM(InfoDriver)",
+                  "label": "OEM(InfoDriver)"
+              },
+              {
+                  "value": "OEM(DRO)",
+                  "label": "OEM(DRO)"
+              },
+              {
+                  "value": "OEM(InfoCirrus)",
+                  "label": "OEM(InfoCirrus)"
+              },
+              {
+                  "value": "存储池(磁带库)",
+                  "label": "存储池(磁带库)"
+              },
+              {
+                  "value": "存储池(其它)",
+                  "label": "存储池(其它)"
+              },
+              {
+                  "value": "操作系统备份(Linux OS)",
+                  "label": "操作系统备份(Linux OS)"
+              },
+              {
+                  "value": "操作系统备份(Wiindows OS)",
+                  "label": "操作系统备份(Wiindows OS)"
+              },
+              {
+                  "value": "数据库(SQLServer)",
+                  "label": "数据库(SQLServer)"
+              },
+              {
+                  "value": "数据库(Oracle)",
+                  "label": "数据库(Oracle)"
+              },
+              {
+                  "value": "数据库(MySQL)",
+                  "label": "数据库(MySQL)"
+              },
+              {
+                  "value": "文件",
+                  "label": "文件"
+              },
+              {
+                  "value": "用户登录",
+                  "label": "用户登录"
+              },
+              {
+                  "value": "硬件问题",
+                  "label": "硬件问题"
+              },
+              {
+                  "value": "维保咨询",
+                  "label": "维保咨询"
+              },
+              {
+                  "value": "了解功能",
+                  "label": "了解功能"
+              },
+              {
+                  "value": "产品使用",
+                  "label": "产品使用"
+              },
+              {
+                  "value": "安装问题",
+                  "label": "安装问题"
+              },
+              {
+                  "value": "磁盘容量问题",
+                  "label": "磁盘容量问题"
+              },
+              {
+                  "value": "虚拟化",
+                  "label": "虚拟化"
+              },
+              {
+                  "value": "许可证",
+                  "label": "许可证"
+              },
+              {
+                  "value": "警告",
+                  "label": "警告"
+              },
+              {
+                  "value": "其它",
+                  "label": "其它"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 93,
+          "name": "变更方案执行人",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 26,
+                  "name": "Change"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 94,
+          "name": "问题出现所处环境",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "客户环境",
+                  "label": "客户环境"
+              },
+              {
+                  "value": "POC环境",
+                  "label": "POC环境"
+              },
+              {
+                  "value": "内部测试环境",
+                  "label": "内部测试环境"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 95,
+          "name": "dbackup-server 版本",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 96,
+          "name": "联系人电话",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 27,
+                  "name": "Contact"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 97,
+          "name": "联系人姓名",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 27,
+                  "name": "Contact"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 98,
+          "name": "所属行政区域",
+          "description": "华东区\r\n东北区\r\n华中区\r\n华南区\r\n西南区\r\n西北区\r\n新区",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 99,
+          "name": "竞品分析",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "爱数",
+                  "label": "爱数"
+              },
+              {
+                  "value": "英方",
+                  "label": "英方"
+              },
+              {
+                  "value": "壹进制",
+                  "label": "壹进制"
+              },
+              {
+                  "value": "Veritas",
+                  "label": "Veritas"
+              },
+              {
+                  "value": "CommVault",
+                  "label": "CommVault"
+              },
+              {
+                  "value": "Veeam",
+                  "label": "Veeam"
+              },
+              {
+                  "value": "Actifio",
+                  "label": "Actifio"
+              },
+              {
+                  "value": "EMC",
+                  "label": "EMC"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 6,
+                  "name": "Task"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 100,
+          "name": "故障级别",
+          "description": "P1:重大的系统故障：现有系统停机,或对用户的业务运作有严重影响无法提供正常服务。\r\nP2:严重的系统故障：现有系统的工作性能严重下降,或由于性能明显下降,对最终用户的业务运作重要影响。\r\nP3:一般系统故障：工作性能受损,但最终用户大部分业务运作仍可正常工作。",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "P3-备份系统部分功能不正常，客户业务正常运行",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "P1-备份系统停机/客户业务无法运行",
+                  "label": "P1-备份系统停机/客户业务无法运行"
+              },
+              {
+                  "value": "P2-备份系统性能下降/影响客户业务运行",
+                  "label": "P2-备份系统性能下降/影响客户业务运行"
+              },
+              {
+                  "value": "P3-备份系统部分功能不正常，客户业务正常运行",
+                  "label": "P3-备份系统部分功能不正常，客户业务正常运行"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 101,
+          "name": "迪备版本",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 18,
+                  "name": "400"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 102,
+          "name": "Agent 架构",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "x86_64",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "x86_64",
+                  "label": "x86_64"
+              },
+              {
+                  "value": "PowerPC",
+                  "label": "PowerPC"
+              },
+              {
+                  "value": "IA64",
+                  "label": "IA64"
+              },
+              {
+                  "value": "PA64",
+                  "label": "PA64"
+              },
+              {
+                  "value": "SPARC64",
+                  "label": "SPARC64"
+              },
+              {
+                  "value": "ARM64",
+                  "label": "ARM64"
+              },
+              {
+                  "value": "龙芯",
+                  "label": "龙芯"
+              },
+              {
+                  "value": "飞腾",
+                  "label": "飞腾"
+              },
+              {
+                  "value": "兆芯",
+                  "label": "兆芯"
+              },
+              {
+                  "value": "x86",
+                  "label": "x86"
+              },
+              {
+                  "value": "申威",
+                  "label": "申威"
+              },
+              {
+                  "value": "鲲鹏",
+                  "label": "鲲鹏"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 103,
+          "name": "合同编号/一体机SN号",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 104,
+          "name": "需求类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "定制（有定制费）",
+                  "label": "定制（有定制费）"
+              },
+              {
+                  "value": "定制（无定制费）",
+                  "label": "定制（无定制费）"
+              },
+              {
+                  "value": "功能优化",
+                  "label": "功能优化"
+              },
+              {
+                  "value": "兼容适配",
+                  "label": "兼容适配"
+              },
+              {
+                  "value": "应对竞品",
+                  "label": "应对竞品"
+              },
+              {
+                  "value": "技术发展趋势",
+                  "label": "技术发展趋势"
+              },
+              {
+                  "value": "其它",
+                  "label": "其它"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 105,
+          "name": "项目阶段",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "测试",
+                  "label": "测试"
+              },
+              {
+                  "value": "招标前",
+                  "label": "招标前"
+              },
+              {
+                  "value": "招标后",
+                  "label": "招标后"
+              },
+              {
+                  "value": "实施前",
+                  "label": "实施前"
+              },
+              {
+                  "value": "实施中",
+                  "label": "实施中"
+              },
+              {
+                  "value": "运维中",
+                  "label": "运维中"
+              },
+              {
+                  "value": "其它",
+                  "label": "其它"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 2,
+                  "name": "Feature"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 106,
+          "name": "指派给(多人)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "user",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": true,
+          "default_value": null,
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 7,
+                  "name": "Review"
+              },
+              {
+                  "id": 17,
+                  "name": "Milestone"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 19,
+                  "name": "Customer"
+              },
+              {
+                  "id": 20,
+                  "name": "Service"
+              },
+              {
+                  "id": 21,
+                  "name": "Delivery"
+              },
+              {
+                  "id": 22,
+                  "name": "POC"
+              },
+              {
+                  "id": 23,
+                  "name": "Presale"
+              },
+              {
+                  "id": 24,
+                  "name": "IQC"
+              },
+              {
+                  "id": 26,
+                  "name": "Change"
+              },
+              {
+                  "id": 27,
+                  "name": "Contact"
+              },
+              {
+                  "id": 28,
+                  "name": "Regression"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 107,
+          "name": "租户名称",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 111,
+          "name": "备份服务器平台",
+          "description": "\r\n",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "普通",
+                  "label": "普通"
+              },
+              {
+                  "value": "信创",
+                  "label": "信创"
+              },
+              {
+                  "value": "专用机",
+                  "label": "专用机"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 2,
+                  "name": "Feature"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 112,
+          "name": "所属销售区域",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "北区",
+                  "label": "北区"
+              },
+              {
+                  "value": "华东区",
+                  "label": "华东区"
+              },
+              {
+                  "value": "华南区",
+                  "label": "华南区"
+              },
+              {
+                  "value": "华中区",
+                  "label": "华中区"
+              },
+              {
+                  "value": "西南区",
+                  "label": "西南区"
+              },
+              {
+                  "value": "华北区",
+                  "label": "华北区"
+              },
+              {
+                  "value": "东北区",
+                  "label": "东北区"
+              },
+              {
+                  "value": "西北区",
+                  "label": "西北区"
+              },
+              {
+                  "value": "其它",
+                  "label": "其它"
+              }
+          ],
+          "trackers": [],
+          "roles": []
+      },
+      {
+          "id": 113,
+          "name": "对应销售人员姓名",
+          "description": "请填写涉及销售同事姓名",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 114,
+          "name": "Backupd OS(现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 115,
+          "name": "Backupd version(现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 116,
+          "name": "Agent OS(现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 118,
+          "name": "Data (现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 119,
+          "name": "Data version(现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 120,
+          "name": "dbackup-server 版本(现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 122,
+          "name": "虚拟化平台(现场)",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 123,
+          "name": "问题发生时间(年/月/日/时/分）",
+          "description": "尽可能精确",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 125,
+          "name": "autotest",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "否",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是",
+                  "label": "是"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 127,
+          "name": "测试任务类型",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "功能新增",
+                  "label": "功能新增"
+              },
+              {
+                  "value": "UI 优化",
+                  "label": "UI 优化"
+              },
+              {
+                  "value": "项目需求",
+                  "label": "项目需求"
+              },
+              {
+                  "value": "项目问题",
+                  "label": "项目问题"
+              },
+              {
+                  "value": "性能测试",
+                  "label": "性能测试"
+              },
+              {
+                  "value": "性能优化",
+                  "label": "性能优化"
+              },
+              {
+                  "value": "安全需求",
+                  "label": "安全需求"
+              },
+              {
+                  "value": "最佳实践",
+                  "label": "最佳实践"
+              },
+              {
+                  "value": "自动化",
+                  "label": "自动化"
+              },
+              {
+                  "value": "适配",
+                  "label": "适配"
+              },
+              {
+                  "value": "认证",
+                  "label": "认证"
+              },
+              {
+                  "value": "重构",
+                  "label": "重构"
+              },
+              {
+                  "value": "文档",
+                  "label": "文档"
+              },
+              {
+                  "value": "升级回归",
+                  "label": "升级回归"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 5,
+                  "name": "Test"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 128,
+          "name": "项目名称",
+          "description": "请填写公司名或项目名，如鼎甲、长沙政务云",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 129,
+          "name": "项目-阶段",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "测试",
+                  "label": "测试"
+              },
+              {
+                  "value": "实施（不影响验收）",
+                  "label": "实施（不影响验收）"
+              },
+              {
+                  "value": "实施（影响验收）",
+                  "label": "实施（影响验收）"
+              },
+              {
+                  "value": "扩容",
+                  "label": "扩容"
+              },
+              {
+                  "value": "运维",
+                  "label": "运维"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 133,
+          "name": "涉及平台",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "普通",
+                  "label": "普通"
+              },
+              {
+                  "value": "信创",
+                  "label": "信创"
+              },
+              {
+                  "value": "涉密",
+                  "label": "涉密"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 134,
+          "name": "鼎甲现有客户",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是",
+                  "label": "是"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 135,
+          "name": "迪备后台数据库",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "SQLite3",
+                  "label": "SQLite3"
+              },
+              {
+                  "value": "MySQL",
+                  "label": "MySQL"
+              },
+              {
+                  "value": "MariaDB",
+                  "label": "MariaDB"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 136,
+          "name": "是否重大缺陷(通报)",
+          "description": "识别出重大问题，请主动标记，便于评估是否进行通报。",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": true,
+          "multiple": false,
+          "default_value": "否",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是",
+                  "label": "是"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 137,
+          "name": "进度说明",
+          "description": "备注/总结/现状说明",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 138,
+          "name": "是否升级质控/研发",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": true,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "是",
+                  "label": "是"
+              },
+              {
+                  "value": "否",
+                  "label": "否"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 139,
+          "name": "所属行政区域 ",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "list",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": true,
+          "is_filter": true,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "possible_values": [
+              {
+                  "value": "北区",
+                  "label": "北区"
+              },
+              {
+                  "value": "华东区",
+                  "label": "华东区"
+              },
+              {
+                  "value": "华南区",
+                  "label": "华南区"
+              },
+              {
+                  "value": "华中区",
+                  "label": "华中区"
+              },
+              {
+                  "value": "西南区",
+                  "label": "西南区"
+              },
+              {
+                  "value": "华北区",
+                  "label": "华北区"
+              },
+              {
+                  "value": "东北区",
+                  "label": "东北区"
+              },
+              {
+                  "value": "西北区",
+                  "label": "西北区"
+              },
+              {
+                  "value": "运营商",
+                  "label": "运营商"
+              },
+              {
+                  "value": "ICT",
+                  "label": "ICT"
+              }
+          ],
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 2,
+                  "name": "Feature"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 5,
+                  "name": "Test"
+              },
+              {
+                  "id": 6,
+                  "name": "Task"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 29,
+                  "name": "Requirement"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      },
+      {
+          "id": 140,
+          "name": "根因分析",
+          "description": "",
+          "customized_type": "issue",
+          "field_format": "string",
+          "regexp": "",
+          "min_length": null,
+          "max_length": null,
+          "is_required": false,
+          "is_filter": false,
+          "searchable": false,
+          "multiple": false,
+          "default_value": "",
+          "visible": true,
+          "trackers": [
+              {
+                  "id": 1,
+                  "name": "Bug"
+              },
+              {
+                  "id": 3,
+                  "name": "Support"
+              },
+              {
+                  "id": 18,
+                  "name": "400"
+              },
+              {
+                  "id": 30,
+                  "name": "Fault"
+              }
+          ],
+          "roles": []
+      }
+  ]
+}

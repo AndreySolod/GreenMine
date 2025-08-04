@@ -4,7 +4,7 @@ from app import db, logger
 import json
 import app.models as models
 from app.controllers.networks import bp
-from app.helpers.general_helpers import get_bootstrap_table_json_data, bootstrap_table_argument_parsing
+from app.helpers.general_helpers import get_bootstrap_table_json_data, bootstrap_table_argument_parsing, get_complementary_color
 from flask import abort, request, jsonify, current_app
 from flask_login import current_user
 from app.helpers.roles import project_role_can_make_action_or_abort
@@ -245,10 +245,14 @@ def add_hosts_to_network_graph():
             new_node["color"] = current_user.theme_style.compromised_host_color
             if host.operation_system_family and host.operation_system_family.icon:
                 new_node["icon"]["color"] = current_user.theme_style.compromised_host_color
+            else:
+                new_node["font"] = {"color": get_complementary_color(current_user.theme_style.compromised_host_color)}
         else:
             new_node["color"] = current_user.theme_style.normal_host_color
             if host.operation_system_family and host.operation_system_family.icon:
                 new_node["icon"]["color"] = current_user.theme_style.normal_host_color
+            else:
+                new_node["font"] = {"color": get_complementary_color(current_user.theme_style.normal_host_color)}
         nodes.append(new_node)
         edges.append({'from': 'network_' + str(network.id), 'to': 'host_' + str(host.id)})
         for iface in host.interfaces:
@@ -272,7 +276,8 @@ def add_services_to_network_graph():
     edges = []
     for service in host.services:
         service_title = str(service.port) + ": " + service.title if service.title else str(service.port)
-        nodes.append({'id': 'service_' + str(service.id), 'label': service_title, 'color': current_user.theme_style.service_on_graph_color})
+        nodes.append({'id': 'service_' + str(service.id), 'label': service_title, 'color': current_user.theme_style.service_on_graph_color,
+                      "font": {"color": get_complementary_color(current_user.theme_style.service_on_graph_color)}})
         edges.append({'from': 'host_' + str(host.id), 'to': 'service_' + str(service.id)})
         for accessible_host in service.accessible_from_hosts:
             edges.append({'from': 'host_' + str(accessible_host.id), 'to': 'service_' + str(service.id), 'arrows': 'to'})

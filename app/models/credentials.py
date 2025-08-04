@@ -3,14 +3,14 @@ from app.helpers.general_helpers import default_string_slug, utcnow
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
 from app.models.datatypes import LimitedLengthString
 from .generic import HasComment, HasHistory
-from typing import List, Set, Optional
+from typing import Set, Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm.session import Session as SessionBase
-from sqlalchemy import event
 import datetime
 import wtforms
 from flask_babel import lazy_gettext as _l
+from flask import current_app
 
 
 class HashTypeHasPrototype(db.Model):
@@ -119,6 +119,17 @@ class Credential(HasComment, db.Model, HasHistory):
     @property
     def service_list_as_text(self):
         return '\n'.join([i.shorttitle for i in self.services])
+    
+    @property
+    def received_from_as_text(self):
+        try:
+            m2m_max_items = current_app.config['GlobalSettings'].m2m_max_items
+        except (KeyError, RuntimeError):
+            m2m_max_items = 7
+        received_from =  ";<br>\n".join([str(i.ip_address) for i in list(self.received_from)[:m2m_max_items:]])
+        if len(self.received_from) > m2m_max_items:
+            received_from += ";<br>\n" + str(_l('Total: %(total)s elements', total=len(self.received_from)))
+        return received_from
 
     class Meta:
         verbose_name = _l("Credential")

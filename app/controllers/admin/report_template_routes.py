@@ -16,7 +16,7 @@ from app import logger
 @bp.route('/report_templates/index')
 def report_template_index():
     templates = db.session.scalars(sa.select(models.ProjectReportTemplate)).all()
-    ctx = DefaultEnvironment('report_template_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     return render_template('report_templates/admin_index.html', **ctx, templates=templates)
 
@@ -41,7 +41,7 @@ def report_template_new():
     elif request.method == 'GET':
         form.load_default_data(db.session, models.ProjectReportTemplate)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('report_template_new')()
+    ctx = DefaultEnvironment()()
     return render_template('report_templates/admin_new.html', **ctx, form=form)
 
 
@@ -52,7 +52,7 @@ def report_template_show(template_id: str):
         template = db.session.scalars(sa.select(models.ProjectReportTemplate).where(models.ProjectReportTemplate.id == template_id)).one()
     except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
         abort(400)
-    ctx = DefaultEnvironment('report_template_show', template)()
+    ctx = DefaultEnvironment(template)()
     context = {'template': template}
     return render_template('report_templates/admin_show.html', **ctx, **context)
 
@@ -82,7 +82,7 @@ def report_template_edit(template_id: str):
     elif request.method == 'GET':
         form.load_exist_value(templ)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('report_template_edit', templ)()
+    ctx = DefaultEnvironment(templ)()
     return render_template('report_templates/admin_edit.html', **ctx, form=form)
 
 

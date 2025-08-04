@@ -49,7 +49,7 @@ def background_tasks_index():
                 except (exc.MultipleResultsFound, exc.NoResultFound):
                     running_user = _l("Deleted user")
                 all_tasks[worker_name].append({'id': t['id'],'title': task.title, 'description': task.description, 'status': lazy_pgettext("she", "Reserver"), 'running_user': running_user})
-    ctx = DefaultEnvironment('background_tasks_index')()
+    ctx = DefaultEnvironment()()
 
     side_libraries.library_required('bootstrap_table')
     return render_template('admin/background_tasks_index.html', **ctx, all_tasks=all_tasks)
@@ -58,6 +58,6 @@ def background_tasks_index():
 @bp.route('/background-tasks/options/index')
 def background_tasks_options_index():
     all_modules = automation_modules.action_modules
-    ctx = DefaultEnvironment('background_tasks_options_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     return render_template('admin/background_tasks_options_index.html', **ctx, action_modules=all_modules)

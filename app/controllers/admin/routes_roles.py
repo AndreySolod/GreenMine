@@ -15,7 +15,7 @@ from flask_login import current_user
 @bp.route('/project_roles/index')
 def project_role_index():
     project_roles = db.session.scalars(sa.select(models.ProjectRole)).all()
-    ctx = DefaultEnvironment('project_role_index')()
+    ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
     return render_template('admin/project_role_index.html', **ctx, project_roles=project_roles)
@@ -35,7 +35,7 @@ def project_role_new():
     elif request.method == 'GET':
         form.load_default_data(db.session, models.ProjectRole)
         form.load_data_from_json(request.args)
-    ctx = DefaultEnvironment('project_role_new')()
+    ctx = DefaultEnvironment()()
     context = {'form': form}
     return render_template('admin/project_role_new.html', **ctx, **context)
 
@@ -60,7 +60,7 @@ def project_role_edit(role_id):
         return redirect(url_for('admin.project_role_index'))
     elif request.method == 'GET':
         form.load_exist_value(pr)
-    ctx = DefaultEnvironment('project_role_edit', pr)()
+    ctx = DefaultEnvironment(pr)()
     context = {'form': form}
     return render_template('admin/project_role_edit.html', **ctx, **context)
 
@@ -104,6 +104,6 @@ def project_role_permissions():
             role_permissions[o][a] = {}
             for r in all_roles:
                 role_permissions[o][a][r] = getattr(form, 'role_' + str(r.id) + '____' + o.__name__ + '____' + a)
-    ctx = DefaultEnvironment('project_role_permissions')()
+    ctx = DefaultEnvironment()()
     context = {'form': form, 'objs': get_all_project_objects(), 'roles': all_roles, 'role_permissions': role_permissions}
     return render_template('admin/role_permissions.html', **ctx, **context)
