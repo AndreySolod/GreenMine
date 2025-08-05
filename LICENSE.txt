@@ -1,16 +1,13 @@
-MIT License
-
 Copyright (c) 2025 NekiyUser / GreenMine
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+ of this software and associated documentation files (the "Software"), to 
+ non-commerce deal in the Software, including without limitation the rights to 
+ use, copy, modify, merge, publish, distribute, and to permit persons to whom 
+ the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in 
+all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -20,7 +17,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+For commercial use, please contact the author.
+
 Installed plugins:
-- Material-Kanban-Board (https://github.com/McRange/Material-Kanban-Board): MIT
-- JQuery-contextMenu (https://github.com/swisnl/jQuery-contextMenu): MIT
-- bootstrap-table (https://github.com/wenzhixin/bootstrap-table): MIT
+- Material-Kanban-Board (https://github.com/McRange/Material-Kanban-Board): MIT License
+- JQuery-contextMenu (https://github.com/swisnl/jQuery-contextMenu): MIT License
+- bootstrap-table (https://github.com/wenzhixin/bootstrap-table): MIT License
+- bootstrap-table-filter-control (https://github.com/wenzhixin/bootstrap-table-filter-control): MIT License
+- bootstrap-table-export (https://github.com/wenzhixin/bootstrap-table-export): MIT License
+- ace (https://github.com/ajaxorg/ace): BSD-3-Clause
+- ckeditor5 (https://ckeditor.com/): GPL2+ License
+- highlight.js (https://highlightjs.org/): BSD-3-Clause
+- bootstrap5 (https://getbootstrap.com/): MIT License
+- jQuery (https://jquery.com/): MIT
+- jQuery UI (https://jqueryui.com/): MIT License
+- Font Awesome (https://fontawesome.com/): Font Awesome Free License (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+- js-fileexplorer (https://github.com/cubiclesoft/js-fileexplorer) - MIT License
+- jstree (https://www.jstree.com/) - MIT License
+- notifyjs (https://github.com/jpillora/notifyjs) - MIT License
+- onoffcanvas (https://github.com/onokumus/onoffcanvas#readme) - MIT License
+- select2 (https://github.com/select2/select2) - MIT License
+- pickr (https://github.com/simonwep/pickr) - MIT License
+- range-slider (https://github.com/agrinko/range-slider.git) - MIT License
+- simple-scrollbar (https://github.com/buzinas/simple-scrollbar) - MIT License
+- treeselectjs (https://github.com/dipson88/treeselectjs) - MIT License
+- unifyMenu (https://github.com/onokumus/metismenu) - MIT License
+- socketio (https://github.com/socketio/socket.io) - MIT License
+- contextmenu (http://swisnl.github.io/jQuery-contextMenu/) - MIT License
+- chartjs (https://github.com/chartjs/Chart.js) - MIT License
+- visjs (https://github.com/visjs/vis-network) - MIT License

@@ -21,9 +21,7 @@ from app.extensions.side_libraries import SideLibraries
 from app.extensions.security import PasswordPolicyManager
 from flask_socketio import SocketIO
 from app.action_modules import AutomationModules
-from multiprocessing import Process
-import atexit
-import werkzeug
+import werkzeug.exceptions
 from pathlib import Path
 from typing import Optional
 import logging
@@ -218,7 +216,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     
     # Error handlers:
     if not app.debug:
-        @app.errorhandler(500)
+        @app.errorhandler(werkzeug.exceptions.InternalServerError)
         def internal_error(error):
             db.session.rollback()
             db.technical_session.rollback()

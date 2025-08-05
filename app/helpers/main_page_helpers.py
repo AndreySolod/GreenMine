@@ -5,11 +5,12 @@ from flask_login import current_user
 from .general_helpers import SidebarElement, SidebarElementSublink
 from app.helpers.general_helpers import CurrentObjectAction, CurrentObjectInfo
 from flask_babel import lazy_gettext as _l
+import importlib
 
 
 class DefaultSidebar:
     def __init__(self, obj: str, act: str):
-        from app.helpers.roles import user_position_can_make_action
+        user_position_can_make_action = importlib.import_module('app.helpers.roles').user_position_can_make_action
         ses = []
         sel11 = SidebarElementSublink(_l("Home page"), url_for('main_page.main_page'), obj=='main_page' and act=='show')
         se1 = SidebarElement(_l("Home page"), url_for('main_page.main_page'), "fa fa-home", obj=='main_page', [sel11])
@@ -80,7 +81,7 @@ class DefaultSidebar:
 
 class DefaultEnvironment:
     def __init__(self, obj: str, op: str, **kwargs):
-        from app.helpers.roles import user_position_can_make_action
+        user_position_can_make_action = importlib.import_module('app.helpers.roles').user_position_can_make_action
         acts = []
         # Title page
         if obj == 'main_page' and op == 'show':

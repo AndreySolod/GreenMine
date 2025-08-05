@@ -40,13 +40,12 @@ class ProjectForm(FlaskForm):
 class ProjectFormCreate(ProjectForm):
     def __init__(self, *args, **kwargs):
         super(ProjectFormCreate, self).__init__(*args, **kwargs)
-        self.leader.data = str(current_user.id)
         self.teams.choices = [(t.id, t) for t in db.session.scalars(sa.select(models.Team)).all()]
     teams = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Team.Meta.verbose_name_plural), validators=[validators.Optional()])
     submit = wtforms.SubmitField(_l("Create"))
 
 
-class EditProjectForm(ProjectForm):
+class ProjectFormEdit(ProjectForm):
     submit = wtforms.SubmitField(_l("Save"))
 
 

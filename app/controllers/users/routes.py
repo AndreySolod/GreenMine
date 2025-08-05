@@ -100,9 +100,7 @@ def user_edit(user_id):
     if form.validate_on_submit():
         form.populate_obj(db.session, user)
         if form.avatar.data:
-            if user.avatar is not None:
-                db.session.delete(user.avatar)
-                db.session.commit()
+            old_avatar_id = user.avatar_id
             avatar = FileData()
             filename = secure_filename(form.avatar.data.filename)
             avatar.title = filename
@@ -110,11 +108,13 @@ def user_edit(user_id):
             avatar.description = str(_l("Avatar for %(login)s", login=user.login))
             avatar.data = request.files[form.avatar.name].read()
             db.session.add(avatar)
-            db.session.commit()
             user.avatar = avatar
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit user #{user.id}")
         flash(_l("User «%(title)s» successfully changed", title=user.title), 'success')
         db.session.commit()
+        if old_avatar_id is not None:
+            db.session.execute(sa.delete(FileData).where(FileData.id == old_avatar_id)).rowcount
+            db.session.commit()
         return redirect(url_for('users.user_show', user_id=user.id))
     elif request.method == "GET":
         form.load_exist_value(user)

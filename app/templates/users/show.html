@@ -33,7 +33,11 @@
               </tr>
               <tr>
                 <td>{{ models.User.manager.info["label"] }}:</td>
+                {% if user.manager == none %}
+                <td><a href="#">{{ _("No manager") }}</a></td>
+                {% else %}
                 <td><a href="{{ url_for('users.user_show', user_id=user.manager.id) }}">{{ user.manager.title|safe }}</a></td>
+                {% endif %}
               </tr>
               {% if roles.has_user_role([roles.UserHimself], user) %}
               <tr>

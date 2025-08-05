@@ -22,6 +22,7 @@ cli.register(app)
 
 
 def create_gunicorn_app():
+    logging.basicConfig(level=logging.INFO)
     app.setting_custom_attributes_for_application()
     return app
 

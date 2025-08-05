@@ -675,28 +675,30 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
         
         def check_default_values():
             ''' Checks default values in database and add default value if they not exist '''
-            # admin - at least one person
+            # administrator position - at least one position
             models = importlib.import_module('app.models')
+            admin_position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.is_administrator == True)).first()
+            if admin_position is None:
+                admin_position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.string_slug == 'admin')).first()
+                if admin_position is None:
+                    logger.warning('Created new position "administrator"')
+                    admin_position = models.UserPosition(title="Administrator", string_slug="admin", is_default=False)
+                admin_position.is_administrator = True
+                db.session.add(admin_position)
+                db.session.commit()
+            # admin - at least one person
             u = db.session.scalars(sa.select(models.User).join(models.User.position, isouter=True).where(models.UserPosition.is_administrator == True)).all()
             if len(u) == 0:
                 logger.warning('User with administrator role is not exist.')
                 a = db.session.scalars(sa.select(models.User).where(models.User.login == 'admin')).first()
                 if a is None:
                     logger.warning('Created new admin user with login "admin" and password "admin"')
-                    a = models.User(login='admin', string_slug='admin', first_name='Admin', last_name='GreenMine', email='admin@localhost.com', is_administrator=True)
+                    a = models.User(login='admin', string_slug='admin', first_name='Admin', last_name='GreenMine', email='admin@localhost.com', position=admin_position)
                     a.manager = a
                     a.set_password('admin')
                 else:
                     logger.warning("Administrator rights have been added to the existing user 'admin'")
-                    position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.is_administrator == True)).first()
-                    if position is None:
-                        position = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.string_slug == 'admin')).first()
-                        if position is None:
-                            logger.warning('Created new position "administrator"')
-                            position = models.UserPosition(title="Administrator", string_slug="admin", is_default=False)
-                        position.is_administrator = True
-                        db.session.add(position)
-                    a.position = position
+                    a.position = admin_position
                 db.session.add(a)
                 db.session.commit()
                 logger.warning('Changes have been made to the database')

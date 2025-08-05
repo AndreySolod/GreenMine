@@ -6,7 +6,7 @@ import app.models as models
 from app.helpers.general_helpers import get_or_404
 from app.helpers.projects_helpers import get_default_environment, add_team_users_to_project
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
-from .forms import ProjectFormCreate, EditProjectForm, get_project_role_user_form
+from .forms import ProjectFormCreate, ProjectFormEdit, get_project_role_user_form
 from flask_babel import lazy_gettext as _l, pgettext
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy as sa
@@ -50,6 +50,7 @@ def project_new():
         flash(_l("Project #%(project_id)s has been successfully created", project_id=p.id), 'success')
         return redirect(url_for('projects.project_show', project_id=p.id))
     elif request.method == 'GET':
+        form.leader.data = str(current_user.id)
         form.load_data_from_json(request.args)
     return render_template('projects/new.html', form=form, **ctx)
 
@@ -58,7 +59,7 @@ def project_new():
 def project_edit(project_id):
     project = get_or_404(db.session, models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'update')
-    form = EditProjectForm()
+    form = ProjectFormEdit()
     if form.validate_on_submit():
         form.populate_obj(db.session, project)
         db.session.commit()
