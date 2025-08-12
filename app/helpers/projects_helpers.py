@@ -636,7 +636,7 @@ def load_network_from_csv(form):
     Raises:
         ValueError: If IP address fields contain invalid IPv4 network data
     """
-    network_list = []
+    network_list = {}
     file_data = io.StringIO(form.network_data.data)
     for row in csv.reader(file_data, delimiter=form.separator.data, lineterminator="\n"):
         title = row[form.title_position.data]
@@ -661,5 +661,6 @@ def load_network_from_csv(form):
             asn = row[form.asn_position.data]
         else:
             asn = None
-        network_list.append({"title": title, "description": description, "ip_address": ip_address, "vlan_number": vlan_number, "internal_ip": internal_ip, "connect_cmd": connect_cmd, "asn": asn})
-    return network_list
+        network_list[ip_address] = {"title": title, "description": description, "ip_address": ip_address,
+                     "vlan_number": vlan_number, "internal_ip": internal_ip, "connect_cmd": connect_cmd, "asn": asn}
+    return list(network_list.values())

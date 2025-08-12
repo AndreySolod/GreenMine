@@ -274,7 +274,7 @@ class NetworkMultipleAddForm(FlaskForm):
     connect_cmd_position = wtforms.IntegerField(_l("Connect command position:"), validators=[validators.Optional()])
     asn_position = wtforms.IntegerField(_l("ASN position:"), validators=[validators.Optional()])
     separator = wtforms.StringField(_l("Separator:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))], default=",")
-    network_data = wtforms.TextAreaField(_l("Data:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
+    network_data = wtforms.TextAreaField(_l("Data:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))], render_kw={"rows": "30"})
     submit = wtforms.SubmitField(_l("Add"))
 
     def validate_network_data(form, field):

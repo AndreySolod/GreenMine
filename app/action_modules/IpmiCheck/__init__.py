@@ -18,6 +18,7 @@ logger = logging.getLogger('Module IpmiCheck')
 
 
 def action_run(target: models.Service, running_user_id: int, session: Session, console: Optional[MsfRpcConsole], locale: str="en") -> Dict[str, Union[str, List[Dict[str, str]]]]:
+    project_id = target.host.from_network.project_id
     # Firstly, we check all host on ipmi version
     console.write("use auxiliary/scanner/ipmi/ipmi_version")
     console.write(f"set RHOSTS {target.host.ip_address}")
@@ -25,18 +26,24 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
     _garbage = console.read()
     console.write("run")
     ipmi_data = console.read_all()
-    for line in ipmi_data.decode('utf8').split("\n").strip():
+    ipmi_version = None
+    for line in ipmi_data.decode('utf8').strip().split("\n"):
         line = line.strip()
         if "[+]" in line and " - IPMI - " in line:
             ipmi_version = line.split(' - IPMI - ', 1)[1]
-    
+    if ipmi_version is None:
+        logger.warning(f"Did not found IPMI version: {target}")
+        return {'version': None, 'found_hashes': []}
+    logger.info(f"Target {target} has ipmi version")
     if not target.title:
         target.title = ipmi_version.split(' ', 1)[0].strip()
-    if target.description is None:
-        target.description = ""
-    target.description += "<p>IPMI version:" + ipmi_version + "</p>"
+    else:
+        if target.description is None:
+            target.description = ""
+        target.description += "<p>IPMI version:" + ipmi_version + "</p>"
     # IPMI Cipher 0 check later - when we know more about metasploit output ipmi cipher 0
     IPMI_ACTION = "ipmi_cipher_0"
+    logger.warning("Skilling Cipher 0 test - action in development")
     # Now we exploit IPMI_dumphashes on target:
     IPMI_ACTION = "ipmi_dumphashes"
     console.write('use auxiliary/scanner/ipmi/ipmi_dumphashes')
@@ -46,7 +53,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
     console.write("run")
     ipmi_hashes_data = console.read_all()
     found_hashes = []
-    for line in ipmi_hashes_data.decode('utf8').split("\n").strip():
+    for line in ipmi_hashes_data.decode('utf8').strip().split("\n"):
         line = line.strip()
         if "[+]" in line and " - IPMI - Hash found:" in line: # [+] 10.0.0.1:623 - IPMI - Hash found: admin:5557338cfb2db5ff021e4d814d87b6fff154160f3a2e1b4881fb54dfe1bf56478788ea7ba154375b000000000000fd030010d21da876c01d140561646d696e:ad297481ecdd2b88019fc074031ac2b9bb907cf1
             ipmi_hash = line.split(' - IPMI - Hash found: ', 1)[1]
@@ -67,18 +74,26 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
     for h in found_hashes:
         with force_locale(locale):
             if 'password' in h and 'login' in h:
-                cred = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == h['login'], models.Credential.password == h['password']))).first()
+                cred = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == h['login'],
+                                                                                  models.Credential.password == h['password'],
+                                                                                  models.Credential.project_id == project_id))).first()
                 if not cred:
-                    cred = models.Credential(login=h['login'], password=h['password'], created_by_id=running_user_id,
-                                            description="<p>" + str(_l("Extracted via CVE-2013-4786 from IPMI")) + "</p>", hash_type=ipmi_hash_type)
+                    cred = models.Credential(created_by_id=running_user_id)
+                    cred.login = h['login']
+                    cred.password = h['password']
+                    cred.description = "<p>" + str(_l("Extracted via CVE-2013-4786 from IPMI")) + "</p>"
+                    cred.hash_type = ipmi_hash_type
+                    cred.project_id = project_id
+                    session.add(cred)
                 cred.services.add(target)
                 cred.received_from.add(target.host)
             else:
                 cred = models.Credential(login=h['login'], password_hash=h['hash'], hash_type=ipmi_hash_type,
-                                         description="<p>" + str(_l("Extracted via CVE-2013-4786 from IPMI")) + "</p>", created_by_id=running_user_id)
+                                         description="<p>" + str(_l("Extracted via CVE-2013-4786 from IPMI")) + "</p>",
+                                         created_by_id=running_user_id, project_id=project_id)
+                session.add(cred)
                 cred.services.add(target)
                 cred.received_from.add(target.host)
-            session.add(cred)
     if len(found_hashes) != 0:
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == target.host.from_network.project_id, models.Issue.by_template_slug == 'cve_2013_4786'))).first()
         if not issue:
@@ -88,10 +103,11 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
                 issue = issue_template.create_issue_by_template()
                 issue.status = issue_status
                 issue.created_by_id = running_user_id
-                issue.project_id = target.host.from_network.project_id
+                issue.project_id = project_id
                 session.add(issue)
         if issue:
             issue.services.add(target)
+    logger.info("Committing session")
     session.commit()
     return {'version': ipmi_version, 'found_hashes': found_hashes}
 
@@ -105,7 +121,6 @@ def exploit(filled_form: dict, running_user_id: int, default_options: dict, loca
             target = session.scalars(sa.select(models.Service).where(models.Service.id == int(target))).one()
             logger.info("Trying to exploit " + str(target))
             action_run(target, running_user_id, session, console, locale)
-        session.commit()
 
 
 class ModuleInitForm(FlaskForm):

@@ -98,7 +98,7 @@ class ModuleInitForm(FlaskForm):
 
 class ImportFromZmap(ActionModule):
     title = _l("Import from Zmap")
-    description = _l("Imports the data of the scan results with Zmap scanner")
+    description = _l("Imports the data of the scan results with Zmap scanner (Not to be confused with nmap/zenmap)")
     admin_form = AdminOptionsForm
     run_form = ModuleInitForm
     exploit_single_target = staticmethod(action_run)

@@ -34,9 +34,10 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
     console.write('set THREADS 1')
     console.write('set RPORT '+ str(target.port))
     _garbage = console.read()
+    console.write("run")
     rdp_data = console.read_all()
     RDP_PROPS = None
-    for line in rdp_data.decode("utf8").split('\n').strip():
+    for line in rdp_data.decode("utf8").strip().split('\n'):
         line = line.strip()
         pattern = r".*?- Detected RDP on .*?(\(name:(.*?)\) )?(\(domain:(.*?)\) )?(\(domain_fqdn:(.*?)\) )?(\(server_fqdn:(.*?)\) )?(\(os_version:(.*?)\) )?\(Requires NLA: (.*?)\)"
         if "Detected RDP on" in line: #Detected RDP on 10.0.0.1:3389     (name:SOME-NAME) (domain:SOME-DOMAIN) (domain_fqdn:SOME-FQDN) (server_fqdn:SOME-FQDN) (os_version:10.0.19041) (Requires NLA: Yes)
@@ -45,17 +46,20 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
                 logger.warning(f"Error when parse rdp props. String: {line}")
                 continue
             RDP_PROPS = rdp_props[0]
+    if RDP_PROPS is None:
+        logger.warning(f"All RDP Properties is None. Target id is: {target.id}")
+        return {"Name": None, "Domain":None, "Domain FQDN":None, "Server FQDN":None, "OS Version":None, "Requires NLA": None}
     if not target.host.title:
         target.host.title = RDP_PROPS[1]
     if target.description is None:
         target.description = ""
     if target.host.description is None:
         target.host.description = ""
-    target.description += f"<p>Name: {RDP_PROPS[1]}<br>Domain:{RDP_PROPS[3]}" \
-        "<br>Domain FQDN:{RDP_PROPS[5]}<br>Server FQDN:{RDP_PROPS[7]}<br>" \
-            "OS Version:{RDP_PROPS[9]}<br>Requires NLA:{RDP_PROPS[10]}</p>"
-    target.host.description += f"<p>RDP Data:</p><p>Name: {RDP_PROPS[1]}<br>Domain:{RDP_PROPS[3]}<br>" \
-        "Domain FQDN:{RDP_PROPS[5]}<br>Server FQDN:{RDP_PROPS[7]}"
+    target.description += f"<p>Name: {RDP_PROPS[1]};<br>Domain:{RDP_PROPS[3]};" \
+        f"<br>Domain FQDN:{RDP_PROPS[5]};<br>Server FQDN:{RDP_PROPS[7]};<br>" \
+            f"OS Version:{RDP_PROPS[9]};<br>Requires NLA:{RDP_PROPS[10]};</p>"
+    target.host.description += f"<p>RDP Data:</p><p>Name: {RDP_PROPS[1]};<br>Domain:{RDP_PROPS[3]};<br>" \
+        f"Domain FQDN:{RDP_PROPS[5]};<br>Server FQDN:{RDP_PROPS[7]};"
     target.host.operation_system_gen = RDP_PROPS[9].strip()
     if RDP_PROPS[10] == "No":
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == target.host.from_network.project_id, models.Issue.by_template_slug == 'rdp_without_nla'))).first()

@@ -666,8 +666,10 @@ def multiple_add_network():
     form = forms.NetworkMultipleAddForm()
     if form.validate_on_submit():
         for nw in form.parsed_network:
-            network = models.Network(title=nw["title"], description=nw["description"], project=project, ip_address=nw["ip_address"],
-                                     vlan_number=nw["vlan_number"], internal_ip=nw["internal_ip"], connect_cmd=nw["connect_cmd"], asn=nw["asn"])
+            network = db.session.scalars(sa.select(models.Network).where(sa.and_(models.Network.project_id == project_id, models.Network.ip_address == nw["ip_address"]))).first()
+            if network is None:
+                network = models.Network(title=nw["title"], description=nw["description"], project=project, ip_address=nw["ip_address"],
+                                        vlan_number=nw["vlan_number"], internal_ip=nw["internal_ip"], connect_cmd=nw["connect_cmd"], asn=nw["asn"])
             db.session.add(network)
         db.session.commit()
         flash(_l("Networks have been successfully added"), 'success')

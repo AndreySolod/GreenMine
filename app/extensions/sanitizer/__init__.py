@@ -9,7 +9,7 @@ from copy import deepcopy
 class TextSanitizerManager:
     ''' Sanitize all text to safety use with various WYSIWYG editos  '''
     def __init__(self, app: Optional[Flask]=None, allowed_attrs: Optional[Set[str]]=set(["class", "style", 'href', 'src', 'width', 'height', 'colspan']), allowed_tags: Optional[Set[str]]=set(['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-                                                                                                                                            'strong', 'i', 'u', 's', 'a', 'ul', 'ol', 'li', 'pre', 'code',
+                                                                                                                                            'strong', 'i', 'u', 's', 'a', 'ul', 'ol', 'li', 'pre', 'code', 'br',
                                                                                                                                             'mark', 'span', 'hr', 'figure', 'img', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td'])):
         self.allowed_attrs = deepcopy(ALLOWED_ATTRIBUTES)
         self.allowed_attrs.update({'ul': {'style', 'class'}, 'ol': {'style', 'class'}, 'p': {'style'}, 'code': {'class'}, 'span': {'style'}, 'mark': {'class'}, 'figure': {'class'}})

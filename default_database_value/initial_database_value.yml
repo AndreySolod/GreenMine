@@ -707,6 +707,8 @@ ServiceTransportLevelProtocol:
         title: "TCP"
     - udp:
         title: "UDP"
+    - sctp:
+        title: "SCTP"
 
 HashType:
     - _import_module: "gen_list_hash_types"

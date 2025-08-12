@@ -31,14 +31,13 @@ def project_additional_parameter_index(project_id):
     db.session.commit()
     # Теперь берём все поля, сгруппированные по ProjectAdditionalFieldGroup, и вместе с ними рендерим шаблон:
     fields = db.session.scalars(sa.select(models.ProjectAdditionalFieldData).join(models.ProjectAdditionalFieldData.field_type, isouter=True)
-                                .join(models.ProjectAdditionalField.group, isouter=True).where(models.ProjectAdditionalFieldData.project_id == sa.cast(project_id, sa.Integer))
+                                .join(models.ProjectAdditionalField.group, isouter=True).where(models.ProjectAdditionalFieldData.project_id == project.id)
                                 .order_by(models.ProjectAdditionalFieldGroup.order_number.asc())).all()
     grouped_fields = {i: [] for i in all_groups}
     for f in fields:
         grouped_fields[f.field_type.group].append(f)
     ctx = get_default_environment(project, 'project_additional_parameters_index')
     context = {'groups': all_groups, 'grouped_fields': grouped_fields, 'project': project}
-    print(grouped_fields)
     return render_template('project_additional_parameters/index.html', **ctx, **context)
 
 
@@ -73,7 +72,7 @@ def project_additional_parameter_edit(project_id):
     # Отдельно берём все дополнительные поля для данного объекта
     all_groups = db.session.scalars(sa.select(models.ProjectAdditionalFieldGroup).order_by(models.ProjectAdditionalFieldGroup.order_number.asc())).all()
     fields = db.session.scalars(sa.select(models.ProjectAdditionalFieldData).join(models.ProjectAdditionalFieldData.field_type, isouter=True)
-                                .join(models.ProjectAdditionalField.group, isouter=True).where(models.ProjectAdditionalFieldData.project_id == project_id)
+                                .join(models.ProjectAdditionalField.group, isouter=True).where(models.ProjectAdditionalFieldData.project_id == project.id)
                                 .order_by(models.ProjectAdditionalFieldGroup.order_number.asc())).all()
     grouped_fields = {i: [] for i in all_groups}
     for f in fields:
