@@ -26,7 +26,11 @@ def filedirectory_index():
     project = get_or_404(db.session, Project, project_id)
     try:
         parent_dir = db.session.scalars(sa.select(FileDirectory).where(sa.and_(FileDirectory.project_id==project_id, FileDirectory.parent_dir_id==None))).one()
-    except (exc.NoResultFound, exc.MultipleResultsFound):
+    except (exc.NoResultFound):
+        parent_dir = FileDirectory(project_id=project_id, title="/", created_by_id=project.created_by_id)
+        db.session.add(parent_dir)
+        db.session.commit()
+    except exc.MultipleResultsFound:
         abort(500)
     project_role_can_make_action_or_abort(current_user, parent_dir, 'index')
     ctx = get_default_environment(FileDirectory(project=project), 'index')

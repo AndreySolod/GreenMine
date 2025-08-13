@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Dict, Any
+import os
 
 
 class NetworkError(Exception):
@@ -16,6 +17,8 @@ class ImportDefaultData:
             self.nmap_port_file = f.read()
         port_strings = self.nmap_port_file.split('\n')
         slugs = []
+        template_path = Path(__file__).parent / "access_protocols_parameter_templates"
+        script_path = Path(__file__).parent / "access_protocol_script_templates"
         if cls not in GLOBAL_UPDATED_OBJECT_DICT:
             GLOBAL_UPDATED_OBJECT_DICT[cls] = {}
         for ps in port_strings:
@@ -31,5 +34,12 @@ class ImportDefaultData:
             np.title = spl[0]
             np.string_slug = slug
             np.comment = " ".join(spl[3::])
+            # access protocol templates
+            if os.path.exists(template_path / (np.title + ".html")):
+                with open(template_path / (np.title + ".html"), 'r') as f:
+                    np.additional_attributes_template = f.read()
+            if os.path.exists(script_path / (np.title + ".js")):
+                with open(script_path / (np.title + ".js"), 'r') as f:
+                    np.additional_attributes_script = f.read()
             slugs.append(slug)
             GLOBAL_UPDATED_OBJECT_DICT[cls][slug] = np

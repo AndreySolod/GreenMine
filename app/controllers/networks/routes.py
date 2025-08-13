@@ -256,24 +256,6 @@ def service_new():
         service = models.Service()
         db.session.add(service)
         form.populate_obj(db.session, service, current_user)
-        if form.temp_screenshot_http.data:
-            scr = models.FileData()
-            filename = secure_filename(form.temp_screenshot_http.data.filename)
-            scr.title = filename
-            scr.extension = filename.split('.')[-1]
-            scr.description = _l("Screenshot for service %(port)s by host #%(host_id)s on project #%(project_id)s", port=service.port, host_id=service.host_id, project_id=project_id)
-            scr.data = request.files[form.temp_screenshot_http.name].read()
-            service.screenshot = scr
-            db.session.add(scr)
-        if form.temp_screenshot_https.data:
-            scr = models.FileData()
-            filename = secure_filename(form.temp_screenshot_https.data.filename)
-            scr.title = filename
-            scr.extension = filename.split('.')[-1]
-            scr.description = _l("Screenshot for service %(port)s by host #%(host_id)s on project #%(project_id)s", port=service.port, host_id=service.host_id, project_id=project_id)
-            scr.data = request.files[form.temp_screenshot_https.name].read()
-            service.screenshot = scr
-            db.session.add(scr)
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new service {service.id}")
         flash(_l("Service #%(service_id)s has been successfully added", service_id=service.id), 'success')
@@ -483,6 +465,7 @@ def service_show(service_id):
     ctx = get_default_environment(service, 'show')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('ckeditor')
+    service.add_additional_attributes_script()
     context = {'service': service, 'edit_related_objects': forms.EditRelatedObjectsForm(service)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service #{service_id}")
     return render_template('services/show.html', **context, **ctx)
@@ -501,27 +484,6 @@ def service_edit(service_id):
     if form.validate_on_submit():
         form.populate_obj(db.session, service)
         service.updated_by_id = current_user.id
-        if form.temp_screenshot_http.data:
-            if service.screenshot_http:
-                db.session.delete(service.screenshot)
-            scr = models.FileData()
-            filename = secure_filename(form.temp_screenshot_http.data.filename)
-            scr.title = filename
-            scr.extension = filename.split('.')[-1]
-            scr.description = str(_l("Screenshot for service %(port)s by host #%(host_id)s on project #%(project_id)s", port=service.port, host_id=service.host_id, project_id=service.host.from_network.project_id))
-            scr.data = request.files[form.temp_screenshot_http.name].read()
-            service.screenshot_http = scr
-            db.session.add(scr)
-        if form.temp_screenshot_https.data:
-            if service.screenshot_https:
-                db.session.delete(service.screenshot_https)
-            scr = models.FileData()
-            scr.title = secure_filename(form.temp_screenshot_https.data.filename)
-            scr.extension = filename.split('.')[-1]
-            scr.description = str(_l("Screenshot for service %(port)s by host #%(host_id)s on project #%(project_id)s", port=service.port, host_id=service.host_id, project_id=service.host.from_network.project_id))
-            scr.data = request.files[form.temp_screenshot_https.name].read()
-            service.screenshot_https = scr
-            db.session.add(scr)
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit service {service.id}")
         flash(_l("Service «%(serv_title)s» successfully changed", serv_title=service.fulltitle), 'success')
@@ -530,7 +492,7 @@ def service_edit(service_id):
         form.load_exist_value(service)
         form.load_data_from_json(request.args)
     ctx = get_default_environment(service, 'edit')
-    return render_template('services/new.html', form=form, **ctx)
+    return render_template('services/edit.html', form=form, **ctx)
 
 
 @bp.route("/service/<int:service_id>/delete", methods=["POST"])

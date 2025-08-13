@@ -28,31 +28,35 @@ def action_run(target: models.Service, running_user_id: int, protocol: str, wind
     driver.implicitly_wait(int(implicity_wait))
     driver.get(f"{protocol}://{target.host.ip_address}:{target.port}")
     png_data = driver.get_screenshot_as_png()
-    screenshot_directory = session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.project_id==target.project_id, models.FileDirectory.title=="Screenshots"))).first()
+    if target.additional_attributes is None:
+        target.additional_attributes = {}
+    screenshot_directory = session.scalars(sa.select(models.FileDirectory).where(sa.and_(models.FileDirectory.project_id==target.project_id,
+                                                                                         models.FileDirectory.title=="Screenshots"))).first()
     if screenshot_directory is None:
-        screenshot_directory = models.FileDirectory(title="Screenshots", description="Folder with screenshots of web services", project_id=target.project_id, created_by_id=running_user_id)
+        screenshot_directory = models.FileDirectory(title="Screenshots", project_id=target.project_id, created_by_id=running_user_id, parent_dir=target.host.from_network.project.file_directories[0])
         session.add(screenshot_directory)
         session.commit()
     all_files_title = session.scalars(sa.select(models.FileData.title).where(models.FileData.directory_id == screenshot_directory.id)).all()
     if (protocol == 'http'):
-        if target.screenshot_http is not None:
-            session.delete(target.screenshot_http)
+        if target.additional_attributes.get('screenshot_http_id'):
+            session.execute(sa.delete(models.FileData).where(models.FileData.id == target.additional_attributes.get('screenshot_http_id')))
             session.commit()
         fd = models.FileData(title=f"Screenshot {protocol}-{target.host.ip_address}-{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
         fd.title = gen_new_name_for_file_or_dir(fd.title, all_files_title)
         session.add(fd)
-        target.screenshot_http = fd
-        target.http_title = driver.title
     else:
-        if target.screenshot_https is not None:
-            session.delete(target.screenshot_https)
+        if target.additional_attributes.get('screenshot_https_id'):
+            session.execute(sa.delete(models.FileData).where(models.FileData.id == target.additional_attributes.get('screenshot_https_id')))
             session.commit()
         fd = models.FileData(title=f"Screenshot {protocol}-{target.host.ip_address}-{target.port}.png", extension='png', data=png_data, created_by_id=running_user_id)
         fd.title = gen_new_name_for_file_or_dir(fd.title, all_files_title)
         session.add(fd)
-        target.screenshot_https = fd
-        target.https_title = driver.title
+    fd.directory = screenshot_directory
     attr = "screenshot_" + protocol
+    session.commit()
+    session.refresh(target)
+    target.additional_attributes[attr + "_id"] = fd.id
+    target.additional_attributes[protocol + "_title"] = driver.title
     session.add(target)
     session.commit()
 
@@ -66,23 +70,30 @@ def exploit(filled_form: dict, running_user_id: int, default_options: dict, loca
             for service in services:
                 if filled_form["check_proto"]:
                     if service.access_protocol is not None and service.access_protocol.string_slug in ('http', 'https'):
-                        # clean old screenshots from database
-                        attr = "screenshot_" + service.access_protocol.string_slug
-                        if getattr(service, attr) is not None:
-                            session.delete(getattr(service, attr))
+                        attr = "screenshot_" + service.access_protocol.string_slug + "_id"
+                        if service.additional_attributes is not None:
+                            old_screenshot_id = service.additional_attributes.get(attr)
+                        else:
+                            old_screenshot_id = None
                         # Taking screenshot
                         try:
                             action_run(target=service, running_user_id=running_user_id, protocol=service.access_protocol.string_slug,
                                     window_size=default_options["window_size"], timeout=default_options["timeout"], implicity_wait=default_options["implicity_wait"],
                                     session=session)
-                        except WebDriverException:
+                        except WebDriverException as e:
                             continue
+                        else:
+                            # clean old screenshots from database
+                            if old_screenshot_id is not None:
+                                session.execute(sa.delete(models.FileData).where(models.FileData.id == old_screenshot_id))
+                                session.commit()
                 else:
                     for protocol in ('http', 'https'):
-                        # clean old screenshots from database
-                        attr = "screenshot_" + protocol
-                        if getattr(service, attr) is not None:
-                            session.delete(getattr(service, attr))
+                        old_screenshot_attr_id = "screenshot_" + protocol + "_id"
+                        if service.additional_attributes is not None:
+                            old_screenshot_id = service.additional_attributes.get(attr)
+                        else:
+                            old_screenshot_id = None
                         # Taking screenshot
                         try:
                             action_run(target=service, running_user_id=running_user_id, protocol=protocol,
@@ -90,6 +101,11 @@ def exploit(filled_form: dict, running_user_id: int, default_options: dict, loca
                                     session=session)
                         except WebDriverException:
                             continue
+                        else:
+                            # clean old screenshots from database
+                            if old_screenshot_id is not None:
+                                session.execute(sa.delete(models.FileData).where(models.FileData.id == old_screenshot_id))
+                                session.commit()
         session.commit()
 
 
@@ -134,4 +150,4 @@ class HardwareInventory(ActionModule):
     run_form = ModuleInitForm
     exploit_single_target = staticmethod(action_run)
     exploit = staticmethod(exploit)
-    default_options = {'window_size': '1920,2500', 'timeout': 5, 'implicity_wait': 5}
+    default_options = {'window_size': '1920,1080', 'timeout': 5, 'implicity_wait': 5}

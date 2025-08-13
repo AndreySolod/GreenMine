@@ -157,16 +157,6 @@ class ServiceForm(FlaskForm):
     transport_level_protocol_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Service.transport_level_protocol_id.info["label"]),
                                                       validators=[validators.InputRequired(message=_l("This field is mandatory!"))])
     host_id = TreeSelectSingleField(_l("%(field_name)s:", field_name=models.Service.host_id.info["label"]))
-    temp_screenshot_http = wtforms.FileField(_l("%(field_name)s:", field_name=models.Service.screenshot_http.info["label"]),
-                                             validators=[wtfile.FileAllowed(['jpg', 'jpeg', 'png'], _l("Only images!"))])
-    http_title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Service.http_title.info["label"]),
-                                validators=[validators.Length(min=0, max=models.Service.http_title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.http_title.type.length)),
-                                            validators.Optional()])
-    temp_screenshot_https = wtforms.FileField(_l("%(field_name)s:", field_name=models.Service.screenshot_https.info["label"]),
-                                              validators=[wtfile.FileAllowed(['jpg', 'jpeg', 'png'], _l("Only images!"))])
-    https_title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Service.https_title.info["label"]),
-                                validators=[validators.Length(min=0, max=models.Service.https_title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Service.https_title.type.length)),
-                                            validators.Optional()])
     issues = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.issues.info["label"]), validators=[validators.Optional()])
     credentials = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.credentials.info["label"]), validators=[validators.Optional()])
     tasks = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.tasks.info["label"]), validators=[validators.Optional()])

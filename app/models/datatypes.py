@@ -1,6 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.types as types
 from sqlalchemy.dialects.postgresql.base import ischema_names
+from sqlalchemy.ext.mutable import MutableDict
 import ipaddress
 import json
 
@@ -65,7 +66,7 @@ class IPAddress(types.TypeDecorator):
         return self._coerce(value)
 
 
-class JSONType(types.TypeDecorator):
+class ImmutableJSONType(types.TypeDecorator):
     """
     JSONType offers way of saving JSON data structures to database. On
     PostgreSQL the underlying implementation of this data type is 'json' while
@@ -123,6 +124,10 @@ class JSONType(types.TypeDecorator):
         if value is not None:
             value = json.loads(value)
         return value
+
+
+def JSONType():
+    return MutableDict.as_mutable(ImmutableJSONType) # https://docs.sqlalchemy.org/en/20/core/custom_types.html#marshal-json-strings
 
 
 class LimitedLengthString(types.TypeDecorator):

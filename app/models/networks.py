@@ -1,4 +1,4 @@
-from app import db
+from app import db, sanitizer, side_libraries
 from app.helpers.general_helpers import validates_port, default_string_slug, validates_mac, utcnow
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
 from .generic import HasComment, HasHistory
@@ -9,15 +9,18 @@ from .credentials import Credential, DefaultCredential
 from typing import List, Optional, Set
 import sqlalchemy as sa
 from sqlalchemy import event
-from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.orm as so
 from sqlalchemy.orm import validates
 from sqlalchemy.orm.session import Session as SessionBase
 from .credentials import CredentialByService
 from .issues import IssueHasService
+from .datatypes import JSONType
+import wtforms
 import datetime
 import ipaddress
-from flask_babel import lazy_gettext as _l
+from flask_babel import lazy_gettext as _l, pgettext
+from flask import current_app, has_app_context
+import importlib
 
 
 @project_object_with_permissions
@@ -420,6 +423,8 @@ class AccessProtocol(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     default_port: so.Mapped[List["DefaultPortAndTransportProto"]] = so.relationship(lazy='select', back_populates='access_protocol', cascade='all, delete-orphan', info={'label': _l("Default ports")})
     comment: so.Mapped[Optional[str]] = so.mapped_column(LimitedLengthString(60), info={'label': _l("Nmap-comment")})
+    additional_attributes_template: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Jinja2 additional parameters template"), 'form': wtforms.TextAreaField, 'was_escaped': True})
+    additional_attributes_script: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Additional parameter script template"), 'form': wtforms.TextAreaField, 'was_escaped': True})
 
     @property
     def treeselecttitle(self):
@@ -489,12 +494,7 @@ class Service(HasComment, db.Model, HasHistory):
                                                        back_populates="services",
                                                        info={'label': _l("Issues")})
     credentials: so.Mapped[List["Credential"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin='Service.id==CredentialByService.service_id', secondaryjoin='CredentialByService.credential_id==Credential.id', back_populates='services', lazy='select', info={'label': _l("Credentials")})
-    screenshot_http_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='SET NULL'), info={'label': _l('http screenshot of the web interface')})
-    screenshot_http: so.Mapped["FileData"] = so.relationship(lazy='select', info={'label': _l("http screenshot of the web interface")}, foreign_keys=[screenshot_http_id]) # type: ignore
-    http_title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(80), info={'label': _l("Title of http site")})
-    screenshot_https_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete="SET NULL"), info={'label': _l("https screenshot of the web interface")})
-    screenshot_https: so.Mapped["FileData"] = so.relationship(lazy='select', info={'label': _l("https screenshot of the web interface")}, foreign_keys=[screenshot_https_id]) # type: ignore
-    https_title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(80), info={'label': _l("Title of https site")})
+    additional_attributes: so.Mapped[Optional[dict]] = so.mapped_column(JSONType(), default={}, info={'label': _l("Additional service attributes")})
     tasks: so.Mapped[List["ProjectTask"]] = so.relationship(secondary='service_has_task',
                                                             primaryjoin='Service.id==ServiceHasTask.service_id',
                                                             secondaryjoin='ServiceHasTask.task_id==ProjectTask.id',
@@ -529,6 +529,25 @@ class Service(HasComment, db.Model, HasHistory):
 
     def parent(self):
         return self.host
+
+    def render_additional_attributes_templates(self):
+        if self.access_protocol is None or self.access_protocol.additional_attributes_template in [None, ""]:
+            return sanitizer.markup(pgettext("they", "(Missing)"))
+        if not has_app_context():
+            return ""
+        template = current_app.jinja_env.from_string(sanitizer.unescape(self.access_protocol.additional_attributes_template),
+                                                                  {"service": self, 'models': importlib.import_module('app.models'),
+                                                                   'roles': importlib.import_module('app.helpers.roles')})
+        return sanitizer.markup(template.render())
+    
+    def add_additional_attributes_script(self):
+        if self.access_protocol is None or self.access_protocol.additional_attributes_script in [None, ""]:
+            return None
+        if not has_app_context():
+            return None
+        return side_libraries.require_script(current_app.jinja_env.from_string(sanitizer.unescape(self.access_protocol.additional_attributes_script), {"service": self,
+                                                                                                                                   'models': importlib.import_module('app.models'),
+                                                                                                                                   'roles': importlib.import_module('app.helpers.roles')}).render())
 
     __table_args__ = (sa.UniqueConstraint('host_id', 'port', 'transport_level_protocol_id', name='_unique_host_port_and_transport_protocol'),)
 

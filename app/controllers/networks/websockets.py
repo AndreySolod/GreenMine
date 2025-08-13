@@ -164,9 +164,9 @@ def take_service_sreenshot(data):
         pass
     db.session.refresh(service)
     attr = "screenshot_" + proto + "_id"
-    file_id = getattr(service, attr)
+    file_id = service.additional_attributes.get(attr)
     if file_id:
-        screenshot_title = getattr(service, proto + 'title', '')
+        screenshot_title = service.additional_attributes.get(proto + '_title')
         emit("screenshot taked", {'address': url_for('files.download_file', file_id=file_id), 'proto': proto, 'screenshot_title': screenshot_title}, namespace="/service", to=current_room_name)
     else:
         emit("screenshot taked", {'address': None, 'proto': proto, 'screenshot_title': ''}, namespace="/service", to=current_room_name)

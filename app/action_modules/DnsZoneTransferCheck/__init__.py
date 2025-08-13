@@ -12,10 +12,11 @@ import dns
 import dns.query
 import dns.xfr
 import logging
+from typing import List
 logger = logging.getLogger("DNS Zone transfer module")
 
 
-def action_run(target: models.Service, running_user_id: int, zone_name: str, session: Session, locale: str="en"):
+def action_run(target: models.Service, running_user_id: int, zone_name: str, session: Session, locale: str="en") -> List:
     project_id = target.host.from_network.project_id
     try:
         dns_zone = dns.zone.from_xfr(dns.query.xfr(str(target.host.ip_address), zone_name, port=target.port))

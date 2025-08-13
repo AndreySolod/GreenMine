@@ -53,9 +53,9 @@
             <div class="card-header">
                 <ul class="nav nav-tabs" id="CommentTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="screenshot-tab" data-bs-toggle="tab" data-bs-target="#screenshot"
+                        <button class="nav-link active" id="additional-attributes-tab" data-bs-toggle="tab" data-bs-target="#additional-attributes"
                             type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-list"></i>
-                            {{ _("Site screenshot") }}</button>
+                            {{ models.Service.additional_attributes.info["label"] }}:</button>
                     </li>
                     {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=service.host.from_network.project) %}
                     <li class="nav-item" role="presentation">
@@ -87,65 +87,8 @@
             </div>
             <div class="card-body">
                 <div class="tab-content" id="ServiceDataTabContent">
-                    <div class="tab-pane fade show active" id="screenshot" role="tabpanel" aria-labelledby="screenshot-tab">
-                        <ul class="nav nav-tabs" id="ScreenshotTab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="screenshot-http-tab" data-bs-toggle="tab" data-bs-target="#screenshot_http"
-                                    type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-regular fa-image"></i>
-                                    {{ models.Service.screenshot_http.info["label"] }}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="screenshot-https-tab" data-bs-toggle="tab" data-bs-target="#screenshot_https" type="button"
-                                    role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-image"></i>
-                                    {{ models.Service.screenshot_https.info["label"] }}</button>
-                            </li>
-                        </ul>
-                        <div class="tab-content" id="ScreenshotTabContent">
-                            <div class="tab-pane fade show active row g-2" id="screenshot_http" role="tabpanel" aria-labelledby="screenshot-http-tab">
-                                {% if roles.project_role_can_make_action(current_user, service, 'take_screenshot') %}
-                                <div class="d-flex justify-content-end">
-                                    <div class="col-1">
-                                        <a id="http-take-screenshot-button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" aria-label="{{ _('Take screenshot') }}" data-bs-original-title="{{ _('Take screenshot') }}"><i class="fa-solid fa-camera-retro"></i></a>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                <table class="table table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <td>{{ models.Service.http_title.info.label }}:</td>
-                                            <td id="screenshot-http-title">{{ service.http_title|suppress_none }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% if service.screenshot_http_id != none %}
-                                <img src="{{ url_for('files.download_file', file_id=service.screenshot_http_id) }}" alt="{{ _('Error when content loading') }}">
-                                {% else %}
-                                <h6 class="text-muted text-center">{{ _("(Missing)") }}</h6>
-                                {% endif %}
-                            </div>
-                            <div class="tab-pane fade" id="screenshot_https" role="tabpanel" aria-labelledby="screenshot-https-tab">
-                                {% if roles.project_role_can_make_action(current_user, service, 'take_screenshot') %}
-                                <div class="d-flex justify-content-end">
-                                    <div class="col-1">
-                                        <a id="https-take-screenshot-button" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="left" aria-label="{{ _('Take screenshot') }}" data-bs-original-title="{{ _('Take screenshot') }}"><i class="fa-solid fa-camera-retro"></i></a>
-                                    </div>
-                                </div>
-                                {% endif %}
-                                <table class="table table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <td>{{ models.Service.https_title.info.label }}:</td>
-                                            <td id="screenshot-https-title">{{ service.https_title|suppress_none }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {% if service.screenshot_https_id != none %}
-                                <img src="{{ url_for('files.download_file', file_id=service.screenshot_https_id) }}" alt="{{ _('Error when content loading') }}">
-                                {% else %}
-                                <h6 class="text-muted text-center">{{ _("(Missing)") }}</h6>
-                                {% endif %}
-                            </div>
-                        </div>
+                    <div class="tab-pane fade show active" id="additional-attributes" role="tabpanel" aria-labelledby="additional-attributes-tab">
+                        {{ service.render_additional_attributes_templates() }}
                     </div>
                     {% if roles.project_role_can_make_action(current_user, models.Issue(), 'index', project=service.host.from_network.project) %}
                     <div class="tab-pane fade" id="issues" role="tabpanel" aria-labelledby="issues-tab">
@@ -485,64 +428,7 @@
     serviceSocket.on('connect', function () {
         serviceSocket.emit('join_room', '{{ service.id }}')
     });
-    
-    serviceSocket.on("take screenshot received", function(data) {
-        $.notify(`{{ _('User __username__ request to take screenshot on protocol "__proto_name__"') }}`.replace("__username__", data.by_user).replace("__proto_name__", data.proto), "info", {
-            clickToHide: true,
-            autoHide: true,
-            autoHideDelay: 5000,
-            globalPosition: 'top right'
-        });
-        let div_data = null
-        if(data.proto === 'http') {
-            div_data = document.getElementById('screenshot_http');
-            screenshot_title = document.getElementById('screenshot_http-title');
-        }
-        else if(data.proto === 'https') {
-            div_data = document.getElementById('screenshot_https');
-            screenshot_title = document.getElementById('screenshot-https-title');
-        };
-        for (let i = 4; i < div_data.childNodes.length + 1;i++){
-            div_data.removeChild(div_data.childNodes[4]);
-        };
-        screenshot_title.innerHTML = '';
-        let spinner = document.createElement("div");
-        setMultipleAttributes(spinner, {"class": "spinner-border text-primary text-center", "role": "status"});
-        let child_span = document.createElement("span");
-        child_span.setAttribute("class", "visually-hidden");
-        child_span.innerHTML = "{{ _('Loading...') }}";
-        let over_div = document.createElement('div');
-        setMultipleAttributes(over_div, {'class': 'd-flex justify-content-center'});
-        spinner.appendChild(child_span);
-        over_div.appendChild(spinner);
-        div_data.appendChild(over_div);
-    });
-    serviceSocket.on("screenshot taked", function(data) {
-        if(data.address !== null) {
-            new_screenshot = document.createElement('img');
-            setMultipleAttributes(new_screenshot, {'src': data.address, 'onerror': '{{ _("Cannot load a screenshot") }}'});
-            let div_data = document.getElementById('screenshot_' + data.proto);
-            div_data.removeChild(div_data.lastChild);
-            div_data.appendChild(new_screenshot);
-            document.getElementById('screenshot-' + data.proto + '-title').innerHTML = data.screenshot_title;
-        }
-        else {
-            let h6_placeholder = document.createElement('h6');
-            h6_placeholder.innerHTML = "{{ pgettext('man', '(Missing)') }}";
-            h6_placeholder.setAttribute('class', 'text-muted text-center');
-            let div_data = document.getElementById("screenshot_" + data.proto);
-            div_data.removeChild(div_data.lastChild);
-            div_data.appendChild(h6_placeholder);
-            document.getElementById('screenshot-' + data.proto + '-title').innerHTML = data.screenshot_title;
-        };
-    });
-    
-    document.getElementById('http-take-screenshot-button').addEventListener('click', function(){
-        serviceSocket.emit("take screenshot", {"proto": 'http'});
-    });
-    document.getElementById('https-take-screenshot-button').addEventListener('click', function() {
-        serviceSocket.emit("take screenshot", {"proto": 'https'});
-    });
+
     function default_row_style(row, index) {
         return {css: { cursor: 'pointer' }}
     };
