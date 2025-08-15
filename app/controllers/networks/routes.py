@@ -556,8 +556,7 @@ def services_inventory():
         abort(400)
     project = db.get_or_404(models.Project, project_id)
     serv = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True)
-                              .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project.id,
-                                             sa.or_(models.Service.screenshot_http_id != None, models.Service.screenshot_https_id != None)))).first()
+                              .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project.id, sa.cast(models.Service.additional_attributes, sa.String).like("%screenshot_http%")))).first()
     if serv is not None:
         project_role_can_make_action_or_abort(current_user, serv, 'update')
         project_role_can_make_action_or_abort(current_user, serv.host, 'update')

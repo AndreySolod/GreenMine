@@ -256,6 +256,8 @@ class Host(HasComment, db.Model, HasHistory):
                                                                      primaryjoin="Host.id==AccessibleServiceHasHost.host_id",
                                                                      secondaryjoin="AccessibleServiceHasHost.accessible_service_id==Service.id",
                                                                      back_populates="accessible_from_hosts", info={'label': _l("Accessible services")})
+    ipidsequence_class: so.Mapped[str] = so.mapped_column(LimitedLengthString(70), info={'label': _l("IP ID Sequence class")}, server_default="", default="")
+    ipidsequence_value: so.Mapped[str] = so.mapped_column(LimitedLengthString(70), info={'label': _l("IP ID Sequence value")}, server_default="", default="")
 
     @property
     def fulltitle(self):
@@ -501,6 +503,7 @@ class Service(HasComment, db.Model, HasHistory):
                                                             back_populates='services', info={'label': _l("Related tasks")})
     has_been_inventoried: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Has been inventoried")})
     nmap_fingerprint: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Nmap Fingerprint"), "description": _l("Submit it on https://nmap.org/cgi-bin/submit.cgi?new-service"), "was_escaped": True})
+    ssl: so.Mapped[bool] = so.mapped_column(info={'label': _l("Use SSL")}, server_default=sa.false()) 
 
     @property
     def fulltitle(self):

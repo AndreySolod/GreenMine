@@ -232,6 +232,12 @@ class NmapScanner:
             current_host = create_host_if_not_exist(ip_addr, current_user_id)
             current_host.mac = mac_addr
             current_host.from_network = current_network
+            try:
+                ipidsequence = next(host.iter("ipidsequence"))
+                current_host.ipidsequence_class = ipidsequence.get("class")
+                current_host.ipidsequence_value = ipidsequence.get("values")
+            except StopIteration:
+                pass
             # add network mutual visibility
             if add_network_mutial_visibility and scanning_host is not None:
                 if current_host.from_network.id != scanning_host.from_network.id:
@@ -258,6 +264,7 @@ class NmapScanner:
                 if service_attr is not None:
                     access_protocol = session.scalars(sa.select(models.AccessProtocol).where(models.AccessProtocol.string_slug == service_attr.get('name'))).first()
                     serv.access_protocol = access_protocol
+                    serv.ssl = service_attr.get("tunnel") == "ssl"
                     serv.title = sanitizer.escape(service_attr.get('product'), models.Service.title.type.length)
                     device_type = service_attr.get('devicetype')
                     if device_type is not None:

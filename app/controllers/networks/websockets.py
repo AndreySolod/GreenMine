@@ -444,20 +444,23 @@ def update_inventory_data(data):
     service.has_been_inventoried = True
     db.session.commit()
     ns = db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True)
-                            .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project_id,
-                                           sa.or_(models.Service.screenshot_http_id != None, models.Service.screenshot_https_id != None)))).first()
+                            .where(sa.and_(models.Service.has_been_inventoried == False, models.Network.project_id == project_id, sa.cast(models.Service.additional_attributes, sa.String).like("%screenshot_http%")))).first()
     if ns is None:
         return {'service_id': None}
     ret_data = {'service_id': ns.id, 'service_title': ns.title or '', 'service_description': ns.description or '', 'host_title': ns.host.title or '', 'host_description': ns.host.description or '',
                 'host_device_type': str(ns.host.device_type_id), 'host_device_vendor': str(ns.host.device_vendor_id), 'obj_title': str(ns.fulltitle)}
-    if ns.screenshot_http_id is not None:
-        ret_data['screenshot_http'] = url_for('files.download_file', file_id=ns.screenshot_http_id)
+    if ns.additional_attributes is None:
+        ns.additional_attributes = {}
+        db.session.add(ns)
+        db.session.commit()
+    if ns.additional_attributes.get("screenshot_http_id") is not None:
+        ret_data['screenshot_http'] = url_for('files.download_file', file_id=ns.additional_attributes.get("screenshot_http_id"))
         ret_data['http_title'] = ns.http_title
     else:
         ret_data['screenshot_http'] = None
         ret_data['http_title'] = ''
-    if ns.screenshot_https_id is not None:
-        ret_data['screenshot_https'] = url_for('files.download_file', file_id=ns.screenshot_https_id)
+    if ns.additional_attributes.get("screenshot_https_id") is not None:
+        ret_data['screenshot_https'] = url_for('files.download_file', file_id=ns.additional_attributes.get("screenshot_https_id"))
         ret_data['https_title'] = ns.https_title
     else:
         ret_data['screenshot_https'] = None

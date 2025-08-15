@@ -10,7 +10,6 @@ import sqlalchemy as sa
 import sqlalchemy.orm as so
 from sqlalchemy.orm.session import Session
 from flask import current_app
-import time
 import re
 from flask_babel import lazy_gettext as _l
 import logging

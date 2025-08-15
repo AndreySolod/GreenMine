@@ -63,6 +63,14 @@
                             {% endif %}
                         </tr>
                         <tr>
+                            <td>{{ models.Host.ipidsequence_class.info["label"] }}:</td>
+                            <td>{{ host.ipidsequence_class }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ models.Host.ipidsequence_value.info["label"] }}:</td>
+                            <td>{{ host.ipidsequence_value }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ models.Host.operation_system_family.info["label"] }}:</td>
                             <td>{{ host.operation_system_family.title|suppress_none }}</td>
                         </tr>

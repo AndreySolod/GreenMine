@@ -93,6 +93,12 @@ class HostForm(FlaskForm):
     device_model_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.device_model_id.info["label"]),
                                           validators=[validators.Optional()])
     compromised = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Host.compromised.info["label"]), validators=[validators.Optional()], description=models.Host.compromised.info["description"])
+    ipidsequence_class = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ipidsequence_class.info["label"]),
+                                validators=[validators.Length(min=0, max=models.Host.ipidsequence_class.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.ipidsequence_class.type.length)),
+                                            validators.Optional()])
+    ipidsequence_value = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ipidsequence_value.info["label"]),
+                                validators=[validators.Length(min=0, max=models.Host.ipidsequence_value.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.ipidsequence_value.type.length)),
+                                            validators.Optional()])
 
     def validate_ip_address(form, field):
         netw = int(form.from_network_id.data)
@@ -161,6 +167,7 @@ class ServiceForm(FlaskForm):
     credentials = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.credentials.info["label"]), validators=[validators.Optional()])
     tasks = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.tasks.info["label"]), validators=[validators.Optional()])
     accessible_from_hosts = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Service.accessible_from_hosts.info["label"]), validators=[validators.Optional()])
+    ssl = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Service.ssl.info["label"]), validators=[validators.Optional()])
 
     def validate_host_id(form, field):
         if field.data is None or int(field.data) == 0:

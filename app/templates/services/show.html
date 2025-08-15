@@ -43,6 +43,10 @@
                             <td>{{ models.Service.access_protocol.info["label"] }}:</td>
                             <td>{{ service.access_protocol.title|default("", True) }}</td>
                         </tr>
+                        <tr>
+                            <td>{{ models.Service.ssl.info["label"] }}:</td>
+                            <td>{{ _("Yes") if service.ssl else _("No") }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
