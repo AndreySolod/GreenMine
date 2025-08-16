@@ -37,6 +37,8 @@ class ProjectAdditionalField(db.Model):
     group: so.Mapped[ProjectAdditionalFieldGroup] = so.relationship(lazy='select', back_populates="fields", info={'label': _l("Group")})
     project_fields: so.Mapped["ProjectAdditionalFieldData"] = so.relationship(lazy='select', back_populates='field_type', info={'label': _l("Created fields")}, cascade='all,delete')
 
+    __table_args__ = (sa.CheckConstraint("project_fields IN ('StringField', 'TextAreaField', 'IntegerField', 'BooleanField', 'WysiwygField')", name="project_additional_parameter_field_type"),)
+
     class Meta:
         verbose_name = _l("Project additional field")
         verbose_name_plural = _l("Project additional fields")

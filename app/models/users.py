@@ -1,12 +1,13 @@
 from app import db, login, logger
 from flask import current_app, url_for
-from app.helpers.general_helpers import default_string_slug, utcnow
+from app.helpers.general_helpers import default_string_slug, utcnow, random_string
 from app.helpers.users_helpers import generate_avatar
 from app.helpers.admin_helpers import project_enumerated_object
 from unidecode import unidecode
 import datetime
 import os
 import os.path
+import random
 from typing import List, Optional, Dict, Set
 from app.extensions.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -18,7 +19,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.exc as exc
 from .generic import Comment, Reaction
 from .files import FileData
-from markupsafe import Markup
 from flask_babel import lazy_gettext as _l
 import secrets
 import json
@@ -232,6 +232,26 @@ class User(UserMixin, db.Model):
     @staticmethod
     def get_list_mentions():
         return json.dumps({'mentions': ["@" + i for i in db.session.scalars(sa.select(User.login).where(User.archived == False)).all()]})
+    
+    @classmethod
+    def create_random_user(cls, login: str) -> "User":
+        password = random_string(25)
+        first_names = ["Таракан", "Тараканоид", 'Бактерия', 'Белый', 'Чёрный', 'Хрен', 'Глиста', 'Гриб', 'Шланг', "Тряпка", 'Юдишка', "Конь", "Шмель"]
+        last_names = ["Резиновый", "Зелёный", "Странный", "Юдишкоподобный", "Шестилапый", "Усатый", "Нормальный"]
+        middle_names = ["Тараканьевич", "Глистович", "Грибович", "Хренович", "Шмелевич", "Зеленович"]
+        admin_user = db.session.scalars(sa.select(User).join(User.position).where(UserPosition.is_administrator == True)).first()
+        default_position = db.session.scalars(sa.select(UserPosition).where(UserPosition.is_default == True)).first()
+        email = login + "@mental_hospital.ru"
+        programming_language_theme = db.session.scalars(sa.select(ProgrammingLanguageTheme).where(ProgrammingLanguageTheme.is_default == True)).first()
+        programming_languages = db.session.scalars(sa.select(ProgrammingLanguage).where(ProgrammingLanguage.is_default == True)).all()
+        theme_style = db.session.scalars(sa.select(UserThemeStyle).where(UserThemeStyle.is_default == True)).first()
+        user = cls(login=login, first_name=random.choice(first_names), last_name=random.choice(last_names), middle_name=random.choice(middle_names),
+                   email=email, position=default_position, programming_languages=programming_languages,
+                   programming_language_theme=programming_language_theme, theme_style=theme_style, manager=admin_user)
+        user.set_password(password)
+        user.password_expired_date = utcnow() + datetime.timedelta(days=365)
+        user.is_password_expired = True
+        return user
 
     class Meta:
         verbose_name = _l("User")

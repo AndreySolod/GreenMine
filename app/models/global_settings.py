@@ -21,6 +21,19 @@ class GlobalSettings(db.Model):
     password_uppercase_symbol_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Required to use uppercase letters")})
     password_numbers_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Require to use numbers")})
     password_special_symbols_require: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Require to use specias symbols")})
+    authentication_method: so.Mapped[str] = so.mapped_column(sa.String(30), server_default="password", info={'label': _l("Authentication method")})
+    authentication_request_header_name: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Authentication request header name"), 'description': _l("A field name of request header, that contains a user login")}, server_default="X-User-Login")
+    authentication_request_header_allow_registration: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Allow registration by request header"), 'description': _l("If true and user, that specified in request header is not exist - than specified user will be created")})
+    
+    __table_args__ = (sa.CheckConstraint("authentication_method IN ('password', 'request_header')", name='authentication_method_check'), )
+
+    def get_authentication_method_name(self):
+        if self.authentication_method == 'password':
+            return _l('Password')
+        elif self.authentication_method == 'request_header':
+            return _l('Request header')
+        else:
+            return _l('Unknown')
 
 class ApplicationLanguage(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})

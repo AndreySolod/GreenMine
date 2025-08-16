@@ -124,29 +124,45 @@ def user_edit(user_id):
     return render_template('users/edit.html', **context)
 
 
-@bp.route('/delete', methods=["POST"])
+@bp.route('/<user_id>/delete', methods=["POST"])
 @login_required
-def user_delete():
-    fd = UserFormDelete()
-    if fd.validate_on_submit():
-        is_current_user = current_user.id == int(fd.user_id.data)
-        user = get_or_404(db.session, User, int(fd.user_id.data))
-        user_position_can_make_action_or_abort(current_user, user, 'delete')
-        if not has_user_role([UserHimself], user):
-            abort(403)
-        uid = user.id
-        db.session.delete(user)
-        db.session.commit()
-        logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete user #{user.id}")
-        flash(_l("User #%(uid)s: «%(title)s» sucessfully deleted", uid=uid, title=user.title), 'success')
-        if is_current_user:
-            logout_user()
-        return redirect(url_for('users.user_index'))
-    abort(400)
+def user_delete(user_id: str):
+    try:
+        user_id = int(user_id)
+    except (ValueError, TypeError):
+        abort(404)
+    is_current_user = current_user.id == user_id
+    user = get_or_404(db.session, User, user_id)
+    user_position_can_make_action_or_abort(current_user, user, 'delete')
+    if not has_user_role([UserHimself], user):
+        abort(403)
+    uid = user.id
+    db.session.delete(user)
+    db.session.commit()
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete user #{user.id}")
+    flash(_l("User #%(uid)s: «%(title)s» sucessfully deleted", uid=uid, title=user.title), 'success')
+    if is_current_user:
+        logout_user()
+    return redirect(url_for('users.user_index'))
 
 
 @bp.route('/login', methods=["GET", "POST"])
 def user_login():
+    if current_app.config["GlobalSettings"].authentication_method == 'request_header':
+        request_header_value = request.headers.get(current_app.config["GlobalSettings"].authentication_request_header_name)
+        if request_header_value is not None:
+            user = db.session.scalars(sa.select(User).where(sa.and_(User.login==request_header_value.strip(), User.archived == False))).first()
+            if user is None and current_app.config["GlobalSettings"].authentication_request_header_allow_registration:
+                user = User.create_random_user(request_header_value.strip())
+                db.session.add(user)
+                db.session.commit()
+            if user is not None:
+                login_user(user, remember=True)
+                next_page = request.args.get('next')
+                if not next_page or urlparse(next_page).netloc != '':
+                    next_page = url_for('users.user_show', user_id=user.id)
+                logger.info(f"User '{getattr(user, 'login', 'Anonymous')}' entered the system")
+                return redirect(next_page)
     form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('users.user_show', user_id=current_user.id))

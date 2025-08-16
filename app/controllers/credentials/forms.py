@@ -14,11 +14,9 @@ class CredentialForm(FlaskForm):
     def __init__(self, project_id, *args, **kwargs):
         super(CredentialForm, self).__init__(*args, **kwargs)
         self.check_wordlist_id.choices = [('0', '---')] + [(i[0], i[1]) for i in db.session.execute(sa.select(models.CheckWordlist.id, models.CheckWordlist.title))]
-        self.services.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Service).join(models.Service.host, isouter=True).join(models.Host.from_network, isouter=True).where(models.Network.project_id==project_id))]
         self.services.callback = url_for('networks.get_select2_service_data', project_id=project_id)
         self.services.locale = g.locale
         self.services.validate_funcs = lambda x: validate_service(project_id, x)
-        self.received_from.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(models.Network.project_id == project_id))]
         self.received_from.callback = url_for('networks.get_select2_host_data', project_id=project_id)
         self.received_from.locale = g.locale
         self.received_from.validate_funcs = lambda x: validate_host(project_id, x)
@@ -47,7 +45,6 @@ class CredentialEditForm(CredentialForm):
 class EditRelatedServicesForm(FlaskForm):
     def __init__(self, credential: models.Credential, *args, **kwargs):
         super(EditRelatedServicesForm, self).__init__(*args, **kwargs)
-        self.services.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Service).join(models.Service.host).join(models.Host.from_network).where(models.Network.project_id==credential.project_id)).all()]
         self.services.data = [str(i.id) for i in credential.services]
         self.services.locale = g.locale
         self.services.callback = url_for('networks.get_select2_service_data', project_id=credential.project_id)

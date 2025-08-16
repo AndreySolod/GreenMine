@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger("Nmap scanner action module")
 
 
-def action_run(target_networks: List[models.Network], target_ports: str, project_id: int, current_user_id,
+def action_run(targets: List[models.Network | models.Host], target_ports: str, project_id: int, current_user_id,
                scan_params: dict[str, bool], session: Session, scanning_host_id: Optional[int], locale: str="en",
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
                add_host_with_only_arp_response: bool=True, add_network_mutial_visibility: bool=True) -> Optional[bool]:
@@ -27,22 +27,24 @@ def action_run(target_networks: List[models.Network], target_ports: str, project
         return False
     scan_command = scanner.build_scan_command(scan_params)
     logger.info(f"Run nmap with args: {scan_command}")
-    scan_result, scan_error, _1, _2 = scanner.scan(list(map(lambda x: x.ip_address, target_networks)), target_ports, scan_command)
-    logger.info("Nmap run completed")
-    logger.warning(f"Error when scanning:\n{scan_error}")
-    try:
-        scan_result = scan_result.decode()
-    except Exception as e:
-        logger.error(f"Error when decoding nmap result: {e}")
-        return False
-    scanner.parse_and_update_database(scan_result, project_id=project_id, current_user_id=current_user_id, session=session,
-                                      ignore_closed_ports=ignore_closed_ports,
-                                      ignore_host_without_open_ports_and_arp_response=ignore_host_without_open_ports_and_arp_response,
-                                      add_host_with_only_arp_response=add_host_with_only_arp_response,
-                                      process_operation_system=scan_params["process_operation_system"],
-                                      scanning_host_id=scanning_host_id,
-                                      add_network_mutial_visibility=add_network_mutial_visibility,
-                                      locale=locale)
+    for target in targets:
+        logger.info(f"Run nmap by target {target}")
+        scan_result, scan_error, _1, _2 = scanner.scan(str(target.ip_address), target_ports, scan_command)
+        logger.info("Nmap run completed")
+        logger.warning(f"Error when scanning:\n{scan_error}")
+        try:
+            scan_result = scan_result.decode()
+        except Exception as e:
+            logger.error(f"Error when decoding nmap result: {e}")
+            return False
+        scanner.parse_and_update_database(scan_result, project_id=project_id, current_user_id=current_user_id, session=session,
+                                        ignore_closed_ports=ignore_closed_ports,
+                                        ignore_host_without_open_ports_and_arp_response=ignore_host_without_open_ports_and_arp_response,
+                                        add_host_with_only_arp_response=add_host_with_only_arp_response,
+                                        process_operation_system=scan_params["process_operation_system"],
+                                        scanning_host_id=scanning_host_id,
+                                        add_network_mutial_visibility=add_network_mutial_visibility,
+                                        locale=locale)
     return None
 
 

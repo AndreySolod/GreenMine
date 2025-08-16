@@ -4,6 +4,7 @@ _term() {
   echo "Caught SIGINT signal, stopping the server!"
   kill -SIGINT "$child"
   wait "$child"
+  exit $?
 }
 trap _term SIGINT
 trap _term SIGTERM

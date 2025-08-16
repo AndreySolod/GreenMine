@@ -256,12 +256,14 @@
 
 {% macro object_comments(object_with_comments, moment, comment_form, current_user, roles=none) %}
 <div class="row g-3">
+  {% if current_user.environment_setting.comment_order_desc %}
   <div class="col-2">
     {% if roles == none or roles.project_role_can_make_action(current_user, object_with_comments, 'add_comment') %}
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommentModal">
       <i class="fa-solid fa-square-plus"></i> {{ _("Add new comment") }}</button>
     {% endif %}
   </div>
+  {% endif %}
   <div class="col-12">
     {% if object_with_comments.comments|length != 0 %}
       <div class="comment-list" id="comment-list">
@@ -277,6 +279,14 @@
       </div>
       {% endif %}
   </div>
+  {% if current_user.environment_setting.comment_order_asc %}
+  <div class="col-2">
+    {% if roles == none or roles.project_role_can_make_action(current_user, object_with_comments, 'add_comment') %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommentModal">
+      <i class="fa-solid fa-square-plus"></i> {{ _("Add new comment") }}</button>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
 {% if roles == none or roles.project_role_can_make_action(current_user, object_with_comments, 'add_comment') %}
 <div class="modal fade" id="addCommentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">

@@ -95,10 +95,3 @@ class UserFormEdit(UserForm):
 class UserFormDelete(FlaskForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    user_id = wtforms.StringField(_l("%(field_name)s:", field_name=models.User.id.info["label"]), validators=[validators.DataRequired()])
-
-    def validate_user_id(form, field):
-        try:
-            field.data = int(field.data)
-        except (ValueError, TypeError):
-            raise validators.ValidationError("data must being an integer field")

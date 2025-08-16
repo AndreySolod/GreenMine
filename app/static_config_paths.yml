@@ -75,8 +75,9 @@ libraries:
       - "npm/node_modules/vis-network/dist/vis-network.min.js"
   ace:
     css:
-      - "js/ace/css/theme/monokai.css"
+      - "js/ace/css/theme/cobalt.css"
+      - "js/ace/css/ace.css"
     js:
       - "js/ace/src/ace.js"
       - "js/ace/src/mode-python.js"
-      - "js/ace/src/theme-monokai.js"
+      - "js/ace/src/theme-cobalt.js"

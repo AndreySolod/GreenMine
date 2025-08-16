@@ -1,4 +1,23 @@
 services:
+    nginx:
+        container_name: "nginx"
+        image: "nginx:latest"
+        restart: "always"
+        depends_on:
+            - greenmine
+        ports:
+            - "80:80"
+            - "443:443"
+        networks:
+            - innerNetwork
+        volumes:
+            - "./nginx/conf.d:/etc/nginx/conf.d:ro"
+        logging:
+            driver: "json-file"
+            options:
+                max-size: "10m"
+                max-file: "3"
+                compress: "true"
     greenmine:
         container_name: greenmine
         image: greenmine:1.4
@@ -17,10 +36,6 @@ services:
             - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
             - CELERY_BROKER_URL=redis://@redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
-        ports:
-            - 5000:5000
-        expose:
-            - 5000
         networks:
             - innerNetwork
         logging:
@@ -42,12 +57,12 @@ services:
             - "/etc/localtime:/etc/localtime:ro"
         environment:
             - ENVIRONMENT=PRODUCTION
-            - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
+            - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres # CHANGE HERE!
             - CELERY_BROKER_URL=redis://@redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
             - METASPLOIT_HOST=metasploit
             - METASPLOIT_PORT=55553
-            - METASPLOIT_PASSWORD=secret
+            - METASPLOIT_PASSWORD=secret # CHANGE HERE
         networks:
             - innerNetwork
         logging:
@@ -69,9 +84,9 @@ services:
         networks:
             - innerNetwork
         environment:
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=postgres
-            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres # CHANGE HERE!
+            - POSTGRES_PASSWORD=postgres # CHANGE HERE!
+            - POSTGRES_DB=postgres # CHANGE HERE!
         ports:
             - 5432:5432
         logging:
@@ -111,7 +126,7 @@ services:
         restart: always
         hostname: metasploit
         environment:
-            - MSFPASSWORD=secret
+            - MSFPASSWORD=secret # CHANGE HERE
         networks:
             - innerNetwork
         logging:

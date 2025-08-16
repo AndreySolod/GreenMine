@@ -34,8 +34,13 @@ def upgrade():
         batch_op.add_column(sa.Column("additional_attributes_script", sa.String(), nullable=True))
     
     with op.batch_alter_table("host", schema=None) as batch_op:
-        batch_op.add_column(sa.Column("ipidsequence_class", sa.String(70), server_default=""))
-        batch_op.add_column(sa.Column("ipidsequence_value", sa.String(70), server_default=""))
+        batch_op.add_column(sa.Column("ipidsequence_class", sa.String(70), server_default="", nullable=False))
+        batch_op.add_column(sa.Column("ipidsequence_value", sa.String(70), server_default="", nullable=False))
+    
+    with op.batch_alter_table('global_settings', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('authentication_method', sa.String(length=30), server_default='password', nullable=False))
+        batch_op.add_column(sa.Column('authentication_request_header_name', sa.String(length=50), server_default='X-User-Login', nullable=False))
+        batch_op.add_column(sa.Column('authentication_request_header_allow_registration', sa.Boolean(), server_default=sa.false(), nullable=False))
 
     # ### end Alembic commands ###
 
@@ -59,5 +64,10 @@ def downgrade():
     with op.batch_alter_table("host", schema=None) as batch_op:
         batch_op.drop_column("ipidsequence_class")
         batch_op.drop_column("ipidsequence_value")
-
+    
+    with op.batch_alter_table('global_settings', schema=None) as batch_op:
+        batch_op.drop_column('authentication_request_header_name')
+        batch_op.drop_column('authentication_method')
+        batch_op.drop_column('authentication_request_header_allow_registration')
+    
     # ### end Alembic commands ###

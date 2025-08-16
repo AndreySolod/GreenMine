@@ -46,6 +46,8 @@ def check_user_need_change_password(callback_endpoint: str, exempt_endpoint: Set
     def decorated(func):
         @functools.wraps(func)
         def wrapped(*args, **kwargs):
+            if not current_app.password_policy_manager.activate:
+                return func(*args, **kwargs)
             if not request.endpoint or request.endpoint in exempt_endpoint or request.blueprint in exempt_bp or current_user.is_anonymous or request.endpoint == callback_endpoint:
                 return func(*args, **kwargs)
             if current_user.is_password_expired or current_user.password_expired_date < datetime.datetime.now():
@@ -98,6 +100,7 @@ def check_password_complexity(password: str) -> List[LazyString]:
 
 class PasswordPolicyManager:
     def __init__(self, app: Optional[Flask]=None, change_password_callback: Optional[str]=None, exempt_endpoint: Set[str]=set(), exempt_bp: Set[str] = set()):
+        self.activate = True
         self.change_password_callback = change_password_callback
         exempt_endpoint.add('static')
         self.exempt_endpoint = exempt_endpoint
@@ -105,10 +108,12 @@ class PasswordPolicyManager:
         if app:
             self.init_app(app)
     def init_app(self, app: Flask):
+        app.extensions["PasswordPolicyManager"] = self
+        app.password_policy_manager = self
         if not self.change_password_callback:
             return None
         
-        if app.config["ACTIVATE_PASSWORD_POLICY"]:
+        if app.config["ACTIVATE_PASSWORD_POLICY"] and self.activate:
             @app.before_request
             @self.need_change_password
             def check_if_need_change_password_before_request():
