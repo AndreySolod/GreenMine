@@ -29,10 +29,6 @@ def upgrade():
         batch_op.drop_column('https_title')
         batch_op.drop_column('http_title')
     
-    with op.batch_alter_table('access_protocol', schema=None) as batch_op:
-        batch_op.add_column(sa.Column("additional_attributes_template", sa.String(), nullable=True))
-        batch_op.add_column(sa.Column("additional_attributes_script", sa.String(), nullable=True))
-    
     with op.batch_alter_table("host", schema=None) as batch_op:
         batch_op.add_column(sa.Column("ipidsequence_class", sa.String(70), server_default="", nullable=False))
         batch_op.add_column(sa.Column("ipidsequence_value", sa.String(70), server_default="", nullable=False))
@@ -56,10 +52,6 @@ def downgrade():
         batch_op.create_foreign_key(batch_op.f('fk_service_screenshot_http_id_file_data'), 'file_data', ['screenshot_http_id'], ['id'], ondelete='SET NULL')
         batch_op.drop_column('additional_attributes')
         batch_op.drop_column('ssl')
-    
-    with op.batch_alter_table('access_protocol', schema=None) as batch_op:
-        batch_op.drop_column("additional_attributes_template")
-        batch_op.drop_column("additional_attributes_script")
     
     with op.batch_alter_table("host", schema=None) as batch_op:
         batch_op.drop_column("ipidsequence_class")

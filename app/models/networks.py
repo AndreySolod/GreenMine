@@ -15,12 +15,13 @@ from sqlalchemy.orm.session import Session as SessionBase
 from .credentials import CredentialByService
 from .issues import IssueHasService
 from .datatypes import JSONType
-import wtforms
 import datetime
 import ipaddress
 from flask_babel import lazy_gettext as _l, pgettext
 from flask import current_app, has_app_context
 import importlib
+from pathlib import Path
+import os
 
 
 @project_object_with_permissions
@@ -425,8 +426,6 @@ class AccessProtocol(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     default_port: so.Mapped[List["DefaultPortAndTransportProto"]] = so.relationship(lazy='select', back_populates='access_protocol', cascade='all, delete-orphan', info={'label': _l("Default ports")})
     comment: so.Mapped[Optional[str]] = so.mapped_column(LimitedLengthString(60), info={'label': _l("Nmap-comment")})
-    additional_attributes_template: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Jinja2 additional parameters template"), 'form': wtforms.TextAreaField, 'was_escaped': True})
-    additional_attributes_script: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Additional parameter script template"), 'form': wtforms.TextAreaField, 'was_escaped': True})
 
     @property
     def treeselecttitle(self):
@@ -534,23 +533,32 @@ class Service(HasComment, db.Model, HasHistory):
         return self.host
 
     def render_additional_attributes_templates(self):
-        if self.access_protocol is None or self.access_protocol.additional_attributes_template in [None, ""]:
+        if self.access_protocol is None:
             return sanitizer.markup(pgettext("they", "(Missing)"))
         if not has_app_context():
             return ""
-        template = current_app.jinja_env.from_string(sanitizer.unescape(self.access_protocol.additional_attributes_template),
-                                                                  {"service": self, 'models': importlib.import_module('app.models'),
-                                                                   'roles': importlib.import_module('app.helpers.roles')})
+        template_path = Path(__file__).parent.parent / "templates" / "services" / "access_protocols_parameter_templates"
+        if not os.path.exists(template_path / (self.access_protocol.string_slug + ".html")):
+            return sanitizer.markup(pgettext("they", "(Missing)"))
+        with open(template_path / (self.access_protocol.string_slug + ".html"), "r") as f:
+            template = current_app.jinja_env.from_string(f.read(),
+                                                        {"service": self, 'models': importlib.import_module('app.models'),
+                                                         'roles': importlib.import_module('app.helpers.roles')})
         return sanitizer.markup(template.render())
     
     def add_additional_attributes_script(self):
-        if self.access_protocol is None or self.access_protocol.additional_attributes_script in [None, ""]:
+        if self.access_protocol is None:
             return None
         if not has_app_context():
             return None
-        return side_libraries.require_script(current_app.jinja_env.from_string(sanitizer.unescape(self.access_protocol.additional_attributes_script), {"service": self,
-                                                                                                                                   'models': importlib.import_module('app.models'),
-                                                                                                                                   'roles': importlib.import_module('app.helpers.roles')}).render())
+        scripts_path = Path(__file__).parent.parent / "templates" / "services" / "access_protocol_script_templates"
+        if not os.path.exists(scripts_path / (self.access_protocol.string_slug + ".js")):
+            return None
+        with open(scripts_path / (self.access_protocol.string_slug + ".js"), "r") as f:
+            return side_libraries.require_script(current_app.jinja_env.from_string(f.read(), {"service": self,
+                                                                                              'models': importlib.import_module('app.models'),
+                                                                                              'roles': importlib.import_module('app.helpers.roles')}).render())
+        return None
 
     __table_args__ = (sa.UniqueConstraint('host_id', 'port', 'transport_level_protocol_id', name='_unique_host_port_and_transport_protocol'),)
 

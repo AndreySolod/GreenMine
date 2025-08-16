@@ -628,9 +628,9 @@ def authenticated_only(f):
 
 
 def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> None:
+    import app.models as models
     """ Check global settings on application when create an application instance """
     with app.app_context():
-        from app.models import GlobalSettings, ApplicationLanguage
         def create_application_languages():
             root = os.path.join(os.path.dirname(app.root_path), 'default_database_value') # Migragion root
             init_db_val_file = os.path.join(root, 'application_languages.yml')
@@ -638,7 +638,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                 read_data = yaml.load(f, Loader=yaml.FullLoader)
             for app_language in read_data['ApplicationLanguage']:
                 ss = next(iter(app_language.keys()))
-                lang = ApplicationLanguage(string_slug=ss)
+                lang = models.ApplicationLanguage(string_slug=ss)
                 for key_name, key_value in app_language[ss].items():
                     setattr(lang, key_name, key_value)
                 db.session.add(lang)
@@ -650,14 +650,14 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             init_db_val_file = os.path.join(root, 'GlobalSettings.yml')
             with open(init_db_val_file, 'r') as f:
                 read_data = yaml.load(f, Loader=yaml.FullLoader)
-            gs = GlobalSettings()
-            simple_attrs = inspect(GlobalSettings).column_attrs.keys()
+            gs = models.GlobalSettings()
+            simple_attrs = inspect(models.GlobalSettings).column_attrs.keys()
             for key_name, key_value in read_data["GlobalSettings"].items():
                 if key_name in simple_attrs:
                     setattr(gs, key_name, key_value)
                 else:
                     try:
-                        now_attr_cls = inspect(GlobalSettings).relationships[key_name].entity.class_
+                        now_attr_cls = inspect(models.GlobalSettings).relationships[key_name].entity.class_
                         now_attr_value = db.session.scalars(sa.select(now_attr_cls).where(now_attr_cls.string_slug == key_value)).one()
                         setattr(gs, key_name, now_attr_value)
                     except (exc.MultipleResultsFound, exc.NoResultFound, AttributeError, KeyError):
@@ -665,7 +665,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                         exit()
             db.session.add(gs)
             db.session.commit()
-            gs = db.session.scalars(sa.select(GlobalSettings)).one()
+            gs = db.session.scalars(sa.select(models.GlobalSettings)).one()
             lang = gs.default_language
             db.session.expunge(gs)
             db.session.expunge(lang)
@@ -714,7 +714,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
             users = db.session.scalars(sa.select(models.User)).all()
             for u in users:
                 if u.preferred_language is None:
-                    u.preferred_language = db.session.scalars(sa.select(ApplicationLanguage).where(ApplicationLanguage.string_slug == 'auto')).one()
+                    u.preferred_language = db.session.scalars(sa.select(models.ApplicationLanguage).where(models.ApplicationLanguage.string_slug == 'auto')).one()
                 if u.position is None:
                     pos = db.session.scalars(sa.select(models.UserPosition).where(models.UserPosition.is_default == True)).first()
                     if pos is None:
@@ -742,15 +742,14 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
                         setattr(templ, attr_name, attr_value)
                     db.session.add(templ)
                     db.session.commit()
-
         
         #Application languages
         try:
-            auto_language = db.session.scalars(sa.select(ApplicationLanguage).where(ApplicationLanguage.string_slug == 'auto')).one()
+            auto_language = db.session.scalars(sa.select(models.ApplicationLanguage).where(models.ApplicationLanguage.string_slug == 'auto')).one()
         except (exc.NoResultFound, exc.MultipleResultsFound):
             logger.warning('Your database is corrupt. Must exist language with string_slug "auto". Recreating table "application_language"')
             logger.info("Cleaned table")
-            all_languages = db.session.scalars(sa.select(ApplicationLanguage)).all()
+            all_languages = db.session.scalars(sa.select(models.ApplicationLanguage)).all()
             for l in all_languages:
                 db.session.delete(l)
             db.session.commit()
@@ -759,20 +758,20 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
         except (exc.OperationalError): # database instance is not created yet
             logger.error("Table 'application_languages' does not exist. Try to execute 'flask db upgrade && FLASK_APP=GreenMine flask greenmine-command load-default-database'")
             sys.exit(1)
-        all_languages = db.session.scalars(sa.select(ApplicationLanguage.code).where(ApplicationLanguage.string_slug != 'auto')).all()
+        all_languages = db.session.scalars(sa.select(models.ApplicationLanguage.code).where(models.ApplicationLanguage.string_slug != 'auto')).all()
         app.config["LANGUAGES"] = all_languages
         # Values required for correct operation
         check_default_values()
             
         # Global settings
         try:
-            global_settings = db.session.scalars(sa.select(GlobalSettings)).one()
+            global_settings = db.session.scalars(sa.select(models.GlobalSettings)).one()
             # check if current global settings has an application language:
             if global_settings.default_language is None:
                 logger.warning('Default language of application is None. Set to language "Auto"')
                 global_settings.default_language = auto_language
                 db.session.commit()
-            global_settings = db.session.scalars(sa.select(GlobalSettings)).one()
+            global_settings = db.session.scalars(sa.select(models.GlobalSettings)).one()
             lang = global_settings.default_language
             db.session.expunge(global_settings)
             db.session.expunge(lang)
@@ -786,7 +785,7 @@ def check_global_settings_on_init_app(app: Flask, logger: logging.Logger) -> Non
         except exc.MultipleResultsFound:
             logger.warning("Your database is corrupt. Must exist only one instance of Global Settings")
             logger.info("Dropped all Global Settings Instance")
-            gss = db.session.scalars(sa.select(GlobalSettings)).all()
+            gss = db.session.scalars(sa.select(models.GlobalSettings)).all()
             for i in gss:
                 db.session.delete(i)
             db.session.commit()
