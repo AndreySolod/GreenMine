@@ -40,7 +40,7 @@ def service_to_host(host_id):
     except (exc.NoResultFound, exc.MultipleResultsFound):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'technical', 'port', 'access_protocol.title-input'],
+    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'technical', 'port', 'ssl', 'access_protocol.title-input'],
                          'base_select': lambda x: x.join(models.Service.host, isouter=True).where(models.Host.id == host_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request services from host #{host_id}")
     return get_bootstrap_table_json_data(request, additional_params)

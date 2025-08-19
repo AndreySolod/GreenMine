@@ -89,7 +89,7 @@ def user_new():
 
 @bp.route('/<int:user_id>/edit', methods=["GET", "POST"])
 @login_required
-def user_edit(user_id):
+def user_edit(user_id: int):
     user = get_or_404(db.session, User, user_id)
     user_position_can_make_action_or_abort(current_user, user, 'update')
     if not has_user_role([UserHimself], user):
@@ -99,6 +99,7 @@ def user_edit(user_id):
     current_object = CurrentObjectInfo(_l("Edit user #%(user_id)s", user_id=user.id), "fa-solid fa-user-pen")
     if form.validate_on_submit():
         form.populate_obj(db.session, user)
+        old_avatar_id = None
         if form.avatar.data:
             old_avatar_id = user.avatar_id
             avatar = FileData()

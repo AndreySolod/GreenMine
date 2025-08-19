@@ -25,9 +25,9 @@ def authentication_password_policy_settings():
         db.session.expunge(gs)
         current_app.config["GlobalSettings"] = gs
         if gs.authentication_method == 'password':
-            current_app.policy_manager.activate = True
+            current_app.password_policy_manager.activate = True
         else:
-            current_app.policy_manager.activate = False
+            current_app.password_policy_manager.activate = False
         flash(_l("Password policy settings have been successfully updated"), 'success')
         return redirect(url_for('admin.authentication_password_policy_settings'))
     elif request.method == 'GET':

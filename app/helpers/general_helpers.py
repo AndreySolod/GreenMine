@@ -461,7 +461,14 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     for a, val_a in filter_data.items():
         if a in simple_attrs:
             # a - простой атрибут
-            where_filter.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + str(val_a) + '%'))
+            # Если a - это атрибут типа boolean, то нужно использовать не сопоставление со строкой, а сопоставление со значением:
+            print(getattr(obj, a))
+            print(val_a)
+            print(isinstance(getattr(obj, a).type, sa.Boolean), type(getattr(obj, a)))
+            if isinstance(getattr(obj, a).type, sa.Boolean):
+                where_filter.append(getattr(obj, a) == (val_a == 'true'))
+            else: # Иначе - сопоставление со строкой
+                where_filter.append(sa.cast(getattr(obj, a), sa.String).ilike('%' + str(val_a) + '%'))
         elif a in rels or a in rels_uselist:
             # a - записывается как атрибут 'id' данного отношения, и поэтому интерпретируется соответствующе
             try:
@@ -538,6 +545,8 @@ def get_bootstrap_table_json_data(request, additional_params):
                         now_attr[col] = ''
                 elif isinstance(getattr(obj, col).type, sa.DateTime):
                     now_attr[col] = moment(getattr(i, col)).format('LLLL')
+                elif isinstance(getattr(obj, col).type, sa.Boolean):
+                    now_attr[col] = str(_l("Yes")) if getattr(i, col) else str(_l("No"))
                 else:
                     value_now_attr = getattr(i, col)
                     now_attr[col] = str(value_now_attr) if value_now_attr is not None else '-'

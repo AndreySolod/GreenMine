@@ -19,7 +19,6 @@
                                         data-show-pagination-switch="true"
                                         data-page-list="[10, 25, 50, 100, 500, All]"
                                         data-url="{{ url_for('tasks.projecttask_index_data', project_id=project.id) }}"
-                                        data-row-style="tasksRowStyle"
                                         data-cookie="true"
                                         data-cookie-id-table="ProjectTaskIndex"
                                         data-cookie-storage="localStorage">
@@ -42,6 +41,7 @@
                     title: '#',
                     align: 'center',
                     sortable: true,
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'tracker',
@@ -50,6 +50,7 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["ProjectTaskTracker"]|escapejs }}',
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'title',
@@ -57,6 +58,7 @@
                     align: 'center',
                     sortable: true,
                     filterControl: 'input',
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'description',
@@ -64,6 +66,7 @@
                     align: 'center',
                     sortable: true,
                     filterControl: 'input',
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'priority',
@@ -72,6 +75,7 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["ProjectTaskPriority"]|escapejs }}',
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'assigned_to',
@@ -80,6 +84,7 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["User"]|escapejs }}',
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'readiness',
@@ -87,6 +92,7 @@
                     align: 'center',
                     sortable: true,
                     filterControl: 'input',
+                    cellStyle: tasksCellStyle
                 },
                 {
                     field: 'state',
@@ -95,21 +101,28 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["TaskState"]|escapejs }}',
+                    cellStyle: tasksCellStyle
                 }
                 ],
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 buttonsClass: 'primary',
                 exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
-                onClickRow: function(row, element, field) {
+                onDblClickRow: function(row, element, field) {
                     location = "{{ url_for('tasks.projecttask_show', projecttask_id='__row_id') }}".replace("__row_id", row.id)
+                },
+                rowStyle: (value, row, index) => {
+                    return { classes: "with-context-menu-task", css: {"cursor": 'pointer', 'background-color': row.row_background_color} }
                 }
             })
           });
-    </script>
-    <script nonce="{{ csp_nonce() }}">
-        function tasksRowStyle(row, index) {
-            return { classes: "with-context-menu-task", css: {"cursor": 'pointer', 'background-color': row.background_color + " !important"} }
-        }
+        function tasksCellStyle(value, row, index, field) {
+            if(field !== "state") {
+                return { css: {"cursor": 'pointer', 'background-color': row.row_background_color} };
+            }
+            else {
+                return { css: {"cursor": 'pointer', 'background-color': row.task_background_color, 'color': row.task_text_color} };
+            }
+        };
         $(function () {
             $.contextMenu({
                 selector: '.with-context-menu-task',
@@ -120,10 +133,26 @@
                     else if(key === 'edit') {
                         window.open("{{ url_for('tasks.projecttask_edit', projecttask_id='__task_id') }}".replace('__task_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus()
                     }
+                    else if (key === 'delete') {
+                        if (confirm("{{ _('Are you sure you want to delete this task?') }}")) {
+                            let task_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                            fetch("{{ url_for('tasks.projecttask_delete', projecttask_id='__task_id') }}".replace('__task_id', task_id), {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token() }}'
+                                }
+                            }).then(response => {
+                                if (response.redirected) {
+                                    document.location = response.url;
+                                }
+                            });
+                        };
+                    }
                 },
                 items: {
                     "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
                     "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                    "delete": { name: '{{ _("Delete") }}' , icon: "delete"}
                 }
             });
         });

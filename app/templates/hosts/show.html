@@ -611,6 +611,14 @@
                 filterControl: 'input',
             },
             {
+                field: "ssl",
+                title: '{{ models.Service.ssl.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: `json:{"true":"{{ _('Yes') }}","false":"{{ _('No') }}" }`
+            },
+            {
                 field: 'access_protocol.title-input',
                 title: '{{ models.Service.access_protocol.info["label"] }}',
                 sortable: true,

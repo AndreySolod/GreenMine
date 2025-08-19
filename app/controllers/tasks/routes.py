@@ -4,7 +4,7 @@ from flask_login import current_user
 from flask import request, render_template, url_for, redirect, flash, abort, jsonify
 from app.models import ProjectTask, Project, ProjectTaskTracker, ProjectTaskPriority, User, TaskState, ProjectTaskTemplate
 import app.models as models
-from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, get_complementary_color
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.tasks.forms as forms
 import json
@@ -26,7 +26,9 @@ def projecttask_index_data():
     project_role_can_make_action_or_abort(current_user, ProjectTask(), 'index', project_id=project_id)
     additional_params = {'obj': ProjectTask, 'column_index': ['id', 'title', 'description', 'tracker', 'priority', 'state', 'readiness', 'assigned_to'],
                          'base_select': lambda x: x.where(ProjectTask.project_id==project_id),
-                         'print_params': [('background_color', lambda x: getattr(x.priority, 'color', None))]}
+                         'print_params': [('row_background_color', lambda x: getattr(x.priority, 'color', None)),
+                                          ('task_background_color', lambda x: getattr(x.state, 'color', None)),
+                                          ('task_text_color', lambda x: get_complementary_color(getattr(x.state, 'color', None)))]}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all tasks on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -85,6 +87,7 @@ def projecttask_index_on_me():
         filters[obj.__name__] = json.dumps(now_obj)
     ctx = get_default_environment(ProjectTask(project=project), 'index_on_me')
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
     context = {'project': project, 'filters': filters}
     return render_template('tasks/index-on-me.html', **context, **ctx)
 
@@ -267,8 +270,13 @@ def projecttask_edit(projecttask_id):
     return render_template('tasks/edit.html', form=form, **ctx)
 
 
-@bp.route('/<int:projecttask_id>/delete', methods=["POST"])
-def projecttask_delete(projecttask_id):
+@bp.route('/<projecttask_id>/delete', methods=["POST"])
+def projecttask_delete(projecttask_id: str):
+    try:
+        projecttask_id = int(projecttask_id)
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request delete task with non-integer projecttask_id {projecttask_id}")
+        abort(400)
     task = get_or_404(db.session, ProjectTask, projecttask_id)
     project_role_can_make_action_or_abort(current_user, task, 'delete')
     project_id = task.project_id

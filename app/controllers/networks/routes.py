@@ -129,7 +129,7 @@ def service_by_host_data():
     except (exc.MultipleResultsFound, exc.NoResultFound):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
-    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason'],
+    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'port', 'access_protocol.title-input', 'ssl', 'transport_level_protocol', 'port_state', 'port_state_reason'],
                          'base_select': lambda x: x.where(models.Service.host_id == host_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index on host #{host_id}")
     return get_bootstrap_table_json_data(request, additional_params)
@@ -214,7 +214,7 @@ def service_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'host.ip_address-input', 'host.device_type.id-select', 'host.device_vendor.id-select', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason', 'technical'],
+    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'host.ip_address-input', 'host.device_type.id-select', 'host.device_vendor.id-select', 'port', 'access_protocol.title-input', 'ssl', 'transport_level_protocol', 'port_state', 'port_state_reason', 'technical'],
                          'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)

@@ -251,6 +251,14 @@
                                     filterControl: 'input',
                                 },
                                 {
+                                    field: "ssl",
+                                    title: "{{ models.Service.ssl.info['label'] }}",
+                                    sortable: true,
+                                    align: 'center',
+                                    filterControl: "select",
+                                    filterData: `json:{"true":"{{ _('Yes') }}","false":"{{ _('No') }}" }`
+                                },
+                                {
                                     field: 'transport_level_protocol',
                                     title: '{{ models.Service.transport_level_protocol.info["label"] }}',
                                     sortable: true,
