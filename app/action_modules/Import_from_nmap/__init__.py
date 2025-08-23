@@ -20,11 +20,12 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
                add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
                scanning_host_id: Optional[int]=None, add_network_mutial_visibility: bool=True,
+               add_host_and_service_mutual_visibility: bool=False,
                session=db.session, locale: str='en'):
     scanner = NmapScanner(init_scanner=False)
     scanner.parse_and_update_database(nmap_file_data, project_id, current_user_id, session, ignore_closed_ports,
                                       ignore_host_without_open_ports_and_arp_response, add_host_with_only_arp_response, process_operation_system,
-                                      scanning_host_id, add_network_mutial_visibility, locale)
+                                      scanning_host_id, add_network_mutial_visibility, add_host_and_service_mutual_visibility, locale)
     return None
 
 
@@ -33,7 +34,8 @@ def exploit(filled_form: dict, running_user: int, default_options: dict, locale:
         action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
                    filled_form["ignore_host_without_open_ports_and_arp_response"],
                    filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"],
-                   filled_form["scanning_host"], session=session, locale=locale)
+                   filled_form["scanning_host"], filled_form["add_network_accessible"], filled_form["add_host_to_service_accessible"],
+                   session=session, locale=locale)
 
 
 class AdminOptionsForm(FlaskForm):
@@ -57,7 +59,8 @@ class ModuleInitForm(FlaskForm):
                                   description=_l("The host from which or through which the scan was performed. Affects the mutual visibility of hosts/services with the specified one."),
                                   validators=[validators.Optional()],
                                   attr_title="treeselecttitle")
-    add_network_accessible = wtforms.BooleanField(_l("Automatically add mutual visibility of networks"), default=True)
+    add_network_accessible = wtforms.BooleanField(_l("Automatically add mutual visibility of networks:"), default=True)
+    add_host_to_service_accessible = wtforms.BooleanField(_l("Automatically add mutual visibility of hosts and service:"), default=False)
     project_id = wtforms.HiddenField(_l("Project ID:"), validators=[validators.InputRequired()])
     submit = wtforms.SubmitField(_l("Import"))
 

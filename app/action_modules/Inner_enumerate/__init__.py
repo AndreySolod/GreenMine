@@ -66,7 +66,7 @@ def exploit(filled_form: dict, running_user_id: int, default_options: dict, loca
     logger.info(f"Running module <Inner enumerate> by ID: {running_user_id}")
     with so.sessionmaker(bind=db.engine)() as session:
         for i in filled_form["targets"]:
-            services = session.scalars(sa.select(models.Service).where(models.Service.host_id == i)).all()
+            services = session.scalars(sa.select(models.Service).where(models.Service.host_id == int(i))).all()
             for service in services:
                 if filled_form["check_proto"]:
                     if service.access_protocol is not None and service.access_protocol.string_slug in ('http', 'https'):

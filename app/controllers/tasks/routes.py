@@ -4,7 +4,7 @@ from flask_login import current_user
 from flask import request, render_template, url_for, redirect, flash, abort, jsonify
 from app.models import ProjectTask, Project, ProjectTaskTracker, ProjectTaskPriority, User, TaskState, ProjectTaskTemplate
 import app.models as models
-from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, get_complementary_color
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, get_complementary_color, BootstrapTableSearchParams
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.tasks.forms as forms
 import json
@@ -24,11 +24,12 @@ def projecttask_index_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index all tasks with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, ProjectTask(), 'index', project_id=project_id)
-    additional_params = {'obj': ProjectTask, 'column_index': ['id', 'title', 'description', 'tracker', 'priority', 'state', 'readiness', 'assigned_to'],
-                         'base_select': lambda x: x.where(ProjectTask.project_id==project_id),
-                         'print_params': [('row_background_color', lambda x: getattr(x.priority, 'color', None)),
-                                          ('task_background_color', lambda x: getattr(x.state, 'color', None)),
-                                          ('task_text_color', lambda x: get_complementary_color(getattr(x.state, 'color', None)))]}
+    additional_params: BootstrapTableSearchParams = {'obj': ProjectTask,
+                                                     'column_index': ['id', 'title', 'description', 'tracker', 'priority', 'state', 'readiness', 'assigned_to'],
+                                                     'base_select': lambda x: x.where(ProjectTask.project_id==project_id),
+                                                     'print_params': [('row_background_color', lambda x: getattr(x.priority, 'color', None)),
+                                                                      ('task_background_color', lambda x: getattr(x.state, 'color', None)),
+                                                                      ('task_text_color', lambda x: get_complementary_color(getattr(x.state, 'color', None)))]}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all tasks on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -63,9 +64,10 @@ def projecttask_index_on_me_data():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index all tasks on user with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, ProjectTask(), 'index', project_id=project_id)
-    additional_params = {'obj': ProjectTask, 'column_index': ['id', 'title', 'description', 'tracker', 'priority', 'state', 'readiness', 'assigned_to'],
-                         'base_select': lambda x: x.where(db.and_(ProjectTask.project_id==project_id, ProjectTask.assigned_to_id==current_user.id)),
-                         'print_params': [('background_color', lambda x: getattr(x.priority, 'color', None))]}
+    additional_params: BootstrapTableSearchParams = {'obj': ProjectTask,
+                                                     'column_index': ['id', 'title', 'description', 'tracker', 'priority', 'state', 'readiness', 'assigned_to'],
+                                                     'base_select': lambda x: x.where(db.and_(ProjectTask.project_id==project_id, ProjectTask.assigned_to_id==current_user.id)),
+                                                     'print_params': [('background_color', lambda x: getattr(x.priority, 'color', None))]}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all tasks on user on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 

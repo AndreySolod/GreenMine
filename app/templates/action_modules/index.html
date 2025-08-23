@@ -48,8 +48,7 @@
         rowStyle: function(row, index) {
             return {css: { cursor: 'pointer' } };
         },
-        onClickRow: function(row, element, field) {
-            z = row._data
+        onDblClickRow: function(row, element, field) {
             location = ("{{ url_for('action_modules.module_run', project_id=project.id, module_name='__module_name') }}".replace('__module_name', row._data["action-module-name"]))
         },
         icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")

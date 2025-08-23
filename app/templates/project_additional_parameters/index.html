@@ -18,7 +18,7 @@
                             {% for field in grouped_fields[group] %}
                             <tr class="user-text-data">
                                 <td><h6 data-toggle="tooltip" data-placement="top" data-bs-title="{{ field.field_type.help_text|suppress_none|safe }}">{{ field.field_type.title|suppress_none }}</h6>{{ field.field_type.description|suppress_none|safe }}</td>
-                                {% if field.field_type.field_type == 'BooleanField' %}
+                                {% if field.field_type.field_type == models.ProjectAdditionalParameterFieldType.BooleanField %}
                                 {% if field.data == "True" %}
                                 <td>{{ _("Yes") }}</td>
                                 {% else %}

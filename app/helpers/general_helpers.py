@@ -9,7 +9,7 @@ import datetime
 import functools
 import yaml
 import sys
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any, TypedDict, Callable, TypeVar, Required, NotRequired
 from flask_socketio import disconnect
 from flask_login import current_user
 from flask import url_for, abort, g, jsonify, Flask, Request, current_app
@@ -21,6 +21,7 @@ from sqlalchemy import func
 import sqlalchemy.exc as exc
 from sqlalchemy.inspection import inspect
 import sqlalchemy.orm as so
+import sqlalchemy.sql.selectable as sa_selectable
 from bs4 import BeautifulSoup
 from sqlalchemy.orm.session import Session
 import os
@@ -32,6 +33,23 @@ from pathlib import Path
 
 
 def validates_ip(address: str, error_msg: str = _l("Incorrect IP-address"), error_type: Exception = ValueError) -> str:
+    """
+    Validates an IP address against a regular expression pattern.
+
+    This function checks if the provided `address` is a valid IPv4 address. If the address is valid, it is returned as is.
+    If the address is invalid, an exception of type `error_type` is raised with the message `error_msg`.
+
+    Args:
+        address (str): The IP address to validate.
+        error_msg (str, optional): The error message to raise if the IP address is invalid. Defaults to "Incorrect IP-address".
+        error_type (Exception, optional): The type of exception to raise if the IP address is invalid. Defaults to ValueError.
+
+    Returns:
+        str: The validated IP address.
+
+    Raises:
+        Exception: If the IP address is invalid, an exception of type `error_type` is raised with the message `error_msg`.
+    """
     pattern = r"^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
     if re.match(pattern, address):
         return address
@@ -83,7 +101,7 @@ def get_complementary_color(color: str) -> str:
     return comp_color
 
 
-def state_button(state, is_archived: bool = False):
+def state_button(state, is_archived: bool = False) -> str:
     rand_string = random_string(15)
     if not is_archived:
         res = f'''<div class="btn-group">
@@ -388,7 +406,7 @@ def bootstrap_table_argument_parsing(request: Request) -> Tuple[str, str, str, O
     return search, sort, order, offset, limit, filter_data, multi_sort
 
 
-def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=None):
+def find_data_by_request_params(obj: Any, request: Request, column_index: Optional[List[str]]=None):
     #db.engine.echo = True
     ''' Выполняет поиск заданных объектов типа obj, получая параметры поиска из запроса (request). Возвращает 2 sql-запроса: на получение всех объектов, соответствующих заданным параметрам, а также на получение количества таких объектов. Для получения соответствующих объектов, нужно вызвать session.scalars(sql).all() '''
     # Собираем аргументы
@@ -522,15 +540,25 @@ def find_data_by_request_params(obj, request, column_index: Optional[List[str]]=
     return sql, sql_count
 
 
-def get_bootstrap_table_json_data(request, additional_params):
-    obj = additional_params['obj'] # Объект поиска
+T = TypeVar('T')
+
+
+class BootstrapTableSearchParams(TypedDict):
+    obj: Required[T] # Объект поиска
+    column_index: Required[List[str]] # Список столбцов, которые будут отображаться, и по которым будет производиться поиск.
+    print_params: NotRequired[List[Tuple[str, Callable[[T], str]]]] # Параметры отображения заданной строки на экране (такие как раскраска в цвета и т.п.).
+    base_select: Required[Callable[[sa_selectable.Select], sa_selectable.Select]] # Базовый запрос, который будет использоваться для поиска данных.
+
+
+def get_bootstrap_table_json_data(request: Request, additional_params: BootstrapTableSearchParams):
+    obj = additional_params['obj']
     if 'column_index' in additional_params:
-        column_index = additional_params['column_index'] # Список столбцов, которые будут отображаться, и по которым будет производиться поиск.
+        column_index = additional_params['column_index']
     else:
         column_index = obj.Meta.column_index
-    print_params = additional_params.get('print_params') # Параметры отображения заданной строки на экране (такие как раскраска в цвета и т.п.).
+    print_params = additional_params.get('print_params')
     sql, sql_count = find_data_by_request_params(obj, request, column_index=column_index)
-    sql = db.session.scalars(additional_params["base_select"](sql)).all() # base_select - это условия, дополнительно накладываемые на sql-запрос (помимо параметров запроса)
+    sql = db.session.scalars(additional_params["base_select"](sql)).all()
     # Теперь сохраняем данные в json и возвращаем их:
     lst = []
     for i in sql:

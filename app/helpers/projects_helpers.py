@@ -5,6 +5,7 @@ from flask_socketio import rooms
 from .general_helpers import utcnow
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.attributes import get_history
 import functools
 import sqlalchemy as sa
 import sqlalchemy.exc as exc
@@ -172,7 +173,7 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
             continue
         object_class = obj.__class__
         history_class = inspect(obj.__class__).relationships['history'].entity.class_
-        columns = [(i.columns[0].name, i.columns[0].info['label']) for i in inspect(object_class).column_attrs]
+        columns: List[Tuple[str, str]] = [(i.columns[0].name, i.columns[0].info['label']) for i in inspect(object_class).column_attrs]
         relationships = [(i.key, i.info['label']) for i in inspect(object_class).relationships if not i.uselist]
         list_m2m_relationships = [i for i in inspect(object_class).relationships if i.uselist and i.key not in ['comments', 'history']]
         attrs = inspect(obj).attrs
@@ -181,16 +182,16 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
         relationships_already_added = []
         with force_locale('en'): # all param names only in default locale
             for attr_name, attr_label in columns: # added simple_attrs to history
-                if len(attrs[attr_name].history.added) != 0 and not attr_name.startswith("updated_by"):
+                if len(get_history(obj, attr_name).added) != 0 and not attr_name.startswith("updated_by"):
                     changed = True
                     if not attr_name.endswith("_id"):
-                        if len(attrs[attr_name].history.deleted) == 0:
+                        if len(get_history(obj, attr_name).deleted) == 0:
                             old_value = ''
                         else:
-                            old_value = attrs[attr_name].history.deleted[0]
+                            old_value = get_history(obj, attr_name).deleted[0]
                         if isinstance(old_value, str):
                             old_value = sanitizer.sanitize(old_value)
-                        new_value = attrs[attr_name].history.added[0]
+                        new_value = get_history(obj, attr_name).added[0]
                         if isinstance(new_value, str):
                             new_value = sanitizer.sanitize(new_value)
                         changes["changes"].append({"action": "modify_paramether", "attrs": {'lazy_name': str(attr_label), "old_value": str(old_value),
@@ -198,11 +199,11 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
                     else:
                         an = attr_name[:len(attr_name) - 3:]
                         attr_cls = inspect(obj.__class__).relationships[an].entity.class_
-                        old_id = attrs[attr_name].history.deleted[0]
+                        old_id = get_history(obj, attr_name).deleted[0]
                         if old_id is None:
                             old_id = 0
                         old_val = db.session.get(attr_cls, old_id)
-                        new_id = attrs[attr_name].history.added[0]
+                        new_id = get_history(obj, attr_name).added[0]
                         if new_id is None:
                             new_id = 0
                         new_val = db.session.get(attr_cls, new_id)
@@ -218,8 +219,8 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
                 if attr_name in relationships_already_added:
                     # they was being added in simple_attrs via '_id' syntax
                     continue
-                old_val = attrs[attr_name].history.deleted
-                new_val = attrs[attr_name].history.added
+                old_val = get_history(obj, attr_name).deleted
+                new_val = get_history(obj, attr_name).added
                 if old_val and new_val:
                     changes['changes'].append({"action": "modify_paramether", "attrs": {'lazy_name': str(attr_label), "old_value": old_val[0].title, "new_value": new_val[0].title}})
                     changed = True

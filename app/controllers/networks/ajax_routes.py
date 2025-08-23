@@ -4,7 +4,7 @@ from app import db, logger
 import json
 import app.models as models
 from app.controllers.networks import bp
-from app.helpers.general_helpers import get_bootstrap_table_json_data, bootstrap_table_argument_parsing, get_complementary_color
+from app.helpers.general_helpers import get_bootstrap_table_json_data, bootstrap_table_argument_parsing, get_complementary_color, BootstrapTableSearchParams
 from flask import abort, request, jsonify, current_app
 from flask_login import current_user
 from app.helpers.roles import project_role_can_make_action_or_abort
@@ -23,8 +23,9 @@ def host_to_network(network_id):
     except (exc.MultipleResultsFound, exc.NoResultFound):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Host, 'column_index': ['id', 'title', 'ip_address', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
-                         'base_select': lambda x: x.where(models.Host.from_network_id == network_id)}
+    additional_params: BootstrapTableSearchParams = {'obj': models.Host,
+                                                     'column_index': ['id', 'title', 'ip_address', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
+                                                     'base_select': lambda x: x.where(models.Host.from_network_id == network_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request hosts from network #{network_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -40,8 +41,9 @@ def service_to_host(host_id):
     except (exc.NoResultFound, exc.MultipleResultsFound):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'technical', 'port', 'ssl', 'access_protocol.title-input'],
-                         'base_select': lambda x: x.join(models.Service.host, isouter=True).where(models.Host.id == host_id)}
+    additional_params: BootstrapTableSearchParams = {'obj': models.Service,
+                                                     'column_index': ['id', 'title', 'technical', 'port', 'ssl', 'access_protocol.title-input'],
+                                                     'base_select': lambda x: x.join(models.Service.host, isouter=True).where(models.Host.id == host_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request services from host #{host_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -191,10 +193,11 @@ def services_by_port_data(port, transport_level_protocol):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index services by port with non-integer paramethers {request.args.get('project_id')}, {port}, {transport_level_protocol}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
-    additional_params = {'obj': models.Service, 'column_index': ['id', 'title', 'host.ip_address-input', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason'],
-                         'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network)
-                         .where(sa.and_(models.Network.project_id==project_id, models.Service.port == port, models.Service.transport_level_protocol_id == transport_level_protocol,
-                                        models.Host.excluded == False))}
+    additional_params: BootstrapTableSearchParams = {'obj': models.Service,
+                                                     'column_index': ['id', 'title', 'host.ip_address-input', 'port', 'access_protocol.title-input', 'transport_level_protocol', 'port_state', 'port_state_reason'],
+                                                     'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network)
+                                                                               .where(sa.and_(models.Network.project_id==project_id, models.Service.port == port, models.Service.transport_level_protocol_id == transport_level_protocol,
+                                                                                              models.Host.excluded == False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 

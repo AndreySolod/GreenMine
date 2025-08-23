@@ -14,21 +14,23 @@ from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.inspection import inspect
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from flask_babel import lazy_gettext as _l
-from typing import Callable, Optional
+from typing import Callable, Optional, Any
 from jinja2.filters import Markup
 
 
-def populate_object(session: SessionBase, o, field: str, value):
+def populate_object(session: SessionBase, o: Any, field: str, value):
     simple_fields = inspect(o.__class__).column_attrs.keys()
     relations = inspect(o.__class__).relationships.keys()
     if field in simple_fields and not field.endswith('_id'):
         column = inspect(o.__class__).column_attrs[field].columns[0]
         if column.type.python_type == datetime.timedelta and value is not None:
             setattr(o, field, datetime.timedelta(hours=value))
-        elif column.type.python_type == str and (column.type.length or  column.info.get('was_escaped')):
+        elif column.type.python_type == str and (column.type.length or column.info.get('was_escaped')):
             setattr(o, field, sanitizer.escape(value, column.type.length))
         elif column.type.python_type == str and not column.type.length and not column.info.get('was_escaped'):
             setattr(o, field, sanitizer.sanitize(value)) # Bleached data if they are does not have length - this is fields like WysiwygField
+        elif column.type.__class__.__name__ == 'Enum':
+            setattr(o, field, getattr(column.type.python_type, value))
         else:
             setattr(o, field, value)
     elif (field in simple_fields) and value is not None and (int(value) > 0):
@@ -68,6 +70,8 @@ class FlaskForm(flask_wtf.FlaskForm):
                     field.data = getattr(o, name).seconds // 60 // 60
                 elif isinstance(field, fields.StringField) or isinstance(field, fields.TextAreaField):
                     field.data = sanitizer.unescape((getattr(o, name)))
+                elif inspect(o.__class__).column_attrs[name].columns[0].type.__class__.__name__ == 'Enum':
+                    field.data = getattr(o, name).name
                 else:
                     field.data = getattr(o, name)
             elif (hasattr(o, name)):

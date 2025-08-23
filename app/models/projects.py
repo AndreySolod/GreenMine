@@ -1,6 +1,5 @@
 from app import db, sanitizer
 from app.models.files import FileDirectory
-from app.helpers.general_helpers import utcnow, default_string_slug
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
 from typing import List, Optional
 import sqlalchemy as sa
@@ -14,18 +13,19 @@ from flask_babel import lazy_gettext as _l
 from flask import url_for
 from bs4 import BeautifulSoup
 from .networks import Network, Host, Service
+from .datatypes import ID, StringSlug, CreatedAt, UpdatedAt, Archived
 
 
 @project_object_with_permissions
 class Project(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(50), index=True, info={'label': _l("Title")})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    archived: so.Mapped[Archived]
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description"), 'description': _l("Project description - additional information not specified in other fields")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, index=True, info={'label': _l("Created at"), 'description': _l("The date and time the project was created. It is filled in automatically")})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l("Created by")})
     created_by: so.Mapped["User"] = so.relationship(lazy='joined', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={'label': _l("Updated at")})
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
     updated_by: so.Mapped["User"] = so.relationship(lazy='joined', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     start_at: so.Mapped[datetime.date] = so.mapped_column(info={'label': _l("Start date"), 'description': _l("Start date of work on the project")})
@@ -106,8 +106,8 @@ def update_project_default_value_if_not_exist(session):
 
 @project_enumerated_object
 class ProjectRole(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': 'ID'})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(35), info={'label': _l("Title")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
     actions: so.Mapped[List["RoleHasProjectObjectAction"]] = so.relationship(lazy='select', back_populates="role", cascade="all,delete-orphan", info={'label': _l("Actions on project objects"), 'on_form': False})
@@ -130,7 +130,7 @@ class UserRoleHasProject(db.Model):
 
 
 class RoleHasProjectObjectAction(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     role_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectRole.id, ondelete='CASCADE'), info={'label': _l("Project role")})
     role: so.Mapped[ProjectRole] = so.relationship(lazy='joined', back_populates='actions', info={'label': _l("Project role")})
     object_class_name: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Project object")})

@@ -136,7 +136,7 @@ class NmapScanner:
     def parse_and_update_database(self, nmap_file_data: str, project_id: int, current_user_id: int, session: Session,
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
                add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
-               scanning_host_id: Optional[int]=None, add_network_mutial_visibility: bool=True,
+               scanning_host_id: Optional[int]=None, add_network_mutial_visibility: bool=True, add_host_and_service_mutual_visibility: bool=True,
                locale: str='en'):
         ''' Parse nmap file and create host/service object in project.
         Paramethers:
@@ -150,6 +150,8 @@ class NmapScanner:
         :param scanning_host_id: scanning host's id which or through which the scan was performed. Added as a mutual visibility with this service;
         :param session: sqlalchemy database session object;
         :param locale: locale of user, that running a task;
+        :param add_network_mutual_visibility: mark network in which scanned host are placed and scanning network as mutual visibility;
+        :param add_host_and_service_mutual_visibility: mark scanning service as accessible from scanning host;
         Features:
         - If network to which host belongs does not exist, the host is skipped;
         - If port transport level protocol (tcp, udp, sctp, etc) does not exist in database like string slug field, the port is skipped '''
@@ -259,6 +261,9 @@ class NmapScanner:
                 else:
                     serv.port_state = port_state_filtered
                 serv.port_state_reason = port.find('state').get('reason').strip()
+                # Host and service mutual visibility
+                if add_host_and_service_mutual_visibility and scanning_host is not None:
+                    scanning_host.accessible_services.add(serv)
                 # processing service
                 service_attr = port.find('service')
                 if service_attr is not None:

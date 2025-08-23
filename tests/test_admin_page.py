@@ -367,7 +367,7 @@ def test_project_additional_parameters(auth_client: FlaskClient):
     assert group_fields.json["total"] == db.session.scalars(sa.select(sa.func.count(models.ProjectAdditionalField.id)).where(models.ProjectAdditionalField.group_id == group_id.id)).one(), f"Incorrect total elements for project additional fields group"
     parameter_new_get = auth_client.get(url_for('admin.project_additional_parameters_new', _external=False))
     assert parameter_new_get.status_code == 200, f"Cannot open project additional parametes create page. Status code {parameter_new_get.status_code}"
-    parameter_fields = {'title': "New parameter", 'string_slug': "new_parameter", "help_text": "Test created parameter", "description": "This is a new parameter", "field_type": list(models.ProjectAdditionalField.get_all_field_names().keys())[0], "group_id": 1}
+    parameter_fields = {'title': "New parameter", 'string_slug': "new_parameter", "help_text": "Test created parameter", "description": "This is a new parameter", "field_type": [i.name for i in models.ProjectAdditionalParameterFieldType][0], "group_id": 1}
     parameter_new = auth_client.post(url_for('admin.project_additional_parameters_new', _external=False), follow_redirects=True, data=parameter_fields)
     assert parameter_new.status_code == 200, f"Cannot create new project additional parameter. Status code {parameter_new.status_code}"
     assert len(parameter_new.history) == 1, f"Incorrect count of redirect history after create new project additional parameter: {len(parameter_new.history)}"
@@ -375,17 +375,23 @@ def test_project_additional_parameters(auth_client: FlaskClient):
     param = db.session.scalars(sa.select(models.ProjectAdditionalField).where(models.ProjectAdditionalField.string_slug == 'new_parameter')).first()
     assert param is not None, f"Cannot find new project additional parameter"
     for key, value in parameter_fields.items():
-        assert getattr(param, key) == value, f"Cannot change project additional field parameter {key}"
+        if key == 'field_type':
+            assert param.field_type.name == value, f"Cannot change project additional field parameter {key}"
+        else:
+            assert getattr(param, key) == value, f"Cannot change project additional field parameter {key}"
     edit_get = auth_client.get(url_for('admin.project_additional_parameters_edit', _external=False, parameter_id=param.id))
     assert edit_get.status_code == 200, f"Cannot open project additional parameter edit page. Status code {edit_get.status_code}"
-    parameter_fields = {'title': "Edit parameter", 'string_slug': "edit_parameter", "help_text": "Test edited parameter", "description": "This is an edited parameter", "field_type": list(models.ProjectAdditionalField.get_all_field_names().keys())[1], "group_id": 2}
+    parameter_fields = {'title': "Edit parameter", 'string_slug': "edit_parameter", "help_text": "Test edited parameter", "description": "This is an edited parameter", "field_type": [i.name for i in models.ProjectAdditionalParameterFieldType][1], "group_id": 2}
     edit_post = auth_client.post(url_for('admin.project_additional_parameters_edit', parameter_id=param.id, _external=False), follow_redirects=True, data=parameter_fields)
     assert edit_post.status_code == 200, f"Cannot edit project additional parameter. Status code: {edit_post.status_code}"
     assert len(edit_post.history) == 1, f"Incorrect count of redirect history after edit project additional parameter: {len(edit_post.history)}"
     assert urlparse(edit_post.request.url).path == url_for('admin.project_additional_parameters_index', _external=False), "Redirect after edit project additional parameter is not to parameters index page"
     db.session.refresh(param)
     for key, value in parameter_fields.items():
-        assert getattr(param, key) == value, f"Cannot change project additional field parameter{key}"
+        if key == 'field_type':
+            assert param.field_type.name == value, f"Cannot change project additional field parameter {key}"
+        else:
+            assert getattr(param, key) == value, f"Cannot change project additional field parameter{key}"
     # Delete request
     delete_req = auth_client.post(url_for('admin.project_additional_parameter_delete', parameter_id=param.id, _external=False), follow_redirects=True)
     assert delete_req.status_code == 200, f"Cannot delete project additional parameter. Status code {delete_req.status_code}"
@@ -439,12 +445,16 @@ def test_password_policy(auth_client: FlaskClient):
     page = auth_client.get(url_for('admin.authentication_password_policy_settings', _external=False))
     assert page.status_code == 200, f"Cannot open authentication password policy page. Status code: {page.status_code}"
     post_data = {'password_min_length': 5, 'password_lifetime': 1234, 'password_lowercase_symbol_require': True, 'password_uppercase_symbol_require': True,
-                 'password_numbers_require': True, 'password_special_symbols_require': True}
+                 'password_numbers_require': True, 'password_special_symbols_require': True, 'authentication_method': "PASSWORD",
+                 "authentication_request_header_name": "X-User-Login"}
     policy_post = auth_client.post(url_for('admin.authentication_password_policy_settings', _external=False), follow_redirects=True, data=post_data)
     assert policy_post.status_code == 200, f"Cannot change password policy. Status code: {policy_post.status_code}"
     gs = db.session.scalars(sa.select(models.GlobalSettings)).first()
     for key, value in post_data.items():
-        assert getattr(gs, key) == value, f"Cannot set attribute {key} to password policy in global settings"
+        if key == 'authentication_method':
+            assert gs.authentication_method == models.AuthenticationMethod.PASSWORD, f"Cannot set authentication method to password policy in global settings"
+        else:
+            assert getattr(gs, key) == value, f"Cannot set attribute {key} to password policy in global settings"
 
 
 def test_user_position_actions(auth_client: FlaskClient):

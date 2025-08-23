@@ -19,14 +19,14 @@
                         <tbody>
                             <tr>
                                 <td>{{ models.GlobalSettings.authentication_method.info["label"] }}:</td>
-                                <td>{{ global_settings.get_authentication_method_name() }}</td>
+                                <td>{{ global_settings.authentication_method.value }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        {% if global_settings.authentication_method == 'password' %}
+        {% if global_settings.authentication_method == models.AuthenticationMethod.PASSWORD %}
         <div class="col-sm-12 col-md-6 col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -64,7 +64,7 @@
                 </div>
             </div>
         </div>
-        {% elif global_settings.authentication_method == 'request_header' %}
+        {% elif global_settings.authentication_method == models.AuthenticationMethod.REQUEST_HEADER %}
         <div class="col-sm-12 col-md-6 col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -105,9 +105,9 @@
             {{ form_element(form, form.authentication_method, inline=True) }}
             {% set password_hidden = 'hidden' %}
             {% set request_hidden = 'hidden' %}
-            {% if form.authentication_method.data == 'password' %}
+            {% if form.authentication_method.data == models.AuthenticationMethod.PASSWORD.name %}
                 {% set password_hidden = ''  %}
-            {% elif form.authentication_method.data == 'request_header' %}
+            {% elif form.authentication_method.data == models.AuthenticationMethod.REQUEST_HEADER.name %}
                 {% set request_hidden = '' %}
             {% endif %}
             <div id="password-authentication-attributes" {{ password_hidden }}>
@@ -137,7 +137,7 @@
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
     document.getElementById("{{ form.authentication_method.id }}").addEventListener("change", function() {
-        if (this.value === "password") {
+        if (this.value === "{{ models.AuthenticationMethod.PASSWORD.name }}") {
             document.getElementById("password-authentication-attributes").hidden = false;
             document.getElementById("request-header-authentication-attributes").hidden = true;
         } else {

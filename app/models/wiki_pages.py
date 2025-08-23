@@ -1,18 +1,17 @@
 from app import db
-from app.helpers.general_helpers import utcnow
-import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from typing import List, Optional
 from flask_babel import lazy_gettext as _l
+from .datatypes import ID, CreatedAt, UpdatedAt
 
 
 class WikiPage(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys="WikiPage.created_by_id", info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l("Updated by")})
     updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="WikiPage.updated_by_id", info={'label': _l("Updated by")}) # type: ignore
     title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l("Title")})
@@ -41,11 +40,11 @@ class WikiPage(db.Model):
 
 
 class WikiDirectory(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys="WikiDirectory.created_by_id", info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l("Updated by")})
     updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="WikiDirectory.updated_by_id", info={'label': _l("Updated by")}) # type: ignore
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})

@@ -1,6 +1,6 @@
 from app import db, logger
 from flask import flash, has_request_context
-from app.helpers.general_helpers import default_string_slug, utcnow, get_complementary_color
+from app.helpers.general_helpers import get_complementary_color
 from app.helpers.admin_helpers import project_enumerated_object, project_status_object, project_object_with_permissions
 from flask import url_for
 from typing import List, Set, Optional
@@ -21,6 +21,7 @@ from flask_babel import lazy_gettext as _l
 from flask_socketio import emit
 from flask_login import current_user
 from app.extensions.moment import moment
+from .datatypes import ID, StringSlug, CreatedAt, UpdatedAt, Archived, utcnow
 
 
 class StateToStateTask(db.Model):
@@ -31,8 +32,8 @@ class StateToStateTask(db.Model):
 @project_enumerated_object
 @project_status_object
 class TaskState(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(20), info={'label': _l("Title")})
     color: so.Mapped[int] = so.mapped_column(sa.String(60), info={'label': _l("Color"), 'form': PickrColorField})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description"), 'form': wtforms.TextAreaField})
@@ -59,8 +60,8 @@ class TaskState(db.Model):
 
 @project_enumerated_object
 class ProjectTaskPriority(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(20), index=True, info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description"), 'form': wtforms.TextAreaField})
     color: so.Mapped[Optional[str]] = so.mapped_column(sa.String(60), info={'label': _l("Color"), 'form': PickrColorField})
@@ -79,8 +80,8 @@ class ProjectTaskPriority(db.Model):
 
 @project_enumerated_object
 class ProjectTaskTracker(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(35), info={'label': _l("Title")})
 
     class Meta:
@@ -113,15 +114,15 @@ class FileHasTask(db.Model):
 
 @project_object_with_permissions
 class ProjectTask(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
     by_template_slug: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Created by template")}) # Used for create task from nmap scripts
-    title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Theme")})
+    title: so.Mapped[str] = so.mapped_column(sa.String(60), info={'label': _l("Theme")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description"), 'help_text': _l("Detailed description - what exactly needs to be done")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at"), 'help_text': _l("The date and time the task was created. It is filled in automatically")})
+    created_at: so.Mapped[CreatedAt] = so.mapped_column(info={'label': _l("Created at"), 'help_text': _l("The date and time the task was created. It is filled in automatically")})
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at"), 'help_text': _l("It is filled in automatically when the task is changed")})
+    updated_at: so.Mapped[UpdatedAt] = so.mapped_column(info={"label": _l("Updated at"), 'help_text': _l("It is filled in automatically when the task is changed")})
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by"), 'help_text': _l("The user who updated the task")})
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={"label": _l("Updated by"), 'help_text': _l("The user who updated the task")}) # type: ignore
     tracker_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskTracker.id, ondelete='SET NULL'), info={'label': _l("Tracker"), 'help_text': _l("A hypothesis about a possible problem")})
@@ -356,9 +357,9 @@ def create_notification_to_assigned_to_user_task_when_comment_added(mapper, conn
 
 
 class ProjectTaskTemplate(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l('Slug')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Template title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Template description")})
     task_title: so.Mapped[str] = so.mapped_column(sa.String(ProjectTask.title.type.length), info={'label': _l("Task theme")})

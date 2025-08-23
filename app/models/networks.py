@@ -1,8 +1,8 @@
 from app import db, sanitizer, side_libraries
-from app.helpers.general_helpers import validates_port, default_string_slug, validates_mac, utcnow
+from app.helpers.general_helpers import validates_port, validates_mac
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
 from .generic import HasComment, HasHistory
-from .datatypes import NetworkAddress, IPAddress, LimitedLengthString
+from .datatypes import NetworkAddress, IPAddress, LimitedLengthString, ID, StringSlug, CreatedAt, UpdatedAt, Archived
 from .issues import Issue
 from .tasks import ProjectTask
 from .credentials import Credential, DefaultCredential
@@ -15,7 +15,6 @@ from sqlalchemy.orm.session import Session as SessionBase
 from .credentials import CredentialByService
 from .issues import IssueHasService
 from .datatypes import JSONType
-import datetime
 import ipaddress
 from flask_babel import lazy_gettext as _l, pgettext
 from flask import current_app, has_app_context
@@ -26,16 +25,16 @@ import os
 
 @project_object_with_permissions
 class Network(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
     title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Title")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at")})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
-    created_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys='Network.created_by_id', info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
+    created_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
-    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Network.updated_by_id", info={'label': _l("Updated by")}) # type: ignore
+    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     ip_address: so.Mapped[ipaddress.IPv4Network] = so.mapped_column(NetworkAddress, info={'label': _l("IP address of network")})
     internal_ip: so.Mapped[Optional[ipaddress.IPv4Network]] = so.mapped_column(NetworkAddress, info={'label': _l("Inner IP address")})
     asn: so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), info={'label': _l('ASN')})
@@ -52,6 +51,8 @@ class Network(HasComment, db.Model, HasHistory):
                                                                  secondaryjoin="MutualNetworkVisibility.from_network_id==Network.id", back_populates="can_see_network",
                                                                  lazy='select', info={'label': _l("It can be observed from the network"), "description": _l("List of networks from which the devices in this networkc are accessible")})
     vlan_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("VLAN number")})
+    icon_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('network_icon.id', ondelete='SET NULL'), info={'label': _l("Icon")})
+    icon: so.Mapped["NetworkIcon"] = so.relationship(lazy='select', foreign_keys=[icon_id], info={'label': _l("Icon")})
 
     @property
     def fulltitle(self):
@@ -95,9 +96,27 @@ class MutualNetworkVisibility(db.Model):
 
 
 @project_enumerated_object
+class NetworkIcon(db.Model):
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug] = so.mapped_column()
+    title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
+    icon_hex: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Icon hex-code")})
+
+    def __repr__(self):
+        return f"<NetworkIcon '{self.title}' with id='{self.id}'>"
+
+    class Meta:
+        verbose_name = _l("Network icon")
+        verbose_name_plural = _l("Network icons")
+        description = _l("Contains hexadecimal codes of network icon symbols for their display on the network map")
+        title_new = _l("Add new network icon")
+        column_index = ['id', 'string_slug', 'title', 'icon_hex']
+
+
+@project_enumerated_object
 class OperationSystemFamily(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     icon: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon")})
 
@@ -113,8 +132,8 @@ class OperationSystemFamily(db.Model):
 
 @project_enumerated_object
 class DeviceType(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    string_slug: so.Mapped[int] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     nmap_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Nmap-designation")})
@@ -132,8 +151,8 @@ class DeviceType(db.Model):
 
 @project_enumerated_object
 class DeviceVendor(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    string_slug: so.Mapped[int] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     device_models: so.Mapped[List["DeviceModel"]] = so.relationship(back_populates='vendor', cascade='all, delete-orphan', info={'label': _l("Released models")})
 
@@ -149,8 +168,8 @@ class DeviceVendor(db.Model):
 
 @project_enumerated_object
 class DeviceModel(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     device_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(DeviceType.id, ondelete='CASCADE'), info={'label': _l("Device type")})
@@ -171,7 +190,7 @@ class DeviceModel(db.Model):
 
 @project_enumerated_object
 class MacAddressInfo(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(120), info={'label': _l("Vendor title")})
     mac_prefix: so.Mapped[str] = so.mapped_column(sa.String(14), unique=True, info={'label': _l("MAC prefix")})
     is_private: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Private"), "description": _l("If True, then company name and address will not be displayed in public lists")})
@@ -185,7 +204,7 @@ class MacAddressInfo(db.Model):
 
 
 class HostDnsName(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(255), info={'label': _l("Title")})
     dns_type: so.Mapped[Optional[str]] = so.mapped_column(sa.String(8), info={'label': _l("Record type")})
     to_host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), info={'label': _l("Refers to host")})
@@ -196,8 +215,8 @@ class HostDnsName(db.Model):
 
 @project_enumerated_object
 class HostStatus(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
 
     class Meta:
@@ -212,22 +231,41 @@ class HostAnotherInterface(db.Model):
     second_interface_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), primary_key=True)
 
 
+@project_enumerated_object
+class HostLabel(db.Model):
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
+    title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
+    icon_hex: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon")})
+
+    class Meta:
+        verbose_name = _l("Host label")
+        verbose_name_plural = _l("Host labels")
+        title_new = _l("Add new host label")
+        column_index = ['id', 'title', 'icon_hex']
+
+
+class HostByLabel(db.Model):
+    host_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('host.id', ondelete='CASCADE'), primary_key=True)
+    label_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(HostLabel.id, ondelete='CASCADE'), primary_key=True)
+
+
 @project_object_with_permissions
 class Host(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': 'ID'})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={"label": _l("Description")})
     technical: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Technical information"), 'was_escaped': True})
     state_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HostStatus.id, ondelete='SET NULL'), info={'label': _l("Status")})
     state: so.Mapped[HostStatus] = so.relationship(lazy='select', info={'label': _l("Status")})
     state_reason: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("The reason for the host status")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={"label": _l("Created at")})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
-    created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys='Host.created_by_id', info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
+    created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
-    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Host.updated_by_id", info={'label': _l("Updated by")}) # type: ignore
+    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     ip_address: so.Mapped[ipaddress.IPv4Address] = so.mapped_column(IPAddress, info={"label": _l("IP address")})
     dnsnames: so.Mapped[List[HostDnsName]] = so.relationship(lazy='select', back_populates='to_host', cascade="all,delete-orphan", info={'label': _l("DNS-names")})
     mac: so.Mapped[Optional[str]] = so.mapped_column(sa.String(17), info={'label': _l("MAC-address")})
@@ -259,6 +297,11 @@ class Host(HasComment, db.Model, HasHistory):
                                                                      back_populates="accessible_from_hosts", info={'label': _l("Accessible services")})
     ipidsequence_class: so.Mapped[str] = so.mapped_column(LimitedLengthString(70), info={'label': _l("IP ID Sequence class")}, server_default="", default="")
     ipidsequence_value: so.Mapped[str] = so.mapped_column(LimitedLengthString(70), info={'label': _l("IP ID Sequence value")}, server_default="", default="")
+
+    labels: so.Mapped[Set[HostLabel]] = so.relationship(secondary=HostByLabel,
+                                                        primaryjoin=id==HostByLabel.host_id,
+                                                        secondaryjoin=HostByLabel.label_id==HostLabel.id,
+                                                        info={'label': _l("Labels")})
 
     @property
     def fulltitle(self):
@@ -365,8 +408,8 @@ def update_host_mac_vendor_info(session, flush_context, instances):
 
 @project_enumerated_object
 class ServiceTransportLevelProtocol(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
 
     def __repr__(self):
@@ -381,7 +424,7 @@ class ServiceTransportLevelProtocol(db.Model):
 
 @project_enumerated_object
 class DefaultPortAndTransportProto(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), info={'label': _l("Title"), 'on_form': False})
     port: so.Mapped[int] = so.mapped_column(info={'label': _l("Port")})
     transport_level_protocol_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ServiceTransportLevelProtocol.id, ondelete='CASCADE'), info={'label': _l("Transport layer protocol")})
@@ -421,8 +464,8 @@ def update_title_port_and_transport_proto(session):
 
 @project_enumerated_object
 class AccessProtocol(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     default_port: so.Mapped[List["DefaultPortAndTransportProto"]] = so.relationship(lazy='select', back_populates='access_protocol', cascade='all, delete-orphan', info={'label': _l("Default ports")})
     comment: so.Mapped[Optional[str]] = so.mapped_column(LimitedLengthString(60), info={'label': _l("Nmap-comment")})
@@ -443,8 +486,8 @@ class AccessProtocol(db.Model):
 
 @project_enumerated_object
 class ServicePortState(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
 
     def __repr__(self):
@@ -464,17 +507,17 @@ class AccessibleServiceHasHost(db.Model):
 
 @project_object_with_permissions
 class Service(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(60), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     technical: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Technical information"), 'was_escaped': True})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at")})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
-    created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys='Service.created_by_id', info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={'label': _l("Updated at")})
+    created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
-    updated_by: so.Mapped["User"] = so.relationship(lazy='joined', foreign_keys='Service.updated_by_id', info={'label': _l("Updated by")}) # type: ignore
+    updated_by: so.Mapped["User"] = so.relationship(lazy='joined', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     port: so.Mapped[int] = so.mapped_column(info={'label': _l("Port")})
     access_protocol_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(AccessProtocol.id, ondelete='SET NULL'), info={'label': _l("Application Layer Protocol")})
     access_protocol: so.Mapped["AccessProtocol"] = so.relationship(lazy='joined', info={'label': _l("Application Layer Protocol")})

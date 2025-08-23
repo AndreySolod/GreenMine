@@ -38,7 +38,22 @@ def project_enumerated_object(obj: Any):
     return obj
 
 
-def project_status_object(obj):
+def project_status_object(obj: Any):
+    """
+    Appends an object to the global status object list and returns the object.
+    
+    This function is used as class decorator for project objects that have status:
+    
+    @project_status_object
+    class SomeModel(db.model):
+        ...
+
+    Args:
+        obj (Any): The object to be appended to the status object list.
+
+    Returns:
+        Any: The object that was appended to the list.
+    """
     global status_object_list
     status_object_list.append(obj)
     return obj
@@ -49,7 +64,7 @@ def get_enumerated_objects():
     return enumerated_object_list
 
 
-def get_status_objects():
+def get_status_objects() -> None:
     global status_object_list
     return status_object_list
 

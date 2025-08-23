@@ -345,7 +345,7 @@
             url: '{{ url_for("networks.host_to_network", network_id=network.id) }}',
             rowStyle: hostRowStyle,
             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-            onClickRow: function(row, element, field) {
+            onDblClickRow: function(row, element, field) {
                 location = '{{ url_for("networks.host_show", host_id="__host_id") }}'.replace('__host_id', row.id)
             }
         })

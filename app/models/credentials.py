@@ -1,13 +1,11 @@
 from app import db
-from app.helpers.general_helpers import default_string_slug, utcnow
+from app.helpers.general_helpers import utcnow
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
-from app.models.datatypes import LimitedLengthString
+from app.models.datatypes import ID, StringSlug, CreatedAt, UpdatedAt, Archived
 from .generic import HasComment, HasHistory
 from typing import Set, Optional
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from sqlalchemy.orm.session import Session as SessionBase
-import datetime
 import wtforms
 from flask_babel import lazy_gettext as _l
 from flask import current_app
@@ -20,7 +18,7 @@ class HashTypeHasPrototype(db.Model):
 
 @project_enumerated_object
 class HashPrototype(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     regex: so.Mapped[str] = so.mapped_column(sa.String(500), unique=True, index=True, info={'label': _l("Regular Expression"), 'was_escaped': True})
     title = so.synonym('regex')
     hash_types: so.Mapped[Set["HashType"]] = so.relationship(secondary=HashTypeHasPrototype.__table__, primaryjoin='HashPrototype.id==HashTypeHasPrototype.prototype_id', secondaryjoin='HashTypeHasPrototype.hash_id==HashType.id', back_populates='regexs', lazy='select', info={'label': _l("Hash types")})
@@ -34,9 +32,9 @@ class HashPrototype(db.Model):
 
 @project_enumerated_object
 class HashType(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
-    string_slug: so.Mapped[str] = so.mapped_column(LimitedLengthString(80), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Hash description"), 'form': wtforms.TextAreaField})
     hashcat_mode: so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), info={'label': _l('HashCat-mode')})
@@ -57,8 +55,8 @@ class HashType(db.Model):
 
 @project_enumerated_object
 class CheckWordlist(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l('Slug')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l('Title')})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l('Description'), 'form': wtforms.TextAreaField})
 
@@ -81,16 +79,16 @@ class CredentialByReceivedHost(db.Model):
 
 @project_object_with_permissions
 class Credential(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l('Project')})
     project: so.Mapped["Project"] = db.relationship(lazy='select', backref=so.backref('credentials', cascade='all, delete-orphan'), info={'label': _l('Project')}) # type: ignore
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={"label": _l("Created at")})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Created by')})
-    created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys="Credential.created_by_id", info={'label': _l('Created by')}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l('Updated at')})
+    created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l('Created by')}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l('Updated by')})
-    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Credential.updated_by_id", info={'label': _l('Updated by')}) # type: ignore
+    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l('Updated by')}) # type: ignore
     login: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l('Login')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Additional information')})
     password_hash: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Password hash')})
@@ -143,8 +141,8 @@ class Credential(HasComment, db.Model, HasHistory):
 
 
 class CredentialImportTemplate(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(LimitedLengthString(80), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Template description")})
     login_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Login column number")})
@@ -167,8 +165,8 @@ class CredentialImportTemplate(db.Model):
 
 @project_enumerated_object
 class DefaultCredential(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(LimitedLengthString(80), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(80), index=True, info={'label': _l("Title")})
     login: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Login")})
     password: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Password")})

@@ -1,6 +1,6 @@
 from app import db, login, logger
 from flask import current_app, url_for
-from app.helpers.general_helpers import default_string_slug, utcnow, random_string
+from app.helpers.general_helpers import random_string
 from app.helpers.users_helpers import generate_avatar
 from app.helpers.admin_helpers import project_enumerated_object
 from unidecode import unidecode
@@ -24,13 +24,14 @@ import secrets
 import json
 from .global_settings import ApplicationLanguage
 from .projects import ProjectRole
+from .datatypes import ID, StringSlug, CreatedAt, Archived, utcnow
 
 
 @project_enumerated_object
 class UserPosition(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(35), info={'label': _l("Title")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    string_slug: so.Mapped[StringSlug]
     is_default: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Default")})
     is_administrator: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Is an administrator")}, server_default=sa.false())
 
@@ -42,7 +43,7 @@ class UserPosition(db.Model):
         verbose_name_plural = _l("Positions")
         icon = "fa-solid fa-map-pin"
         title_new = _l("Add new position")
-        column_index = ['id', 'string_slug', 'title', 'is_default']
+        column_index = ['id', 'string_slug', 'title', 'is_default', 'is_administrator']
 
 
 class UserHasProgramLanguage(db.Model):
@@ -52,8 +53,8 @@ class UserHasProgramLanguage(db.Model):
 
 @project_enumerated_object
 class ProgrammingLanguageClass(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l(_l("ID"))})
-    string_slug: so.Mapped[int] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     programming_languages: so.Mapped[List["ProgrammingLanguage"]] = so.relationship(back_populates='language_class', cascade="all, delete-orphan", info={'label': _l("Programming languages")})
 
@@ -77,9 +78,9 @@ class ProgrammingLanguageClass(db.Model):
 
 @project_enumerated_object
 class ProgrammingLanguage(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l(_l("ID"))})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(40), unique=True, info={'label': _l("Title")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    string_slug: so.Mapped[StringSlug]
     alias: so.Mapped[str] = so.mapped_column(sa.String(20), unique=True, info={'label': _l("Alias"), 'help_text': _l("A string used in the HTML code to denote a given language")})
     is_default: so.Mapped[bool] = so.mapped_column(default=False,  info={'label': _l("Is the default language")})
     language_class_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProgrammingLanguageClass.id, ondelete='CASCADE'), info={'label': _l("Belongs to the class")})
@@ -105,9 +106,9 @@ class ProgrammingLanguage(db.Model):
 
 @project_enumerated_object
 class ProgrammingLanguageTheme(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l(_l("ID"))})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    string_slug: so.Mapped[StringSlug]
     directory: so.Mapped[str] = so.mapped_column(sa.String(30), default='', info={'label': _l("Directory")})
     filename: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("File Name")})
     is_default: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Default")})
@@ -145,10 +146,10 @@ def default_user_token():
 
 
 class User(UserMixin, db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(info={'label': _l("Created at")}, default=utcnow)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    created_at: so.Mapped[CreatedAt]
     string_slug: so.Mapped[int] = so.mapped_column(sa.String(20), unique=True, index=True, default=default_user_string_slug, info={'label': _l("Slug")})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
+    archived: so.Mapped[Archived]
     login: so.Mapped[str] = so.mapped_column(sa.String(20), index=True, unique=True, info={'label': _l("Login")})
     password_hash: so.Mapped[str] = so.mapped_column(sa.String(170), default='', info={'label': _l("Password hash")})
     is_password_expired: so.Mapped[bool] = so.mapped_column(default=True, server_default=sa.true(), info={'label': _l("Is password already expired"), 'help_text': _l("If true, the user will have to change it on the next request.")})
@@ -241,11 +242,20 @@ class User(UserMixin, db.Model):
         middle_names = ["Тараканьевич", "Глистович", "Грибович", "Хренович", "Шмелевич", "Зеленович"]
         admin_user = db.session.scalars(sa.select(User).join(User.position).where(UserPosition.is_administrator == True)).first()
         default_position = db.session.scalars(sa.select(UserPosition).where(UserPosition.is_default == True)).first()
-        email = login + "@mental_hospital.ru"
         programming_language_theme = db.session.scalars(sa.select(ProgrammingLanguageTheme).where(ProgrammingLanguageTheme.is_default == True)).first()
         programming_languages = db.session.scalars(sa.select(ProgrammingLanguage).where(ProgrammingLanguage.is_default == True)).all()
         theme_style = db.session.scalars(sa.select(UserThemeStyle).where(UserThemeStyle.is_default == True)).first()
-        user = cls(login=login, first_name=random.choice(first_names), last_name=random.choice(last_names), middle_name=random.choice(middle_names),
+        if login == 'demon':
+            last_name = 'Великий'
+            first_name = 'Демон'
+            middle_name = 'Валерьевич'
+            email = 'demon@hell.ru'
+        else:
+            last_name = random.choice(last_names)
+            first_name = random.choice(first_names)
+            middle_name = random.choice(middle_names)
+            email = login + "@mental-hospital.ru"
+        user = cls(login=login, first_name=first_name, last_name=last_name, middle_name=middle_name,
                    email=email, position=default_position, programming_languages=programming_languages,
                    programming_language_theme=programming_language_theme, theme_style=theme_style, manager=admin_user)
         user.set_password(password)
@@ -262,8 +272,8 @@ class User(UserMixin, db.Model):
 
 
 class UserThemeStyle(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(40))
     is_default: so.Mapped[bool] = so.mapped_column(default=False)
     main_color: so.Mapped[str] = so.mapped_column(sa.String(60))
@@ -312,7 +322,7 @@ class UserThemeStyle(db.Model):
 
 
 class UserEnvironmentSetting(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     to_user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='CASCADE'), unique=True)
     to_user: so.Mapped['User'] = so.relationship(lazy='joined', back_populates='environment_setting')
     sidebar_hide: so.Mapped[bool] = so.mapped_column(default=True, info={'label': _l("The sidebar is in a hidden state")})
@@ -375,9 +385,9 @@ def request_user_load(request):
 
 
 class Team(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(30), index=True, info={'label': _l("Title")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    string_slug: so.Mapped[StringSlug]
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
     leader_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='SET NULL'), info={'label': _l("Leader of the team")})
     leader: so.Mapped["User"] = so.relationship(lazy="joined", foreign_keys=[leader_id], info={'label': _l("Leader of the team")})
@@ -413,7 +423,7 @@ class Team(db.Model):
 
 
 class UserPositionHasObjectAction(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     position_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(UserPosition.id, ondelete='CASCADE'), info={'label': _l("Position")})
     position: so.Mapped[UserPosition] = so.relationship(lazy='joined')
     object_class_name: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Object class name")})

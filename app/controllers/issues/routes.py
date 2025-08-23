@@ -4,7 +4,7 @@ from flask_login import current_user
 from app.controllers.issues import bp
 from app import db, side_libraries, logger
 from app.models import Issue, Project, IssueStatus, IssueTemplate
-from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, BootstrapTableSearchParams
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.issues.forms as forms
 from sqlalchemy import exc
@@ -39,8 +39,9 @@ def issue_data_index():
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index all issue with non-integer project_id {request.args.get('project_id')}")
         abort(400)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
-    additional_params = {'obj': Issue, 'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
-                         'base_select': lambda x: x.where(db.and_(Issue.project_id==project_id, Issue.archived == False))}
+    additional_params: BootstrapTableSearchParams = {'obj': Issue,
+                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
+                                                     'base_select': lambda x: x.where(db.and_(Issue.project_id==project_id, Issue.archived == False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -71,8 +72,9 @@ def exist_issue_data_index():
         abort(400)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     aliased = so.aliased(IssueStatus)
-    additional_params = {'obj': Issue, 'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
-                         'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived == False, aliased.string_slug != 'fixed'))}
+    additional_params: BootstrapTableSearchParams = {'obj': Issue,
+                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
+                                                     'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived == False, aliased.string_slug != 'fixed'))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request exist issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -103,8 +105,9 @@ def positive_issue_data_index():
         abort(400)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     aliased = so.aliased(IssueStatus)
-    additional_params = {'obj': Issue, 'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
-                         'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived==False, aliased.string_slug == 'fixed'))}
+    additional_params: BootstrapTableSearchParams = {'obj': Issue,
+                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
+                                                     'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived==False, aliased.string_slug == 'fixed'))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request positive issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 

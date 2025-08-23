@@ -13,7 +13,6 @@
                                                                     data-show-multi-sort="true"
                                                                     data-filter-control="true"
                                                                     data-buttons-class="primary"
-                                                                    data-row-style="defaultRowStyle"
                                                                     data-cookie="true"
                                                                     data-cookie-id-table="CredentialExportTemplateIndex"
                                                                     data-cookie-storage="localStorage">
@@ -57,9 +56,4 @@
 {% block script %}
 {{ super() }}
 {{ load_bootstrap_table_js('import-credential-template-table', 'admin.credential_template_show', 'template_id') }}
-<script nonce="{{ csp_nonce() }}">
-    function defaultRowStyle(row, index) {
-        return { css: {"cursor": 'pointer' } };
-    };
-</script>
 {% endblock %}

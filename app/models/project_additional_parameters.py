@@ -1,17 +1,17 @@
 from app import db
-from app.helpers.general_helpers import default_string_slug
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from flask_babel import lazy_gettext as _l
 from typing import Optional, Set
 from app.helpers.admin_helpers import project_enumerated_object
-import datetime
+from .datatypes import ID, StringSlug, UpdatedAt
+import enum
 
 
 @project_enumerated_object
 class ProjectAdditionalFieldGroup(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Title")})
     order_number: so.Mapped[int] = so.mapped_column(info={'label': _l("Order number")})
     fields: so.Mapped[Set["ProjectAdditionalField"]] = so.relationship(lazy='select', back_populates="group", info={'label': _l("Additional fields"), 'on_form': False}, cascade='all,delete-orphan')
@@ -26,39 +26,36 @@ class ProjectAdditionalFieldGroup(db.Model):
         column_index = ['id', 'string_slug', 'title', 'order_number']
 
 
+class ProjectAdditionalParameterFieldType(enum.Enum):
+    StringField = _l("String field")
+    TextAreaField = _l("Text area field")
+    IntegerField = _l("Integer field")
+    BooleanField = _l("Boolean field")
+    DateField = _l("Date field")
+    WysiwygField = _l("Wysiwyg field")
+
+
 class ProjectAdditionalField(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(150), info={'label': _l("Title")})
     help_text: so.Mapped[Optional[str]] = so.mapped_column(sa.String(150), info={'label': _l("Help text"), 'help_text': _l("The text that appears in the pop-up window")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
-    field_type: so.Mapped[str] = so.mapped_column(info={'label': _l("Field type")})
+    field_type: so.Mapped[ProjectAdditionalParameterFieldType] = so.mapped_column(default=ProjectAdditionalParameterFieldType.StringField,
+                                                                         info={'label': _l("Field type")}, server_default=sa.text("StringField"))
     group_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectAdditionalFieldGroup.id, ondelete='CASCADE'), info={'label': _l("Group")})
     group: so.Mapped[ProjectAdditionalFieldGroup] = so.relationship(lazy='select', back_populates="fields", info={'label': _l("Group")})
     project_fields: so.Mapped["ProjectAdditionalFieldData"] = so.relationship(lazy='select', back_populates='field_type', info={'label': _l("Created fields")}, cascade='all,delete')
-
-    __table_args__ = (sa.CheckConstraint("project_fields IN ('StringField', 'TextAreaField', 'IntegerField', 'BooleanField', 'WysiwygField')", name="project_additional_parameter_field_type"),)
 
     class Meta:
         verbose_name = _l("Project additional field")
         verbose_name_plural = _l("Project additional fields")
         icon = "fa-solid fa-building"
     
-    @staticmethod
-    def get_all_field_names():
-        return {'StringField': _l("String field"), "TextAreaField": _l("Text Area Field"), "IntegerField": _l("Integer Field"),
-                 "BooleanField": _l("Boolean Field"), "WysiwygField": _l("Wysiwyg Field")}
-
-    def get_name_by_field_type(self):
-        names = self.get_all_field_names()
-        if self.field_type not in names:
-            raise AttributeError(f"Looks like your database is corrupt: name '{self.field_type}' did not register in field names")
-        return str(names[self.field_type])
-
 
 class ProjectAdditionalFieldData(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={"label": _l("Updated by")}) # type: ignore
     field_type_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectAdditionalField.id, ondelete='CASCADE'), info={'label': _l("Field type")})

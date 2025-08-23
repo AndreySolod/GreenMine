@@ -24,7 +24,7 @@ def authentication_password_policy_settings():
         db.session.refresh(gs)
         db.session.expunge(gs)
         current_app.config["GlobalSettings"] = gs
-        if gs.authentication_method == 'password':
+        if gs.authentication_method == models.AuthenticationMethod.PASSWORD:
             current_app.password_policy_manager.activate = True
         else:
             current_app.password_policy_manager.activate = False

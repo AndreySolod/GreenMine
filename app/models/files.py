@@ -1,21 +1,20 @@
 from app import db
-from app.helpers.general_helpers import utcnow
 from app.helpers.admin_helpers import project_object_with_permissions
 from typing import List, Optional
-import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from flask_babel import lazy_gettext as _l
+from .datatypes import ID, CreatedAt, UpdatedAt
 
 
 @project_object_with_permissions
 class FileDirectory(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l('Title')})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l('Created at')})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Created by')})
     created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l('Created by')}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={'label': _l('Updated at')})
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Updated by')})
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l('Updated by')}) # type: ignore
     files: so.Mapped[List["FileData"]] = so.relationship(lazy='select', back_populates='directory', cascade='all, delete-orphan', info={'label': _l('Files')})
@@ -41,11 +40,11 @@ class FileDirectory(db.Model):
 
 
 class FileData(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l('Title')})
     extension: so.Mapped[str] = so.mapped_column(sa.String(4), info={'label': _l('Extension')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l('Created at')})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL', use_alter=True), info={'label': _l('Added by')})
     created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l('Added by')}) # type: ignore
     directory_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(FileDirectory.id, ondelete='CASCADE', use_alter=True), info={'label': _l('Refers to the directory')})

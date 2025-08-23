@@ -32,7 +32,7 @@ def project_additional_parameters_index_data(group_id):
     sql_count = sql_count.where(models.ProjectAdditionalField.group_id == group_id)
     rows = []
     for i in db.session.scalars(sql).all():
-        row = {'id': i.id, 'string_slug': i.string_slug, 'title': i.title, 'help_text': i.help_text, 'description': i.description, 'field_type': str(i.get_name_by_field_type())}
+        row = {'id': i.id, 'string_slug': i.string_slug, 'title': i.title, 'help_text': i.help_text, 'description': i.description, 'field_type': str(i.field_type.value)}
         rows.append(row)
     return jsonify({'total': db.session.scalars(sql_count).one(), 'rows': rows})
 

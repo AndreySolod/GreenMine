@@ -27,14 +27,17 @@ def register(app):
         for value in GLOBAL_UPDATED_OBJECT_DICT.values():
             for changed_object in value.values():
                 db.session.add(changed_object)
+        app.logger.info("Committing session")
         db.session.commit()
 
     def get_base_data(e, data):
         """Вносит простые данные - т.е. те, которые не являются отношениями (строки, числа, логические значения и т.д.)"""
         base_data = inspect(e.__class__).column_attrs.keys() # Это все простые значения
         for attr_name, attr_value in data.items():
-            if attr_name in base_data:
-                # Если атрибут - простой
+            if attr_name in base_data: # Если атрибут - простой
+                if inspect(e.__class__).column_attrs[attr_name].columns[0].type.__class__.__name__ == 'Enum': # Класс перечисления
+                    enum_class = inspect(e.__class__).column_attrs[attr_name].columns[0].type.python_type # Устанавливаем в значение перечисления - атрибут класса перечисления
+                    setattr(e, attr_name, getattr(enum_class,attr_value))
                 setattr(e, attr_name, attr_value)
             elif attr_name.startswith('_function__'):
                 # Если начинается с _function__, то необходимо интерпретировать как вызов метода на данном значении. Например, для установки хэша пароля для пользователя

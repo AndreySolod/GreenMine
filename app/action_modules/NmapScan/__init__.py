@@ -16,7 +16,7 @@ import logging
 logger = logging.getLogger("Nmap scanner action module")
 
 
-def action_run(targets: List[models.Network | models.Host], target_ports: str, project_id: int, current_user_id,
+def action_run(targets: List[models.Network | models.Host], target_ports: str | None, project_id: int, current_user_id,
                scan_params: dict[str, bool], session: Session, scanning_host_id: Optional[int], locale: str="en",
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
                add_host_with_only_arp_response: bool=True, add_network_mutial_visibility: bool=True) -> Optional[bool]:
@@ -53,11 +53,18 @@ def exploit(filled_form: dict, running_user: int, default_options: dict, locale:
         filled_form["script"] = filled_form["nmap_scripts"]
         scan_params = filled_form.copy()
         ports = filled_form['ports']
-        networks = session.scalars(sa.select(models.Network).where(models.Network.id.in_(filled_form["target_networks"]))).all()
-        for network in networks:
-            action_run([network], ports, project_id, running_user, scan_params, session, filled_form["scanning_host"],
-                    locale, filled_form["ignore_closed_ports"], filled_form["ignore_host_without_open_ports_and_arp_response"],
-                    filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"])
+        if filled_form["scan_type"] == "network":
+            networks = session.scalars(sa.select(models.Network).where(models.Network.id.in_(map(int, filled_form["target_networks"])))).all()
+            for network in networks:
+                action_run([network], ports, project_id, running_user, scan_params, session, filled_form["scanning_host"],
+                        locale, filled_form["ignore_closed_ports"], filled_form["ignore_host_without_open_ports_and_arp_response"],
+                        filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"])
+        elif filled_form["scan_type"] == "host":
+            hosts = session.scalars(sa.select(models.Host).where(models.Host.id.in_(map(int, filled_form["target_hosts"])))).all()
+            for host in hosts:
+                action_run([host], ports, project_id, running_user, scan_params, session, filled_form["scanning_host"],
+                        locale, filled_form["ignore_closed_ports"], filled_form["ignore_host_without_open_ports_and_arp_response"],
+                        filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"])
 
 
 class AdminOptionsForm(FlaskForm):
@@ -73,7 +80,10 @@ class ModuleInitForm(FlaskForm):
         self.scanning_host.locale = g.locale
         self.scanning_host.validate_funcs = lambda x: validate_host(project_id, x)
         self.target_networks.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Network).where(models.Network.project_id == project_id))]
+        self.target_hosts.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False)))]
     target_networks = TreeSelectMultipleField(_l("Networks to scan:"), validators=[validators.InputRequired()])
+    target_hosts = TreeSelectMultipleField(_l("Hosts to scan:"), validators=[validators.InputRequired()])
+    scan_type = wtforms.SelectField(_l("Scan type:"), choices=[("network", _l("Network only")), ("host", _l("Host only"))], description=_l("Network only scan - scan current subnet to find host and their port. Host only - scan all host in current network on open ports"))
     ports = wtforms.StringField(_l("Ports:"), validators=[validators.DataRequired(_l("This field is mandatory!"))])
     ignore_closed_ports = wtforms.BooleanField(_l("Ignore ports that do not have the status <Open>:"), default=True)
     ignore_host_without_open_ports_and_arp_response = wtforms.BooleanField(_l("Ignore hosts without open ports and ARP response:"), default=True)

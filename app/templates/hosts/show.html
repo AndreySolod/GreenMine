@@ -570,7 +570,7 @@
             showExport: true,
             showMultiSort: true,
             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-            onClickRow: function(row, element, field) {
+            onDblClickRow: function(row, element, field) {
                 location = '{{ url_for("networks.host_show", host_id="__host_id") }}'.replace('__host_id', row.id)
             },
             cookie: true,
@@ -637,7 +637,7 @@
             sidePagination: 'server',
             url: '{{ url_for("networks.service_to_host", host_id=host.id) }}',
             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-            onClickRow: function(row, element, field) {
+            onDblClickRow: function(row, element, field) {
                 location = '{{ url_for("networks.service_show", service_id="__service_id") }}'.replace('__service_id', row.id)
             },
             rowStyle: (row, index) => { return { css: { cursor: 'pointer' } } },

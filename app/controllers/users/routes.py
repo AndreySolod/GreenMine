@@ -5,6 +5,7 @@ from urllib.parse import urlparse
 from werkzeug.utils import secure_filename
 from flask import url_for, request, redirect, render_template, flash, abort, current_app
 from app.models import User, FileData
+import app.models as models
 from app.helpers.general_helpers import CurrentObjectInfo, CurrentObjectAction, get_or_404
 from app.helpers.users_helpers import UserSidebar
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
@@ -149,7 +150,7 @@ def user_delete(user_id: str):
 
 @bp.route('/login', methods=["GET", "POST"])
 def user_login():
-    if current_app.config["GlobalSettings"].authentication_method == 'request_header':
+    if current_app.config["GlobalSettings"].authentication_method == models.AuthenticationMethod.REQUEST_HEADER:
         request_header_value = request.headers.get(current_app.config["GlobalSettings"].authentication_request_header_name)
         if request_header_value is not None:
             user = db.session.scalars(sa.select(User).where(sa.and_(User.login==request_header_value.strip(), User.archived == False))).first()

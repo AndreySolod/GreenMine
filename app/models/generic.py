@@ -1,16 +1,14 @@
 from app import db, sanitizer
-from app.helpers.general_helpers import utcnow
 from app.helpers.projects_helpers import create_history, load_history_script
 from typing import List, Optional
 from sqlalchemy import event
-from .datatypes import JSONType
+from .datatypes import JSONType, ID, CreatedAt, UpdatedAt, utcnow
 import sqlalchemy as sa
 import importlib
 from sqlalchemy.orm import backref, foreign, remote, relationship
 import sqlalchemy.orm as so
 from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.inspection import inspect
-import datetime
 from markupsafe import Markup
 from flask_babel import lazy_gettext as _l
 from flask_babel import gettext
@@ -20,7 +18,7 @@ from flask_sqlalchemy.model import camel_to_snake_case # Function to convert cla
 
 
 class Reaction(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     is_positive: so.Mapped[bool]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'))
     created_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Reaction.created_by_id", back_populates='reactions') # type: ignore
@@ -33,9 +31,9 @@ class Reaction(db.Model):
 
 
 class Comment(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at")})
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={'label': _l("Updated at")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    created_at: so.Mapped[CreatedAt]
+    updated_at: so.Mapped[UpdatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys='Comment.created_by_id', back_populates="created_comments", info={'label': "Created by"}) # type: ignore
     to_object_type: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
@@ -184,7 +182,7 @@ def updated_paramethers_updated_by_id_if_exist(session):
 
 
 class UserNotification(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     to_user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id', ondelete='CASCADE'), info={'label': _l("Refer to user")})
     to_user: so.Mapped["User"] = so.relationship(foreign_keys=[to_user_id], lazy='select', backref=so.backref("notifications", info={'label': _l("User notifications")}, cascade='all,delete-orphan', # type: ignore
                                                                                                               order_by="UserNotification.created_at.desc()"),
@@ -194,7 +192,7 @@ class UserNotification(db.Model):
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
     technical_info: so.Mapped[Optional[dict]] = so.mapped_column(JSONType(), info={'label': _l("Technical detaled")})
     link_to_object: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Link to object")})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Created at")})
+    created_at: so.Mapped[CreatedAt]
 
     class Meta:
         verbose_name = _l("Notification")

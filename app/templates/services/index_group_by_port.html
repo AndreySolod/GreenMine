@@ -150,7 +150,7 @@
                         url: '{{ url_for("networks.services_by_port_data", port="__port_id", transport_level_protocol="__transport_protocol", project_id=project.id) }}'.replace('__port_id', row.port_number).replace("__transport_protocol", service_transport_level_protocol_filters[row.transport_level_protocol]),
                         rowStyle: serviceRowStyle,
                         icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-                        onClickRow: function(row, element, field) {
+                        onDblClickRow: function(row, element, field) {
                             location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id)
                         },
                     })

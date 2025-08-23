@@ -1,9 +1,14 @@
 import sqlalchemy as sa
+import sqlalchemy.orm as so
 import sqlalchemy.types as types
 from sqlalchemy.dialects.postgresql.base import ischema_names
 from sqlalchemy.ext.mutable import MutableDict
 import ipaddress
 import json
+from typing import Annotated, Optional
+import datetime
+from flask_babel import lazy_gettext as _l
+import uuid
 
 try:
     from sqlalchemy.dialects.postgresql import JSON
@@ -140,3 +145,16 @@ class LimitedLengthString(types.TypeDecorator):
 
     def copy(self, **kwargs):
         return LimitedLengthString(self.impl.length)
+
+
+def utcnow():
+    return datetime.datetime.now(datetime.timezone.utc)
+
+
+ID = Annotated[int, so.mapped_column(primary_key=True, info={'label': _l('ID')})]
+StringSlug = Annotated[str, so.mapped_column(LimitedLengthString(80), unique=True, index=True, default=lambda: str(uuid.uuid4()), info={'label': _l('Slug')})]
+Archived = Annotated[bool, so.mapped_column(default=False, info={'label': _l('Archived')})]
+CreatedAt = Annotated[datetime.datetime, so.mapped_column(default=utcnow, info={'label': _l('Created at')})]
+UpdatedAt = Annotated[Optional[datetime.datetime], so.mapped_column(info={'label': _l('Updated at')})]
+Title = Annotated[str, so.mapped_column(sa.String(100), info={'label': _l('Title')})]
+Description = Annotated[Optional[str], so.mapped_column(info={'label': _l('Description')})]

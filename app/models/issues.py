@@ -1,13 +1,11 @@
 from app import db
-from app.helpers.general_helpers import default_string_slug, utcnow
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
 from typing import List, Optional, Set
 import datetime
 from .generic import HasComment, HasHistory
-from .datatypes import LimitedLengthString
+from .datatypes import ID, StringSlug, CreatedAt, UpdatedAt, Archived, LimitedLengthString
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-from sqlalchemy.ext.hybrid import hybrid_property
 import wtforms
 from app.controllers.forms import PickrColorField
 from sqlalchemy.orm import validates
@@ -16,8 +14,8 @@ from flask_babel import lazy_gettext as _l
 
 @project_enumerated_object
 class IssueStatus(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l('Slug')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l('Title')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('State description'), 'form': wtforms.TextAreaField})
     color: so.Mapped[str] = so.mapped_column(sa.String(60), info={'label': _l('Color'), 'form': PickrColorField})
@@ -31,8 +29,8 @@ class IssueStatus(db.Model):
 
 @project_enumerated_object
 class VulnerableEnvironmentType(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l('Slug')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(20), info={'label': _l('Title')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Description')})
 
@@ -44,14 +42,14 @@ class VulnerableEnvironmentType(db.Model):
 
 
 class CriticalVulnerability(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, index=True, info={'label': _l('Created at')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Created by')})
-    created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys="CriticalVulnerability.created_by_id", info={'label': _l('Created by')}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l('Updated at')})
+    created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l('Created by')}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l('Updated by')})
-    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="CriticalVulnerability.updated_by_id", info={'label': _l('Updated by')}) # type: ignore
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
+    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l('Updated by')}) # type: ignore
+    archived: so.Mapped[Archived]
     year: so.Mapped[int] = so.mapped_column(default=lambda: datetime.datetime.now(datetime.UTC).year, info={'label': _l('The year the vulnerability was released')})
     identifier: so.Mapped[str] = so.mapped_column(sa.String(20), info={'label': _l('CVE identifier')})
     cvss: so.Mapped[float] = so.mapped_column(info={'label': _l('CVSS')})
@@ -83,9 +81,9 @@ class CriticalVulnerability(HasComment, db.Model, HasHistory):
 
 
 class ProofOfConcept(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Archived")})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, default=default_string_slug, info={'label': _l("Slug")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
     source_code: so.Mapped[str] = so.mapped_column(info={'label': _l("Source code")})
@@ -114,15 +112,15 @@ class IssueHasTask(db.Model):
 
 @project_object_with_permissions
 class Issue(HasComment, db.Model, HasHistory):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
     by_template_slug: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Created by template")}) # Used for create issue from nmap scripts
-    created_at: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={"label": _l("Created at")})
+    created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
-    created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys="Issue.created_by_id", info={'label': _l("Created by")}) # type: ignore
-    updated_at: so.Mapped[Optional[datetime.datetime]] = so.mapped_column(info={"label": _l("Updated at")})
+    created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete="SET NULL"), info={'label': _l("Updated by")})
-    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys="Issue.updated_by_id", info={'label': _l("Updated by")}) # type: ignore
+    updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     title: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     fix: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Fix")})
@@ -177,9 +175,9 @@ class Issue(HasComment, db.Model, HasHistory):
 
 
 class IssueTemplate(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l('ID')})
-    archived: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Archived')})
-    string_slug: so.Mapped[str] = so.mapped_column(sa.String(50), unique=True, index=True, default=default_string_slug, info={'label': _l('Slug')})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    archived: so.Mapped[Archived]
+    string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(100), info={'label': _l('Template title')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Template Description')})
     issue_title: so.Mapped[str] = so.mapped_column(LimitedLengthString(Issue.title.type.length), info={'label': _l('Issue Title')})

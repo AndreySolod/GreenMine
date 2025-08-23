@@ -1,20 +1,16 @@
 from app import db
-from flask import flash, has_request_context
-from app.helpers.general_helpers import default_string_slug, utcnow
 from app.helpers.admin_helpers import project_object_with_permissions
-from typing import List, Set, Optional
+from typing import Optional
 from .files import FileData
 import sqlalchemy as sa
 import sqlalchemy.orm as so
-import datetime
-import wtforms
-from app.controllers.forms import PickrColorField
+from .datatypes import ID
 from flask_babel import lazy_gettext as _l
 
 
 @project_object_with_permissions
 class ProjectReportTemplate(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     template_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='CASCADE'), info={'label': _l("File template")})

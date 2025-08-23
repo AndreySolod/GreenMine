@@ -103,15 +103,15 @@ class AdditionalParametersFormMeta(FormMeta):
                 raise ValueError('all additional parameters form must being of type ProjectAdditionalFieldData')
             new_name = 'param_' + str(param.id)
             name_list.append(new_name)
-            if param.field_type.field_type == 'StringField':
+            if param.field_type.field_type == models.ProjectAdditionalParameterFieldType.StringField:
                 new_item = wtforms.StringField(_l("%(field_name)s:", field_name=param.field_type.title), validators=[validators.Optional()], description=param.field_type.help_text)
-            elif param.field_type.field_type == 'TextAreaField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.TextAreaField:
                 new_item = wtforms.TextAreaField(_l("%(field_name)s:", field_name=param.field_type.title), validators=[validators.Optional()], description=param.field_type.help_text)
-            elif param.field_type.field_type == 'IntegerField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.IntegerField:
                 new_item = wtforms.IntegerField(_l("%(field_name)s:", field_name=param.field_type.title), validators=[validators.Optional()], description=param.field_type.help_text)
-            elif param.field_type.field_type == 'BooleanField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.BooleanField:
                 new_item = wtforms.BooleanField(_l("%(field_name)s:", field_name=param.field_type.title), validators=[validators.Optional()], description=param.field_type.help_text)
-            elif param.field_type.field_type == 'WysiwygField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.WysiwygField:
                 new_item = WysiwygField(_l("%(field_name)s:", field_name=param.field_type.title), validators=[validators.Optional()], description=param.field_type.help_text)
             else:
                 raise ValueError(f'Database is corrupt: field_type of {param.field_type.field_type} does not exist')
@@ -125,24 +125,25 @@ class AdditionalParametersForm(FlaskForm, metaclass=AdditionalParametersFormMeta
     def populate_parameters(self, project: models.Project) -> None:
         ''' Populate additional parameters for given project '''
         for param_name in self.name_list:
-            param = db.session.scalars(sa.select(models.ProjectAdditionalFieldData).where(models.ProjectAdditionalFieldData.id == int(param_name[6::]))).one() # paam: models.ProjectAdditionalFieldData
+            param: models.ProjectAdditionalFieldData = db.session.scalars(sa.select(models.ProjectAdditionalFieldData)
+                                                                          .where(models.ProjectAdditionalFieldData.id == int(param_name[6::]))).one() # paam: models.ProjectAdditionalFieldData
             param_data = getattr(self, param_name).data
-            if param.field_type.field_type == 'BooleanField':
+            if param.field_type.field_type == models.ProjectAdditionalParameterFieldType.BooleanField:
                 param.data = str(param_data)
-            elif param.field_type.field_type == 'WysiwygField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.WysiwygField:
                 param.data = sanitizer.sanitize(param_data)
-            elif param.field_type.field_type == 'IntegerField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.IntegerField:
                 param.data = str(param_data) if param_data is not None else None
             else:
                 param.data = sanitizer.escape(param_data)
     def load_exist_value(self, project: models.Project):
         for param_name in self.name_list:
-            param = db.session.scalars(sa.select(models.ProjectAdditionalFieldData).where(models.ProjectAdditionalFieldData.id == int(param_name[6::]))).one()
-            if param.field_type.field_type == 'BooleanField':
+            param: models.ProjectAdditionalFieldData = db.session.scalars(sa.select(models.ProjectAdditionalFieldData).where(models.ProjectAdditionalFieldData.id == int(param_name[6::]))).one()
+            if param.field_type.field_type == models.ProjectAdditionalParameterFieldType.BooleanField:
                 getattr(self, param_name).data = param.data == 'True'
-            elif param.field_type.field_type == 'IntegerField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.IntegerField:
                 getattr(self, param_name).data = int(param.data) if param.data is not None and param.data != 'None' else None
-            elif param.field_type.field_type == 'WysiwygField':
+            elif param.field_type.field_type == models.ProjectAdditionalParameterFieldType.WysiwygField:
                 getattr(self, param_name).data = param.data
             else:
                 getattr(self, param_name).data = sanitizer.unescape(param.data)

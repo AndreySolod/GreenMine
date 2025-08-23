@@ -3,7 +3,7 @@ from flask_login import current_user
 from app.controllers.cves import bp
 from app.models import CriticalVulnerability, ProgrammingLanguage, VulnerableEnvironmentType
 from app import db, side_libraries, logger
-from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, BootstrapTableSearchParams
 from app.helpers.main_page_helpers import DefaultEnvironment
 from .forms import CriticalVulnerabilityCreateForm, CriticalVulnerabilityEditForm
 import json
@@ -28,8 +28,9 @@ def cve_index():
 @bp.route('/index-data')
 def cve_index_data():
     user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'index')
-    additional_params = {'obj': CriticalVulnerability, 'column_index': ['id', 'title', 'description', 'vulnerable_environment_type', 'proof_of_concept_language'],
-                         'base_select': lambda x: x.where(CriticalVulnerability.archived == False)}
+    additional_params: BootstrapTableSearchParams = {'obj': CriticalVulnerability,
+                                                     'column_index': ['id', 'title', 'description', 'vulnerable_environment_type', 'proof_of_concept_language'],
+                                                     'base_select': lambda x: x.where(CriticalVulnerability.archived == False)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all cves")
     return get_bootstrap_table_json_data(request, additional_params)
         

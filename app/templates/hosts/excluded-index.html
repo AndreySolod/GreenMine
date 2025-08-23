@@ -86,7 +86,7 @@
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                 buttonsClass: 'primary',
                 exportTypes: ['json', 'xml', 'png', 'csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],
-                onClickRow: function(row, element, field) {
+                onDblClickRow: function(row, element, field) {
                     location = "{{ url_for('networks.host_show', host_id='__row_id') }}".replace("__row_id", row.id)
                 }
               })
