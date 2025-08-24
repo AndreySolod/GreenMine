@@ -409,7 +409,8 @@ ul.main-list-ul  {
 
 .main-heading .right-actions {
     float: right;
-    margin-top: 2px
+    margin-top: 2px;
+    display:flex;
 }
 
 @media(max-width: 992px) {
@@ -5365,7 +5366,20 @@ label {
     color: var(--main-text-color); 
 }
 
+.select2-container--classic .select2-selection--single .select2-selection__rendered {
+    color: var(--main-text-color);
+    line-height: 28px; }
+
 .full-screen-element {
     height: 80vh;
     overflow: auto;
+}
+
+.select2-icon-field-element {
+    font-size: 50px;
+    /*margin-top: 12px; */
+}
+
+.select2-single-icon-list-widget {
+    height: 80px;
 }

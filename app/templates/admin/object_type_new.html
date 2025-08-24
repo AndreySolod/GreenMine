@@ -9,7 +9,7 @@
                 <form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
                       {% for form_attr in form_attrs %}
-                        {{ form_element(form, form_attr[0]) }}
+                        {{ form_element(form, form_attr[0], inline=True) }}
                       {% endfor %}
                     <div class="row justify-content-end">
                         <div class="col-3">

@@ -1,0 +1,89 @@
+<table class="table table-borderless">
+    <tbody>
+        <tr>
+            <td>{{ _("SNMP v1:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ _("Yes") if service.additional_attributes["snmp"].get("v1_enable") else _("No") }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>{{ _("SNMP v2c:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ _("Yes") if service.additional_attributes["snmp"].get("v2c_enable") else _("No") }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        </tr>
+    </tbody>
+</table>
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <table class="table table-stripped">
+            <thead>
+                <tr>
+                    <th>{{ _("Read-only community") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if service.additional_attributes and service.additional_attributes.get("read_only_community") %}
+                    {% for community in service.additional_attributes["read_only_community"] %}
+                        <tr>
+                            <td>{{ community }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>{{ _("No read-only community defined") }}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <table class="table table-stripped">
+            <thead>
+                <tr>
+                    <th>{{ _("Read-write community") }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if service.additional_attributes and service.additional_attributes.get("read_write_community") %}
+                    {% for community in service.additional_attributes["read_write_community"] %}
+                        <tr>
+                            <td>{{ community }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td>{{ _("No read-write community defined") }}</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<table class="table table-borderless">
+    <tbody>
+        <tr>
+            <td>{{ _("NsExtendObjectModule enabled:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ _("Yes") if service.additional_attributes["snmp"].get("ns_extend_object_module") else _("No") }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>{{ _("SNMP v3:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ _("Yes") if service.additional_attributes["snmp"].get("v3_enable") else _("No") }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+    </tbody>
+</table>
+
+</table>

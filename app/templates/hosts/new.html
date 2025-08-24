@@ -2,35 +2,47 @@
 {% from 'layout/_macrosses.html' import form_element %}
 
 {% block page_content %}
-<div class="row gutters">
-    <div class="col-lg-6 col-md-12">
-        <div class="card">
-            <div class="card-body">
-                <form action="" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
-                    {{ form.hidden_tag() }}
-                    {{ form_element(form, form.from_network_id) }}
-                    {{ form_element(form, form.title) }}
-                    {{ form_element(form, form.ip_address) }}
-                    {{ form_element(form, form.mac) }}
-                    {{ form_element(form, form.operation_system_family_id) }}
-                    {{ form_element(form, form.operation_system_gen) }}
-                    {{ form_element(form, form.ipidsequence_class) }}
-                    {{ form_element(form, form.ipidsequence_value) }}
+<form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+    <div class="row gutters">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_element(form, form.from_network_id, inline=True) }}
+                    {{ form_element(form, form.title, inline=True) }}
+                    {{ form_element(form, form.ip_address, inline=True) }}
+                    {{ form_element(form, form.mac, inline=True) }}
+                    {{ form_element(form, form.state_id, inline=True) }}
+                    {{ form_element(form, form.state_reason, inline=True) }}
                     {{ form_element(form, form.description) }}
-                    {{ form_element(form, form.device_type_id) }}
-                    {{ form_element(form, form.device_vendor_id) }}
-                    {{ form_element(form, form.device_model_id) }}
-                    {{ form_element(form, form.compromised, inline=True) }}
                     {{ form.excluded(style="display: none") }}
-                    <div class="row justify-content-end">
-                        <div class="col-4">
-                            {{ form.submit(class="btn btn-primary") }}
-                            {{ form.submit_and_add_new(class="btn btn-primary") }}
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_element(form, form.operation_system_family_id, inline=True) }}
+                    {{ form_element(form, form.operation_system_gen, inline=True) }}
+                    {{ form_element(form, form.ipidsequence_class, inline=True) }}
+                    {{ form_element(form, form.ipidsequence_value, inline=True) }}
+                    {{ form_element(form, form.device_type_id, inline=True) }}
+                    {{ form_element(form, form.device_vendor_id, inline=True) }}
+                    {{ form_element(form, form.device_model_id, inline=True) }}
+                    {{ form_element(form, form.compromised, inline=True) }}
+                    {{ form_element(form, form.labels, inline=True) }}
+                </div>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-6">
+                    {{ form.submit(class="btn btn-primary") }}
+                    {{ form.submit_and_add_new(class="btn btn-primary") }}
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            
+        </div>
     </div>
-</div>
+</form>
 {% endblock %}

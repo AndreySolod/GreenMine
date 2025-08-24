@@ -4,6 +4,7 @@ import ipaddress
 import flask_wtf.file as wtfile
 from app import db
 from app.controllers.forms import WysiwygField, FlaskForm, TreeSelectSingleField, Select2Field, TreeSelectMultipleField, Select2MultipleField
+from app.controllers.forms import Select2IconMultipleField, Select2IconField
 from app.helpers.general_helpers import validates_port, validates_mac
 from app.helpers.projects_helpers import load_network_from_csv
 import app.models as models
@@ -17,6 +18,7 @@ class NetworkForm(FlaskForm):
         self.project_id = project_id
         super(NetworkForm, self).__init__(*args, **kwargs)
         self.can_see_network.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Network).where(models.Network.project_id == project_id))]
+        self.icon_id.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.NetworkIcon))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Network.title.info["label"]),
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=models.Network.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Network.title.type.length))])
@@ -29,6 +31,7 @@ class NetworkForm(FlaskForm):
                                                     validators.Length(min=0, max=models.Network.connect_cmd.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Network.connect_cmd.type.length))])
     can_see_network = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Network.can_see_network.info["label"]), description=models.Network.can_see_network.info["description"])
     vlan_number = wtforms.IntegerField(_l("%(field_name)s:", field_name=models.Network.vlan_number.info["label"]), validators=[validators.Optional()])
+    icon_id = Select2IconField(models.NetworkIcon, _l("%(field_name)s:", field_name=models.Network.icon_id.info["label"]), validators=[validators.Optional()])
 
     def validate_ip_address(self, field):
         ns = [str(i) for i in db.session.scalars(sa.select(models.Network.ip_address).where(models.Network.project_id==int(self.project_id)))]
@@ -74,6 +77,8 @@ class HostForm(FlaskForm):
         self.device_type_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceType.id, models.DeviceType.title)).all()
         self.device_vendor_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title)).all()
         self.device_model_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceModel.id, models.DeviceModel.title)).all()
+        self.state_id.choices =[("0", "---")] + db.session.execute(sa.select(models.HostStatus.id, models.HostStatus.title)).all()
+        self.labels.choices = [(i.id, i) for i in db.session.scalars(sa.select(models.HostLabel)).all()]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.title.info["label"]),
                                 validators=[validators.Length(min=0, max=models.Host.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.title.type.length)),
                                             validators.Optional()])
@@ -99,6 +104,10 @@ class HostForm(FlaskForm):
     ipidsequence_value = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ipidsequence_value.info["label"]),
                                 validators=[validators.Length(min=0, max=models.Host.ipidsequence_value.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.ipidsequence_value.type.length)),
                                             validators.Optional()])
+    state_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.state_id.info["label"]), validators=[validators.Optional()])
+    state_reason = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.state_reason.info["label"]), validators=[validators.Optional(),
+                                                                                                                             validators.Length(min=0, max=models.Host.state_reason.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.state_reason.type.length))])
+    labels = Select2IconMultipleField(models.HostLabel, _l("%(field_name)s:", field_name=models.Host.labels.info["label"]), attr_icon="icon_class", attr_color="icon_color", validators=[validators.Optional()])
 
     def validate_ip_address(form, field):
         netw = int(form.from_network_id.data)

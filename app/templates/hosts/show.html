@@ -7,11 +7,21 @@
     <div class="col-lg-4 col-md-12">
         <div class="card">
             <div class="card-header">
-                {% if host.title != none and host.title != '' %}
-                <h5>{{ host.title|safe }}</h5>
-                {% else %}
-                <h5 class="text-muted">{{ _("(Title is missing)") }}</h5>
-                {% endif %}
+                <div class="row justify-content-between">
+                    <div class="col-6">
+                        {% if host.title != none and host.title != '' %}
+                        <h5>{{ host.title|safe }}</h5>
+                        {% else %}
+                        <h5 class="text-muted">{{ _("(Title is missing)") }}</h5>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        {% for label in host.labels %}
+                        {% set now_style = {'color': label.icon_color} %}
+                        <a data-toggle="tooltip" data-placement="top" data-bs-title="{{ label.title }}" {{ now_style|as_style }}><i class="{{ label.icon_class }}"></i></a>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
@@ -26,11 +36,7 @@
                         </tr>
                         <tr>
                             <td>{{ models.Host.state.info["label"] }}:</td>
-                            {% if host.state != none %}
-                            <td>{{ host.state.title }}</td>
-                            {% else %}
-                            <td></td>
-                            {% endif %}
+                            <td>{{ getattr(host.state, 'title', '') }}</td>
                         </tr>
                         <tr>
                             {% if host.compromised %}
@@ -44,11 +50,7 @@
                         </tr>
                         <tr>
                             <td>{{ models.Host.state_reason.info["label"] }}:</td>
-                            {% if host.state_reason != none %}
-                            <td>{{ host.state_reason|safe }}</td>
-                            {% else %}
-                            <td></td>
-                            {% endif %}
+                            <td>{{ host.state_reason|suppress_none|safe }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Host.mac.info["label"] }}:</td>

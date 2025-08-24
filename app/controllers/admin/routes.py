@@ -205,7 +205,7 @@ def object_type_new(object_type):
     if obj_type not in get_enumerated_objects():
         abort(400)
     form = get_object_create_form(obj_type, db.session)()
-    form_attributes = [getattr(form, i) for i in form.inspected_columns]
+    form_attributes = [getattr(form, i) for i in form.inspected_columns if not getattr(getattr(getattr(form, i), 'flags', 'not_hidden'), 'hidden', False)]
     form_attrs = []
     for i in form_attributes:
         form_attrs.append((i, i.__class__.__name__=='BooleanField'))
@@ -220,6 +220,8 @@ def object_type_new(object_type):
             db.session.rollback()
         except Exception as e:
             flash(_l("Something went wrong. Please report this error to GitVerse"))
+            current_app.logger.error(f"Error when create new object type: {e.with_traceback()}")
+            abort(500)
         else:
             flash(_l('Object «%(title)s» successfully added', title=o.title), 'success')
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new enumerated object '{object_type}' #{o.id}: '{o.title}")
@@ -247,7 +249,7 @@ def object_type_edit(object_type, object_id):
     except exc.NoResultFound:
         abort(404)
     form = get_object_edit_form(obj_type, db.session)(current_object_value=obj)
-    form_attributes = [getattr(form, i) for i in form.inspected_columns]
+    form_attributes = [getattr(form, i) for i in form.inspected_columns if not getattr(getattr(getattr(form, i), 'flags', 'not_hidden'), 'hidden', False)]
     form_attrs = []
     for i in form_attributes:
         form_attrs.append((i, i.__class__.__name__=='BooleanField'))

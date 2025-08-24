@@ -102,6 +102,8 @@ def register(app):
             module_obj_list[classes] = import_class
             return None
         new_objects = []
+        if not isinstance(object_classes, list):
+            raise TypeError(f'Object of classes {classes} must be a list')
         for elem in object_classes:
             e = getattr(module, classes)()
             e.string_slug = list(elem.keys())[0]

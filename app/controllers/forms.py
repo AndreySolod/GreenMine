@@ -2,6 +2,7 @@ import flask_wtf
 from flask import abort, g, url_for
 from wtforms import fields, widgets
 from app.helpers.general_helpers import escapejs
+import wtforms
 from wtforms.fields.choices import SelectField, SelectMultipleField
 from wtforms import ValidationError
 import datetime
@@ -14,7 +15,7 @@ from sqlalchemy.orm.session import Session as SessionBase
 from sqlalchemy.inspection import inspect
 from sqlalchemy.exc import MultipleResultsFound, NoResultFound
 from flask_babel import lazy_gettext as _l
-from typing import Callable, Optional, Any
+from typing import Callable, Optional, Any, List, Tuple, Generator
 from jinja2.filters import Markup
 
 
@@ -395,12 +396,13 @@ class Select2Widget:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}">{field_data}</select>'
         else:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
-        jquery_script = '$(document).ready(function() { $("#' + field.id + '").select2({ language: "' + locale + '", placeholder: "' + _l("Select an option") + '''", ajax: {
-            url: "''' + callback + '''",'''
+        jquery_script = '$(document).ready(function() { $("#' + field.id + '").select2({ language: "' + locale + '", placeholder: "' + _l("Select an option") + '", '
         if self.multiple:
-            jquery_script += '\ncloseOnSelect: false,'
+            jquery_script += '\ncloseOnSelect: false, '
         if dropdownParent is not None:
             jquery_script += f'\ndropdownParent: $("#{dropdownParent}"),'
+        jquery_script += '''ajax: {
+            url: "''' + callback + '''",'''
         jquery_script += '''
         allowClear: true,
         dataType: 'json',
@@ -540,3 +542,154 @@ class ProgressBarField(fields.IntegerField):
         if data < self.min_value or data > self.max_value:
             raise ValidationError("Not a valid value")
         return super().pre_validate(form)
+
+
+class Select2IconWidget:
+    def __init__(self, multiple=False):
+        self.multiple = multiple
+    
+    def __call__(self, field, locale: str='EN', dropdownParent: Optional[str]=None, **kwargs) -> Markup:
+        field_data = ''
+        if field.data: # field.data: int | List[int]
+            try:
+                if not self.multiple:
+                    object_element = db.session.scalars(sa.select(field.object_class).where(field.object_class.id==int(field.data))).one()
+                    field_title = getattr(object_element, field.attr_title)
+                    icon_value = getattr(object_element, field.attr_icon)
+                    color_value = getattr(object_element, field.attr_color)
+                    field_data = f'<option value="{field.data}" data-icon="{icon_value}" data-icon-color="" selected="selected">{field_title}</option>'
+                else:
+                    field_data = ''
+                    for e in db.session.scalars(sa.select(field.object_class).where(field.object_class.id.in_([int(k) for k in field.data]))):
+                        field_title = getattr(e, field.attr_title)
+                        icon_value = getattr(e, field.attr_icon)
+                        color_value = getattr(e, field.attr_color)
+                        field_data += f'<option value="{e.id}" data-icon="{icon_value}" data-icon-color="{color_value}" selected="selected">{field_title}</option>\n'
+            except (MultipleResultsFound, NoResultFound, ValueError, TypeError):
+                field_data = ''
+        for choice in field.choices: # choice: List[Any] - список объектов, имеющих атрибуты id, icon и title
+            if (self.multiple and str(choice[1].id) in field.data) or (not self.multiple and str(choice[1].id) == field.data):
+                continue
+            field_data += f'<option value="{choice[1].id}" data-icon="{getattr(choice[1], field.attr_icon)}" data-icon-color="{getattr(choice[1], field.attr_color)}">{getattr(choice[1], field.attr_title)}</option>\n'
+        additional_classes = ''
+        if 'class' in kwargs:
+            additional_classes = " " + kwargs['class']
+        if not self.multiple:
+            select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}">{field_data}</select>'
+        else:
+            select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
+        jquery_script = '''$(document).ready(function() { $("#''' + str(field.id) + '''").select2({ language: "''' + locale + '''", placeholder: "''' + _l("Select an option") + '''",'''
+        if self.multiple:
+            jquery_script += '\ncloseOnSelect: false, '
+        if dropdownParent is not None:
+            jquery_script += f'\ndropdownParent: $("#{dropdownParent}"),'
+        if not self.multiple:
+            jquery_script += 'selectionCssClass: "select2-single-icon-list-widget",'
+        jquery_script += '''
+        
+          templateResult: function(state) { if (!state.id) {
+          return state.text;
+          }
+          let icon = state.element.getAttribute('data-icon');
+          let color = state.element.getAttribute('data-icon-color');
+           return $('<span><i class="' + icon + '" style="color: ' + color + '"></i>' + state.text + '</span>') },
+          templateSelection: function(state) { if (!state.id) {
+          return state.text;
+          }
+          let icon = state.element.getAttribute('data-icon');
+          let color = state.element.getAttribute('data-icon-color');
+           return $('<span class="select2-icon-field-element"><i class="' + icon + '" style="color: ' + color + '"></i></span>') },
+           }) })'''
+        field.script_tag = jquery_script
+        side_libraries.require_script(jquery_script)
+        return Markup(select_field)
+
+
+class Select2IconField(SelectField):
+    widget = Select2IconWidget()
+    def __init__(self, object_class: Any, label: str | None=None, validators: List=None, coerce: Callable[[str], Any]=int,
+                 choices: List[Tuple[int, Any]] | None=None, validate_choice: bool=True, locale: str='EN',
+                 attr_title: str='title', attr_icon: str="icon", attr_color: str="color", **kwargs):
+        super().__init__(label, validators, coerce, choices, validate_choice, **kwargs)
+        self.object_class = object_class
+        self.locale = locale
+        self.attr_title = attr_title
+        self.attr_icon = attr_icon
+        self.attr_color = attr_color
+        side_libraries.library_required('select2')
+    
+    def _choices_generator(self, choices: List[Tuple[int, Any]]) -> Generator[Tuple[str, str, bool, dict]]:
+        print()
+        if not choices:
+            _choices = []
+
+        elif isinstance(choices[0], (list, tuple)):
+            _choices = choices
+
+        for choice in _choices:
+            selected = choice[1].id == self.coerce(self.data)
+            yield (choice[1].id, getattr(choice[1], self.attr_title), selected, {})
+
+    def pre_validate(self, form):
+        if not self.validate_choice:
+            return
+
+        for _, _, match, *_ in self.iter_choices():
+            if match:
+                break
+        else:
+            raise ValidationError(self.gettext('Not a valid choice'))
+    
+    
+    def __call__(self, *args, **kwargs) -> Markup:
+        return super().__call__(*args, locale=self.locale, **kwargs)
+
+
+class Select2IconMultipleField(SelectMultipleField):
+    widget = Select2IconWidget(multiple=True)
+
+    def __init__(self, object_class: Any, label: str | None=None, validators: List=None, coerce: Callable[[str], Any]=int,
+                 choices: List[Tuple[int, Any]] | None=None, validate_choice: bool=True, locale: str='EN',
+                 attr_title: str='title', attr_icon: str="icon", attr_color: str="color", **kwargs):
+        super().__init__(label, validators, coerce, choices, validate_choice, **kwargs)
+        self.object_class = object_class
+        self.locale = locale
+        self.attr_title = attr_title
+        self.attr_icon = attr_icon
+        self.attr_color = attr_color
+        side_libraries.library_required('select2')
+
+
+class FontAwesomeIconComputedSymbolInput(widgets.HiddenInput):
+    def __call__(self, field: wtforms.Field, **kwargs):
+        hidden_result: Markup = super().__call__(field, **kwargs)
+        javascript = f'''document.getElementById('{field.observable_field_id}').addEventListener('change', function() {{
+        function faUnicode(name) {{
+            var testI = document.createElement('i');
+            var char;
+            testI.className = name;
+            document.body.appendChild(testI);
+            char = window.getComputedStyle( testI, ':before' )
+                    .content.replace(/'|"/g, '');
+            testI.remove();
+            return char.charCodeAt(0);
+        }}
+        current_unicode = faUnicode(this.value);
+        if(current_unicode != 110) {{
+            document.getElementById('{field.id}').value = faUnicode(this.value);
+        }}
+        else {{
+            document.getElementById('{field.id}').value = 0;
+        }}
+        }});'''
+        side_libraries.require_script(javascript)
+        field.script_tag = javascript
+        return hidden_result
+
+
+class FontAwesomeIconField(wtforms.HiddenField):
+    widget = FontAwesomeIconComputedSymbolInput()
+    observable_field_id = "icon_class"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

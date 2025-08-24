@@ -194,19 +194,19 @@ class CurrentObjectAction:
             generate_csrf()
         if self.method == 'GET':
             if (self.action_type == "a_href"):
-                return '<a href="{}" class="btn {} float-right" data-toggle="tooltip" data-placement="left" title="{}" {}><i class="{}"></i></a>'.format(self.link, self.btn_class, self.title, self.confirm, self.icon)
+                return '<a href="{}" class="btn {}" data-toggle="tooltip" data-placement="left" title="{}" {}><i class="{}"></i></a>'.format(self.link, self.btn_class, self.title, self.confirm, self.icon)
             elif (self.action_type == "button_modal"):
-                return '<a href="#" class="btn {} float-right" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#{}" title="{}" {}><i class="{}"></i></a>'.format(self.btn_class, self.link, self.title, self.confirm, self.icon)
+                return '<a href="#" class="btn {}" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#{}" title="{}" {}><i class="{}"></i></a>'.format(self.btn_class, self.link, self.title, self.confirm, self.icon)
         elif self.method == 'DELETE':
             element_id = 'a_confirm' + random_string(20)
             script = f"document.getElementById('{element_id}').addEventListener('click', function() {{if(confirm('{self.confirm}')) {{ document.getElementById('{self.unique_identifier}').submit() }} }});"
             side_libraries.require_script(script)
-            return f'<a id="{element_id}" class="btn {self.btn_class} float-right" data-toggle="tooltip" data-placement="left" title="{self.title}" ><i class="{self.icon}"></i></a><form id="{self.unique_identifier}" action="{self.link}" method="POST"><input type="hidden" name="csrf_token" value="{g.csrf_token}" /></form>'
+            return f'<a id="{element_id}" class="btn {self.btn_class}" data-toggle="tooltip" data-placement="left" title="{self.title}" ><i class="{self.icon}"></i></a><form id="{self.unique_identifier}" action="{self.link}" method="POST"><input type="hidden" name="csrf_token" value="{g.csrf_token}" /></form>'
         elif self.method == 'POST':
             element_id = 'a_confirm' + random_string(20)
             script = f"document.getElementById('{element_id}').addEventListener('click', function() {{ document.getElementById('{self.unique_identifier}').submit() }});"
             side_libraries.require_script(script)
-            return f'<a id="{element_id}" class="btn {self.btn_class} float-right" data-toggle="tooltip" data-placement="left" title="{self.title}" ><i class="{self.icon}"></i></a><form id="{self.unique_identifier}" action="{self.link}" method="POST"><input type="hidden" name="csrf_token" value="{g.csrf_token}" /></form>'
+            return f'<a id="{element_id}" class="btn {self.btn_class}" data-toggle="tooltip" data-placement="left" title="{self.title}" ><i class="{self.icon}"></i></a><form id="{self.unique_identifier}" action="{self.link}" method="POST"><input type="hidden" name="csrf_token" value="{g.csrf_token}" /></form>'
 
 
 
@@ -480,9 +480,6 @@ def find_data_by_request_params(obj: Any, request: Request, column_index: Option
         if a in simple_attrs:
             # a - простой атрибут
             # Если a - это атрибут типа boolean, то нужно использовать не сопоставление со строкой, а сопоставление со значением:
-            print(getattr(obj, a))
-            print(val_a)
-            print(isinstance(getattr(obj, a).type, sa.Boolean), type(getattr(obj, a)))
             if isinstance(getattr(obj, a).type, sa.Boolean):
                 where_filter.append(getattr(obj, a) == (val_a == 'true'))
             else: # Иначе - сопоставление со строкой

@@ -63,8 +63,6 @@ def credential_template_edit(template_id):
         flash(_l("Credential import template successfully updated"), "success")
         return redirect(url_for('admin.credential_template_show', template_id=template.id))
     elif request.method == 'GET':
-        print('template:', template)
-        print('template.static_hash_type:', template.static_hash_type)
         form.load_exist_value(template)
     ctx = DefaultEnvironment(template)()
     return render_template('credential_import_templates/edit.html', **ctx, form=form)

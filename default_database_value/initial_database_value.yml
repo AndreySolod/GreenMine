@@ -631,24 +631,30 @@ TaskState:
 OperationSystemFamily:
     - windows:
         title: "Windows"
-        icon: "ef85ba"
+        icon_class: "fa-brands fa-windows"
+        icon_number: 61818
     - linux:
         title: 'Linux'
-        icon: "ef85bc"
+        icon_class: "fa-brands fa-linux"
+        icon_number: 61820
     - ios:
         title: "IOS"
-        icon: "ef85b9"
+        icon_class: "fa-brands fa-apple"
+        icon_number: 61817
     - ios_xe:
         title: "IOS-XE"
-        icon: "ef85b9"
+        icon_class: "fa-brands fa-apple"
+        icon_number: 61817
     - openbsd:
         title: "OpenBSD"
     - android:
         title: "Android"
-        icon: "ef85bb"
+        icon_class: "fa-brands fa-android"
+        icon_number: 61819
     - apple_tv:
         title: "Apple TV"
-        icon: "ef85b9"
+        icon_class: "fa-brands fa-apple"
+        icon_number: 61817
     - arubaos:
         title: "ArubaOS"
     - esxi:
@@ -781,10 +787,13 @@ DeviceType:
         title: 'IP-камера'
         description: "Различного рода камеры, которые могут сохранять или передавать изображения и/или видео."
         nmap_name: "webcam"
+        icon_class: ""
     - ip_phone:
         title: 'VoIP-телефон'
         description: "Телефон, поддерживающий возможность использования протокола VoIP"
         nmap_name: "VoIP phone"
+        icon_class: "fa-solid fa-phone-volume"
+        icon_number: 62112
     - pbx:
         title: "PBX"
         description: "Private Branch Exchange (PBX) - Частная телефонная станция - маршрутизирует телефонные звонки внутри частной организации и подключает их к телефонной сети общего пользования, или VOIP"
@@ -805,6 +814,8 @@ DeviceType:
         title: 'Принтер/МФУ'
         description: "Принтера, доступные по сети, включая принтера со встроенным принт сервером"
         nmap_name: 'printer'
+        icon_class: "fa-solid fa-print"
+        icon_number: 61487
     - computer:
         title: 'Компьютер'
         nmap_name: 'general purpose'
@@ -2103,3 +2114,31 @@ ProjectAdditionalField:
 
 DefaultCredential:
     - _import_module: "gen_list_default_passwords"
+
+HostLabel:
+    - in_scope:
+        title: "В области исследования"
+        icon_class: "fa-solid fa-bullseye"
+        icon_color: "rgba(0, 250.304, 23.187, 1)"
+    - research_required:
+        title: "Требуется дополнительное исследование"
+        icon_class: "fa-brands fa-searchengin"
+        icon_color: "rgba(0, 245.751, 9.6, 1)"
+    - exclude_required:
+        title: "Исключить из исследования"
+        icon_class: "fa-solid fa-ban"
+        icon_color: "rgba(250.304, 0, 0, 1)"
+
+NetworkIcon:
+    - wifi:
+        title: "Wi-Fi"
+        icon_class: "fa-solid fa-wifi"
+        icon_number: 61931
+    - users:
+        title: "Пользователи"
+        icon_class: "fa-solid fa-users-viewfinder"
+        icon_number: 58773
+    - servers:
+        title: "Сервера"
+        icon_class: "fa-solid fa-computer"
+        icon_number: 58597

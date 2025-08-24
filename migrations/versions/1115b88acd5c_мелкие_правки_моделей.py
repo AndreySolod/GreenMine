@@ -51,6 +51,8 @@ def upgrade():
                existing_type=sa.VARCHAR(length=50),
                type_=app.models.datatypes.LimitedLengthString(length=80),
                existing_nullable=False)
+        batch_op.add_column(sa.Column('icon_class', sa.String(length=30), nullable=True))
+        batch_op.add_column(sa.Column('icon_number', sa.Integer(), nullable=True))
 
     with op.batch_alter_table('device_vendor', schema=None) as batch_op:
         batch_op.alter_column('string_slug',
@@ -120,6 +122,9 @@ def upgrade():
                existing_type=sa.VARCHAR(length=50),
                type_=app.models.datatypes.LimitedLengthString(length=80),
                existing_nullable=False)
+        batch_op.add_column(sa.Column('icon_class', sa.String(length=30), nullable=True))
+        batch_op.add_column(sa.Column('icon_number', sa.Integer(), nullable=True))
+        batch_op.drop_column('icon')
 
     with op.batch_alter_table('programming_language', schema=None) as batch_op:
         batch_op.alter_column('string_slug',
@@ -253,7 +258,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('string_slug', app.models.datatypes.LimitedLengthString(length=80), nullable=False),
     sa.Column('title', sa.String(length=50), nullable=False),
-    sa.Column('icon_hex', sa.String(length=30), nullable=True),
+    sa.Column('icon_class', sa.String(length=30), nullable=True),
+    sa.Column('icon_color', sa.String(length=60), nullable=True),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_host_label'))
     )
     with op.batch_alter_table('host_label', schema=None) as batch_op:
@@ -263,7 +269,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('string_slug', app.models.datatypes.LimitedLengthString(length=80), nullable=False),
     sa.Column('title', sa.String(length=30), nullable=False),
-    sa.Column('icon_hex', sa.String(length=30), nullable=False),
+    sa.Column('icon_number', sa.Integer(), nullable=True),
+    sa.Column('icon_class', sa.String(length=30), nullable=False),
     sa.PrimaryKeyConstraint('id', name=op.f('pk_network_icon'))
     )
     with op.batch_alter_table('network_icon', schema=None) as batch_op:
@@ -395,6 +402,9 @@ def downgrade():
                existing_type=app.models.datatypes.LimitedLengthString(length=80),
                type_=sa.VARCHAR(length=50),
                existing_nullable=False)
+        batch_op.add_column(sa.Column('icon', sa.VARCHAR(length=30), nullable=True))
+        batch_op.drop_column('icon_number')
+        batch_op.drop_column('icon_class')
 
     with op.batch_alter_table('note_importance', schema=None) as batch_op:
         batch_op.alter_column('string_slug',
@@ -464,6 +474,8 @@ def downgrade():
                existing_type=app.models.datatypes.LimitedLengthString(length=80),
                type_=sa.VARCHAR(length=50),
                existing_nullable=False)
+        batch_op.drop_column('icon_number')
+        batch_op.drop_column('icon_class')
 
     with op.batch_alter_table('device_model', schema=None) as batch_op:
         batch_op.alter_column('string_slug',

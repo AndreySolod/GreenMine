@@ -1,20 +1,19 @@
 from app import db, sanitizer, side_libraries
 from app.helpers.general_helpers import validates_port, validates_mac
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
+from app.controllers.forms import PickrColorField, FontAwesomeIconField
 from .generic import HasComment, HasHistory
-from .datatypes import NetworkAddress, IPAddress, LimitedLengthString, ID, StringSlug, CreatedAt, UpdatedAt, Archived
+from .datatypes import NetworkAddress, IPAddress, LimitedLengthString, ID, StringSlug, CreatedAt, UpdatedAt, Archived, JSONType
 from .issues import Issue
 from .tasks import ProjectTask
-from .credentials import Credential, DefaultCredential
+from .credentials import Credential, DefaultCredential, CredentialByService
 from typing import List, Optional, Set
 import sqlalchemy as sa
 from sqlalchemy import event
 import sqlalchemy.orm as so
 from sqlalchemy.orm import validates
 from sqlalchemy.orm.session import Session as SessionBase
-from .credentials import CredentialByService
 from .issues import IssueHasService
-from .datatypes import JSONType
 import ipaddress
 from flask_babel import lazy_gettext as _l, pgettext
 from flask import current_app, has_app_context
@@ -100,7 +99,8 @@ class NetworkIcon(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
-    icon_hex: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Icon hex-code")})
+    icon_class: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Icon class")})
+    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon"), 'form': FontAwesomeIconField})
 
     def __repr__(self):
         return f"<NetworkIcon '{self.title}' with id='{self.id}'>"
@@ -110,7 +110,7 @@ class NetworkIcon(db.Model):
         verbose_name_plural = _l("Network icons")
         description = _l("Contains hexadecimal codes of network icon symbols for their display on the network map")
         title_new = _l("Add new network icon")
-        column_index = ['id', 'string_slug', 'title', 'icon_hex']
+        column_index = ['id', 'string_slug', 'title', 'icon_class']
 
 
 @project_enumerated_object
@@ -118,7 +118,8 @@ class OperationSystemFamily(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
-    icon: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon")})
+    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("FontAwesome icon class")})
+    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon")})
 
     def __repr__(self):
         return f"<OperationSystemFamily '{self.title}' with id='{self.id}'>"
@@ -127,7 +128,7 @@ class OperationSystemFamily(db.Model):
         verbose_name = _l("Family of operating systems")
         verbose_name_plural = _l("Operating system families")
         title_new = _l("Add new family of operation systems")
-        column_index = ['id', 'string_slug', 'title']
+        column_index = ['id', 'string_slug', 'title', 'icon_class']
 
 
 @project_enumerated_object
@@ -137,6 +138,8 @@ class DeviceType(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     nmap_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Nmap-designation")})
+    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("FontAwesome icon class")})
+    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon")})
     device_models: so.Mapped[List["DeviceModel"]] = so.relationship(back_populates='device_type', info={'label': _l("Device models")}, cascade='all, delete-orphan')
 
     def __repr__(self):
@@ -236,13 +239,14 @@ class HostLabel(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
-    icon_hex: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon")})
+    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("FontAwesome icon class")})
+    icon_color: so.Mapped[Optional[str]] = so.mapped_column(sa.String(60), info={'label': _l("FontAwesome icon color"), 'form': PickrColorField})
 
     class Meta:
         verbose_name = _l("Host label")
         verbose_name_plural = _l("Host labels")
         title_new = _l("Add new host label")
-        column_index = ['id', 'title', 'icon_hex']
+        column_index = ['id', 'title', 'icon_class']
 
 
 class HostByLabel(db.Model):
@@ -298,7 +302,7 @@ class Host(HasComment, db.Model, HasHistory):
     ipidsequence_class: so.Mapped[str] = so.mapped_column(LimitedLengthString(70), info={'label': _l("IP ID Sequence class")}, server_default="", default="")
     ipidsequence_value: so.Mapped[str] = so.mapped_column(LimitedLengthString(70), info={'label': _l("IP ID Sequence value")}, server_default="", default="")
 
-    labels: so.Mapped[Set[HostLabel]] = so.relationship(secondary=HostByLabel,
+    labels: so.Mapped[Set[HostLabel]] = so.relationship(secondary=HostByLabel.__table__,
                                                         primaryjoin=id==HostByLabel.host_id,
                                                         secondaryjoin=HostByLabel.label_id==HostLabel.id,
                                                         info={'label': _l("Labels")})
