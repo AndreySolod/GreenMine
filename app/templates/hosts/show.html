@@ -17,7 +17,7 @@
                     </div>
                     <div class="col-6">
                         {% for label in host.labels %}
-                        {% set now_style = {'color': label.icon_color} %}
+                        {% set now_style = {'color': label.icon_color, 'font-size': '20px;'} %}
                         <a data-toggle="tooltip" data-placement="top" data-bs-title="{{ label.title }}" {{ now_style|as_style }}><i class="{{ label.icon_class }}"></i></a>
                         {% endfor %}
                     </div>

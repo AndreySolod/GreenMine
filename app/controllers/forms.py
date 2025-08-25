@@ -567,8 +567,9 @@ class Select2IconWidget:
                         field_data += f'<option value="{e.id}" data-icon="{icon_value}" data-icon-color="{color_value}" selected="selected">{field_title}</option>\n'
             except (MultipleResultsFound, NoResultFound, ValueError, TypeError):
                 field_data = ''
-        for choice in field.choices: # choice: List[Any] - список объектов, имеющих атрибуты id, icon и title
-            if (self.multiple and str(choice[1].id) in field.data) or (not self.multiple and str(choice[1].id) == field.data):
+        print(field.choices)
+        for choice in field.choices: # choice: List[Tuple[int, Any]] - список объектов, имеющих атрибуты id, icon и title
+            if (self.multiple and field.data and str(choice[1].id) in field.data) or (not self.multiple and str(choice[1].id) == field.data):
                 continue
             field_data += f'<option value="{choice[1].id}" data-icon="{getattr(choice[1], field.attr_icon)}" data-icon-color="{getattr(choice[1], field.attr_color)}">{getattr(choice[1], field.attr_title)}</option>\n'
         additional_classes = ''

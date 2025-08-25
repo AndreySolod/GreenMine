@@ -68,7 +68,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
             for h in found_hashes:
                 if h['login'] == login:
                     h['password'] = password
-                break
+                    break
 
     ipmi_hash_type = session.scalars(sa.select(models.HashType).where(models.HashType.string_slug == 'IPMI-2-0-RAKP-HMAC-SHA1')).first()
     for h in found_hashes:

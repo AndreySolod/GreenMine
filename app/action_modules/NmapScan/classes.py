@@ -137,6 +137,8 @@ class NmapScanner:
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
                add_host_with_only_arp_response: bool=True, process_operation_system: bool=True,
                scanning_host_id: Optional[int]=None, add_network_mutial_visibility: bool=True, add_host_and_service_mutual_visibility: bool=True,
+               new_host_labels: Optional[List[int]]=None, exist_host_labels: Optional[List[int]]=None,
+               added_comment: str="",
                locale: str='en'):
         ''' Parse nmap file and create host/service object in project.
         Paramethers:
@@ -152,6 +154,9 @@ class NmapScanner:
         :param locale: locale of user, that running a task;
         :param add_network_mutual_visibility: mark network in which scanned host are placed and scanning network as mutual visibility;
         :param add_host_and_service_mutual_visibility: mark scanning service as accessible from scanning host;
+        :param new_host_labels: a list of id of HostLabel objects that was being added to labels of created host;
+        :param exist_host_labels: a list of HostLabel ids that was being added to labes of existed host;
+        :param added_comment: a comment to append to description for all modified hosts;
         Features:
         - If network to which host belongs does not exist, the host is skipped;
         - If port transport level protocol (tcp, udp, sctp, etc) does not exist in database like string slug field, the port is skipped '''
@@ -170,11 +175,18 @@ class NmapScanner:
                 if host_ip in network.ip_address:
                     return network
             return None
+        
+        hosts_with_only_arp: List[models.Host] = []
+
         def create_host_if_not_exist(host_ip: ipaddress.IPv4Address, current_user_id: int) -> models.Host:
             ''' Trying to create host if them is not exist. Returned Host if they exist and create Host and saved it otherwise '''
             host = session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id, models.Host.ip_address == host_ip))).first()
             if host is not None:
                 return host
+            nonlocal hosts_with_only_arp
+            for host_only_arp in hosts_with_only_arp:
+                if host_only_arp.ip_address == host_ip:
+                    return host
             host = models.Host(ip_address=host_ip, created_by_id=current_user_id)
             return host
         
@@ -218,6 +230,7 @@ class NmapScanner:
                         new_host.state = host_status_up
                         new_host.state_reason = status_reason
                         new_host.from_network = network
+                        hosts_with_only_arp.append(new_host)
                         session.add(new_host)
         # Processing pure hosts and ports
         for host in nmap_etree.iter('host'):
@@ -294,10 +307,22 @@ class NmapScanner:
                             serv.technical += technical
                 serv.technical = sanitizer.sanitize(serv.technical)
                 session.add(serv)
+            # Check if we need to skip added this host to database
             if len(current_host.services) != 0 or len(current_host.services) == 0 and not ignore_host_without_open_ports_and_arp_response:
                 session.add(current_host)
             else:
                 continue
+            # processing labels for host
+            if current_host in session.new:
+                if new_host_labels is not None:
+                    current_host.labels = set(session.scalars(sa.select(models.HostLabel).where(models.HostLabel.id.in_(map(int, new_host_labels)))).all())
+            else:
+                if exist_host_labels is not None:
+                    current_host.labels.update(set(session.scalars(sa.select(models.HostLabel).where(models.HostLabel.id.in_(map(int, exist_host_labels)))).all()))
+            if added_comment not in [None, ""]:
+                if current_host.description is None:
+                    current_host.description = ""
+                current_host.description += sanitizer.sanitize("\n" + added_comment)
             # processing hostnames
             for hostname in host.find('hostnames'):
                 try_dns = session.scalars(sa.select(models.HostDnsName).where(sa.and_(models.HostDnsName.title==hostname.get('name'), models.HostDnsName.dns_type==hostname.get('type'), models.HostDnsName.to_host_id == current_host.id))).first()

@@ -2123,7 +2123,7 @@ HostLabel:
     - research_required:
         title: "Требуется дополнительное исследование"
         icon_class: "fa-brands fa-searchengin"
-        icon_color: "rgba(0, 245.751, 9.6, 1)"
+        icon_color: "rgba(255, 191.25, 0, 1)"
     - exclude_required:
         title: "Исключить из исследования"
         icon_class: "fa-solid fa-ban"

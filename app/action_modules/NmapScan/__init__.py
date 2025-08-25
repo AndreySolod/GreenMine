@@ -1,5 +1,5 @@
 from app import db
-from app.controllers.forms import FlaskForm, Select2Field, TreeSelectMultipleField
+from app.controllers.forms import FlaskForm, Select2Field, TreeSelectMultipleField, WysiwygField, Select2IconMultipleField
 from app.helpers.projects_helpers import validate_host
 from flask import url_for, g
 from flask_babel import lazy_gettext as _l
@@ -19,7 +19,8 @@ logger = logging.getLogger("Nmap scanner action module")
 def action_run(targets: List[models.Network | models.Host], target_ports: str | None, project_id: int, current_user_id,
                scan_params: dict[str, bool], session: Session, scanning_host_id: Optional[int], locale: str="en",
                ignore_closed_ports: bool=True, ignore_host_without_open_ports_and_arp_response: bool=True,
-               add_host_with_only_arp_response: bool=True, add_network_mutial_visibility: bool=True) -> Optional[bool]:
+               add_host_with_only_arp_response: bool=True, add_network_mutial_visibility: bool=True,
+               created_host_marks: List[int] | None=None, edited_host_marks: List[int] | None=None, added_comment: str="") -> Optional[bool]:
     try:
         scanner = NmapScanner()
     except (PortScannerError):
@@ -44,6 +45,8 @@ def action_run(targets: List[models.Network | models.Host], target_ports: str | 
                                         process_operation_system=scan_params["process_operation_system"],
                                         scanning_host_id=scanning_host_id,
                                         add_network_mutial_visibility=add_network_mutial_visibility,
+                                        new_host_labels=created_host_marks, exist_host_labels=edited_host_marks,
+                                        added_comment=added_comment,
                                         locale=locale)
     return None
 
@@ -58,13 +61,15 @@ def exploit(filled_form: dict, running_user: int, default_options: dict, locale:
             for network in networks:
                 action_run([network], ports, project_id, running_user, scan_params, session, filled_form["scanning_host"],
                         locale, filled_form["ignore_closed_ports"], filled_form["ignore_host_without_open_ports_and_arp_response"],
-                        filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"])
+                        filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"], filled_form["created_host_marks"],
+                        filled_form["edited_host_marks"], filled_form["added_comment"])
         elif filled_form["scan_type"] == "host":
             hosts = session.scalars(sa.select(models.Host).where(models.Host.id.in_(map(int, filled_form["target_hosts"])))).all()
             for host in hosts:
                 action_run([host], ports, project_id, running_user, scan_params, session, filled_form["scanning_host"],
                         locale, filled_form["ignore_closed_ports"], filled_form["ignore_host_without_open_ports_and_arp_response"],
-                        filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"])
+                        filled_form["add_host_with_only_arp_response"], filled_form["add_network_accessible"], filled_form["created_host_marks"],
+                        filled_form["edited_host_marks"], filled_form["added_comment"])
 
 
 class AdminOptionsForm(FlaskForm):
@@ -94,6 +99,9 @@ class ModuleInitForm(FlaskForm):
                                   attr_title="treeselecttitle")
     add_network_accessible = wtforms.BooleanField(_l("Automatically add mutual visibility of networks:"), default=True)
     process_operation_system = wtforms.BooleanField(_l("Process host operating system data:"), default=True)
+    created_host_marks = Select2IconMultipleField(models.HostLabel, _l("Labels for new hosts:"), validators=[validators.Optional()], attr_icon="icon_class", attr_color="icon_color")
+    edited_host_marks = Select2IconMultipleField(models.HostLabel, _l("Label for edited hosts:"), description=_l("Add labels to hosts that have been changed"), validators=[validators.Optional()], attr_icon="icon_class", attr_color="icon_color")
+    added_comment = WysiwygField(_l("Add description for all scanned host:"), validators=[validators.Optional()])
     scan_tcp = wtforms.BooleanField(_l("Scan TCP ports:"), default=True, validators=[validators.Optional()])
     scan_udp = wtforms.BooleanField(_l("Scan UDP ports:"), default=True, validators=[validators.Optional()])
     scan_sctp = wtforms.BooleanField(_l("Scan SCTP ports:"), default=False, validators=[validators.Optional()])
