@@ -99,7 +99,7 @@ class NetworkIcon(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
-    icon_class: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Icon class")})
+    icon_class: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Icon class"), "description": _l("The value for substitution in the <i> tag")})
     icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon"), 'form': FontAwesomeIconField})
 
     def __repr__(self):
@@ -108,7 +108,7 @@ class NetworkIcon(db.Model):
     class Meta:
         verbose_name = _l("Network icon")
         verbose_name_plural = _l("Network icons")
-        description = _l("Contains hexadecimal codes of network icon symbols for their display on the network map")
+        description = _l("Contains codes of network icon symbols for their display on the network map")
         title_new = _l("Add new network icon")
         column_index = ['id', 'string_slug', 'title', 'icon_class']
 
@@ -118,7 +118,7 @@ class OperationSystemFamily(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
-    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("FontAwesome icon class")})
+    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon class"), "description": _l("The value for substitution in the <i> tag")})
     icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon")})
 
     def __repr__(self):
@@ -138,7 +138,7 @@ class DeviceType(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     nmap_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Nmap-designation")})
-    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("FontAwesome icon class")})
+    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon class"), "description": _l("The value for substitution in the <i> tag")})
     icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon")})
     device_models: so.Mapped[List["DeviceModel"]] = so.relationship(back_populates='device_type', info={'label': _l("Device models")}, cascade='all, delete-orphan')
 
@@ -239,8 +239,8 @@ class HostLabel(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
-    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("FontAwesome icon class")})
-    icon_color: so.Mapped[Optional[str]] = so.mapped_column(sa.String(60), info={'label': _l("FontAwesome icon color"), 'form': PickrColorField})
+    icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon class"), "description": _l("The value for substitution in the <i> tag")})
+    icon_color: so.Mapped[Optional[str]] = so.mapped_column(sa.String(60), info={'label': _l("Icon color"), 'form': PickrColorField})
 
     class Meta:
         verbose_name = _l("Host label")
@@ -518,10 +518,10 @@ class Service(HasComment, db.Model, HasHistory):
     technical: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Technical information"), 'was_escaped': True})
     created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
-    created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
+    created_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
     updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
-    updated_by: so.Mapped["User"] = so.relationship(lazy='joined', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
+    updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     port: so.Mapped[int] = so.mapped_column(info={'label': _l("Port")})
     access_protocol_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(AccessProtocol.id, ondelete='SET NULL'), info={'label': _l("Application Layer Protocol")})
     access_protocol: so.Mapped["AccessProtocol"] = so.relationship(lazy='joined', info={'label': _l("Application Layer Protocol")})

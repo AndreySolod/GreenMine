@@ -23,7 +23,33 @@
     var options = {autoResize: true,
         height: '100%',
         width: '100%',
-        locale: '{{ g.locale }}'};
+        locale: '{{ g.locale }}',
+        physics: {
+            enabled: true,
+            solver: 'barnesHut',  // Options: 'barnesHut', 'repulsion', 'hierarchicalRepulsion', 'forceAtlas2Based' Full: https://deepwiki.com/visjs/vis-network/2.4-configuration-options
+            barnesHut: {
+                gravitationalConstant: -2000,
+                centralGravity: 0.3,
+                springLength: 300,
+                springConstant: 0.01,
+                damping: 0.05,
+                avoidOverlap: 0.1
+            },
+            stabilization: {
+                enabled: true,
+                iterations: 100,
+                updateInterval: 100,
+                onlyDynamicEdges: false,
+                fit: true
+            },
+            maxVelocity: 50,
+            minVelocity: 0.1,
+            timestep: 0.5
+        },
+        //configure: {
+        //    enabled: true
+        //}
+    };
     var network = new vis.Network(container, data, options);
     network.on('doubleClick', function(properties) {
         if(properties.nodes.length == 1) {
@@ -31,9 +57,21 @@
             if(node_id.startsWith('network_')) {
                 fetch("{{ url_for('networks.add_hosts_to_network_graph', network_id='__network_id') }}".replace('__network_id', node_id.slice(8)))
                 .then(response => { if (response.ok) { return response.json() } })
-                .then((data) => { 
+                .then((data) => {
                     nodes.update(data.nodes);
-                    edges.update(data.edges);
+                    data.edges.forEach(function(value, index) {
+                        var exist = false;
+                        let exist_edges = edges.get();
+                        for (let i = 0; i < exist_edges.length; i++) {
+                            if (exist_edges[i]["from"] == value["from"] && exist_edges[i]["to"] == value["to"]) {
+                                exist = true;
+                                break;
+                            };
+                        };
+                        if (!exist) {
+                            edges.update(value);
+                        }
+                    });
                  })
             }
             else if(node_id.startsWith('host_')) {
@@ -41,7 +79,19 @@
                 .then(response => { if (response.ok) { return response.json() } })
                 .then((data) => {
                     nodes.update(data.nodes);
-                    edges.update(data.edges);
+                    data.edges.forEach(function(value, index) {
+                        var exist = false;
+                        let exist_edges = edges.get();
+                        for (let i = 0; i < exist_edges.length; i++) {
+                            if (exist_edges[i]["from"] == value["from"] && exist_edges[i]["to"] == value["to"]) {
+                                exist = true;
+                                break;
+                            };
+                        };
+                        if (!exist) {
+                            edges.update(value);
+                        }
+                    });
                 })
             }
             else if(node_id.startsWith('service_')) {

@@ -2,11 +2,11 @@
 {% from 'layout/_macrosses.html' import form_element %}
 
 {% block page_content %}
-<div class="row gutters">
-    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div class="card">
-            <div class="card-body">
-                <form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+<form action="" method="POST" class="needs-validation" enctype="multipart/form-data">
+    <div class="row gutters">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-body">
                     {{ form.hidden_tag() }}
                     {{ form_element(form, form.title, inline=True) }}
                     {{ form_element(form, form.ip_address, inline=True) }}
@@ -14,16 +14,25 @@
                     {{ form_element(form, form.internal_ip, inline=True) }}
                     {{ form_element(form, form.asn, inline=True) }}
                     {{ form_element(form, form.connect_cmd, inline=True) }}
-                    {{ form_element(form, form.description) }}
+                    <div style="margin-top: 15px;">
+                        {{ form_element(form, form.icon_id, inline=True) }}
+                    </div>
                     {{ form_element(form, form.can_see_network, inline=True) }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_element(form, form.description) }}
                     <div class="row justify-content-end">
                         <div class="col-4">
                             {{ form.submit(class='btn btn-primary') }}
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
 {% endblock %}

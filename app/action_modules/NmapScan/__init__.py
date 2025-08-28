@@ -86,8 +86,10 @@ class ModuleInitForm(FlaskForm):
         self.scanning_host.validate_funcs = lambda x: validate_host(project_id, x)
         self.target_networks.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Network).where(models.Network.project_id == project_id))]
         self.target_hosts.choices = [(str(i.id), i) for i in db.session.scalars(sa.select(models.Host).join(models.Host.from_network, isouter=True).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False)))]
-    target_networks = TreeSelectMultipleField(_l("Networks to scan:"), validators=[validators.InputRequired()])
-    target_hosts = TreeSelectMultipleField(_l("Hosts to scan:"), validators=[validators.InputRequired()])
+        self.created_host_marks.choices = [(i.id, i) for i in db.session.scalars(sa.select(models.HostLabel))]
+        self.edited_host_marks.choices = [(i.id, i) for i in db.session.scalars(sa.select(models.HostLabel))]
+    target_networks = TreeSelectMultipleField(_l("Networks to scan:"), validators=[validators.Optional()])
+    target_hosts = TreeSelectMultipleField(_l("Hosts to scan:"), validators=[validators.Optional()])
     scan_type = wtforms.SelectField(_l("Scan type:"), choices=[("network", _l("Network only")), ("host", _l("Host only"))], description=_l("Network only scan - scan current subnet to find host and their port. Host only - scan all host in current network on open ports"))
     ports = wtforms.StringField(_l("Ports:"), validators=[validators.DataRequired(_l("This field is mandatory!"))])
     ignore_closed_ports = wtforms.BooleanField(_l("Ignore ports that do not have the status <Open>:"), default=True)

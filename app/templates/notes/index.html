@@ -51,7 +51,7 @@
                     note.updated_by.title }}</a>{{ moment(note.updated_at).fromNow() }}
                   {% endif %}
                 </p>
-                <div id="note-accorditon-description-{{ note.id }}">
+                <div id="note-accordion-description-{{ note.id }}">
                   {{ note.description|safe }}
                 </div>
                 <p id="p-accordion-note-importance-{{ note.id }}">{{ models.Note.importance.info["label"] }}: {{ note.importance.title }}</p>
@@ -244,7 +244,7 @@
     let updated_by = `{{ _("Updated by") }} <a href="${data.user_href}">${data.user_title}</a> ${data.updated_at}`;
     document.getElementById('h6-card-note-updated-by-' + data.note_id).innerHTML = updated_by;
     document.getElementById('p-accordion-note-updated-by-' + data.note_id).innerHTML = updated_by;
-    document.getElementById('note-accorditon-description-' + data.note_id).innerHTML = data.description;
+    document.getElementById('note-accordion-description-' + data.note_id).innerHTML = data.description;
     document.getElementById('note-description-' + data.note_id).innerHTML = data.description;
     document.getElementById('p-accordion-note-importance-' + data.note_id).innerHTML = '{{ models.Note.importance.info["label"] }}: ' + data.importance_title;
     document.getElementById('note-importance-' + data.note_id).innerHTML = '{{ models.Note.importance.info["label"] }}: ' + data.importance_title;

@@ -819,6 +819,8 @@ DeviceType:
     - computer:
         title: 'Компьютер'
         nmap_name: 'general purpose'
+        icon_class: "fa-solid fa-computer"
+        icon_number: 58597
     - router:
         title: "Маршрутизатор"
         description: "Устройство уровня L3, соединяющее множество сетей, и умеющее пересылать пакеты между соединёнными сетями."

@@ -122,6 +122,13 @@
                     filterControl: 'input'
                 },
                 {
+                    field: "labels.title-input",
+                    title: "{{ models.Host.labels.info['label']|escapejs }}",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
                     field: 'operation_system_family',
                     title: '{{ models.Host.operation_system_family.info["label"] }}',
                     sortable: true,

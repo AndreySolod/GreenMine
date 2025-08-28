@@ -27,9 +27,8 @@ def project_additional_parameters_index_data(group_id):
         logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to get project parameter data with non-integer group_id: {group_id}")
         abort(400)
     group = db.get_or_404(models.ProjectAdditionalFieldGroup, group_id)
-    sql, sql_count = find_data_by_request_params(models.ProjectAdditionalField, request, ['id', 'string_slug', 'title', 'help_text', 'description', 'field_type'])
-    sql = sql.where(models.ProjectAdditionalField.group_id == group_id)
-    sql_count = sql_count.where(models.ProjectAdditionalField.group_id == group_id)
+    sql, sql_count = find_data_by_request_params(models.ProjectAdditionalField, request, ['id', 'string_slug', 'title', 'help_text', 'description', 'field_type'],
+                                                 lambda x: x.where(models.ProjectAdditionalField.group_id == group_id))
     rows = []
     for i in db.session.scalars(sql).all():
         row = {'id': i.id, 'string_slug': i.string_slug, 'title': i.title, 'help_text': i.help_text, 'description': i.description, 'field_type': str(i.field_type.value)}

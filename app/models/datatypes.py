@@ -11,7 +11,7 @@ from flask_babel import lazy_gettext as _l
 import uuid
 
 try:
-    from sqlalchemy.dialects.postgresql import JSON
+    from sqlalchemy.dialects.postgresql import JSONB
     has_postgres_json = True
 except ImportError:
     class PostgresJSONType(sa.types.UserDefinedType):
@@ -110,7 +110,7 @@ class ImmutableJSONType(types.TypeDecorator):
         if dialect.name == 'postgresql':
             # Use the native JSON type.
             if has_postgres_json:
-                return dialect.type_descriptor(JSON())
+                return dialect.type_descriptor(JSONB())
             else:
                 return dialect.type_descriptor(PostgresJSONType())
         else:

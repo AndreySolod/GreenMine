@@ -6,7 +6,18 @@
     <div class="col-lg-4 col-md-12">
         <div class="card">
             <div class="card-header">
-                <h5>{{ network.title|safe }}</h5>
+                <div class="row d-flex justify-content-between">
+                    <div class="col-6">
+                        <h5>{{ network.title|safe }}</h5>
+                    </div>
+                    <div class="col-6 text-end float-end">
+                        {% if network.icon != none %}
+                        {% set now_style = {'font-size': '20px'} %}
+                        <a data-toggle="tooltip" data-placement="top" data-bs-title="{{ network.icon.title|default('') }}" {{ now_style|as_style }}><i class="{{ network.icon.icon_class|default('') }}"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+                
             </div>
             <div class="card-body">
                 <table class="table table-borderless">
@@ -298,6 +309,13 @@
             {
                 field: 'ip_address',
                 title: '{{ models.Host.ip_address.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: "labels.title-input",
+                title: "{{ models.Host.labels.info['label']|escapejs }}",
                 sortable: true,
                 align: 'center',
                 filterControl: 'input'

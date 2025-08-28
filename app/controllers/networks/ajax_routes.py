@@ -24,8 +24,9 @@ def host_to_network(network_id):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-                                                     'column_index': ['id', 'title', 'ip_address', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
-                                                     'base_select': lambda x: x.where(models.Host.from_network_id == network_id)}
+                                                     'column_index': ['id', 'title', 'ip_address', "labels.title-input", 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
+                                                     'base_select': lambda x: x.where(models.Host.from_network_id == network_id),
+                                                     "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request hosts from network #{network_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -241,18 +242,21 @@ def add_hosts_to_network_graph():
     edges = []
     for host in network.to_hosts:
         new_node = {'id': 'host_' + str(host.id), 'label': str(host.ip_address)}
-        if host.operation_system_family and host.operation_system_family.icon not in [None, ""]:
-            new_node["icon"] = {"face": "FontAwesome", "code": binascii.unhexlify(host.operation_system_family.icon.encode()).decode()} # to convert: make fontawesome code (like f17c), then binascii.hexlify("\uf17c".encode())
+        if host.device_type and (host.device_type.string_slug != 'computer' or host.operation_system_family and host.operation_system_family.icon_number in [None, 0]) and host.device_type.icon_number not in [None, 0]:
+            new_node["icon"] = {"code": chr(host.device_type.icon_number)}
+            new_node["shape"] = "icon"
+        elif host.operation_system_family and host.operation_system_family.icon_number not in [None, ""]:
+            new_node["icon"] = {"code": chr(host.operation_system_family.icon_number)}
             new_node["shape"] = "icon"
         if host.compromised:
             new_node["color"] = current_user.theme_style.compromised_host_color
-            if host.operation_system_family and host.operation_system_family.icon:
+            if host.operation_system_family and host.operation_system_family.icon_number:
                 new_node["icon"]["color"] = current_user.theme_style.compromised_host_color
             else:
                 new_node["font"] = {"color": get_complementary_color(current_user.theme_style.compromised_host_color)}
         else:
             new_node["color"] = current_user.theme_style.normal_host_color
-            if host.operation_system_family and host.operation_system_family.icon:
+            if (host.operation_system_family and host.operation_system_family.icon_number) or (host.device_type and (host.device_type.string_slug != 'computer' or host.operation_system_family and host.operation_system_family.icon_number in [None, 0]) and host.device_type.icon_number not in [None, 0]):
                 new_node["icon"]["color"] = current_user.theme_style.normal_host_color
             else:
                 new_node["font"] = {"color": get_complementary_color(current_user.theme_style.normal_host_color)}

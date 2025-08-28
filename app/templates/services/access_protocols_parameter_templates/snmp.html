@@ -16,7 +16,6 @@
             <td>{{ _("Unknown") }}</td>
             {% endif %}
         </tr>
-        </tr>
     </tbody>
 </table>
 <div class="row">
@@ -79,6 +78,46 @@
             <td>{{ _("SNMP v3:") }}</td>
             {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
             <td>{{ _("Yes") if service.additional_attributes["snmp"].get("v3_enable") else _("No") }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+                <tr>
+            <td>{{ _("SNMP Enterprise:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ service.additional_attributes["snmp"].get("enterprise")|suppress_none }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>{{ _("SNMP engineIDFormat:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ service.additional_attributes["snmp"].get("engineIDFormat")|suppress_none }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>{{ _("SNMP engineIDData:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ service.additional_attributes["snmp"].get("engineIDData")|suppress_none }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>{{ _("SNMP EngineBoots:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ service.additional_attributes["snmp"].get("snmpEngineBoots")|suppress_none }}</td>
+            {% else %}
+            <td>{{ _("Unknown") }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>{{ _("SNMP EngineTime:") }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get("snmp") %}
+            <td>{{ service.additional_attributes["snmp"].get("snmpEngineTime")|suppress_none }}</td>
             {% else %}
             <td>{{ _("Unknown") }}</td>
             {% endif %}

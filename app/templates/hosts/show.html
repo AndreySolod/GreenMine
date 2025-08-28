@@ -7,7 +7,7 @@
     <div class="col-lg-4 col-md-12">
         <div class="card">
             <div class="card-header">
-                <div class="row justify-content-between">
+                <div class="row d-flex justify-content-between">
                     <div class="col-6">
                         {% if host.title != none and host.title != '' %}
                         <h5>{{ host.title|safe }}</h5>
@@ -15,7 +15,7 @@
                         <h5 class="text-muted">{{ _("(Title is missing)") }}</h5>
                         {% endif %}
                     </div>
-                    <div class="col-6">
+                    <div class="col-6 text-end float-end">
                         {% for label in host.labels %}
                         {% set now_style = {'color': label.icon_color, 'font-size': '20px;'} %}
                         <a data-toggle="tooltip" data-placement="top" data-bs-title="{{ label.title }}" {{ now_style|as_style }}><i class="{{ label.icon_class }}"></i></a>

@@ -54,6 +54,9 @@ class NmapScanner:
             else:
                 self._nmap_path = nmap_path  # save path
                 break
+        if self._nmap_path == "":
+            logger.error("Nmap scanner not found")
+            raise PortScannerError("Nmap scanner not found")
         # regex used to detect nmap (http or https)
         regex = re.compile(r"Nmap version [0-9]*\.[0-9]*[^ ]* \( http(|s)://.* \)")
         self._nmap_last_output = bytes.decode(p.communicate()[0])  # sav stdout

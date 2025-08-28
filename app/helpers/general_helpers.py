@@ -9,7 +9,7 @@ import datetime
 import functools
 import yaml
 import sys
-from typing import List, Optional, Tuple, Any, TypedDict, Callable, TypeVar, Required, NotRequired
+from typing import List, Optional, Tuple, Any, TypedDict, Callable, TypeVar, Required, NotRequired, Dict
 from flask_socketio import disconnect
 from flask_login import current_user
 from flask import url_for, abort, g, jsonify, Flask, Request, current_app
@@ -406,13 +406,16 @@ def bootstrap_table_argument_parsing(request: Request) -> Tuple[str, str, str, O
     return search, sort, order, offset, limit, filter_data, multi_sort
 
 
-def find_data_by_request_params(obj: Any, request: Request, column_index: Optional[List[str]]=None):
+def find_data_by_request_params(obj: Any, request: Request, column_index: List[str] | None=None,
+                                additional_select_params: Callable[[sa_selectable.Select], sa_selectable.Select] | None = None):
     #db.engine.echo = True
     ''' Выполняет поиск заданных объектов типа obj, получая параметры поиска из запроса (request). Возвращает 2 sql-запроса: на получение всех объектов, соответствующих заданным параметрам, а также на получение количества таких объектов. Для получения соответствующих объектов, нужно вызвать session.scalars(sql).all() '''
     # Собираем аргументы
     search, sort, order, offset, limit, filter_data, multi_sort = bootstrap_table_argument_parsing(request)
-    # Все аргументы разобраны. Начинаем построение sql:
-    sql = sa.select(obj)
+    # Все аргументы разобраны. Начинаем построение sql - это будет подзапрос на получения всех уникальных ID для данного запроса.
+    # А далее из этого подзапроса создадим основной запрос и получим все данные:
+    subfunc_row_number = sa.func.row_number().over(partition_by=obj.id, order_by=sa.select(None)).label("rn_current_obj")
+    sql_subquery = sa.select(obj, subfunc_row_number)
     # Дополнительный SQL для подсчёта количества объектов
     sql_count = sa.select(func.count(obj.id.distinct())).select_from(obj)
     # Все простые атрибуты:
@@ -454,12 +457,12 @@ def find_data_by_request_params(obj: Any, request: Request, column_index: Option
             where_search.append(sa.cast(now_attr, sa.String).ilike('%' + search + '%'))
     # Добавим условия join'ов:
     for j in list_joins:
-        sql = sql.join(j, isouter=True)
+        sql_subquery = sql_subquery.join(j, isouter=True)
         sql_count = sql_count.join(j, isouter=True)
     # Отдельно - загрузка всех не M2M-объектов в joinedload - это нужно для получения возможности фильтрации по ним
     for a in column_index:
         if a in rels:
-            sql = sql.options(so.joinedload(getattr(obj, a)))
+            sql_subquery = sql_subquery.options(so.joinedload(getattr(obj, a)))
         elif a not in simple_attrs and a not in rels_uselist:
             attr_name = a.split('-')[0].split('.')[0]
             now_attr = getattr(obj, attr_name)
@@ -473,7 +476,7 @@ def find_data_by_request_params(obj: Any, request: Request, column_index: Option
                 load_chain.joinedload(now_attr)
             if is_list:
                 continue
-            sql = sql.options(load_chain)
+            sql_subquery = sql_subquery.options(load_chain)
     # Теперь обрабатываем where - фильтры. Они заключаются в db.and_
     where_filter = []
     for a, val_a in filter_data.items():
@@ -508,32 +511,37 @@ def find_data_by_request_params(obj: Any, request: Request, column_index: Option
             except KeyError:
                 abort(400)
     where_all = sa.and_(True, sa.or_(*where_search), sa.and_(True, *where_filter))
-    # Добавляем эти условия в sql:
-    sql = sql.where(where_all)
-    sql_count = sql_count.where(where_all)
+    # Добавляем эти условия в sql вместе с дополнительными параметрами запроса:
+    if additional_select_params:
+        sql_subquery = additional_select_params(sql_subquery.where(where_all))
+        sql_count = additional_select_params(sql_count.where(where_all))
+    else:
+        sql_subquery = sql_subquery.where(where_all)
+        sql_count = sql_count.where(where_all)
     # Теперь обработаем упорядочивание элементов:
     for e in multi_sort:
         if e["sortName"] in simple_attrs:
-            sql = sql.order_by(getattr(getattr(obj, e["sortName"]), e['sortOrder'])())
+            sql_subquery = sql_subquery.order_by(getattr(getattr(obj, e["sortName"]), e['sortOrder'])())
         elif e["sortName"] in rels or e['sortName'] in rels_uselist:
-            sql = sql.order_by(getattr(dict_aliases[e['sortName']].title, e['sortOrder'])())
+            sql_subquery = sql_subquery.order_by(getattr(dict_aliases[e['sortName']].title, e['sortOrder'])())
         else:
             pass
     # Отдельно необходимо обработать операцию простой сортировки:
     if sort is not None and order is not None:
         if sort in simple_attrs:
-            sql = sql.order_by(getattr(getattr(obj, sort), order)())
+            sql_subquery = sql_subquery.order_by(getattr(getattr(obj, sort), order)())
         elif sort in rels:
-            sql = sql.order_by(getattr(dict_aliases[sort].title, order)())
+            sql_subquery = sql_subquery.order_by(getattr(dict_aliases[sort].title, order)())
         elif sort not in rels_uselist:
             attr_path = sort.split('-')[0].split('.')
             attr_name = ".".join(attr_path[:len(attr_path) - 1:])
-            sql = sql.order_by(getattr(getattr(dict_aliases[attr_name], attr_path[-1]), order)())
+            sql_subquery = sql_subquery.order_by(getattr(getattr(dict_aliases[attr_name], attr_path[-1]), order)())
     # Теперь обработаем limit и offset - они обрабатываются очень просто
-    sql = sql.limit(limit).offset(offset)
+    sql_subquery = sql_subquery.limit(limit).offset(offset)
     # Отдельно - указание на поиск уникальных объектов (поскольку выполняем, в том числе, и Many-To-Many Join'ы):
-    #sql = sql.distinct()
-    #sql_count = sql_count.distinct()
+    sql_subquery = sql_subquery.subquery()
+    obj_aliased = so.aliased(obj, sql_subquery)
+    sql = sa.select(obj_aliased).select_from(sql_subquery).where(sql_subquery.c.rn_current_obj == 1)
     return sql, sql_count
 
 
@@ -543,8 +551,9 @@ T = TypeVar('T')
 class BootstrapTableSearchParams(TypedDict):
     obj: Required[T] # Объект поиска
     column_index: Required[List[str]] # Список столбцов, которые будут отображаться, и по которым будет производиться поиск.
-    print_params: NotRequired[List[Tuple[str, Callable[[T], str]]]] # Параметры отображения заданной строки на экране (такие как раскраска в цвета и т.п.).
+    print_params: NotRequired[List[Tuple[str, Callable[[T], str]]]] # Параметры отображения заданной строки на экране (такие как раскраска в цвета и т.п.). Добавляются в возвращаемый результат
     base_select: Required[Callable[[sa_selectable.Select], sa_selectable.Select]] # Базовый запрос, который будет использоваться для поиска данных.
+    convert_funcs: NotRequired[Dict[str, Callable[[T], str]]] # Словарь из сопоставлений имени поля с функцией, преобразующей значение поле в необходимый формат. Исходный результат нигде не сохраняется
 
 
 def get_bootstrap_table_json_data(request: Request, additional_params: BootstrapTableSearchParams):
@@ -554,15 +563,19 @@ def get_bootstrap_table_json_data(request: Request, additional_params: Bootstrap
     else:
         column_index = obj.Meta.column_index
     print_params = additional_params.get('print_params')
-    sql, sql_count = find_data_by_request_params(obj, request, column_index=column_index)
-    sql = db.session.scalars(additional_params["base_select"](sql)).all()
+    convert_funcs = additional_params.get('convert_funcs') or {}
+    sql, sql_count = find_data_by_request_params(obj, request, column_index=column_index, additional_select_params=additional_params["base_select"])
+    sql = db.session.scalars(sql).all()
     # Теперь сохраняем данные в json и возвращаем их:
     lst = []
     for i in sql:
         now_attr = {}
         for col in column_index:
-            # Текущий столбец - это или простой атрибут
-            if col in inspect(obj).column_attrs.keys():
+            # Сперва проверяем - есть ли заданный столбец в функциях преобразования
+            if col in convert_funcs:
+                now_attr[col] = convert_funcs[col](i)
+            # Далее проверяем текущий столбец - это или простой атрибут
+            elif col in inspect(obj).column_attrs.keys():
                 if col == 'description':
                     if i.description is not None:
                         now_attr[col] = sanitizer.escape(sanitizer.pure_text(truncate_html_words(i.description, 20)))
@@ -626,8 +639,6 @@ def get_bootstrap_table_json_data(request: Request, additional_params: Bootstrap
     #sql_total_not_filtered = sa.select(func.count()).select_from(additional_params['obj'])
     #if 'base_select' in additional_params:
     #    sql_total_not_filterd = additional_params['base_select'](sql_total_not_filtered)
-    if 'base_select' in additional_params:
-        sql_count = additional_params['base_select'](sql_count)
     total = db.session.scalars(sql_count).one()
     return jsonify({'total': total, "rows": lst})
 

@@ -68,8 +68,9 @@ def host_by_network_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project=project)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-                                                     'column_index': ['id', 'title', 'description', 'ip_address', 'mac', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
-                                                     'base_select': lambda x: x.where(models.Host.from_network_id == network_id)}
+                                                     'column_index': ['id', 'title', 'description', 'ip_address', 'mac', 'labels.title-input', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
+                                                     'base_select': lambda x: x.where(models.Host.from_network_id == network_id),
+                                                     "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index host by network on network #{network_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -113,8 +114,9 @@ def host_index_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-                                                     'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
-                                                     'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False))}
+                                                     'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', "labels.title-input", 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
+                                                     'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False)),
+                                                     "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -603,7 +605,14 @@ def network_graph():
     nodes = []
     edges = []
     for network in networks:
-        nodes.append({'id': 'network_' + str(network.id), 'label': network.title, 'color': current_user.theme_style.network_on_graph_color, 'font': {'color': get_complementary_color(current_user.theme_style.network_on_graph_color)}})
+        new_node = {'id': 'network_' + str(network.id), 'label': network.title,
+                      'color': current_user.theme_style.network_on_graph_color}
+        if network.icon is not None:
+            new_node["shape"] = "icon"
+            new_node["icon"] = {"code": chr(network.icon.icon_number), "color": current_user.theme_style.network_on_graph_color}
+        else:
+            new_node["font"] = {'color': get_complementary_color(current_user.theme_style.network_on_graph_color)}
+        nodes.append(new_node)
         for accessible_network in network.can_see_network:
             edge_exist = False
             for e in edges:

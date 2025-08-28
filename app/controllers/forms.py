@@ -399,12 +399,13 @@ class Select2Widget:
         jquery_script = '$(document).ready(function() { $("#' + field.id + '").select2({ language: "' + locale + '", placeholder: "' + _l("Select an option") + '", '
         if self.multiple:
             jquery_script += '\ncloseOnSelect: false, '
+        if callback is not None:
+            jquery_script += "\nallowClear: true,"
         if dropdownParent is not None:
             jquery_script += f'\ndropdownParent: $("#{dropdownParent}"),'
         jquery_script += '''ajax: {
             url: "''' + callback + '''",'''
         jquery_script += '''
-        allowClear: true,
         dataType: 'json',
         } })})'''
         field.script_tag = jquery_script
@@ -556,8 +557,8 @@ class Select2IconWidget:
                     object_element = db.session.scalars(sa.select(field.object_class).where(field.object_class.id==int(field.data))).one()
                     field_title = getattr(object_element, field.attr_title)
                     icon_value = getattr(object_element, field.attr_icon)
-                    color_value = getattr(object_element, field.attr_color)
-                    field_data = f'<option value="{field.data}" data-icon="{icon_value}" data-icon-color="" selected="selected">{field_title}</option>'
+                    color_value = getattr(object_element, field.attr_color, "")
+                    field_data = f'<option value="{field.data}" data-icon="{icon_value}" data-icon-color="{color_value}" selected="selected">{field_title}</option>'
                 else:
                     field_data = ''
                     for e in db.session.scalars(sa.select(field.object_class).where(field.object_class.id.in_([int(k) for k in field.data]))):
@@ -565,13 +566,16 @@ class Select2IconWidget:
                         icon_value = getattr(e, field.attr_icon)
                         color_value = getattr(e, field.attr_color)
                         field_data += f'<option value="{e.id}" data-icon="{icon_value}" data-icon-color="{color_value}" selected="selected">{field_title}</option>\n'
-            except (MultipleResultsFound, NoResultFound, ValueError, TypeError):
+            except (ValueError, TypeError):
                 field_data = ''
-        print(field.choices)
-        for choice in field.choices: # choice: List[Tuple[int, Any]] - список объектов, имеющих атрибуты id, icon и title
-            if (self.multiple and field.data and str(choice[1].id) in field.data) or (not self.multiple and str(choice[1].id) == field.data):
-                continue
-            field_data += f'<option value="{choice[1].id}" data-icon="{getattr(choice[1], field.attr_icon)}" data-icon-color="{getattr(choice[1], field.attr_color)}">{getattr(choice[1], field.attr_title)}</option>\n'
+        if isinstance(field.choices, (list, tuple)):
+            for choice in field.choices: # choice: List[Tuple[int, Any]] - список объектов, имеющих атрибуты id, icon и title
+                if isinstance(choice[1], field.object_class):
+                    if (self.multiple and field.data and str(choice[1].id) in field.data) or (not self.multiple and str(choice[1].id) == field.data):
+                        continue
+                    field_data += f'<option value="{choice[1].id}" data-icon="{getattr(choice[1], field.attr_icon)}" data-icon-color="{getattr(choice[1], field.attr_color, "")}">{getattr(choice[1], field.attr_title)}</option>\n'
+                else:
+                    field_data += f'<option value="{choice[0]}" data-icon="" data-icon-color="">{choice[1]}</option>\n'
         additional_classes = ''
         if 'class' in kwargs:
             additional_classes = " " + kwargs['class']
@@ -579,13 +583,13 @@ class Select2IconWidget:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}">{field_data}</select>'
         else:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
-        jquery_script = '''$(document).ready(function() { $("#''' + str(field.id) + '''").select2({ language: "''' + locale + '''", placeholder: "''' + _l("Select an option") + '''",'''
+        jquery_script = '''$(document).ready(function() { $("#''' + str(field.id) + '''").select2({ language: "''' + locale + '''", placeholder: "''' + _l("Select an option") + '''", allowClear: true,'''
         if self.multiple:
             jquery_script += '\ncloseOnSelect: false, '
         if dropdownParent is not None:
             jquery_script += f'\ndropdownParent: $("#{dropdownParent}"),'
         if not self.multiple:
-            jquery_script += 'selectionCssClass: "select2-single-icon-list-widget",'
+            jquery_script += 'selectionCssClass: "select2-single-icon-list-widget", width: "300px",'
         jquery_script += '''
         
           templateResult: function(state) { if (!state.id) {
@@ -593,14 +597,27 @@ class Select2IconWidget:
           }
           let icon = state.element.getAttribute('data-icon');
           let color = state.element.getAttribute('data-icon-color');
-           return $('<span><i class="' + icon + '" style="color: ' + color + '"></i>' + state.text + '</span>') },
+          if(icon !== null && color !== null) {
+            return $('<span><i class="' + icon + '" style="color: ' + color + '"></i>' + state.text + '</span>')
+          }
+          else if (icon !== null) {
+            return $('<span><i class="' + icon + '"></i>' + state.text + '</span>')
+          } },
           templateSelection: function(state) { if (!state.id) {
           return state.text;
           }
           let icon = state.element.getAttribute('data-icon');
           let color = state.element.getAttribute('data-icon-color');
-           return $('<span class="select2-icon-field-element"><i class="' + icon + '" style="color: ' + color + '"></i></span>') },
-           }) })'''
+          if (icon !== null && color != null) {
+           return $('<span class="select2-icon-field-element"><i class="' + icon + '" style="color: ' + color + '"></i></span>')
+          } else if (icon !== null) {
+            return $('<span class="select2-icon-field-element"><i class="' + icon + '"></i></span>')
+          }
+          },
+           }) });
+        '''
+        if field.data in ["", None, []]:
+            jquery_script += f'''$('#{field.id}').val(null).trigger("change")'''
         field.script_tag = jquery_script
         side_libraries.require_script(jquery_script)
         return Markup(select_field)
@@ -620,7 +637,6 @@ class Select2IconField(SelectField):
         side_libraries.library_required('select2')
     
     def _choices_generator(self, choices: List[Tuple[int, Any]]) -> Generator[Tuple[str, str, bool, dict]]:
-        print()
         if not choices:
             _choices = []
 
@@ -628,7 +644,10 @@ class Select2IconField(SelectField):
             _choices = choices
 
         for choice in _choices:
-            selected = choice[1].id == self.coerce(self.data)
+            if self.data is not None:
+                selected = choice[1].id == self.coerce(self.data)
+            else:
+                selected = False
             yield (choice[1].id, getattr(choice[1], self.attr_title), selected, {})
 
     def pre_validate(self, form):

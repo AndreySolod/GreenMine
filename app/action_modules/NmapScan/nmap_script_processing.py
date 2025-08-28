@@ -33,6 +33,9 @@ class NmapScriptNbnsInterfaces(NmapScriptProcessor):
             host = session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project.id, models.Host.ip_address == host_ip))).first()
             if host is not None:
                 return host
+            for host in [i for i in session.new if isinstance(i, models.Host)]:
+                if host.ip_address == ip_address:
+                    return host
             # check if network with this host is exist:
             for n in session.scalars(sa.select(models.Network).where(models.Network.project_id == project.id)).all():
                 if host_ip in n.ip_address:
@@ -60,7 +63,6 @@ class NmapScriptNbnsInterfaces(NmapScriptProcessor):
                         new_host.created_by_id = current_user_id
                         obj_with_script.host.assign_interface(new_host)
                         session.add(new_host)
-                        session.commit()
                 if len(ifaces_data) > 0 and obj_with_script.host.technical is not None:
                     obj_with_script.host.technical += "<p>Interfaces:<br>" + "; ".join(ifaces_data) + "</p>"
                 elif len(ifaces_data) > 0:
@@ -93,10 +95,6 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
                             if serv.port == 445:
                                 issue.services.add(serv)
                                 break
-                        try:
-                            session.commit()
-                        except:
-                            return None
             return ''
         elem = elem.find('elem')
         if elem is None:
@@ -121,10 +119,6 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
                 if serv.port == 445:
                     issue.services.add(serv)
                     break
-            try:
-                session.commit()
-            except:
-                return None
         else:
             return None
         return ''
@@ -170,10 +164,6 @@ class NmapScriptCVE20093103(NmapScriptProcessor):
                                     issue.services.add(serv)
                                     break
                             issue.hosts.add(host)
-                            try:
-                                session.commit()
-                            except:
-                                return None
                             return ''
         return None
 
@@ -205,9 +195,17 @@ class NmapScriptCVE20170144(NmapScriptProcessor):
                                     issue.services.add(serv)
                                     break
                             issue.hosts.add(host)
-                            try:
-                                session.commit()
-                            except:
-                                return None
                             return ''
         return None
+
+
+class NmapScriptSnmpInfo(NmapScriptProcessor):
+    script_id = "snmp-info"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str='en'):
+        if service.additional_attributes is None:
+            service.additional_attributes = {"snmp"}
+        elif "snmp" not in service.additional_attributes:
+            service.additional_attributes["snmp"] = {}
+        for elem in script_element.findall("elem"):
+            service.additional_attributes["snmp"][elem.attrib.get("key")] = elem.text
+        return ''
