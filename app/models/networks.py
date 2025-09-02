@@ -119,7 +119,7 @@ class OperationSystemFamily(db.Model):
     string_slug: so.Mapped[StringSlug] = so.mapped_column()
     title: so.Mapped[str] = so.mapped_column(sa.String(30), info={'label': _l("Title")})
     icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon class"), "description": _l("The value for substitution in the <i> tag")})
-    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon")})
+    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon"), 'form': FontAwesomeIconField})
 
     def __repr__(self):
         return f"<OperationSystemFamily '{self.title}' with id='{self.id}'>"
@@ -139,7 +139,7 @@ class DeviceType(db.Model):
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     nmap_name: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Nmap-designation")})
     icon_class: so.Mapped[Optional[str]] = so.mapped_column(sa.String(30), info={'label': _l("Icon class"), "description": _l("The value for substitution in the <i> tag")})
-    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon")})
+    icon_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Unicode number of icon"), 'form': FontAwesomeIconField})
     device_models: so.Mapped[List["DeviceModel"]] = so.relationship(back_populates='device_type', info={'label': _l("Device models")}, cascade='all, delete-orphan')
 
     def __repr__(self):

@@ -42,6 +42,7 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
         svc = session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, element['services']))))).all()
         cred.services.update(svc)
     session.add(cred)
+    session.commit()
 
 
 def process_credentials_multiple_import_data(project_id: int, processed_data: List[Dict[str, str]], created_by_id: int, session:so.Session) -> None:

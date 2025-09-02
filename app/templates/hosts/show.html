@@ -41,10 +41,10 @@
                         <tr>
                             {% if host.compromised %}
                             {% set now_style = {'border-radius': '16px', 'background-color': current_user.theme_style.compromised_host_color, 'color': get_complementary_color(current_user.theme_style.compromised_host_color), 'padding-left': '6px', 'padding-right': '6px', 'padding-top': '2px', 'padding-bottom': '2px'} %}
-                            <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.compromised.info['description'] }}">{{models.Host.compromised.info["label"] }}</a></td></td>
+                            <td><a data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.compromised.info['description'] }}">{{models.Host.compromised.info["label"] }}</a></td></td>
                             <td><a {{ now_style|as_style }}>{{ _("Yes") }}</a></td>
                             {% else %}
-                            <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.compromised.info['description'] }}">{{ models.Host.compromised.info["label"] }}</a></td></td>
+                            <td><a data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.compromised.info['description'] }}">{{ models.Host.compromised.info["label"] }}</a></td></td>
                             <td>{{ _("No") }}</td>
                             {% endif %}
                         </tr>
@@ -60,7 +60,7 @@
                             {% if host.mac_info == none %}
                             <td>{{ host.mac|suppress_none }}</td>
                             {% else %}
-                            <td><a href="#" data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.mac_info.info['label'] }}: {{ host.mac_info.title }}">{{ host.mac }}</a></td>
+                            <td><a data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Host.mac_info.info['label'] }}: {{ host.mac_info.title }}">{{ host.mac }}</a></td>
                             {% endif %}
                             {% endif %}
                         </tr>
@@ -82,11 +82,7 @@
                         </tr>
                         <tr>
                             <td>{{ models.Host.device_type.info["label"] }}:</td>
-                            {% if host.device_type != none %}
-                            <td>{{ host.device_type.title|suppress_none }}</td>
-                            {% else %}
-                            <td>{{ _("Not defined") }}</td>
-                            {% endif %}
+                            <td><a data-toggle="tooltip" data-placement="top" data-bs-title="{{ host.device_type.description|default(_('Unknown'))|suppress_none }}">{{ host.device_type.title|default(_("Not defined"))|suppress_none }}</a></td>
                         </tr>
                         <tr>
                             <td>{{ models.Host.device_vendor.info["label"] }}:</td>

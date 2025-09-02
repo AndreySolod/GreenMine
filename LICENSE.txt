@@ -46,3 +46,6 @@ Installed plugins:
 - contextmenu (http://swisnl.github.io/jQuery-contextMenu/) - MIT License
 - chartjs (https://github.com/chartjs/Chart.js) - MIT License
 - visjs (https://github.com/visjs/vis-network) - MIT License
+
+Icons:
+- videocamera: CC (Aughor: Syaiful Ammar, https://www.svgrepo.com/svg/408665/cctv-camera-smart-cctv-securitycamera-protection-secure-insurance)

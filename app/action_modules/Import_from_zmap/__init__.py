@@ -73,6 +73,7 @@ def action_run(zmap_file_data: str, project_id: int, current_user_id: int, sessi
         service = create_service_if_not_exist(current_host, port, current_user_id)
         session.add(service)
         session.add(current_host)
+        session.commit()
     session.commit()
 
 

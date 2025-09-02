@@ -33,6 +33,7 @@ def create_host_if_not_exist(ipaddr: ipaddress.IPv4Address, project_id: int, ses
     host_status_up = session.scalars(sa.select(models.HostStatus).where(models.HostStatus.string_slug == 'up')).first()
     host = models.Host(ip_address=ipaddr, state=host_status_up, from_network=network, created_by_id=user_id)
     session.add(host)
+    session.commit()
     return host
 
 def get_network_by_host(host_ip: ipaddress.IPv4Address, project_id: int, session: so.Session) -> Optional[models.Network]:

@@ -50,6 +50,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
             if issue:
                 session.add(issue)
                 issue.services.add(target)
+    session.commit()
     return issue is not None
 
 

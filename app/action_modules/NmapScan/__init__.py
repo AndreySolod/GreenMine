@@ -30,11 +30,11 @@ def action_run(targets: List[models.Network | models.Host], target_ports: str | 
     logger.info(f"Run nmap with args: {scan_command}")
     for target in targets:
         logger.info(f"Run nmap by target {target}")
-        scan_result, scan_error, _1, _2 = scanner.scan(str(target.ip_address), target_ports, scan_command)
+        scan_result, scan_error, _1, _2 = scanner.scan([target.ip_address], target_ports, scan_command)
         logger.info("Nmap run completed")
         logger.warning(f"Error when scanning:\n{scan_error}")
         try:
-            scan_result = scan_result.decode()
+            scan_result_decoded = scan_result.decode()
         except Exception as e:
             logger.error(f"Error when decoding nmap result: {e}")
             return False

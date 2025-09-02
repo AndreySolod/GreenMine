@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?ycprhf');
-  src:  url('fonts/icomoon.eot?ycprhf#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?ycprhf') format('truetype'),
-    url('fonts/icomoon.woff?ycprhf') format('woff'),
-    url('fonts/icomoon.svg?ycprhf#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?1kljed');
+  src:  url('fonts/icomoon.eot?1kljed#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?1kljed') format('truetype'),
+    url('fonts/icomoon.woff?1kljed') format('woff'),
+    url('fonts/icomoon.svg?1kljed#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-cctv-camera-smart:before {
+  content: "\e903";
+}
 .icon-no-target:before {
   content: "\e901";
 }

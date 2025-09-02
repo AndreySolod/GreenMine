@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-25 22:54+1000\n"
-"PO-Revision-Date: 2025-08-25 22:57+1000\n"
+"POT-Creation-Date: 2025-09-02 23:25+1000\n"
+"PO-Revision-Date: 2025-09-02 23:29+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -65,13 +65,13 @@ msgstr "Наименование зоны:"
 #: app/action_modules/GetKyoceraCreds/__init__.py:145
 #: app/action_modules/GetKyoceraCreds/__init__.py:158
 #: app/action_modules/Import_from_nmap/__init__.py:58
-#: app/action_modules/Import_from_zmap/__init__.py:94
 #: app/action_modules/Import_from_zmap/__init__.py:95
+#: app/action_modules/Import_from_zmap/__init__.py:96
 #: app/action_modules/Inner_enumerate/__init__.py:113
 #: app/action_modules/Inner_enumerate/__init__.py:114
 #: app/action_modules/Inner_enumerate/__init__.py:115
-#: app/action_modules/Mass_import_scan_data/__init__.py:60
-#: app/action_modules/NmapScan/__init__.py:92
+#: app/action_modules/Mass_import_scan_data/__init__.py:61
+#: app/action_modules/NmapScan/__init__.py:94
 #: app/controllers/admin/authentication_forms.py:19
 #: app/controllers/admin/authentication_forms.py:20
 #: app/controllers/admin/credential_templates_forms.py:16
@@ -175,17 +175,17 @@ msgstr "Это поле не может быть больше %(length)s сим�
 
 #: app/action_modules/DnsZoneTransferCheck/__init__.py:67
 #: app/action_modules/Import_from_nmap/__init__.py:72
-#: app/action_modules/Import_from_zmap/__init__.py:95
-#: app/action_modules/NmapScan/__init__.py:120
+#: app/action_modules/Import_from_zmap/__init__.py:96
+#: app/action_modules/NmapScan/__init__.py:122
 msgid "Project ID:"
 msgstr "ID проекта:"
 
 #: app/action_modules/DnsZoneTransferCheck/__init__.py:68
-#: app/action_modules/EthernalBlueCheck/__init__.py:77
+#: app/action_modules/EthernalBlueCheck/__init__.py:78
 #: app/action_modules/GetKyoceraCreds/__init__.py:159
 #: app/action_modules/Inner_enumerate/__init__.py:143
 #: app/action_modules/IpmiCheck/__init__.py:135
-#: app/action_modules/RdpCheck/__init__.py:103
+#: app/action_modules/RdpCheck/__init__.py:104
 #: app/action_modules/VncNoneAuthCheck/__init__.py:96
 msgid "Run"
 msgstr "Запустить"
@@ -198,25 +198,25 @@ msgstr "Трансфер DNS зоны"
 msgid "Test specified DNS services on zone transfer"
 msgstr "Проверяет указанные службы DNS на наличие трансфера"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:76
+#: app/action_modules/EthernalBlueCheck/__init__.py:77
 #: app/action_modules/IpmiCheck/__init__.py:134
-#: app/action_modules/RdpCheck/__init__.py:102
+#: app/action_modules/RdpCheck/__init__.py:103
 #: app/action_modules/VncNoneAuthCheck/__init__.py:95
 msgid "Services:"
 msgstr "Службы:"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:76
+#: app/action_modules/EthernalBlueCheck/__init__.py:77
 #: app/action_modules/IpmiCheck/__init__.py:134
-#: app/action_modules/RdpCheck/__init__.py:102
+#: app/action_modules/RdpCheck/__init__.py:103
 #: app/action_modules/VncNoneAuthCheck/__init__.py:95
 msgid "Choose targets to exploit"
 msgstr "Выберите цели для эксплуатации"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:81
+#: app/action_modules/EthernalBlueCheck/__init__.py:82
 msgid "EthernalBlue check"
 msgstr "Проверка на EthernalBlue"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:82
+#: app/action_modules/EthernalBlueCheck/__init__.py:83
 msgid ""
 "Check given address on MS17-010 vulnerability, and, if true, save data to "
 "database"
@@ -283,17 +283,17 @@ msgid "Only an xml file!"
 msgstr "Только xml-файлы!"
 
 #: app/action_modules/Import_from_nmap/__init__.py:59
-#: app/action_modules/NmapScan/__init__.py:93
+#: app/action_modules/NmapScan/__init__.py:95
 msgid "Ignore ports that do not have the status <Open>:"
 msgstr "Игнорировать порты, не имеющие статус <Открыт>:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:60
-#: app/action_modules/NmapScan/__init__.py:94
+#: app/action_modules/NmapScan/__init__.py:96
 msgid "Ignore hosts without open ports and ARP response:"
 msgstr "Игнорировать хосты без открытых портов и ARP-ответа:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:61
-#: app/action_modules/NmapScan/__init__.py:95
+#: app/action_modules/NmapScan/__init__.py:97
 msgid ""
 "Add hosts for which an ARP response has been received and there are no open "
 "ports:"
@@ -302,14 +302,14 @@ msgstr ""
 "открытые порты:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:62
-#: app/action_modules/NmapScan/__init__.py:101
+#: app/action_modules/NmapScan/__init__.py:103
 msgid "Process host operating system data:"
 msgstr "Обрабатывать данные об операционной системе хоста:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:63
-#: app/action_modules/Mass_import_creds/__init__.py:121
 #: app/action_modules/Mass_import_creds/__init__.py:122
-#: app/action_modules/NmapScan/__init__.py:96
+#: app/action_modules/Mass_import_creds/__init__.py:123
+#: app/action_modules/NmapScan/__init__.py:98
 #: app/controllers/admin/authentication_forms.py:12
 #: app/controllers/admin/authentication_forms.py:13
 #: app/controllers/admin/authentication_forms.py:18
@@ -478,12 +478,12 @@ msgid "%(field_name)s:"
 msgstr "%(field_name)s:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:63
-#: app/action_modules/NmapScan/__init__.py:96
+#: app/action_modules/NmapScan/__init__.py:98
 msgid "Scanning host"
 msgstr "Сканирующий хост"
 
 #: app/action_modules/Import_from_nmap/__init__.py:64
-#: app/action_modules/NmapScan/__init__.py:97
+#: app/action_modules/NmapScan/__init__.py:99
 msgid ""
 "The host from which or through which the scan was performed. Affects the mutual "
 "visibility of hosts/services with the specified one."
@@ -492,7 +492,7 @@ msgstr ""
 "конечных устройств/служб с указанным."
 
 #: app/action_modules/Import_from_nmap/__init__.py:67
-#: app/action_modules/NmapScan/__init__.py:100
+#: app/action_modules/NmapScan/__init__.py:102
 msgid "Automatically add mutual visibility of networks:"
 msgstr "Автоматически добавлять взаимную видимость сетей:"
 
@@ -501,27 +501,27 @@ msgid "Automatically add mutual visibility of hosts and service:"
 msgstr "Автоматически добавлять взаимную видимость конечных устройств и служб:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:69
-#: app/action_modules/NmapScan/__init__.py:102
+#: app/action_modules/NmapScan/__init__.py:104
 msgid "Labels for new hosts:"
 msgstr "Метки для новых конечных устройств:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:70
-#: app/action_modules/NmapScan/__init__.py:103
+#: app/action_modules/NmapScan/__init__.py:105
 msgid "Label for edited hosts:"
 msgstr "Метки для изменённых конечных устройств:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:70
-#: app/action_modules/NmapScan/__init__.py:103
+#: app/action_modules/NmapScan/__init__.py:105
 msgid "Add labels to hosts that have been changed"
 msgstr "Добавить метки к конечным устройствам, которые будут изменены"
 
 #: app/action_modules/Import_from_nmap/__init__.py:71
-#: app/action_modules/NmapScan/__init__.py:104
+#: app/action_modules/NmapScan/__init__.py:106
 msgid "Add description for all scanned host:"
 msgstr "Добавить описание для всех просканированных конечных устройств:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:73
-#: app/action_modules/Import_from_zmap/__init__.py:96
+#: app/action_modules/Import_from_zmap/__init__.py:97
 msgid "Import"
 msgstr "Импортировать"
 
@@ -533,19 +533,19 @@ msgstr "Импорт из Nmap"
 msgid "Imports the data of the scan results with the Nmap scanner"
 msgstr "Импортирует данные результатов сканирования через сканер Nmap"
 
-#: app/action_modules/Import_from_zmap/__init__.py:94
+#: app/action_modules/Import_from_zmap/__init__.py:95
 msgid "Zmap scan result file:"
 msgstr "Файл результатов скана Zmap:"
 
-#: app/action_modules/Import_from_zmap/__init__.py:94
+#: app/action_modules/Import_from_zmap/__init__.py:95
 msgid "Only an csv file!"
 msgstr "Только csv-файлы!"
 
-#: app/action_modules/Import_from_zmap/__init__.py:100
+#: app/action_modules/Import_from_zmap/__init__.py:101
 msgid "Import from Zmap"
 msgstr "Импорт из Zmap"
 
-#: app/action_modules/Import_from_zmap/__init__.py:101
+#: app/action_modules/Import_from_zmap/__init__.py:102
 msgid ""
 "Imports the data of the scan results with Zmap scanner (Not to be confused with "
 "nmap/zenmap)"
@@ -649,19 +649,19 @@ msgstr ""
 "проэксплуатировать известные уязвимости (такие как CVE-2013-4786) и сохранить "
 "результаты в базу данных"
 
-#: app/action_modules/Mass_import_creds/__init__.py:109
+#: app/action_modules/Mass_import_creds/__init__.py:110
 msgid "Login column number:"
 msgstr "Номер столбца логина:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:110
+#: app/action_modules/Mass_import_creds/__init__.py:111
 msgid "Password hash column number:"
 msgstr "Номер столбца хэша пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:111
+#: app/action_modules/Mass_import_creds/__init__.py:112
 msgid "Credential description column number:"
 msgstr "Номер столбца дополнительного описания учётных данных:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:111
+#: app/action_modules/Mass_import_creds/__init__.py:112
 msgid ""
 "If credential is exists, the value of this field will be added to the end of the "
 "current one."
@@ -669,76 +669,76 @@ msgstr ""
 "Если учётные данные существуют, значение этого поля будет добавлено в конец к "
 "существующему полю."
 
-#: app/action_modules/Mass_import_creds/__init__.py:112
+#: app/action_modules/Mass_import_creds/__init__.py:113
 msgid "Password column number:"
 msgstr "Номер столбца пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:113
+#: app/action_modules/Mass_import_creds/__init__.py:114
 msgid "Comprometation source column number:"
 msgstr "Номер столбца источника компрометации:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:113
+#: app/action_modules/Mass_import_creds/__init__.py:114
 msgid "The column with the IP address of the host from which the data was received"
 msgstr ""
 "Столбец с IP-адресом конечного устройства, с которого эти данные были получены"
 
-#: app/action_modules/Mass_import_creds/__init__.py:114
-#: app/action_modules/Mass_import_scan_data/__init__.py:64
+#: app/action_modules/Mass_import_creds/__init__.py:115
+#: app/action_modules/Mass_import_scan_data/__init__.py:65
 msgid "Column delimither:"
 msgstr "Разделитель столбцов:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:114
-#: app/action_modules/Mass_import_scan_data/__init__.py:64
+#: app/action_modules/Mass_import_creds/__init__.py:115
+#: app/action_modules/Mass_import_scan_data/__init__.py:65
 msgid "The symbol by which the rows will be divided into columns"
 msgstr "Символ, по которому строки будут разделены на столбцы"
 
-#: app/action_modules/Mass_import_creds/__init__.py:115
+#: app/action_modules/Mass_import_creds/__init__.py:116
 msgid "Static login:"
 msgstr "Статический логин:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:115
+#: app/action_modules/Mass_import_creds/__init__.py:116
 msgid "The login that will match all the lines"
 msgstr "Логин, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:116
+#: app/action_modules/Mass_import_creds/__init__.py:117
 msgid "Static password hash:"
 msgstr "Статический хэш пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:116
-#: app/action_modules/Mass_import_creds/__init__.py:120
+#: app/action_modules/Mass_import_creds/__init__.py:117
+#: app/action_modules/Mass_import_creds/__init__.py:121
 msgid "The password that will match all the lines"
 msgstr "Пароль, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:117
+#: app/action_modules/Mass_import_creds/__init__.py:118
 msgid "Static hash type:"
 msgstr "Статический тип хэша:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:117
+#: app/action_modules/Mass_import_creds/__init__.py:118
 msgid "An hash type, that will be added to all the lines"
 msgstr "Тип хэша, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:118
+#: app/action_modules/Mass_import_creds/__init__.py:119
 msgid "Static check wordlist:"
 msgstr "Статическое значение \"Проверен на словаре\":"
 
-#: app/action_modules/Mass_import_creds/__init__.py:119
+#: app/action_modules/Mass_import_creds/__init__.py:120
 msgid "Static description:"
 msgstr "Статическое описание:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:119
+#: app/action_modules/Mass_import_creds/__init__.py:120
 msgid "An description string, that will be added to all credentials"
 msgstr "Строка описания, которая будет добавлена всем учётным данным"
 
-#: app/action_modules/Mass_import_creds/__init__.py:120
+#: app/action_modules/Mass_import_creds/__init__.py:121
 msgid "Static password:"
 msgstr "Статический пароль:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:123
-#: app/action_modules/Mass_import_scan_data/__init__.py:65
+#: app/action_modules/Mass_import_creds/__init__.py:124
+#: app/action_modules/Mass_import_scan_data/__init__.py:66
 msgid "Content:"
 msgstr "Содержимое:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:123
+#: app/action_modules/Mass_import_creds/__init__.py:124
 msgid ""
 "Input content to add here (one credential per line with attribute, separated by "
 "column delimither)"
@@ -746,12 +746,12 @@ msgstr ""
 "Введите содержимое для импорта сюда (по одному объекту учётных данных с "
 "атрибутами, разделёнными по заданному символу)"
 
-#: app/action_modules/Mass_import_creds/__init__.py:124
-#: app/action_modules/Mass_import_scan_data/__init__.py:66
+#: app/action_modules/Mass_import_creds/__init__.py:125
+#: app/action_modules/Mass_import_scan_data/__init__.py:67
 msgid "File:"
 msgstr "Файл:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:124
+#: app/action_modules/Mass_import_creds/__init__.py:125
 msgid ""
 "A file with credentials to add (one credential per line, separated by column "
 "delimither)"
@@ -759,37 +759,37 @@ msgstr ""
 "Файл с учётными данным для добавления (по одному объекту учётных данных на "
 "строку, разделённым по заданному символу)"
 
-#: app/action_modules/Mass_import_creds/__init__.py:124
+#: app/action_modules/Mass_import_creds/__init__.py:125
 msgid "Only .txt file are allowed!"
 msgstr "Разрешены только файлы .txt!"
 
-#: app/action_modules/Mass_import_creds/__init__.py:125
-#: app/action_modules/Mass_import_scan_data/__init__.py:67
+#: app/action_modules/Mass_import_creds/__init__.py:126
+#: app/action_modules/Mass_import_scan_data/__init__.py:68
 #: app/controllers/networks/forms.py:284 app/helpers/admin_helpers.py:163
-#: app/templates/chats/index.html:45 app/templates/hosts/show.html:482
-#: app/templates/hosts/show.html:507
+#: app/templates/chats/index.html:45 app/templates/hosts/show.html:478
+#: app/templates/hosts/show.html:503
 msgid "Add"
 msgstr "Добавить"
 
-#: app/action_modules/Mass_import_creds/__init__.py:129
-#: app/action_modules/Mass_import_creds/__init__.py:133
-#: app/action_modules/Mass_import_scan_data/__init__.py:71
-#: app/action_modules/Mass_import_scan_data/__init__.py:75
+#: app/action_modules/Mass_import_creds/__init__.py:130
+#: app/action_modules/Mass_import_creds/__init__.py:134
+#: app/action_modules/Mass_import_scan_data/__init__.py:72
+#: app/action_modules/Mass_import_scan_data/__init__.py:76
 msgid "At least one of the two fields is required: 'Content' or 'File'!"
 msgstr "Как минимум одно из двух полей 'Содержимое' или 'Файл' необходимо!"
 
-#: app/action_modules/Mass_import_creds/__init__.py:138
-#: app/action_modules/Mass_import_creds/__init__.py:140
-#: app/action_modules/Mass_import_scan_data/__init__.py:80
-#: app/action_modules/Mass_import_scan_data/__init__.py:82
+#: app/action_modules/Mass_import_creds/__init__.py:139
+#: app/action_modules/Mass_import_creds/__init__.py:141
+#: app/action_modules/Mass_import_scan_data/__init__.py:81
+#: app/action_modules/Mass_import_scan_data/__init__.py:83
 msgid "Incorrect input delimiter - not enough columns to parse"
 msgstr "Некорректный символ разделителя - недостаточно столбцов"
 
-#: app/action_modules/Mass_import_creds/__init__.py:197
+#: app/action_modules/Mass_import_creds/__init__.py:198
 msgid "Mass import a credential data"
 msgstr "Множественный импорт учётных данных"
 
-#: app/action_modules/Mass_import_creds/__init__.py:198
+#: app/action_modules/Mass_import_creds/__init__.py:199
 msgid ""
 "Creates or updates credentials from the transferred file, split according to the "
 "specified separator"
@@ -797,30 +797,30 @@ msgstr ""
 "Создает или обновляет учетные данные из переданного файла, разделяя их в "
 "соответствии с указанным разделителем"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:60
+#: app/action_modules/Mass_import_scan_data/__init__.py:61
 #: app/controllers/networks/forms.py:276
 msgid "IP address position:"
 msgstr "Позиция IP-адреса:"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:61
+#: app/action_modules/Mass_import_scan_data/__init__.py:62
 #: app/controllers/networks/forms.py:275
 msgid "Title position:"
 msgstr "Позиция заголовка:"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:62
+#: app/action_modules/Mass_import_scan_data/__init__.py:63
 #: app/controllers/networks/forms.py:278
 msgid "Description position:"
 msgstr "Позиция описания:"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:62
+#: app/action_modules/Mass_import_scan_data/__init__.py:63
 msgid "Will be added to the end of the existing element"
 msgstr "Эти параметры будут добавлены каждому новому и/или существующему объекту"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:63
+#: app/action_modules/Mass_import_scan_data/__init__.py:64
 msgid "MAC address position:"
 msgstr "Позиция MAC-адреса:"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:65
+#: app/action_modules/Mass_import_scan_data/__init__.py:66
 msgid ""
 "Input content to add here (one host per line with attribute, separated by column "
 "delimither)"
@@ -828,22 +828,22 @@ msgstr ""
 "Введите содержимое для импорта сюда (по одному объекту хостов с атрибутами, "
 "разделёнными по заданному символу)"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:66
+#: app/action_modules/Mass_import_scan_data/__init__.py:67
 msgid ""
 "A file with host to add (one hostf per line, separated by column delimither)"
 msgstr ""
 "Файл с учётными данным для добавления (по одному объекту хостов на строку, "
 "разделённым по заданному символу)"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:66
+#: app/action_modules/Mass_import_scan_data/__init__.py:67
 msgid "Only .csv file are allowed!"
 msgstr "Разрешены только файлы .csv!"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:111
+#: app/action_modules/Mass_import_scan_data/__init__.py:112
 msgid "Mass import a host data"
 msgstr "Множественный импорт конечных устройств"
 
-#: app/action_modules/Mass_import_scan_data/__init__.py:112
+#: app/action_modules/Mass_import_scan_data/__init__.py:113
 msgid ""
 "Creates or updates host from the transferred file, split according to the "
 "specified separator"
@@ -851,27 +851,27 @@ msgstr ""
 "Создает или обновляет конечные устройства из переданного файла, разделяя их в "
 "соответствии с указанным разделителем"
 
-#: app/action_modules/NmapScan/__init__.py:89
+#: app/action_modules/NmapScan/__init__.py:91
 msgid "Networks to scan:"
 msgstr "Сети для сканирования:"
 
-#: app/action_modules/NmapScan/__init__.py:90
+#: app/action_modules/NmapScan/__init__.py:92
 msgid "Hosts to scan:"
 msgstr "Конечные устройства для сканирования:"
 
-#: app/action_modules/NmapScan/__init__.py:91
+#: app/action_modules/NmapScan/__init__.py:93
 msgid "Scan type:"
 msgstr "Тип сканирования:"
 
-#: app/action_modules/NmapScan/__init__.py:91
+#: app/action_modules/NmapScan/__init__.py:93
 msgid "Network only"
 msgstr "Только сети"
 
-#: app/action_modules/NmapScan/__init__.py:91
+#: app/action_modules/NmapScan/__init__.py:93
 msgid "Host only"
 msgstr "Только конечные устройства"
 
-#: app/action_modules/NmapScan/__init__.py:91
+#: app/action_modules/NmapScan/__init__.py:93
 msgid ""
 "Network only scan - scan current subnet to find host and their port. Host only - "
 "scan all host in current network on open ports"
@@ -880,31 +880,31 @@ msgstr ""
 "устройства и порты. Сканирование только конечных устройств - сканирует все "
 "конечные устройства в текущей сети на предмет наличия открытых портов"
 
-#: app/action_modules/NmapScan/__init__.py:92
+#: app/action_modules/NmapScan/__init__.py:94
 msgid "Ports:"
 msgstr "Порты:"
 
-#: app/action_modules/NmapScan/__init__.py:105
+#: app/action_modules/NmapScan/__init__.py:107
 msgid "Scan TCP ports:"
 msgstr "Сканировать TCP-порты:"
 
-#: app/action_modules/NmapScan/__init__.py:106
+#: app/action_modules/NmapScan/__init__.py:108
 msgid "Scan UDP ports:"
 msgstr "Сканировать UDP-порты:"
 
-#: app/action_modules/NmapScan/__init__.py:107
+#: app/action_modules/NmapScan/__init__.py:109
 msgid "Scan SCTP ports:"
 msgstr "Сканировать SCTP порты:"
 
-#: app/action_modules/NmapScan/__init__.py:108
+#: app/action_modules/NmapScan/__init__.py:110
 msgid "Process service version information:"
 msgstr "Обрабатывать информацию о версии служб::"
 
-#: app/action_modules/NmapScan/__init__.py:109
+#: app/action_modules/NmapScan/__init__.py:111
 msgid "Minimal number of probes (min-parallelism):"
 msgstr "Минимальное число проб (min-parallelism):"
 
-#: app/action_modules/NmapScan/__init__.py:109
+#: app/action_modules/NmapScan/__init__.py:111
 msgid ""
 "These options control the total number of probes that may be outstanding for a "
 "host group. They are used for port scanning and host discovery"
@@ -912,22 +912,22 @@ msgstr ""
 "Эти параметры определяют общее количество проб, которые могут быть пропущены для "
 "группы узлов. Они используются для сканирования портов и обнаружения узлов"
 
-#: app/action_modules/NmapScan/__init__.py:111
+#: app/action_modules/NmapScan/__init__.py:113
 msgid "Minimal directly control scanning rate:"
 msgstr "Минимальная скорость сканирования с непосредственным управлением:"
 
-#: app/action_modules/NmapScan/__init__.py:111
+#: app/action_modules/NmapScan/__init__.py:113
 msgid ""
 "Nmap will do its best to send packets as fast as or faster than the given rate"
 msgstr ""
 "Nmap сделает все возможное, чтобы отправлять пакеты с заданной скоростью или "
 "выше ее"
 
-#: app/action_modules/NmapScan/__init__.py:112
+#: app/action_modules/NmapScan/__init__.py:114
 msgid "Script timeout:"
 msgstr "Тайм-аут скриптов:"
 
-#: app/action_modules/NmapScan/__init__.py:112
+#: app/action_modules/NmapScan/__init__.py:114
 msgid ""
 "Option sets a ceiling on script execution time. The special value 0 can be used "
 "to mean 'no timeout'."
@@ -935,11 +935,11 @@ msgstr ""
 "Параметр устанавливает ограничение на время выполнения скрипта. Специальное "
 "значение 0 может использоваться для обозначения отсутствия тайм-аута."
 
-#: app/action_modules/NmapScan/__init__.py:113
+#: app/action_modules/NmapScan/__init__.py:115
 msgid "Host timeout:"
 msgstr "Тайм-аут конечного устройства:"
 
-#: app/action_modules/NmapScan/__init__.py:113
+#: app/action_modules/NmapScan/__init__.py:115
 msgid ""
 "The maximum amount of time you are willing to wait when scanning host. The "
 "special value 0 can be used to mean 'no timeout'."
@@ -948,41 +948,41 @@ msgstr ""
 "конечного устройства. Специальное значение 0 означает отсутствие времени "
 "ожидания."
 
-#: app/action_modules/NmapScan/__init__.py:115
+#: app/action_modules/NmapScan/__init__.py:117
 msgid "Timing template:"
 msgstr "Шаблон времени:"
 
-#: app/action_modules/NmapScan/__init__.py:117
+#: app/action_modules/NmapScan/__init__.py:119
 msgid "Parallel resolve reverse DNS names for host:"
 msgstr "Использовать параллельные разрешения reverse DNS для конечных устройств:"
 
-#: app/action_modules/NmapScan/__init__.py:118
+#: app/action_modules/NmapScan/__init__.py:120
 msgid "Treat all hosts as online - skip host discovery:"
 msgstr ""
 "Рассматривать все конечные устройства как подключенные к сети - пропустить "
 "обнаружение хостов:"
 
-#: app/action_modules/NmapScan/__init__.py:119
+#: app/action_modules/NmapScan/__init__.py:121
 msgid "Nmap scripts:"
 msgstr "Nmap скрипты:"
 
-#: app/action_modules/NmapScan/__init__.py:121
+#: app/action_modules/NmapScan/__init__.py:123
 msgid "Scan"
 msgstr "Сканировать"
 
-#: app/action_modules/NmapScan/__init__.py:125
+#: app/action_modules/NmapScan/__init__.py:127
 msgid "Nmap scan"
 msgstr "Сканирование Nmap"
 
-#: app/action_modules/NmapScan/__init__.py:126
+#: app/action_modules/NmapScan/__init__.py:128
 msgid "Scan project network via Nmap scanner"
 msgstr "Сканирует сеть проекта с помощью сканера Nmap"
 
-#: app/action_modules/RdpCheck/__init__.py:107
+#: app/action_modules/RdpCheck/__init__.py:108
 msgid "RDP check"
 msgstr "Проверка RDP"
 
-#: app/action_modules/RdpCheck/__init__.py:108
+#: app/action_modules/RdpCheck/__init__.py:109
 msgid ""
 "For a given address, check classic RDP misconfigures (such as RDP without NLA)"
 msgstr ""
@@ -997,7 +997,7 @@ msgstr "Проверка VNC None Authentication"
 msgid "VNC checks for None Authentication for the specified addresses."
 msgstr "Проверяет указанные службы VNC на недостаток None Authentication."
 
-#: app/controllers/forms.py:399 app/controllers/forms.py:585
+#: app/controllers/forms.py:399 app/controllers/forms.py:586
 msgid "Select an option"
 msgstr "Выберите опцию"
 
@@ -1008,7 +1008,7 @@ msgstr "Выберите опцию"
 msgid "Not a valid choice."
 msgstr "Не является корректным выбором."
 
-#: app/controllers/forms.py:660
+#: app/controllers/forms.py:661
 msgid "Not a valid choice"
 msgstr "Не является корректным выбором"
 
@@ -1112,7 +1112,7 @@ msgstr "Такой слаг уже зарегистрирован!"
 #: app/templates/admin/user_positions_index.html:73
 #: app/templates/credentials/index.html:171
 #: app/templates/hosts/excluded-index.html:117 app/templates/hosts/index.html:325
-#: app/templates/networks/index.html:332
+#: app/templates/networks/index.html:339
 #: app/templates/project_additional_parameters/admin_index.html:134
 #: app/templates/project_additional_parameters/admin_index.html:148
 #: app/templates/services/index.html:207
@@ -1132,15 +1132,15 @@ msgstr "%(action_name)s:"
 msgid "Issue template with the specified string slug has already been registered"
 msgstr "Шаблон проблемы с указанным слагом уже зарегистрирован"
 
-#: app/controllers/admin/project_additional_parameters_routes.py:49
+#: app/controllers/admin/project_additional_parameters_routes.py:48
 msgid "Additional parameters successfully created!"
 msgstr "Дополнительный параметр успешно создан!"
 
-#: app/controllers/admin/project_additional_parameters_routes.py:71
+#: app/controllers/admin/project_additional_parameters_routes.py:70
 msgid "Additional parameter successfully updated!"
 msgstr "Дополнительный параметр успешно обновлён!"
 
-#: app/controllers/admin/project_additional_parameters_routes.py:90
+#: app/controllers/admin/project_additional_parameters_routes.py:89
 #, python-format
 msgid "Project additional parameter #%(param_id)s successfully deleted!"
 msgstr "Дополнительный параметр проекта #%(param_id)s успешно удалён!"
@@ -1340,7 +1340,7 @@ msgstr "Учётные данные для логина «%(login)s»"
 #: app/templates/admin/object_type_index.html:70
 #: app/templates/admin/project_role_index.html:64
 #: app/templates/admin/user_positions_index.html:74
-#: app/templates/hosts/index.html:327 app/templates/networks/index.html:334
+#: app/templates/hosts/index.html:327 app/templates/networks/index.html:341
 #: app/templates/project_additional_parameters/admin_index.html:135
 #: app/templates/tasks/index-on-me.html:155 app/templates/tasks/index.html:155
 #: app/templates/wiki_pages/index.html:201 app/templates/wiki_pages/index.html:238
@@ -1583,7 +1583,7 @@ msgstr "Службы по портам"
 
 #: app/controllers/networks/__init__.py:92 app/controllers/networks/__init__.py:212
 #: app/controllers/networks/__init__.py:219
-#: app/controllers/networks/__init__.py:238 app/templates/hosts/show.html:218
+#: app/controllers/networks/__init__.py:238 app/templates/hosts/show.html:214
 msgid "Add new service"
 msgstr "Добавить новую службу"
 
@@ -1600,7 +1600,7 @@ msgstr "Службы"
 msgid "Network «%(ip_addr)s»"
 msgstr "Сеть «%(ip_addr)s»"
 
-#: app/controllers/networks/__init__.py:118 app/templates/networks/index.html:322
+#: app/controllers/networks/__init__.py:118 app/templates/networks/index.html:329
 msgid "Are you sure you want to delete this network?"
 msgstr "Вы уверены в том, что хотите удалить эту сеть?"
 
@@ -1774,76 +1774,76 @@ msgstr "Данные:"
 msgid "Incorrect IP address format: %(error)s"
 msgstr "Некорректный формат IP-адреса: %(error)s"
 
-#: app/controllers/networks/routes.py:94
+#: app/controllers/networks/routes.py:95
 #, python-format
 msgid "Network #%(network_id)s has been successfully added"
 msgstr "Сеть #%(network_id)s успешно добавлена"
 
-#: app/controllers/networks/routes.py:200
+#: app/controllers/networks/routes.py:201
 #, python-format
 msgid "Host #%(host_id)s has been successfully added"
 msgstr "Конечное устройство #%(host_id)s успешно добавлено"
 
-#: app/controllers/networks/routes.py:266
+#: app/controllers/networks/routes.py:267
 #, python-format
 msgid "Service #%(service_id)s has been successfully added"
 msgstr "Служба #%(service_id)s успешно добавлена"
 
-#: app/controllers/networks/routes.py:331
+#: app/controllers/networks/routes.py:332
 #, python-format
 msgid "Network #%(network_id)s successfully changed"
 msgstr "Сеть #%(network_id)s успешно изменена"
 
-#: app/controllers/networks/routes.py:350
+#: app/controllers/networks/routes.py:351
 #, python-format
 msgid "Network #%(network_id)s has been successfully deleted"
 msgstr "Сеть #%(network_id)s успешно удалена"
 
-#: app/controllers/networks/routes.py:394
+#: app/controllers/networks/routes.py:395
 #, python-format
 msgid "Host #%(host_id)s successfully changed"
 msgstr "Конечное устройство #%(host_id)s успешно изменено"
 
-#: app/controllers/networks/routes.py:410
+#: app/controllers/networks/routes.py:411
 #, python-format
 msgid "Host %(host_name)s include to current research"
 msgstr "Конечное устройство %(host_name)s включёно в исследование"
 
-#: app/controllers/networks/routes.py:421
+#: app/controllers/networks/routes.py:422
 #, python-format
 msgid "Host %(host_name)s excluded from research"
 msgstr "Конечное устройство %(host_name)s исключено из исследования"
 
-#: app/controllers/networks/routes.py:432
+#: app/controllers/networks/routes.py:433
 #, python-format
 msgid "Host %(host_name)s marked as compromised"
 msgstr "Конечное устройство %(host_name)s помечено как скомпрометированное"
 
-#: app/controllers/networks/routes.py:443
+#: app/controllers/networks/routes.py:444
 #, python-format
 msgid "The compromised tag has been removed from the host %(host_id)s"
 msgstr "С конечного устройства %(host_id)s удалена метка компрометации"
 
-#: app/controllers/networks/routes.py:451
+#: app/controllers/networks/routes.py:452
 #, python-format
 msgid "Host #%(host_id)s has been successfully deleted"
 msgstr "Конечное устройство #%(host_id)s успешно удалено"
 
-#: app/controllers/networks/routes.py:494
+#: app/controllers/networks/routes.py:495
 #, python-format
 msgid "Service «%(serv_title)s» successfully changed"
 msgstr "Служба «%(serv_title)s» успешно изменена"
 
-#: app/controllers/networks/routes.py:507
+#: app/controllers/networks/routes.py:508
 #, python-format
 msgid "Service #%(service_id)s has been successfully deleted"
 msgstr "Служба #%(service_id)s успешно удалена"
 
-#: app/controllers/networks/routes.py:587
+#: app/controllers/networks/routes.py:588
 msgid "The hosts import module has been successfully launched"
 msgstr "Модуль импорта конечных устройств успешно запущен"
 
-#: app/controllers/networks/routes.py:648
+#: app/controllers/networks/routes.py:649
 msgid "Networks have been successfully added"
 msgstr "Сети были успешно добавлены"
 
@@ -2838,7 +2838,7 @@ msgstr "IP-адрес некорректен"
 msgid "Incorrect MAC-addres"
 msgstr "MAC-адрес некорректен"
 
-#: app/helpers/general_helpers.py:579
+#: app/helpers/general_helpers.py:587
 #: app/templates/admin/authentication_settings.html:48
 #: app/templates/admin/authentication_settings.html:52
 #: app/templates/admin/authentication_settings.html:56
@@ -2847,17 +2847,17 @@ msgstr "MAC-адрес некорректен"
 #: app/templates/admin/user_positions_index.html:38
 #: app/templates/admin/user_positions_index.html:43
 #: app/templates/hosts/index.html:213 app/templates/hosts/show.html:45
-#: app/templates/hosts/show.html:621 app/templates/networks/index.html:259
+#: app/templates/hosts/show.html:617 app/templates/networks/index.html:266
 #: app/templates/project_additional_parameters/index.html:23
 #: app/templates/services/access_protocols_parameter_templates/snmp.html:6
 #: app/templates/services/access_protocols_parameter_templates/snmp.html:14
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:73
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:81
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:72
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:80
 #: app/templates/services/index.html:114 app/templates/services/show.html:48
 msgid "Yes"
 msgstr "Да"
 
-#: app/helpers/general_helpers.py:579
+#: app/helpers/general_helpers.py:587
 #: app/templates/admin/authentication_settings.html:48
 #: app/templates/admin/authentication_settings.html:52
 #: app/templates/admin/authentication_settings.html:56
@@ -2866,27 +2866,27 @@ msgstr "Да"
 #: app/templates/admin/user_positions_index.html:40
 #: app/templates/admin/user_positions_index.html:45
 #: app/templates/hosts/index.html:213 app/templates/hosts/show.html:48
-#: app/templates/hosts/show.html:621 app/templates/networks/index.html:259
+#: app/templates/hosts/show.html:617 app/templates/networks/index.html:266
 #: app/templates/project_additional_parameters/index.html:25
 #: app/templates/services/access_protocols_parameter_templates/snmp.html:6
 #: app/templates/services/access_protocols_parameter_templates/snmp.html:14
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:73
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:81
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:72
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:80
 #: app/templates/services/index.html:114 app/templates/services/show.html:48
 msgid "No"
 msgstr "Нет"
 
-#: app/helpers/general_helpers.py:594 app/models/credentials.py:129
+#: app/helpers/general_helpers.py:602 app/models/credentials.py:129
 #, python-format
 msgid "Total: %(total)s elements"
 msgstr "Всего: %(total)s элементов"
 
-#: app/helpers/general_helpers.py:606
+#: app/helpers/general_helpers.py:614
 #, python-format
 msgid "Total: %(total)s item(s)"
 msgstr "Всего: %(total)s элементов"
 
-#: app/helpers/general_helpers.py:748
+#: app/helpers/general_helpers.py:754
 msgid "Anonymous"
 msgstr "Анонимная"
 
@@ -3532,7 +3532,7 @@ msgid "Reply to"
 msgstr "Ответ на"
 
 #: app/models/generic.py:66 app/templates/credentials/show.html:199
-#: app/templates/cves/show.html:111 app/templates/hosts/show.html:419
+#: app/templates/cves/show.html:111 app/templates/hosts/show.html:415
 #: app/templates/issues/show.html:285
 #: app/templates/research_events/organization-detection-show.html:91
 #: app/templates/research_events/pentest-show.html:166
@@ -3839,7 +3839,7 @@ msgid "Related hosts"
 msgstr "Связанные конечные устройства"
 
 #: app/models/issues.py:151 app/models/networks.py:549 app/models/tasks.py:169
-#: app/templates/hosts/show.html:289 app/templates/issues/show.html:69
+#: app/templates/hosts/show.html:285 app/templates/issues/show.html:69
 #: app/templates/networks/show.html:79 app/templates/services/show.html:82
 msgid "Related tasks"
 msgstr "Связанные задачи"
@@ -4168,7 +4168,7 @@ msgstr "Скомпрометирован"
 msgid "If true, the host has been completely compromised"
 msgstr "Если истина - конечное устройство было полностью скомпрометировано"
 
-#: app/models/networks.py:297 app/templates/hosts/show.html:281
+#: app/models/networks.py:297 app/templates/hosts/show.html:277
 #: app/templates/networks/show.html:73 app/templates/services/show.html:68
 msgid "Related issues"
 msgstr "Связанные проблемы"
@@ -5168,7 +5168,7 @@ msgid "Execution command result"
 msgstr "Результат выполнения команды"
 
 #: app/templates/admin/console.html:53 app/templates/credentials/show.html:252
-#: app/templates/hosts/show.html:471 app/templates/hosts/show.html:497
+#: app/templates/hosts/show.html:467 app/templates/hosts/show.html:493
 #: app/templates/issues/show.html:339 app/templates/issues/show.html:364
 #: app/templates/issues/show.html:390 app/templates/notes/index.html:132
 #: app/templates/services/show.html:355 app/templates/services/show.html:380
@@ -5277,7 +5277,7 @@ msgstr "Экспортировать в формате"
 #: app/templates/credentials/index.html:170
 #: app/templates/credentials/pentest-index.html:80
 #: app/templates/hosts/excluded-index.html:116 app/templates/hosts/index.html:324
-#: app/templates/networks/index.html:331 app/templates/services/index.html:206
+#: app/templates/networks/index.html:338 app/templates/services/index.html:206
 #: app/templates/services/index_group_by_port.html:175
 #: app/templates/tasks/index-on-me.html:153 app/templates/tasks/index.html:153
 #: app/templates/tasks/show.html:473
@@ -5380,8 +5380,8 @@ msgid "Edit related services"
 msgstr "Редактировать связанные службы"
 
 #: app/templates/credentials/show.html:207 app/templates/credentials/show.html:213
-#: app/templates/cves/show.html:117 app/templates/hosts/show.html:427
-#: app/templates/hosts/show.html:433 app/templates/issues/show.html:294
+#: app/templates/cves/show.html:117 app/templates/hosts/show.html:423
+#: app/templates/hosts/show.html:429 app/templates/issues/show.html:294
 #: app/templates/issues/show.html:301 app/templates/networks/show.html:248
 #: app/templates/networks/show.html:254
 #: app/templates/research_events/organization-detection-show.html:99
@@ -5415,24 +5415,37 @@ msgstr "Данные для импорта"
 msgid "(Title is missing)"
 msgstr "(Заголовок отсутствует)"
 
-#: app/templates/hosts/show.html:88 app/templates/hosts/show.html:96
-#: app/templates/hosts/show.html:104
+#: app/templates/hosts/show.html:85
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:8
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:16
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:74
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:82
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:90
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:98
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:106
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:114
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:122
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: app/templates/hosts/show.html:85 app/templates/hosts/show.html:92
+#: app/templates/hosts/show.html:100
 msgid "Not defined"
 msgstr "Не определено"
 
-#: app/templates/hosts/show.html:135
+#: app/templates/hosts/show.html:131
 msgid "Available services"
 msgstr "Доступные службы"
 
-#: app/templates/hosts/show.html:145 app/templates/hosts/show.html:470
+#: app/templates/hosts/show.html:141 app/templates/hosts/show.html:466
 msgid "Add new DNS name to host"
 msgstr "Добавить новую DNS-запись"
 
-#: app/templates/hosts/show.html:174
+#: app/templates/hosts/show.html:170
 msgid "Specify another host as the interface of the current one"
 msgstr "Указать другой хост как интерфейс к текущему"
 
-#: app/templates/hosts/show.html:252 app/templates/issues/show.html:269
+#: app/templates/hosts/show.html:248 app/templates/issues/show.html:269
 #: app/templates/research_events/organization-detection-show.html:77
 #: app/templates/research_events/pentest-show.html:138
 #: app/templates/research_events/pentest-show.html:152
@@ -5441,7 +5454,7 @@ msgctxt "other"
 msgid "(Missing)"
 msgstr "(Отсутствует)"
 
-#: app/templates/hosts/show.html:265 app/templates/issues/show.html:95
+#: app/templates/hosts/show.html:261 app/templates/issues/show.html:95
 #: app/templates/issues/show.html:105 app/templates/layout/_macrosses.html:337
 #: app/templates/layout/_macrosses.html:363
 #: app/templates/research_events/timeline.html:13
@@ -5451,19 +5464,19 @@ msgctxt "woman"
 msgid "(Missing)"
 msgstr "(Отсутствует)"
 
-#: app/templates/hosts/show.html:297 app/templates/services/show.html:75
+#: app/templates/hosts/show.html:293 app/templates/services/show.html:75
 msgid "Related credentials"
 msgstr "Связанные учётные данные"
 
-#: app/templates/hosts/show.html:496
+#: app/templates/hosts/show.html:492
 msgid "Edit host interfaces"
 msgstr "Редактировать интерфейсы конечного устройства"
 
-#: app/templates/hosts/show.html:702
+#: app/templates/hosts/show.html:698
 msgid "Copy DNS record"
 msgstr "Копировать DNS-запись"
 
-#: app/templates/hosts/show.html:703
+#: app/templates/hosts/show.html:699
 msgid "Delete DNS record"
 msgstr "Удалить DNS-запись"
 
@@ -5556,7 +5569,7 @@ msgstr "Добро пожаловать в PCF"
 msgid "List of all included IP"
 msgstr "Список всех относящихся IP-адресов"
 
-#: app/templates/networks/index.html:333
+#: app/templates/networks/index.html:340
 msgid "Copy IP Address"
 msgstr "Копировать IP-адрес"
 
@@ -5832,40 +5845,53 @@ msgstr "Ошибка при загрузке данных"
 msgid "SNMP v1:"
 msgstr "SNMP v1:"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:8
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:16
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:75
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:83
-msgid "Unknown"
-msgstr "Неизвестно"
-
 #: app/templates/services/access_protocols_parameter_templates/snmp.html:12
 msgid "SNMP v2c:"
 msgstr "SNMP v2c:"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:27
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:26
 msgid "Read-only community"
 msgstr "Community-строки с правами только на чтение"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:39
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:38
 msgid "No read-only community defined"
 msgstr "Community-строки с правами только на чтение не определены"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:49
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:48
 msgid "Read-write community"
 msgstr "Community-строки с правами на чтение и запись"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:61
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:60
 msgid "No read-write community defined"
 msgstr "Community-строки с правами на чтение и запись не определены"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:71
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:70
 msgid "NsExtendObjectModule enabled:"
 msgstr "Активирован NsExtendObjectModule:"
 
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:79
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:78
 msgid "SNMP v3:"
 msgstr "SNMP v3:"
+
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:86
+msgid "SNMP Enterprise:"
+msgstr "SNMP Предприятие:"
+
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:94
+msgid "SNMP engineIDFormat:"
+msgstr "Формат движка SNMP:"
+
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:102
+msgid "SNMP engineIDData:"
+msgstr "Значение движка SNMP:"
+
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:110
+msgid "SNMP EngineBoots:"
+msgstr "Количество запусков демона SNMP (EngineBoots):"
+
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:118
+msgid "SNMP EngineTime:"
+msgstr "Время движка SNMP:"
 
 #: app/templates/services/access_protocols_parameter_templates/vnc.html:4
 msgid "VNC Version"

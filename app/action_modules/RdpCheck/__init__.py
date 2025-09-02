@@ -75,6 +75,7 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
         if issue:
             issue.services.add(target)
     session.add(target)
+    session.commit()
     return {"Name": RDP_PROPS[1], "Domain":RDP_PROPS[3], "Domain FQDN":RDP_PROPS[5], "Server FQDN":RDP_PROPS[7], "OS Version":RDP_PROPS[9], "Requires NLA":RDP_PROPS[10] == 'Yes'}
 
 

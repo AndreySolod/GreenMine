@@ -81,7 +81,8 @@ class NmapScanner:
         if not is_nmap_found:
             raise PortScannerError("nmap program was not found in path")
 
-    def scan(self, hosts: List[ipaddress.IPv4Address], ports: str, arguments: str | List[str]="-sV -sT -sU -O", sudo: bool=False, timeout: int=0):
+    def scan(self, hosts: List[ipaddress.IPv4Address | ipaddress.IPv4Network], ports: str | None,
+             arguments: str | List[str]="-sV -sT -sU -O", sudo: bool=False, timeout: int=0):
         h_args = list(map(str, hosts))
         if isinstance(arguments, str):
             f_args = shlex.split(arguments)
@@ -383,7 +384,7 @@ class NmapScanner:
         if args.get("min_parallelism"):
             build_command.extend(["--min-parallelism", str(args.get("min_parallelism"))])
         if args.get("min_rate"):
-            build_command.extend(["--min-rate ", str(args.get("min_rate"))])
+            build_command.extend(["--min-rate", str(args.get("min_rate"))])
         if args.get("script_timeout"):
             build_command.extend(["--script-timeout", str(args.get("script_timeout"))])
         if args.get("host_timeout"):
