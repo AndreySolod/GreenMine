@@ -73,6 +73,34 @@
                     filterControl: 'input',
                 },
                 {
+                    field: "created_at",
+                    title: "{{ models.Host.created_at.info['label'] }}",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: "created_by.title-input",
+                    title: "{{ models.Host.created_by.info['label'] }}",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: "updated_at",
+                    title: "{{ models.Host.updated_at.info['label'] }}",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
+                    field: 'updated_by.title-input',
+                    title: "{{ models.Host.updated_by.info['label'] }}",
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'input'
+                },
+                {
                     field: 'description',
                     title: '{{ models.Host.description.info["label"] }}',
                     sortable: true,
@@ -170,6 +198,9 @@
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                     showColumns: true,
                     detailView: true,
+                    onLoadSuccess: function(data) {
+                        flask_moment_render_all()
+                    },
                     onDblClickRow: function(row, element, field) {
                         location = "{{ url_for('networks.host_show', **{'host_id': '__row_id'}) }}".replace("__row_id", row.id)
                     },
@@ -189,6 +220,34 @@
                                 sortable: true,
                                 align: 'center',
                                 filterControl: 'input',
+                            },
+                            {
+                                field: "created_at",
+                                title: "{{ models.Service.created_at.info['label'] }}",
+                                sortable: true,
+                                align: 'center', 
+                                filterControl: "input"
+                            },
+                            {
+                                field: "created_by.title-input",
+                                title: "{{ models.Service.created_by.info['label'] }}",
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            },
+                            {
+                                field: 'updated_at',
+                                title: "{{ models.Service.updated_at.info['label'] }}",
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
+                            },
+                            {
+                                field: 'updated_by.title-input',
+                                title: "{{ models.Service.updated_by.info['label'] }}",
+                                sortable: true,
+                                align: 'center',
+                                filterControl: 'input'
                             },
                             {
                                 field: 'port',
@@ -249,6 +308,9 @@
                             cookieIdTable: "ServicesByHostIndex",
                             cookieStorage: "localStorage",
                             sidePagination: 'server',
+                            onLoadSuccess: function(data) {
+                                flask_moment_render_all()
+                            },
                             url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
                             rowStyle: (row, index) => { return {css: { "cursor": "pointer" }} },
                             icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),

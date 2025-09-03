@@ -1,12 +1,20 @@
-<table class="table-borderless">
+<table class="table table-borderless">
     <tbody>
         <tr>
             <td>{{ _("VNC Version") }}:</td>
-            <td>{{ service.additional_parameters["vnc_version"] }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get('vnc') %}
+            <td>{{ service.additional_attributes["vnc"].get("version")|suppress_none }}</td>
+            {% else %}
+            <td>{{ _("Not defined") }}</td>
+            {% endif %}
         </tr>
         <tr>
             <td>{{ _("Server security types supported") }}:</td>
-            <td>{{ service.additional_parameters["vnc_security_types_supported"] }}</td>
+            {% if service.additional_attributes and service.additional_attributes.get('vnc') %}
+            <td>{{ service.additional_attributes["vnc"].get('security_types_supported') }}</td>
+            {% else %}
+            <td>{{ _("Not defined") }}</td>
+            {% endif %}
         </tr>
     </tbody>
 </table>

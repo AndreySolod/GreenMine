@@ -69,6 +69,34 @@
                         filterControl: 'input',
                     },
                     {
+                        field: "created_at",
+                        title: "{{ models.Service.created_at.info['label'] }}",
+                        sortable: true,
+                        align: 'center', 
+                        filterControl: "input"
+                    },
+                    {
+                        field: "created_by.title-input",
+                        title: "{{ models.Service.created_by.info['label'] }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
+                    },
+                    {
+                        field: 'updated_at',
+                        title: "{{ models.Service.updated_at.info['label'] }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
+                    },
+                    {
+                        field: 'updated_by.title-input',
+                        title: "{{ models.Service.updated_by.info['label'] }}",
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
+                    },
+                    {
                         field: 'host.ip_address-input',
                         title: "{{ models.Service.host.entity.class_.ip_address.info['label'] }}",
                         sortable: true,
@@ -147,6 +175,9 @@
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
                     onDblClickRow: function(row, element, field) {
                         location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id);
+                    },
+                    onLoadSuccess: function(data) {
+                        flask_moment_render_all()
                     },
                     rowStyle: (row, index) => {return { classes: "with-context-menu-service", css: { cursor: 'pointer' } }},
                 })

@@ -372,7 +372,9 @@ class NmapScanner:
     def build_scan_command(self, args: dict[str, bool | str]) -> List[str]:
         build_command = []
         if args.get("scan_tcp"):
-            build_command.append("-sT")
+            build_command.append("-sS")
+        if args.get('traceroute'):
+            build_command.append("--traceroute")
         if args.get("scan_udp"):
             build_command.append("-sU")
         if args.get("scan_sctp"):

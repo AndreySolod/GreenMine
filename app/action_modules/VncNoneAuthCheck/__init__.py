@@ -49,11 +49,11 @@ def action_run(target: models.Service, console: MsfRpcConsole, running_user_id: 
         if none_auth_props:
             support_none_auth = True
             continue
-    if target.additional_attributes is None:
-        target.additional_attributes = {}
+    if target.additional_attributes is None or 'vnc' not in target.additional_attributes.keys():
+        target.additional_attributes = {"vnc": {}}
     if vnc_version or security_types_supported:
-        target.additional_attributes["vnc_version"] = vnc_version
-        target.additional_attributes["vnc_security_types_supported"] = security_types_supported
+        target.additional_attributes["vnc"]['version'] = vnc_version
+        target.additional_attributes["vnc"]["security_types_supported"] = security_types_supported
     if support_none_auth:
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == project_id, models.Issue.by_template_slug == "vnc_none_auth"))).first()
         if not issue:

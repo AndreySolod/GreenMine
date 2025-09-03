@@ -107,6 +107,7 @@ class ModuleInitForm(FlaskForm):
     scan_tcp = wtforms.BooleanField(_l("Scan TCP ports:"), default=True, validators=[validators.Optional()])
     scan_udp = wtforms.BooleanField(_l("Scan UDP ports:"), default=True, validators=[validators.Optional()])
     scan_sctp = wtforms.BooleanField(_l("Scan SCTP ports:"), default=False, validators=[validators.Optional()])
+    traceroute = wtforms.BooleanField(_l("Use traceroute:"), default=True, validators=[validators.Optional()])
     process_service_version = wtforms.BooleanField(_l("Process service version information:"), default=True, validators=[validators.Optional()])
     min_parallelism = wtforms.IntegerField(_l("Minimal number of probes (min-parallelism):"), description=_l("These options control the total number of probes that may be outstanding for a host group. They are used for port scanning and host discovery"),
                                            default=None, validators=[validators.Optional()])

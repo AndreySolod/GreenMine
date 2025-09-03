@@ -49,8 +49,9 @@ def network_index_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Network(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Network,
-                                                     'column_index': ['id', 'title', 'description', 'ip_address', 'vlan_number', 'internal_ip', 'asn', 'connect_cmd'],
-                                                     'base_select': lambda x: x.where(models.Network.project_id == project_id)}
+            'column_index': ['id', 'title', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input',
+                             'description', 'ip_address', 'vlan_number', 'internal_ip', 'asn', 'connect_cmd'],
+            'base_select': lambda x: x.where(models.Network.project_id == project_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index network on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -68,9 +69,11 @@ def host_by_network_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project=project)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-                                                     'column_index': ['id', 'title', 'description', 'ip_address', 'mac', 'labels.title-input', 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
-                                                     'base_select': lambda x: x.where(models.Host.from_network_id == network_id),
-                                                     "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
+            'column_index': ['id', 'title', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input',
+                             'description', 'ip_address', 'mac', 'labels.title-input', 'operation_system_family', 'operation_system_gen',
+                             'device_type', 'device_vendor'],
+            'base_select': lambda x: x.where(models.Host.from_network_id == network_id),
+            "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index host by network on network #{network_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -114,9 +117,12 @@ def host_index_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-                                                     'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', "labels.title-input", 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
-                                                     'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False)),
-                                                     "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
+            'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'created_at', 'created_by.title-input',
+                             'updated_at', 'updated_by.title-input',
+                             'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', "labels.title-input", 'operation_system_family',
+                             'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
+            'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False)),
+            "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request host index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -134,8 +140,9 @@ def service_by_host_data():
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project=project)
     additional_params: BootstrapTableSearchParams = {'obj': models.Service,
-                                                     'column_index': ['id', 'title', 'port', 'access_protocol.title-input', 'ssl', 'transport_level_protocol', 'port_state', 'port_state_reason'],
-                                                     'base_select': lambda x: x.where(models.Service.host_id == host_id)}
+            'column_index': ['id', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input',
+                             'title', 'port', 'access_protocol.title-input', 'ssl', 'transport_level_protocol', 'port_state', 'port_state_reason'],
+            'base_select': lambda x: x.where(models.Service.host_id == host_id)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index on host #{host_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -220,8 +227,10 @@ def service_index_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Service(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Service,
-                                                     'column_index': ['id', 'title', 'host.ip_address-input', 'host.device_type.id-select', 'host.device_vendor.id-select', 'port', 'access_protocol.title-input', 'ssl', 'transport_level_protocol', 'port_state', 'port_state_reason', 'technical'],
-                                                     'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False))}
+            'column_index': ['id', 'title', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input',
+                             'host.ip_address-input', 'host.device_type.id-select', 'host.device_vendor.id-select', 'port',
+                             'access_protocol.title-input', 'ssl', 'transport_level_protocol', 'port_state', 'port_state_reason', 'technical'],
+            'base_select': lambda x: x.join(models.Service.host).join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded == False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request service index from project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
