@@ -35,8 +35,8 @@
                             <td>{{ host.ip_address }}</td>
                         </tr>
                         <tr>
-                            <td>{{ models.Host.state.info["label"] }}:</td>
-                            <td>{{ getattr(host.state, 'title', '') }}</td>
+                            <td>{{ models.Host.status.info["label"] }}:</td>
+                            <td>{{ host.status.title|default('') }}</td>
                         </tr>
                         <tr>
                             {% if host.compromised %}
@@ -49,8 +49,8 @@
                             {% endif %}
                         </tr>
                         <tr>
-                            <td>{{ models.Host.state_reason.info["label"] }}:</td>
-                            <td>{{ host.state_reason|suppress_none|safe }}</td>
+                            <td>{{ models.Host.status_reason.info["label"] }}:</td>
+                            <td>{{ host.status_reason|suppress_none|safe }}</td>
                         </tr>
                         <tr>
                             <td>{{ models.Host.mac.info["label"] }}:</td>

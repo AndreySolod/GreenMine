@@ -787,8 +787,8 @@ DeviceType:
         title: 'IP-камера'
         description: "Различного рода камеры, которые могут сохранять или передавать изображения и/или видео."
         nmap_name: "webcam"
-        icon_class: "icon-cctv-camera-smart"
-        icon_number: 59651
+        icon_class: "fa-solid fa-video"
+        icon_number: 61501
     - ip_phone:
         title: 'VoIP-телефон'
         description: "Телефон, поддерживающий возможность использования протокола VoIP"

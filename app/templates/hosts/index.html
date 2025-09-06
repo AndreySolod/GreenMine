@@ -51,6 +51,10 @@
                 disableUnusedSelectOptions: true,
                 columns: [
                 {
+                    field: "state",
+                    checkbox: true
+                },
+                {
                     field: "id",
                     title: "#",
                     sortable: true,
@@ -193,133 +197,149 @@
                     sortable: true,
                     align: 'center',
                     filterControl: 'input',
+                },
+                {
+                    field: "status",
+                    title: '{{ models.Host.status.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: 'select',
+                    filterData: 'json:{{ filters["HostStatus"]|escapejs }}'
+                },
+                {
+                    field: "status_reason",
+                    title: '{{ models.Host.status_reason.info["label"] }}',
+                    sortable: true,
+                    align: 'center',
+                    filterControl: "input"
                 }
                 ],
-                    icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-                    showColumns: true,
-                    detailView: true,
-                    onLoadSuccess: function(data) {
-                        flask_moment_render_all()
-                    },
-                    onDblClickRow: function(row, element, field) {
-                        location = "{{ url_for('networks.host_show', **{'host_id': '__row_id'}) }}".replace("__row_id", row.id)
-                    },
-                    onExpandRow: function (index, row, $detail) {
-                        $detail.html('<table></table>').find('table').bootstrapTable({
-                            columns: [
-                            {
-                                field: 'id',
-                                title: '#',
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input',
-                            },
-                            {
-                                field: 'title',
-                                title: '{{ models.Service.title.info["label"] }}',
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input',
-                            },
-                            {
-                                field: "created_at",
-                                title: "{{ models.Service.created_at.info['label'] }}",
-                                sortable: true,
-                                align: 'center', 
-                                filterControl: "input"
-                            },
-                            {
-                                field: "created_by.title-input",
-                                title: "{{ models.Service.created_by.info['label'] }}",
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input'
-                            },
-                            {
-                                field: 'updated_at',
-                                title: "{{ models.Service.updated_at.info['label'] }}",
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input'
-                            },
-                            {
-                                field: 'updated_by.title-input',
-                                title: "{{ models.Service.updated_by.info['label'] }}",
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input'
-                            },
-                            {
-                                field: 'port',
-                                title: '{{ models.Service.port.info["label"] }}',
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input',
-                            },
-                            {
-                                field: 'access_protocol.title-input',
-                                title: '{{ models.Service.access_protocol.info["label"] }}',
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input',
-                            },
-                            {
-                                field: "ssl",
-                                title: "{{ models.Service.ssl.info['label'] }}",
-                                sortable: true,
-                                align: 'center',
-                                filterControl: "select",
-                                filterData: `json:{"true":"{{ _('Yes') }}","false":"{{ _('No') }}" }`
-                            },
-                            {
-                                field: 'transport_level_protocol',
-                                title: '{{ models.Service.transport_level_protocol.info["label"] }}',
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'select',
-                                filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}',
-                            },
-                            {
-                                field: 'port_state',
-                                title: "{{ models.Service.port_state.info['label'] }}",
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'select',
-                                filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
-                            },
-                            {
-                                field: 'port_state_reason',
-                                title: "{{ models.Service.port_state_reason.info['label'] }}",
-                                sortable: true,
-                                align: 'center',
-                                filterControl: 'input',
-                            }
-                            ],
-                            showColumns: true,
-                            search: true,
-                            showToggle: true,
-                            showPaginationSwitch: true,
-                            showExport: true,
-                            showMultiSort: true,
-                            filterControl: true,
-                            buttonsClass: 'primary',
-                            pagination: true,
-                            cookie: true,
-                            cookieIdTable: "ServicesByHostIndex",
-                            cookieStorage: "localStorage",
-                            sidePagination: 'server',
-                            onLoadSuccess: function(data) {
-                                flask_moment_render_all()
-                            },
-                            url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
-                            rowStyle: (row, index) => { return {css: { "cursor": "pointer" }} },
-                            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
-                            onDblClickRow: function(row, element, field) {
-                                location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id);
-                            },
-                          })
-                    }
-                })
+                icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                showColumns: true,
+                detailView: true,
+                clickToSelect: true,
+                onLoadSuccess: function(data) {
+                    flask_moment_render_all()
+                },
+                onDblClickRow: function(row, element, field) {
+                    location = "{{ url_for('networks.host_show', **{'host_id': '__row_id'}) }}".replace("__row_id", row.id)
+                },
+                onExpandRow: function (index, row, $detail) {
+                    $detail.html('<table></table>').find('table').bootstrapTable({
+                        columns: [
+                        {
+                            field: 'id',
+                            title: '#',
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input',
+                        },
+                        {
+                            field: 'title',
+                            title: '{{ models.Service.title.info["label"] }}',
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input',
+                        },
+                        {
+                            field: "created_at",
+                            title: "{{ models.Service.created_at.info['label'] }}",
+                            sortable: true,
+                            align: 'center', 
+                            filterControl: "input"
+                        },
+                        {
+                            field: "created_by.title-input",
+                            title: "{{ models.Service.created_by.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'updated_at',
+                            title: "{{ models.Service.updated_at.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'updated_by.title-input',
+                            title: "{{ models.Service.updated_by.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input'
+                        },
+                        {
+                            field: 'port',
+                            title: '{{ models.Service.port.info["label"] }}',
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input',
+                        },
+                        {
+                            field: 'access_protocol.title-input',
+                            title: '{{ models.Service.access_protocol.info["label"] }}',
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input',
+                        },
+                        {
+                            field: "ssl",
+                            title: "{{ models.Service.ssl.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: "select",
+                            filterData: `json:{"true":"{{ _('Yes') }}","false":"{{ _('No') }}" }`
+                        },
+                        {
+                            field: 'transport_level_protocol',
+                            title: '{{ models.Service.transport_level_protocol.info["label"] }}',
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'select',
+                            filterData: 'json:{{ filters["ServiceTransportLevelProtocol"]|escapejs }}',
+                        },
+                        {
+                            field: 'port_state',
+                            title: "{{ models.Service.port_state.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'select',
+                            filterData: 'json:{{ filters["ServicePortState"]|escapejs }}',
+                        },
+                        {
+                            field: 'port_state_reason',
+                            title: "{{ models.Service.port_state_reason.info['label'] }}",
+                            sortable: true,
+                            align: 'center',
+                            filterControl: 'input',
+                        }
+                        ],
+                        showColumns: true,
+                        search: true,
+                        showToggle: true,
+                        showPaginationSwitch: true,
+                        showExport: true,
+                        showMultiSort: true,
+                        filterControl: true,
+                        buttonsClass: 'primary',
+                        pagination: true,
+                        cookie: true,
+                        cookieIdTable: "ServicesByHostIndex",
+                        cookieStorage: "localStorage",
+                        sidePagination: 'server',
+                        onLoadSuccess: function(data) {
+                            flask_moment_render_all()
+                        },
+                        url: '{{ url_for("networks.service_by_host_data", host_id="__host_id") }}'.replace('__host_id', row.id),
+                        rowStyle: (row, index) => { return {css: { "cursor": "pointer" }} },
+                        icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                        onDblClickRow: function(row, element, field) {
+                            location = "{{ url_for('networks.service_show', service_id='__row_id') }}".replace("__row_id", row.id);
+                        },
+                        })
+                }
+            })
         });
     </script>
     <script nonce="{{ csp_nonce() }}">
@@ -391,5 +411,13 @@
                 }
             });
         });
+        document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && (event.key === 'c' || event.key === 'C' || event.key === 'с' || event.key === 'С')) {
+            let ip_address = $('#hosts-table').bootstrapTable('getSelections')[0]?.ip_address;
+            if(ip_address !== undefined) {
+                navigator.clipboard.writeText(ip_address);
+            };
+        }
+    });
     </script>
 {% endblock %}

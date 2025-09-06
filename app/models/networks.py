@@ -261,9 +261,9 @@ class Host(HasComment, db.Model, HasHistory):
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={"label": _l("Description")})
     technical: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Technical information"), 'was_escaped': True})
-    state_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HostStatus.id, ondelete='SET NULL'), info={'label': _l("Status")})
-    state: so.Mapped[HostStatus] = so.relationship(lazy='select', info={'label': _l("Status")})
-    state_reason: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("The reason for the host status")})
+    status_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HostStatus.id, ondelete='SET NULL'), info={'label': _l("Status")})
+    status: so.Mapped[HostStatus] = so.relationship(lazy='select', info={'label': _l("Status")})
+    status_reason: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("The reason for the host status")})
     created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
     created_by: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore

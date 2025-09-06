@@ -77,7 +77,7 @@ class HostForm(FlaskForm):
         self.device_type_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceType.id, models.DeviceType.title)).all()
         self.device_vendor_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title)).all()
         self.device_model_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceModel.id, models.DeviceModel.title)).all()
-        self.state_id.choices =[("0", "---")] + db.session.execute(sa.select(models.HostStatus.id, models.HostStatus.title)).all()
+        self.status_id.choices =[("0", "---")] + db.session.execute(sa.select(models.HostStatus.id, models.HostStatus.title)).all()
         self.labels.choices = [(i.id, i) for i in db.session.scalars(sa.select(models.HostLabel)).all()]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.title.info["label"]),
                                 validators=[validators.Length(min=0, max=models.Host.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.title.type.length)),
@@ -104,9 +104,9 @@ class HostForm(FlaskForm):
     ipidsequence_value = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ipidsequence_value.info["label"]),
                                 validators=[validators.Length(min=0, max=models.Host.ipidsequence_value.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.ipidsequence_value.type.length)),
                                             validators.Optional()])
-    state_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.state_id.info["label"]), validators=[validators.Optional()])
-    state_reason = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.state_reason.info["label"]), validators=[validators.Optional(),
-                                                                                                                             validators.Length(min=0, max=models.Host.state_reason.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.state_reason.type.length))])
+    status_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.status_id.info["label"]), validators=[validators.Optional()])
+    status_reason = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.status_reason.info["label"]), validators=[validators.Optional(),
+                                                                                                                             validators.Length(min=0, max=models.Host.status_reason.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.status_reason.type.length))])
     labels = Select2IconMultipleField(models.HostLabel, _l("%(field_name)s:", field_name=models.Host.labels.info["label"]), attr_icon="icon_class", attr_color="icon_color", validators=[validators.Optional()])
 
     def validate_ip_address(form, field):

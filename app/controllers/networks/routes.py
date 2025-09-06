@@ -118,7 +118,7 @@ def host_index_data():
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
             'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'created_at', 'created_by.title-input',
-                             'updated_at', 'updated_by.title-input',
+                             'updated_at', 'updated_by.title-input', 'status', 'status_reason',
                              'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', "labels.title-input", 'operation_system_family',
                              'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
             'base_select': lambda x: x.join(models.Host.from_network).where(sa.and_(models.Network.project_id==project_id, models.Host.excluded==False)),
@@ -162,9 +162,10 @@ def host_index():
     port_states = {i: t for i, t in db.session.execute(sa.select(models.ServicePortState.id, models.ServicePortState.title))}
     device_types = {i: t for i, t in db.session.execute(sa.select(models.DeviceType.id, models.DeviceType.title))}
     device_vendors = {i: t for i, t in db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title))}
+    host_statuses = {i: t for i, t in db.session.execute(sa.select(models.HostStatus.id, models.HostStatus.title))}
     filters = {"Network": json.dumps(networks), "OperationSystemFamily": json.dumps(operation_systems),
                "ServiceTransportLevelProtocol": json.dumps(transport_level_protocols), 'ServicePortState': json.dumps(port_states),
-               "DeviceType": json.dumps(device_types), "DeviceVendor": json.dumps(device_vendors)}
+               "DeviceType": json.dumps(device_types), "DeviceVendor": json.dumps(device_vendors), "HostStatus": json.dumps(host_statuses)}
     ctx = get_default_environment(models.Host(), 'index', proj=project)
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
