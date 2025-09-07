@@ -166,6 +166,7 @@ class NmapScanner:
         - If port transport level protocol (tcp, udp, sctp, etc) does not exist in database like string slug field, the port is skipped '''
         project = session.scalars(sa.select(models.Project).where(models.Project.id == project_id)).one()
         host_status_up = session.scalars(sa.select(models.HostStatus).where(models.HostStatus.string_slug == 'up')).one()
+        host_status_down = session.scalars(sa.select(models.HostStatus).where(models.HostStatus.string_slug == 'down')).one()
         port_state_open = session.scalars(sa.select(models.ServicePortState).where(models.ServicePortState.string_slug == 'opened')).one()
         port_state_filtered = session.scalars(sa.select(models.ServicePortState).where(models.ServicePortState.string_slug == 'filtered')).one()
         port_state_closed = session.scalars(sa.select(models.ServicePortState).where(models.ServicePortState.string_slug == 'closed')).one()
@@ -231,11 +232,18 @@ class NmapScanner:
                     if network is not None and mac_addr != '':
                         new_host = create_host_if_not_exist(ipaddress.IPv4Address(ip_addr), current_user_id)
                         new_host.mac = mac_addr
-                        new_host.state = host_status_up
-                        new_host.state_reason = status_reason
+                        new_host.status = host_status_up
+                        new_host.status_reason = status_reason
                         new_host.from_network = network
                         hosts_with_only_arp.append(new_host)
                         session.add(new_host)
+                else:
+                    network = get_network_by_host(ipaddress.IPv4Address(ip_addr))
+                    if network is not None and mac_addr != '':
+                        new_host = create_host_if_not_exist(ipaddress.IPv4Address(ip_addr), current_user_id)
+                        if new_host.id is not None:
+                            new_host.status = host_status_down
+                            new_host.status_reason = status_reason
         # Processing pure hosts and ports
         for host in nmap_etree.iter('host'):
             ip_addr = None
