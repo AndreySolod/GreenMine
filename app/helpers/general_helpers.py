@@ -1,4 +1,5 @@
 from app import db, side_libraries, sanitizer
+import app.models as models
 import re
 import uuid
 import math
@@ -849,3 +850,64 @@ def get_global_objects_with_permissions():
     models = filter(lambda x: hasattr(x, 'Meta') and hasattr(x.Meta, 'global_permission_actions'), [i.class_ for i in db.Model.registry.mappers])
     for i in models:
         yield i
+
+
+def objects_export(obj_list: List[Any]) -> str:
+    if len(obj_list) == 0:
+        return json.dumps({})
+    obj = obj_list[0]
+    column_attrs = [i.key for i in inspect(obj.__class__).column_attrs if i.key not in ['id', 'string_slug'] and not i.key.endswith('_id')]
+    relationships = [i for i in inspect(obj.__class__).relationships]
+    data = {}
+    for obj in obj_list:
+        data[obj.string_slug] = {}
+        for i in column_attrs:
+            if isinstance(getattr(obj, i), datetime.timedelta):
+                data[obj.string_slug][i] = getattr(obj, i).total_seconds()
+            else:
+                data[obj.string_slug][i] = getattr(obj, i)
+        for i in relationships:
+            if i.uselist:
+                data[obj.string_slug][i.key] = []
+                for j in getattr(obj, i.key):
+                    data[obj.string_slug][i.key].append({"id": getattr(j, 'id', None), 'string_slug': getattr(j, 'string_slug', None)})
+            else:
+                data[obj.string_slug][i.key] = {'id': getattr(getattr(obj, i.key), 'id', None), 'string_slug': getattr(getattr(obj, i.key), 'string_slug', None)}
+    return json.dumps(data)
+
+
+def objects_import(obj_type: Any, obj_json: str, override_exist: bool=False) -> bool:
+    try:
+        obj_list: Dict[str, Dict[str, str]] = json.loads(obj_json)
+    except json.decoder.JSONDecodeError:
+        return False
+    for slug, obj_data in obj_list.items():
+        obj = db.session.scalars(sa.select(obj_type).where(obj_type.string_slug == slug)).first()
+        if obj is None:
+            curr_obj = obj_type()
+            curr_obj.string_slug = slug
+            db.session.add(curr_obj)
+        elif override_exist:
+            curr_obj = obj
+        else:
+            continue
+        for key, value in obj_data.items():
+            if not isinstance(value, dict) and not isinstance(value, list):
+                if inspect(obj_type).column_attrs[key].columns[0].type.python_type == datetime.timedelta and value is not None:
+                    setattr(curr_obj, key, datetime.timedelta(seconds=value))
+                elif inspect(obj_type).column_attrs[key].columns[0].type.python_type == str:
+                    setattr(curr_obj, key, sanitizer.sanitize(value))
+                else:
+                    setattr(curr_obj, key, value)
+            else:
+                related_object_type = inspect(obj_type).relationships[key].entity.class_
+                if hasattr(related_object_type, 'string_slug'):
+                    if inspect(obj_type).relationships[key].uselist:
+                        related_object = inspect(obj_type).relationships[key].collection_class(db.session.scalars(sa.select(related_object_type).where(related_object_type.string_slug.in_([j["string_slug"] for j in value]))))
+                    else:
+                        related_object = db.session.scalars(sa.select(related_object_type).where(related_object_type.string_slug == value['string_slug'])).first()
+                else:
+                    continue # Later - if import projects, rebuild all links
+                setattr(curr_obj, key, related_object)
+    db.session.commit()
+    return True

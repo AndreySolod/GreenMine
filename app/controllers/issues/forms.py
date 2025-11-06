@@ -26,7 +26,6 @@ class IssueForm(FlaskForm):
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=models.Issue.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Issue.title.type.length))])
     description = WysiwygField(_l("%(field_name)s:", field_name=models.Issue.description.info["label"]), validators=[validators.Optional()])
-    by_template_slug = wtforms.StringField(_l("%(field_name)s:", field_name=models.Issue.by_template_slug.info["label"]), validators=[validators.Optional()])
     fix = WysiwygField(_l("%(field_name)s:", field_name=models.Issue.fix.info["label"]),
                        validators=[validators.Optional()], description=_l("What is required to fix this problem"))
     technical = WysiwygField(_l("%(field_name)s:", field_name=models.Issue.technical.info["label"]),
@@ -44,6 +43,7 @@ class IssueForm(FlaskForm):
 
 
 class IssueCreateForm(IssueForm):
+    by_template_slug = wtforms.StringField(_l("%(field_name)s:", field_name=models.Issue.by_template_slug.info["label"]), validators=[validators.Optional()])
     submit = wtforms.SubmitField(_l('Create'))
     submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 

@@ -4,6 +4,7 @@ from app.models import ProjectTaskTemplate
 import app.models as models
 import wtforms
 import wtforms.validators as validators
+import flask_wtf.file as wtfile
 import sqlalchemy as sa
 from flask_babel import lazy_gettext as _l
 
@@ -37,3 +38,9 @@ class TaskTemplateCreateForm(TaskTemplateForm):
 
 class TaskTemplateEditForm(TaskTemplateForm):
     submit = wtforms.SubmitField(_l("Save"))
+
+
+class TaskTemplateImportForm(FlaskForm):
+    import_file = wtforms.FileField(_l("Templates file:"), validators=[wtfile.FileAllowed(['json'], _l("Only JSON File allowed!"))])
+    override_exist = wtforms.BooleanField(_l("Override exist task templates:"), validators=[validators.Optional()])
+    submit = wtforms.SubmitField(_l("Import"))

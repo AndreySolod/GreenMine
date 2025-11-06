@@ -12,6 +12,7 @@ from flask_babel import lazy_gettext as _l
 from io import BytesIO
 from app.helpers.roles import project_role_can_make_action, project_role_can_make_action_or_abort
 import sqlalchemy.exc as exc
+import ipaddress
 
 
 @bp.route("/networks/index")
@@ -104,7 +105,8 @@ def network_new():
     elif request.method == "GET":
         form.load_data_from_json(request.args)
     ctx = get_default_environment(models.Network(project=project), 'new')
-    context = {'form': form}
+    context = {'form': form, 'project': project}
+    side_libraries.library_required('imask')
     return render_template('networks/new.html', **context, **ctx)
 
 
@@ -216,7 +218,9 @@ def host_new():
         form.load_default_data(db.session, models.Host)
         form.load_data_from_json(request.args)
     ctx = get_default_environment(models.Host(), 'new', proj=project)
-    return render_template('hosts/new.html', form=form, **ctx)
+    context = {'form': form, 'project': project}
+    side_libraries.library_required('imask')
+    return render_template('hosts/new.html', **ctx, **context)
 
 
 @bp.route('/service/index-data')
@@ -661,3 +665,22 @@ def multiple_add_network():
     ctx = get_default_environment(models.Network(project=project), 'multiple_add', proj=project)
     context = {'form': form}
     return render_template('networks/multiple_add.html', **ctx, **context)
+
+
+@bp.route('/hosts/get-network-by-host')
+def get_network_by_host_address():
+    try:
+        project_id: int = int(request.args.get('project_id'))
+        host_ip_address: ipaddress.IPv4Address = ipaddress.IPv4Address(request.args.get('ipaddress'))
+    except(ValueError, TypeError, ipaddress.AddressValueError):
+        abort(404)
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, models.Host(), 'create', project=project)
+    network_id: int | None = None
+    for network in project.networks:
+        if host_ip_address in network.ip_address:
+            network_id = network.id
+            break
+    if network_id is not None:
+        return jsonify({'status': 'success', "id": network_id})
+    return jsonify({'status': 'fail'})

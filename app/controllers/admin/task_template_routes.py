@@ -1,13 +1,14 @@
 from app import db, side_libraries, logger
-from flask import render_template, flash, redirect, url_for, abort, request
+from flask import render_template, flash, redirect, url_for, abort, request, send_file
 from flask_login import current_user
 from app.controllers.admin import bp
 from app.helpers.admin_helpers import DefaultEnvironment
-from app.helpers.general_helpers import get_or_404
+from app.helpers.general_helpers import objects_export, objects_import
 import app.models as models
 import sqlalchemy as sa
 import sqlalchemy.exc as exc
 import json
+from io import BytesIO
 import app.controllers.admin.task_templates_forms as forms
 from flask_babel import lazy_gettext as _l
 
@@ -20,7 +21,7 @@ def task_template_index():
     filters = {'ProjectTaskTracker': json.dumps(trackers), 'ProjectTaskPriority': json.dumps(priorities)}
     ctx = DefaultEnvironment()()
     side_libraries.library_required('bootstrap_table')
-    context = {'templates': templs, 'filters': filters}
+    context = {'templates': templs, 'filters': filters, 'import_task_templates': forms.TaskTemplateImportForm()}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all project task templates")
     return render_template('task_templates/index.html', **ctx, **context)
 
@@ -67,7 +68,7 @@ def task_template_edit(template_id):
         template_id = int(template_id)
     except (ValueError, TypeError):
         abort(400)
-    template = get_or_404(db.session, models.ProjectTaskTemplate, template_id)
+    template = db.get_or_404(models.ProjectTaskTemplate, template_id)
     form = forms.TaskTemplateEditForm(template)
     if form.validate_on_submit():
         form.populate_obj(db.session, template)
@@ -90,10 +91,45 @@ def task_template_delete(template_id):
         template_id = int(template_id)
     except (ValueError, TypeError):
         abort(400)
-    templ = get_or_404(db.session, models.ProjectTaskTemplate, template_id)
+    templ = db.get_or_404(models.ProjectTaskTemplate, template_id)
     i, t = templ.id, templ.title
     db.session.delete(templ)
     db.session.commit()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete project task template #{i}: '{t}'")
     flash(_l("Task template successfully deleted"), 'success')
+    return redirect(url_for('admin.task_template_index'))
+
+
+@bp.route('/tasks/templates/export')
+def task_template_export():
+    try:
+        selected = request.args.get('selected')
+        if not selected is None and not selected == '':
+            selected_ids = list(map(int, selected.split(',')))
+        else:
+            selected_ids = []
+    except (ValueError, TypeError):
+        abort(400)
+    task_template_data = objects_export(db.session.scalars(sa.select(models.ProjectTaskTemplate).where(models.ProjectTaskTemplate.id.in_(selected_ids))).all())
+    params = {'as_attachment': True, 'download_name': 'Project_task_templates.json'}
+    buf = BytesIO()
+    buf.write(task_template_data.encode())
+    buf.seek(0)
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request export task templates")
+    return send_file(buf, **params)
+
+
+@bp.route('/tasks/templates/import', methods=['POST'])
+def task_template_import():
+    form = forms.TaskTemplateImportForm()
+    if form.validate_on_submit():
+        file_parsed = objects_import(models.ProjectTaskTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
+                                     form.override_exist.data)
+        if file_parsed:
+            logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the task templates")
+            flash(_l("Import was completed successfully"), 'success')
+        else:
+            flash(_l("Errors when parsing file"), 'error')
+    else:
+        flash(_l("Errors when parsing file"), 'error')
     return redirect(url_for('admin.task_template_index'))

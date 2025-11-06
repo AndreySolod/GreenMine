@@ -81,3 +81,7 @@ libraries:
       - "js/ace/src/ace.js"
       - "js/ace/src/mode-python.js"
       - "js/ace/src/theme-cobalt.js"
+  imask:
+    css:
+    js:
+      - "js/imask.js"

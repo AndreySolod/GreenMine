@@ -3,6 +3,7 @@ from app import db
 from app.models import IssueTemplate, Issue, CriticalVulnerability
 import wtforms
 import wtforms.validators as validators
+import flask_wtf.file as wtfile
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
 import app.models as models
@@ -50,3 +51,9 @@ class IssueTemplateCreateForm(IssueTemplateForm):
 
 class IssueTemplateEditForm(IssueTemplateForm):
     submit = wtforms.SubmitField(_l("Save"))
+
+
+class IssueTemplateImportForm(FlaskForm):
+    import_file = wtforms.FileField(_l("Templates file:"), validators=[wtfile.FileAllowed(['json'], _l("Only JSON File allowed!"))])
+    override_exist = wtforms.BooleanField(_l("Override exist issue templates:"), validators=[validators.Optional()])
+    submit = wtforms.SubmitField(_l("Import"))

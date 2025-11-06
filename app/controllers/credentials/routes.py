@@ -123,9 +123,13 @@ def credential_edit(credential_id):
     return render_template('credentials/edit.html', form=form, **ctx)
 
 
-@bp.route("/<int:credential_id>/delete", methods=["POST"])
-def credential_delete(credential_id):
-    cred = get_or_404(db.session, Credential, credential_id)
+@bp.route("/<credential_id>/delete", methods=["POST"])
+def credential_delete(credential_id: str):
+    try:
+        credential_id = int(credential_id)
+    except (ValueError, TypeError):
+        abort(400)
+    cred = db.get_or_404(Credential, credential_id)
     project_role_can_make_action_or_abort(current_user, cred, 'delete')
     project_id = cred.project_id
     msg = _l("Credential #%(cred_id)s has been successfully deleted", cred_id=credential_id)

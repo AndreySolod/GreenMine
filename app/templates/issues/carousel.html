@@ -34,7 +34,7 @@
                                     <div class="col-lg-6 col-md-12 d-block">
                                         <div class="container-fluid">
                                             <h4>{{ issue.title|safe }}</h4>
-                                            <p>{{ models.Issue.cvss.info['label'] }}: issue.cvss</p>
+                                            <p>{{ models.Issue.cvss.info['label'] }}: {{ issue.cvss }}</p>
                                             {{ issue.description|suppress_none|safe }}
                                             <h5>{{ models.Issue.fix.info['label'] }}:</h5>
                                             {{ issue.fix|suppress_none|safe }}

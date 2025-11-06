@@ -1,11 +1,24 @@
 {% extends 'layout/base.html' %}
-{% from 'layout/_macrosses.html' import load_bootstrap_table_js %}
+{% from 'layout/_macrosses.html' import load_bootstrap_table_js, form_element %}
 
 {% block page_content %}
 <div class="row gutters">
     <div class="col-12">
+        <div id="task-template-toolbar">
+            <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalImportTaskTemplates">
+                <i class="fa-solid fa-file-import"></i>{{ _("Import") }}
+            </button>
+            <a href="" class="btn btn-primary btn-rounded" id="export-task-templates-button" style="visibility:hidden"><i class="fa-solid fa-file-arrow-down"></i>
+                {{ _("Export") }}
+            </a>
+            <a href="" class="btn btn-primary btn-rounded" id="delete-task-templates-button" style="visibility:hidden"><i class="fa-solid fa-trash"></i>
+                {{ _("Delete") }}
+            </a>
+        </div>
         <table class="table" id="projecttask-templates-table"
                data-pagination="true"
+               data-toolbar="#task-template-toolbar"
+               data-show-pagination-switch="true"
                data-show-columns="true"
                data-show-toggle="true"
                data-show-export="true"
@@ -17,6 +30,7 @@
                data-cookie-storage="localStorage">
             <thead>
                 <tr>
+                    <th data-field="state" data-checkbox="true"></th>
                     <th data-field="id" data-sortable="true" data-align="center">{{ models.ProjectTaskTemplate.id.info["label"] }}</th>
                     <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.ProjectTaskTemplate.title.info["label"] }}</th>
                     <th data-field="string_slug" data-sortable="true" data-align="center" data-filter-control="select">{{ models.ProjectTaskTemplate.string_slug.info["label"] }}</th>
@@ -31,6 +45,7 @@
             <tbody>
                 {% for template in templates %}
                 <tr style="cursor:pointer">
+                    <td></td>
                     <td>{{ template.id }}</td>
                     <td>{{ template.title }}</td>
                     <td>{{ template.string_slug }}</td>
@@ -47,16 +62,111 @@
                     {% endif %}
                     <td>{{ template.task_tracker.title }}</td>
                     <td>{{ template.task_priority.title }}</td>
-                    <td>{{ template.task_estimation_time_cost }}</td>
+                    <td>{{ template.task_estimation_time_cost|suppress_none }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+
+
+<div class="modal fade modal-xl" id="modalImportTaskTemplates" tabindex="-1" aria-labelledby="modalImportTaskTemplatesLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalImportTaskTemplatesLabel">{{ _("Import task templates") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <form action="{{ url_for('admin.task_template_import') }}" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+            <div class="col-12 position-relative">
+            <div class="form-group">
+                {{ import_task_templates.hidden_tag() }}
+                {{ form_element(import_task_templates, import_task_templates.import_file, inline=True) }}
+                {{ form_element(import_task_templates, import_task_templates.override_exist, inline=True) }}
+            </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            {{ import_task_templates.submit(class='btn btn-primary') }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block script %}
 {{ super() }}
 {{ load_bootstrap_table_js('projecttask-templates-table', 'admin.task_template_show', 'template_id') }}
+<script nonce="{{ csp_nonce() }}">
+    document.getElementById('export-task-templates-button').addEventListener('click', function(e) {
+        e.preventDefault();
+        let selected = $('#projecttask-templates-table').bootstrapTable('getSelections').map((item) => { return item.id }).join(',');
+        location.href = "{{ url_for('admin.task_template_export', selected='__selected') }}".replace('__selected', encodeURIComponent(selected));
+    });
+    let change_bs_table_checked = (row, $element) => {
+        let selected = $('#projecttask-templates-table').bootstrapTable('getSelections');
+        if (selected.length !== 0) {
+            document.getElementById('export-task-templates-button').style.visibility = null;
+            document.getElementById('delete-task-templates-button').style.visibility = null;
+        }
+        else {
+            document.getElementById('export-task-templates-button').style.visibility = 'hidden';
+            document.getElementById('delete-task-templates-button').style.visibility = 'hidden';
+        }
+    };
+    $('#projecttask-templates-table').on('check.bs.table', (row, $element) => { 
+        change_bs_table_checked(row, $element);
+    });
+    $('#projecttask-templates-table').on('uncheck.bs.table', (row, $element) => { 
+        change_bs_table_checked(row, $element)
+    });
+    $('#projecttask-templates-table').on('check-all.bs.table', (row, $element) => { 
+        change_bs_table_checked(row, $element)
+    });
+    $('#projecttask-templates-table').on('uncheck-all.bs.table', (row, $element) => { 
+        change_bs_table_checked(row, $element)
+    });
+    document.getElementById('delete-task-templates-button').addEventListener('click', (e) => {
+        e.preventDefault();
+        if (confirm('{{ _("Are you sure you want to delete this objects?") }}')) {
+            let promises = [];
+            $('#projecttask-templates-table').bootstrapTable('getSelections').forEach((item) => {
+                promises.push(fetch('{{ url_for("admin.task_template_delete", template_id="__template_id") }}'.replace('__template_id', item.id), {
+                    method: 'POST',
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token() }}"
+                    }
+                }))
+            })
+            let promise_result = Promise.all(promises).then((responses) => {
+                if(responses.every((v) => { return v.ok })) {
+                    $.notify("{{ _('All specified task templates successfully deleted') }}", "success", {
+                        clickToHide: true,
+                        autoHide: true,
+                        autoHideDelay: 5000,
+                        globalPosition: 'top right'
+                    });
+                    $('#projecttask-templates-table').bootstrapTable('remove', {
+                        field: 'id',
+                        values: $('#projecttask-templates-table').bootstrapTable('getSelections').map((item) => { return item.id })
+                    });
+                    document.getElementById('export-task-templates-button').style.visibility = 'hidden';
+                    document.getElementById('delete-task-templates-button').style.visibility = 'hidden';
+                }
+                else {
+                    $.notify("{{ _('Something went wrong. Try refreshing the page') }}", "error", {
+                        clickToHide: true,
+                        autoHide: true,
+                        autoHideDelay: 5000,
+                        globalPosition: 'top right'
+                    });
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

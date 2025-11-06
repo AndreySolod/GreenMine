@@ -67,6 +67,7 @@ def researcher_event_show(event_id):
     project_role_can_make_action_or_abort(current_user, event, 'show')
     ctx = get_default_environment(event, 'show')
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('ckeditor')
     return render_template('research_events/pentest-show.html', **ctx, event=event)
 
 

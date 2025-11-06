@@ -10,7 +10,8 @@ import app.models as models
 import sqlalchemy as sa
 import sqlalchemy.exc as exc
 import sqlalchemy.orm as so
-import time
+import re
+import binascii
 from typing import List, Dict
 from flask_babel import lazy_gettext as _l
 
@@ -25,17 +26,11 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
             cred.description += '<p>' + sanitizer.escape(element['description']) + '</p>'
         else:
             cred.description = '<p>' + sanitizer.escape(element['description']) + '</p>'
-    if 'received_from_ip' in element:
-        print('select received from ip')
-        rfi = session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id,
-                                                                                                     models.Host.ip_address == element['received_from_ip']))).first()
-        if rfi is not None:
-            cred.received_from.add(rfi)
-    if 'received_from_data' in element:
-        rfi = session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, element['received_from_data']))))).all()
+    if 'received_from' in element:
+        rfi = session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, element['received_from']))))).all()
         cred.received_from.update(set(rfi))
     if 'hash_type' in element:
-        cred.hash_type_id = int(element['hash_type'])
+        cred.hash_type = db.session.scalars(sa.select(models.HashType).where(models.HashType.id == int(element['hash_type']))).first()
     if 'check_wordlist' in element:
         cred.check_wordlist_id = int(element['check_wordlist'])
     if 'services' in element:
@@ -57,17 +52,24 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
             except exc.MultipleResultsFound:
                 continue
             except exc.NoResultFound:
-                pass
-        elif 'login' in e and 'password_hash' in e and not 'password' in e:
+                cred = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e["login"].strip(),
+                                                                                  models.Credential.password_hash==e["password_hash"].strip(),
+                                                                                  models.Credential.project_id==project_id))).first()
+        elif 'login' in e and 'password_hash' in e:
             try:
                 cred = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login==e['login'],
                                                                                     models.Credential.password_hash==e['password_hash'],
                                                                                     models.Credential.project_id==project_id))).one()
             except exc.MultipleResultsFound:
-                continue
+                # If we find this credential - add to any credential  comprometed source and check wordlist
+                for i in session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login==e['login'],
+                                                                                    models.Credential.password_hash==e['password_hash'],
+                                                                                    models.Credential.project_id==project_id))).all():
+                    i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
+                    i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
             except exc.NoResultFound:
                 pass
-        elif 'login' in e and 'password' in e and not 'password_hash' in e:
+        elif 'login' in e and 'password' in e:
             try:
                 cred = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login==e['login'],
                                                                                     models.Credential.password==e['password'],
@@ -76,7 +78,7 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
                 continue
             except exc.NoResultFound:
                 pass
-        elif 'login' not in e and 'password_hash' in e:
+        elif 'password_hash' in e:
             cred = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.password_hash == e['password_hash'],
                                                                                 models.Credential.project_id==project_id))).all()
             for c in cred:
@@ -111,7 +113,6 @@ class CredentialMultipleAddForm(FlaskForm):
     password_hash_position = wtforms.IntegerField(_l("Password hash column number:"), validators=[validators.Optional()])
     description_position = wtforms.IntegerField(_l("Credential description column number:"), description=_l("If credential is exists, the value of this field will be added to the end of the current one."), validators=[validators.Optional()])
     password_position = wtforms.IntegerField(_l("Password column number:"), validators=[validators.Optional()])
-    received_from_ip_position = wtforms.IntegerField(_l("Comprometation source column number:"), description=_l("The column with the IP address of the host from which the data was received"), validators=[validators.Optional()])
     delimiter = wtforms.StringField(_l("Column delimither:"), default=":", validators=[validators.Optional()], description=_l("The symbol by which the rows will be divided into columns"))
     static_login = wtforms.StringField(_l("Static login:"), description=_l("The login that will match all the lines"))
     static_password_hash = wtforms.StringField(_l("Static password hash:"), validators=[validators.Optional()], description=_l("The password that will match all the lines"))
@@ -157,28 +158,28 @@ class CredentialMultipleAddForm(FlaskForm):
             parse_attrs['description'] = self.description_position.data
         if self.password_position.data is not None:
             parse_attrs['password'] = self.password_position.data
-        if self.received_from_ip_position.data is not None:
-            parse_attrs['received_from_ip'] = self.received_from_ip_position.data
         processed_data = []
         for line in parse_data.strip().split("\n"):
             if line == '':
                 continue
             line = line.split(delimiter)
             current_elem = {}
-            for key, value in parse_attrs.items():
+            for key, value in parse_attrs.items(): # Process static parameters (such as login, password_hash, description, etc.)
                 if key == 'login' and self.static_login.data:
-                    current_elem[key] = self.static_login.data
+                    current_elem[key] = self.static_login.data.strip()
                 elif key == 'password_hash' and self.static_password_hash.data:
-                    current_elem[key] = self.static_password_hash.data
+                    current_elem[key] = self.static_password_hash.data.strip()
                 elif key == 'description' and self.static_description.data:
-                    current_elem[key] = self.static_description.data
+                    current_elem[key] = self.static_description.data.strip()
                 elif key == 'password' and self.static_password.data:
-                    current_elem[key] = self.static_password.data
-                elif key == 'received_from_ip' and self.static_received_from.data:
-                    current_elem['received_from_data'] = self.static_received_from.data
-                else:
+                    current_elem[key] = self.static_password.data.strip()
+                else: # It's normal -i.e. not static data. trying to get it from sources
                     try:
-                        current_elem[key] = line[value]
+                        line_data = line[value]
+                        hashcat_match = re.match(r'\$HEX\[([0-9a-fA-F]+)\]', line_data) # Convert from hashcat $HEX[] to normal string
+                        if hashcat_match:
+                            line_data = binascii.unhexlify(hashcat_match.groups()[0]).decode('utf8')
+                        current_elem[key] = line_data.strip()
                     except IndexError:
                         return False
             if len(current_elem) == 0:
@@ -189,6 +190,8 @@ class CredentialMultipleAddForm(FlaskForm):
                 current_elem['check_wordlist'] = self.static_check_wordlist.data
             if self.static_services.data:
                 current_elem['services'] = self.static_services.data
+            if self.static_received_from.data:
+                current_elem['received_from'] = self.static_received_from.data
             processed_data.append(current_elem)
         self.additional_form_attrs = {'processed_credentials_data': processed_data}
         return True

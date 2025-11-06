@@ -8,8 +8,8 @@
             <div class="card-header">
                 <h6>{{ _("Create by template") }}:</h6>
                 <div class="form-group row">
-                    <select id="issue-pattern" name="issue-pattern">
-                        <option value="0"></option>
+                    <select class="select2-standard-widged" id="issue-pattern" name="issue-pattern">
+                        <option value=""></option>
                         {% for template in patterns %}
                         <option value="{{ template.id }}">{{ template.title|safe }}</option>
                         {% endfor %}
@@ -64,12 +64,17 @@
 {% block script %}
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
-    let pattern = document.getElementById("issue-pattern")
-    pattern.addEventListener('change', function (e) {
-        if (e.target.value != '0') {
+    $(document).ready(function() {$("#issue-pattern").select2({
+        language: "{{ g.locale }}",
+        placeholder: "{{ _('Select an option') }}",
+        allowClear: true,
+    })
+    });
+    $('#issue-pattern').on('select2:select', function(e) {
+        if (e.params.data.id !== null || e.params.data.id !== undefined) {
             $.ajax({
                 "method": "GET",
-                "url": "{{ url_for('issues.issue_data_by_template', template_id='__template_id') }}".replace("__template_id", e.target.value)
+                "url": "{{ url_for('issues.issue_data_by_template', template_id='__template_id') }}".replace("__template_id", e.params.data.id)
             }).done(function (response) {
                 $('#{{ form.title.id }}')[0].value = response.title;
                 if(response.description !== null) {
@@ -94,6 +99,6 @@
                 alert("{{ _('Something went wrong. Try to reload page') }}");
             })
         }
-    })
+    });
 </script>
 {% endblock %}

@@ -17,6 +17,7 @@ import app.controllers.admin.routes
 import app.controllers.admin.routes_file_processing
 import app.controllers.admin.routes_background_tasks
 import app.controllers.admin.routes_roles
+import app.controllers.admin.issue_template_routes
 import app.controllers.admin.task_template_routes
 import app.controllers.admin.report_template_routes
 import app.controllers.admin.credential_template_import

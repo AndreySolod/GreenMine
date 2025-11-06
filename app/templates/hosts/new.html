@@ -46,3 +46,38 @@
     </div>
 </form>
 {% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    const IPMask = IMask(document.getElementById("{{ form.ip_address.id }}"), {
+        mask: 'IP{.}IP{.}IP{.}IP',
+        blocks: {
+            IP: {
+                mask: Number,
+                padFractionalZeros: true,
+                scale: 0,
+                min: 0,
+                max: 255
+            }
+        },
+        prepare: (value, masked) => {
+            if(value === '0' && (masked._value.length === 0 || masked._value.charAt(masked._value.length - 1) === '.')) {
+                return value + '.';
+            }
+            return value;
+        }
+    });
+    document.getElementById("{{ form.ip_address.id }}").addEventListener('input', (e) => {
+        fetch('{{ url_for("networks.get_network_by_host_address", project_id=project.id, ipaddress="__ip_address")|safe }}'.replace("__ip_address", e.srcElement.value))
+            .then((response) => { if(response.ok && response.status == 200) { return response.json() } else if(response.status =! 404) {
+                alert('{{ _("Something went wrong. Try to refresh page") }}');
+            } })
+            .then((response) => {
+                if(response !== undefined && response.status == 'success'){
+                    document.getElementById('{{ form.from_network_id.id }}').value = response.id
+                }
+            })
+    });
+</script>
+{% endblock %}

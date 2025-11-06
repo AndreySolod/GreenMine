@@ -6,6 +6,7 @@ import app.models as models
 from flask_babel import lazy_gettext as _l
 import wtforms
 from wtforms import validators
+import flask_wtf.file as wtfile
 
 
 class CredentialImportTemplateForm(FlaskForm):
@@ -40,3 +41,9 @@ class CredentialImportTemplateFormCreate(CredentialImportTemplateForm):
 
 class CredentialImportTemplateFormEdit(CredentialImportTemplateForm):
     submit = wtforms.SubmitField(_l("Save"))
+
+
+class CredentialTemplateFormForImportFromJSON(FlaskForm):
+    import_file = wtforms.FileField(_l("Templates file:"), validators=[wtfile.FileAllowed(['json'], _l("Only JSON File allowed!"))])
+    override_exist = wtforms.BooleanField(_l("Override exist task templates:"), validators=[validators.Optional()])
+    submit = wtforms.SubmitField(_l("Import"))

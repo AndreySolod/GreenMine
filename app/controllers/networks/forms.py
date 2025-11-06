@@ -84,7 +84,7 @@ class HostForm(FlaskForm):
                                             validators.Optional()])
     description = WysiwygField(_l("%(field_name)s:", field_name=models.Host.description.info["label"]), validators=[validators.Optional()])
     from_network_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.from_network_id.info["label"]), validators=[validators.DataRequired()])
-    ip_address = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ip_address.info["label"]), validators=[validators.DataRequired()])
+    ip_address = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ip_address.info["label"]), validators=[validators.DataRequired()], render_kw={"pattern": r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"})
     mac = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.mac.info["label"]), validators=[validators.Optional()])
     operation_system_family_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.operation_system_family_id.info["label"]),
                                                      validators=[validators.Optional()])

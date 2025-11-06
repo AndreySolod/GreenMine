@@ -36,3 +36,34 @@
     </div>
 </form>
 {% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    const IPMask = IMask(document.getElementById("{{ form.ip_address.id }}"), {
+        mask: 'IP{.}IP{.}IP{.}IP/CM',
+        blocks: {
+            IP: {
+                mask: Number,
+                padFractionalZeros: true,
+                scale: 0,
+                min: 0,
+                max: 255
+            },
+            CM: {
+                mask: Number,
+                padFractionalZeros: true,
+                scale: 0,
+                min: 0,
+                max: 32
+            }
+        },
+        prepare: (value, masked) => {
+            if(value === '0' && (masked._value.length === 0 || masked._value.charAt(masked._value.length - 1) === '.')) {
+                return value + '.';
+            }
+            return value;
+        }
+    });
+</script>
+{% endblock %}

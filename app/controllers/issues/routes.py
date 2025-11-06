@@ -141,6 +141,7 @@ def issue_new():
     patterns = db.session.scalars(sa.select(IssueTemplate).where(IssueTemplate.archived == False)).all()
     ctx = get_default_environment(Issue(project=project), 'new')
     context = {'form': form, 'ckeditor_height': '100px', 'patterns': patterns}
+    side_libraries.library_required('select2')
     return render_template('issues/new.html', **context, **ctx)
 
 
