@@ -110,7 +110,7 @@ def task_template_export():
             selected_ids = []
     except (ValueError, TypeError):
         abort(400)
-    task_template_data = objects_export(db.session.scalars(sa.select(models.ProjectTaskTemplate).where(models.ProjectTaskTemplate.id.in_(selected_ids))).all())
+    task_template_data = json.dumps(objects_export(db.session.scalars(sa.select(models.ProjectTaskTemplate).where(models.ProjectTaskTemplate.id.in_(selected_ids))).all()))
     params = {'as_attachment': True, 'download_name': 'Project_task_templates.json'}
     buf = BytesIO()
     buf.write(task_template_data.encode())
@@ -126,6 +126,7 @@ def task_template_import():
         file_parsed = objects_import(models.ProjectTaskTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
                                      form.override_exist.data)
         if file_parsed:
+            db.session.commit()
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the task templates")
             flash(_l("Import was completed successfully"), 'success')
         else:

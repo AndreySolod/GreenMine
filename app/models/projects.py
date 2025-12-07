@@ -34,6 +34,11 @@ class Project(db.Model):
     leader: so.Mapped['User'] = so.relationship(lazy='joined', foreign_keys=[leader_id], info={'label': _l("Manager"), 'description': _l("The person responsible for this project")}) # type: ignore
     tasks: so.Mapped[List["ProjectTask"]] = so.relationship(back_populates="project", cascade="all, delete-orphan", info={'label': _l("Tasks"), 'description': _l("Tasks performed within the framework of the project")}) # type: ignore
     networks: so.Mapped[List[Network]] = so.relationship(lazy='select', back_populates='project', info={'label': _l("Networks")}, cascade='all,delete-orphan')
+    chat_messages: so.Mapped[List["ChatMessage"]] = so.relationship(lazy='select', back_populates='project', info={'label': _l("Chat messages")}, cascade='all, delete-orphan') # type: ignore
+    credentials: so.Mapped[List["Credential"]] = so.relationship(lazy="select", back_populates="project", info={'label': _l("Credentials")}, cascade='all, delete-orphan') # type: ignore
+    issues: so.Mapped[List["Issue"]] = so.relationship(lazy='select', back_populates='project', cascade='all, delete-orphan', info={'label': _l("Issues")}) # type: ignore
+    notes: so.Mapped[List["Note"]] = so.relationship(lazy="select", back_populates="project", info={'label': _l("Notes")}, cascade="all, delete-orphan") # type: ignore
+    file_directories: so.Mapped["FileDirectory"] = so.relationship(lazy="select", back_populates="project", info={'label': _l("File Directories")}, cascade="all, delete-orphan") # type: ignore
     participants: so.Mapped[List["UserRoleHasProject"]] = so.relationship(back_populates="project", lazy='select', cascade='all, delete-orphan', order_by="UserRoleHasProject.role_id", info={'label': _l("Participants")})
     additional_parameters: so.Mapped[List["ProjectAdditionalFieldData"]] = so.relationship(lazy='select', info={'label': _l("Additional fields")}, back_populates="project", cascade="all,delete-orphan") # type: ignore
 

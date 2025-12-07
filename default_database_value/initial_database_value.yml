@@ -1794,12 +1794,6 @@ ProjectAdditionalFieldGroup:
     - defence_from_comp_attack:
         title: "Вопосы по защите сети от компьютерных атак"
         order_number: 7
-    - antivirus_defence:
-        title: "Вопросы по антивирусной защите"
-        order_number: 8
-    - blitz:
-        title: "Блиц"
-        order_number: 9
     - contacts:
         title: "Контакты"
         order_number: 10
@@ -1810,63 +1804,32 @@ ProjectAdditionalField:
         description: "<ul><li>Название</li><li>ФИО начальника</li></ul>"
         field_type: "WysiwygField"
         group: admin_group_and_users
-    - admin_is_official:
-        title: "Должность администратора закреплена официально"
-        field_type: "BooleanField"
-        group: admin_group_and_users
     - additional_training_admins:
         title: "Ездят ли администраторы на курсы дополнительного обучения"
         field_type: "BooleanField"
-        group: admin_group_and_users
-    - admin_qualifications:
-        title: "Квалификация администраторов"
-        field_type: "WysiwygField"
         group: admin_group_and_users
     - users_teach:
         title: "Проводится ли обучение с пользователями"
         field_type: "BooleanField"
         group: admin_group_and_users
-    - admin_another:
-        title: "Прочее (наблюдения, замечания)"
-        description: ""
-        field_type: "WysiwygField"
-        group: admin_group_and_users
     - documentation_is:
         title: "Документация на информационные системы"
-        description: "<ul><li>Ввод в эксплуатацию</li><li>карта сети (структура)</li><li>состав оборудования + паспорта</li><li>списки угроз</li><li>модели нарушителей</li><li>перечень защищаемых ресурсов</li><li>договора со сторонними организациями</li><li>документация о типовой настройке антивируса на объекте</li></ul>"
+        description: "<ul><li>Ввод в эксплуатацию</li><li>карта сети (структура)</li><li>перечень защищаемых ресурсов</li><li>договора со сторонними организациями</li></ul>"
         field_type: "WysiwygField"
-        group: documentation
-    - admin_instruction:
-        title: "Инструкция администратора сети"
-        field_type: "BooleanField"
         group: documentation
     - user_instruction:
         title: "Инструкция пользователя сети"
         field_type: "BooleanField"
         group: documentation
-    - emergency_situation_instruction:
-        title: "Инструкция действий при нештатных ситуациях"
-        field_type: "BooleanField"
-        group: documentation
     - policies:
         title: "Политики"
-        description: "<ul><li>ИБ</li><li>Парольная</li><li>Управления доступом</li><li>Интернет</li><li>Антивирусная</li><li>Резервного копирования</li><li>Обработки конфиденциальной информации</li><li>Внешние носители, мобильные устройства, модемы</li><li>Беспроводные сети (Wi-Fi)</li></ul>"
+        description: "<ul><li>ИБ</li><li>Парольная</li></ul>"
         field_type: "WysiwygField"
         group: documentation
-    - communication_lines:
-        title: "Линии связи сети"
-        description: "<ul><li>Тип</li><li>Где проложены</li></ul>"
-        field_type: "WysiwygField"
-        group: network_organization
     - network_structure:
         title: "Перечень коммутационного и сетевого оборудования"
-        description: "<p>Какое оборудование в основном стоит</p>"
+        description: "<p>Какое оборудование в основном стоит (Cisco/MikroTik/Huawei и т.п.)</p>"
         field_type: "WysiwygField"
-        group: network_organization
-    - network_reserver:
-        title: "Резерв на случай отказа оборудования"
-        description: "<p>Резерв оборудования, обычно принимаемый в диапазоне 10% от действующего оборудования</p>"
-        field_type: "BooleanField"
         group: network_organization
     - network_routing:
         title: "Тип маршрутизации"
@@ -1880,7 +1843,7 @@ ProjectAdditionalField:
         group: network_organization
     - vlan_subdivide:
         title: "Деленние на VLAN"
-        description: "<ul><li>Принцип деления</li><li>Количество</li><li>Сетевое взаимодействие между сегментами</li></ul>"
+        description: ""
         field_type: "WysiwygField"
         group: network_organization
     - ip_diapasons:
@@ -1892,94 +1855,22 @@ ProjectAdditionalField:
         title: "Контролируется ли подключение несанкционированных устройств к сети"
         field_type: "BooleanField"
         group: network_organization
-    - unused_power_outlets:
-        title: "Деактивируются ли незадействованные сетевые розетки"
-        field_type: "BooleanField"
-        group: network_organization
     - detected_new_devices:
-        title: "Детектирование новых устройств"
+        title: "Детектируются ли новые устройства"
         field_type: "BooleanField"
         group: network_organization
     - intruder_end_up:
-        title: "Куда попадают несанкционированные устройства"
-        field_type: "WysiwygField"
-        group: network_organization
-    - outer_networks:
-        title: "Взаимодействие с внешними сетями"
-        description: "<ul><li>Провайдеры (пропускная способность, диапазоны белых IP-адресов)</li><li>Наличие выделенных каналов связи (криптошлюзы, VPN)</li></ul>"
+        title: "Куда попадают несанкционированные устройства (при использовании 802.1X)"
         field_type: "WysiwygField"
         group: network_organization
     - wireless_organization:
         title: "Организация"
-        description: "<ul><li>Назначение</li><li>Списки точек доступа</li><li>Используемое оборудование</li><li>Зона покрытия</li></ul>"
+        description: "<ul><li>Назначение</li><li>Списки точек доступа</li></ul>"
         field_type: "WysiwygField"
         group: wireless_networks
-    - wireless_access:
-        title: "Доступ"
-        description: "<ul><li>Кто имеет</li><li>Взаимная видимость с основными сегментами ИТС</li></ul>"
-        field_type: "WysiwygField"
-        group: wireless_networks
-    - wireless_defence:
-        title: "Защищённость"
-        description: "<ul><li>Способ аутентификации</li><li>Длина паролей</li><li>Списки доступа (чёрный, белый)</li></ul>"
-        field_type: "WysiwygField"
-        group: wireless_networks
-    - its_appointment:
-        title: "Назначение ИТС"
-        field_type: "WysiwygField"
-        group: its_organization
-    - used_os:
-        title: "Используемые ОС"
-        field_type: "StringField"
-        group: its_organization
-    - download_from_third_party_media:
-        title: "Имеется ли возможность загрузки со сторонних носителей"
-        field_type: "BooleanField"
-        group: its_organization
-    - allowed_po_list:
-        title: "Имеется ли список разрешённого ПО"
-        field_type: "BooleanField"
-        group: its_organization
-    - connected_device_monitor:
-        title: "Ведётся ли контроль за списком подключаемых устройств"
-        field_type: "BooleanField"
-        description: "<p>Имеет ли сотрудник возможность подключить собственную флешку/клавиатуру к рабочему компьютеру</p>"
-        group: its_organization
-    - po_update:
-        title: "Ведётся ли контроль обновления ПО"
-        field_type: "BooleanField"
-        group: its_organization
-    - hardware_access_control:
-        title: "Ведётся ли контроль доступа к аппаратной части"
-        field_type: "BooleanField"
-        group: its_organization
-    - is_on_object:
-        title: "Информационные системы, функционирующие на объекте"
-        description: "<ul><li>Название</li><li>Версия</li><li>Назначение</li><li>Место расположения в сети</li></ul>"
-        field_type: "WysiwygField"
-        group: its_organization
-    - backups:
-        title: "Резервное копирование"
-        description: "<ul><li>Объекты резервного копирования</li><li>Используемое ПО</li><li>Срок хранения</li><li>Место хранения</li></ul>"
-        field_type: "WysiwygField"
-        group: its_organization
-    - monitoring:
-        title: "Мониторинг"
-        description: "<ul><li>Как организован</li><li>Оповещения</li></ul>"
-        group: its_organization
-        field_type: "WysiwygField"
-    - internet_access:
-        title: "Способ предоставления доступа в интернет"
-        group: its_organization
-        field_type: "WysiwygField"
-    - object_ierarchy:
-        title: "Иерархия объектов"
-        description: "<ul><li>Домены/рабочие группы</li><li>Репликация домена</li><li>Структура домена по Organization Unit</li><li>Доверительные отношения между доменами</li></ul>"
-        group: its_organization
-        field_type: "WysiwygField"
-    - account_policy:
-        title: "Политика учётных записей"
-        description: "<ul><li>Права обычного пользователя</li><li>Порядок действие при увольнении/переводе сотрудника</li></ul>"
+    - domain_info:
+        title: "Информация о домене"
+        description: "<ul><li>Домены организации</li><li>Количество контроллеров домена</li><li>Доверительные отношения между доменами</li></ul>"
         group: its_organization
         field_type: "WysiwygField"
     - min_password_length:
@@ -2029,7 +1920,7 @@ ProjectAdditionalField:
         field_type: "StringField"
     - outer_domain_registers:
         title: "На кого зарегистрированы доменные имена"
-        description: "<p>Данные пользователей, регистрировавших доменные имена</p>"
+        description: "<p>Данные пользователей/организации, регистрировавших доменные имена</p>"
         group: outer_network_resourses
         field_type: "StringField"
     - outer_domain_caa:
@@ -2076,38 +1967,10 @@ ProjectAdditionalField:
         description: "<ul><li>Используемое ПО</li><li>Хостинг</li><li>Где расположен</li><li>Выделенный сервер/VDS</li><li>Резервное копирование</li><li>Разрешено ли использование личной электронной почты для служебных целей</li><li>Спам-фильтрация</li><li>Проверка содержимого антивирусными средствами</li><li>Действия при получении подозрительного письма</li></ul>"
         group: outer_network_resourses
         field_type: "WysiwygField"
-    - firewalls:
-        title: "Межсетевые экраны"
-        description: "<ul><li>Наименование решения</li><li>Правила</li></ul>"
-        group: defence_from_comp_attack
-        field_type: "WysiwygField"
-    - ids_or_ips:
-        title: "Средства IDS/IPS"
-        group: defence_from_comp_attack
-        field_type: "WysiwygField"
     - audit:
         title: "Аудит"
         description: "<ul><li>Как организован</li><li>Где хранятся журналы</li><li>Срок хранения журналов</li></ul>"
         group: defence_from_comp_attack
-        field_type: "WysiwygField"
-    - another_defence_from_comp_attack:
-        title: "Прочее"
-        group: defence_from_comp_attack
-        field_type: "WysiwygField"
-    - antivirus_data:
-        title: "Организация антивирусной защиты"
-        description: "<ul><li>Наименование антивирусного решения</li><li>Версия</li><li>Покрытие рабочих станций, серверов</li><li>Центры управления</li><li>Порядок обновления</li><li>Откуда берутся обновления</li><li>Доступ пользователей к настройкам антивируса</li></ul>"
-        group: antivirus_defence
-        field_type: "WysiwygField"
-    - system_minuses:
-        title: "Какие минусы присутствуют в системах"
-        description: "<p>Вопрос администратору - на что стоит обратить внимание при исследовании</p>"
-        group: blitz
-        field_type: "WysiwygField"
-    - system_wanted:
-        title: "Что долгое время планируется к внедрению, на что стоит обратить внимание"
-        description: "<p>Вопрос администратору - на что стоит обратить внимание в отчёте</p>"
-        group: blitz
         field_type: "WysiwygField"
     - contacts_data:
         title: "Контакты"

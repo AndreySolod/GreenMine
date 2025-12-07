@@ -23,7 +23,7 @@ class FileDirectory(db.Model):
                                                  lazy='select', join_depth=2,
                                                  foreign_keys=[parent_dir_id], remote_side=[id], info={'label': _l('Parent directory')})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l('Project')})
-    project: so.Mapped["Project"] = so.relationship(lazy='joined', foreign_keys=[project_id], backref=so.backref('file_directories', cascade='all, delete-orphan'), info={'label': _l('Project')}) # type: ignore
+    project: so.Mapped["Project"] = so.relationship(lazy='joined', foreign_keys=[project_id], back_populates="file_directories", info={'label': _l('Project')}) # type: ignore
 
     @property
     def parent(self):

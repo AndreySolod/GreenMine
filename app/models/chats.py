@@ -14,7 +14,7 @@ class ChatMessage(db.Model):
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Added by')})
     created_by: so.Mapped["User"] = so.relationship(lazy='joined', foreign_keys=[created_by_id], info={'label': _l('Added by')}) # type: ignore
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l('Project')})
-    project: so.Mapped["Project"] = so.relationship(lazy='select', foreign_keys=[project_id], backref=so.backref("chat_messages", info={'label': _l("Chat messages")}, cascade="all, delete-orphan"), # type: ignore
+    project: so.Mapped["Project"] = so.relationship(lazy='select', foreign_keys=[project_id], back_populates="chat_messages", # type: ignore
                                                     info={'label': _l('Project')})
     text: so.Mapped[str] = so.mapped_column(info={'label': _l('Comment')})
 

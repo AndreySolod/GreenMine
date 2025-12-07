@@ -9,6 +9,7 @@ from flask_login import current_user
 import sqlalchemy as sa
 from io import BytesIO
 from flask_babel import lazy_gettext as _l
+import json
 
 
 @bp.route('/issues/templates/index')
@@ -99,7 +100,7 @@ def issue_template_export():
             selected_ids = []
     except (ValueError, TypeError):
         abort(400)
-    issue_template_data = objects_export(db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.id.in_(selected_ids))).all())
+    issue_template_data = json.dumps(objects_export(db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.id.in_(selected_ids))).all()))
     params = {'as_attachment': True, 'download_name': 'Issue_templates.json'}
     buf = BytesIO()
     buf.write(issue_template_data.encode())
@@ -115,6 +116,7 @@ def issue_template_import():
         file_parsed = objects_import(models.IssueTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
                                      form.override_exist.data)
         if file_parsed:
+            db.session.commit()
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the issue templates")
             flash(_l("Import was completed successfully"))
         else:

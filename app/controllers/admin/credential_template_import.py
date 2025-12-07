@@ -9,6 +9,7 @@ from flask import url_for, render_template, redirect, flash, request, abort, sen
 import app.controllers.admin.credential_templates_forms as forms
 from flask_babel import lazy_gettext as _l
 from io import BytesIO
+import json
 
 
 @bp.route('/credentials/templates/index')
@@ -96,7 +97,7 @@ def credential_template_export():
     except (ValueError, TypeError):
         logger.warning()
         abort(400)
-    task_template_data = objects_export(db.session.scalars(sa.select(models.CredentialImportTemplate).where(models.CredentialImportTemplate.id.in_(selected_ids))).all())
+    task_template_data = json.dumps(objects_export(db.session.scalars(sa.select(models.CredentialImportTemplate).where(models.CredentialImportTemplate.id.in_(selected_ids))).all()))
     params = {'as_attachment': True, 'download_name': 'Import_credential_templates.json'}
     buf = BytesIO()
     buf.write(task_template_data.encode())
@@ -112,6 +113,7 @@ def credential_template_import():
         file_parsed = objects_import(models.CredentialImportTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
                                      form.override_exist.data)
         if file_parsed:
+            db.session.commit()
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the credential templates")
             flash(_l("Import was completed successfully"), 'success')
         else:

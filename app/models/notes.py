@@ -38,7 +38,7 @@ class Note(db.Model):
     importance_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(NoteImportance.id, ondelete='SET NULL'), info={'label': _l("Importance")})
     importance: so.Mapped[NoteImportance] = so.relationship(lazy='joined', info={'label': _l("Importance")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l("Project")})
-    project: so.Mapped['Project'] = so.relationship(lazy='select', backref=so.backref('notes', cascade='all, delete-orphan'), info={'label': _l("Project")}) # type: ignore
+    project: so.Mapped['Project'] = so.relationship(lazy='select', back_populates="notes", info={'label': _l("Project")}) # type: ignore
 
     class Meta:
         verbose_name = _l("Note")

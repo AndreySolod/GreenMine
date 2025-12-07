@@ -82,7 +82,7 @@ class Credential(HasComment, db.Model, HasHistory):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     archived: so.Mapped[Archived]
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l('Project')})
-    project: so.Mapped["Project"] = db.relationship(lazy='select', backref=so.backref('credentials', cascade='all, delete-orphan'), info={'label': _l('Project')}) # type: ignore
+    project: so.Mapped["Project"] = db.relationship(lazy='select', back_populates="credentials", info={'label': _l('Project')}) # type: ignore
     created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Created by')})
     created_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l('Created by')}) # type: ignore

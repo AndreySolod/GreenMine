@@ -33,7 +33,7 @@ services:
             - "/etc/localtime:/etc/localtime:ro"
         environment:
             - ENVIRONMENT=PRODUCTION
-            - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/postgres
+            - DATABASE_URL=postgresql+psycopg://postgres:postgres@postgres:5432/greenmine
             - CELERY_BROKER_URL=redis://@redis:6379/0
             - CELERY_RESULT_BACKEND=redis://redis:6379/0
         networks:

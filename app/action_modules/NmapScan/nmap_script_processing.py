@@ -5,6 +5,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from xml.etree.ElementTree import Element as etreeElement
 from flask_babel import force_locale, lazy_gettext as _l
+from app.helpers.general_helpers import validates_mac
 import ipaddress
 import re
 
@@ -41,14 +42,13 @@ class NmapScriptNbnsInterfaces(NmapScriptProcessor):
                 if host_ip in n.ip_address:
                     host = models.Host(ip_address=host_ip)
                     session.add(host)
+                    session.commit()
                     host.from_network = n
                     return host
         for elem in script_element.findall('elem'):
             if elem.get('key') == 'hostname':
                 if obj_with_script.host.title is None or obj_with_script.host.title == '':
                     obj_with_script.host.title = elem.text.strip()
-                else:
-                    obj_with_script.host.technical += "<h5>hostname: " + elem.text.strip() + "</h5>"
         for table in script_element.iter('table'):
             if table.get('key') == 'interfaces':
                 ifaces_data = []
@@ -63,10 +63,11 @@ class NmapScriptNbnsInterfaces(NmapScriptProcessor):
                         new_host.created_by_id = current_user_id
                         obj_with_script.host.assign_interface(new_host)
                         session.add(new_host)
-                if len(ifaces_data) > 0 and obj_with_script.host.technical is not None:
+                        session.commit()
+                if obj_with_script.host.technical is None:
+                    obj_with_script.host.technical = ''
+                if len(ifaces_data) > 0:
                     obj_with_script.host.technical += "<p>Interfaces:<br>" + "; ".join(ifaces_data) + "</p>"
-                elif len(ifaces_data) > 0:
-                    obj_with_script.host.technical = "<p>Interfaces:<br>" + "; ".join(ifaces_data) + "</p>"
 
 class NmapScriptMessageSigning(NmapScriptProcessor):
     script_id = 'smb2-security-mode'
@@ -91,13 +92,16 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
                             issue.project = project
                             issue.created_by_id = current_user_id
                             session.add(issue)
+                            session.commit()
                         for serv in host.services:
                             if serv.port == 445:
                                 issue.services.add(serv)
                                 break
+            session.commit()
             return ''
         elem = elem.find('elem')
         if elem is None:
+            session.commit()
             return ''
         elem = elem.text
         message = 'Message signing enabled but not required'
@@ -115,12 +119,16 @@ class NmapScriptMessageSigning(NmapScriptProcessor):
                 issue.project = project
                 issue.created_by_id = current_user_id
                 session.add(issue)
+                session.commit()
             for serv in host.services:
                 if serv.port == 445:
                     issue.services.add(serv)
                     break
+        elif elem.strip() == 'Message signing enabled and required':
+            return ''
         else:
             return None
+        session.commit()
         return ''
 
 
@@ -132,9 +140,16 @@ class NmapScriptNBSTAT(NmapScriptProcessor):
             m = re.search(pattern="NetBIOS name: (.*?),", string=out)
             if m:
                 host.title = m.groups()[0]
-            return ''
-        else:
-            return None
+        if host.mac == '' or host.mac == None:
+            m = re.search(pattern="NetBIOS MAC: (.*?),", string=out)
+            if m:
+                curr_mac = m.groups()[0]
+                try:
+                    host.mac = validates_mac(curr_mac)
+                except ValueError:
+                    pass
+            session.commit()
+        return ''
 
 
 class NmapScriptCVE20093103(NmapScriptProcessor):
@@ -159,11 +174,13 @@ class NmapScriptCVE20093103(NmapScriptProcessor):
                                 issue.project = project
                                 issue.created_by_id = current_user_id
                                 session.add(issue)
+                                session.commit()
                             for serv in host.services:
                                 if serv.port == 445:
                                     issue.services.add(serv)
                                     break
                             issue.hosts.add(host)
+                            session.commit()
                             return ''
         return None
 
@@ -190,11 +207,13 @@ class NmapScriptCVE20170144(NmapScriptProcessor):
                                 issue.project = project
                                 issue.created_by_id = current_user_id
                                 session.add(issue)
+                                session.commit()
                             for serv in host.services:
                                 if serv.port == 445:
                                     issue.services.add(serv)
                                     break
                             issue.hosts.add(host)
+                            session.commit()
                             return ''
         return None
 
@@ -208,4 +227,5 @@ class NmapScriptSnmpInfo(NmapScriptProcessor):
             service.additional_attributes["snmp"] = {}
         for elem in script_element.findall("elem"):
             service.additional_attributes["snmp"][elem.attrib.get("key")] = elem.text
+        session.commit()
         return ''

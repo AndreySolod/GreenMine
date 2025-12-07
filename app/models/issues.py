@@ -143,7 +143,7 @@ class Issue(HasComment, db.Model, HasHistory):
                                                     back_populates="issues",
                                                     info={'label': _l('Related hosts')})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete="CASCADE"), info={'label': _l("Project")})
-    project: so.Mapped["Project"] = so.relationship(lazy='select', backref=db.backref('issues', cascade='all, delete-orphan'), info={'label': _l("Project")}) # type: ignore
+    project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates="issues", info={'label': _l("Project")}) # type: ignore
     tasks_by_issue: so.Mapped[List["ProjectTask"]] = so.relationship(secondary=IssueHasTask.__table__, # type: ignore
                                                                      primaryjoin='Issue.id==IssueHasTask.issue_id',
                                                                      secondaryjoin='ProjectTask.id==IssueHasTask.task_id',
