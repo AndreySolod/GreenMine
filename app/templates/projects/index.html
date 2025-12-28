@@ -1,4 +1,5 @@
 {% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
 
 {% block page_content %}
 <div class="row gutters">
@@ -113,5 +114,30 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade modal-xl" id="modalImportProject" tabindex="-1" aria-labelledby="modalImportProjectLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalImportProjectLabel">{{ _("Import project") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <form action="{{ url_for('projects.import_new_project') }}" method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+            <div class="col-12 position-relative">
+            <div class="form-group">
+                {{ import_project_form.hidden_tag() }}
+                {{ form_element(import_project_form, import_project_form.import_file, inline=True) }}
+            </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            {{ import_project_form.submit(class='btn btn-primary') }}
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}

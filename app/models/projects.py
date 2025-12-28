@@ -96,7 +96,8 @@ class Project(db.Model):
         icon_index = 'fa-solid fa-list-check'
         project_permission_actions = {'show': _l("Show object card"), 'update': _l("Edit and update object"), 'delete': _l("Delete object"),
                                       'edit_participants': _l("Edit participants of project"), "archive": _l("Archive project"), 'show_charts': _l("View status charts"),
-                                      'show_additional_parameters': _l("Show additional parameters"), 'edit_additional_parameters': _l("Edit additional parameters")}
+                                      'show_additional_parameters': _l("Show additional parameters"), 'edit_additional_parameters': _l("Edit additional parameters"),
+                                      'export': _l("Export project")}
         global_permission_actions = {'index': _l("Show object list"), 'create': _l("Create object")}
 
 
@@ -104,7 +105,7 @@ class Project(db.Model):
 def update_project_default_value_if_not_exist(session):
     projects = [p for p in session.new if isinstance(p, Project)]
     for project in projects:
-        if project.file_directories == []:
+        if project.file_directories in [None, []]:
             fd = FileDirectory(title='/', project=project, created_by_id=project.created_by_id)
             session.add(fd)
 

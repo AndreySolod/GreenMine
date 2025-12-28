@@ -110,9 +110,10 @@ def credential_template_export():
 def credential_template_import():
     form = forms.CredentialTemplateFormForImportFromJSON()
     if form.validate_on_submit():
-        file_parsed = objects_import(models.CredentialImportTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
-                                     form.override_exist.data)
-        if file_parsed:
+        file_parsed = objects_import(models.CredentialImportTemplate, form.import_file_data,
+                                     form.override_exist.data, db.session)
+        if file_parsed is not None:
+            db.session.add_all(list(file_parsed.values()))
             db.session.commit()
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the credential templates")
             flash(_l("Import was completed successfully"), 'success')

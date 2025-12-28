@@ -7,6 +7,8 @@ import flask_wtf.file as wtfile
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
 import app.models as models
+import json
+from flask import request
 
 
 def required_validators(column):
@@ -57,3 +59,11 @@ class IssueTemplateImportForm(FlaskForm):
     import_file = wtforms.FileField(_l("Templates file:"), validators=[wtfile.FileAllowed(['json'], _l("Only JSON File allowed!"))])
     override_exist = wtforms.BooleanField(_l("Override exist issue templates:"), validators=[validators.Optional()])
     submit = wtforms.SubmitField(_l("Import"))
+
+    def validate_import_file(form, field):
+        if field.data is None:
+            raise validators.ValidationError(_l("File is required!"))
+        try:
+            form.import_file_data = json.loads(request.files.get(form.import_file.name).read().decode('utf8'))
+        except json.JSONDecodeError:
+            raise validators.ValidationError(_l("File is not a valid JSON file!"))

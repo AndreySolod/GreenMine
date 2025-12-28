@@ -123,9 +123,10 @@ def task_template_export():
 def task_template_import():
     form = forms.TaskTemplateImportForm()
     if form.validate_on_submit():
-        file_parsed = objects_import(models.ProjectTaskTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
+        file_parsed = objects_import(models.ProjectTaskTemplate, form.import_file_data,
                                      form.override_exist.data)
-        if file_parsed:
+        if file_parsed is not None:
+            db.session.add_all(list(file_parsed.values()))
             db.session.commit()
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the task templates")
             flash(_l("Import was completed successfully"), 'success')

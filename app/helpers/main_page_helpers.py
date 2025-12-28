@@ -92,6 +92,8 @@ class DefaultEnvironment:
             if user_position_can_make_action(current_user, models.Project, 'create'):
                 act1 = CurrentObjectAction(_l("Add new project"), "fa-solid fa-square-plus", url_for('projects.project_new'))
                 acts.append(act1)
+                act2 = CurrentObjectAction(_l("Import project"), "fa-solid fa-file-import", 'modalImportProject', action_type='button_modal')
+                acts.append(act2)
             current_object = CurrentObjectInfo(_l("List of all projects"), "fa-solid fa-list-check", subtitle=_l('Projects, created in PCF'), actions=acts)
             title = _l("All projects")
         elif obj == "Project" and op == 'new':

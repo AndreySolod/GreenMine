@@ -113,9 +113,10 @@ def issue_template_export():
 def issue_template_import():
     form = issue_template_forms.IssueTemplateImportForm()
     if form.validate_on_submit():
-        file_parsed = objects_import(models.IssueTemplate, request.files.get(form.import_file.name).read().decode('utf8'),
-                                     form.override_exist.data)
-        if file_parsed:
+        file_parsed = objects_import(models.IssueTemplate, form.import_file_data,
+                                     form.override_exist.data, db.session)
+        if file_parsed is not None:
+            db.session.add_all(list(file_parsed.values()))
             db.session.commit()
             logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the issue templates")
             flash(_l("Import was completed successfully"))

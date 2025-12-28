@@ -1,16 +1,17 @@
 from app import db, logger, side_libraries
 from app.controllers.projects import bp
-from flask import request, redirect, url_for, render_template, flash, abort
+from flask import request, redirect, url_for, render_template, flash, abort, send_file
 from flask_login import current_user
 import app.models as models
-from app.helpers.general_helpers import get_or_404
+from app.helpers.general_helpers import get_or_404, project_export, project_import
 from app.helpers.projects_helpers import get_default_environment, add_team_users_to_project
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
-from .forms import ProjectFormCreate, ProjectFormEdit, get_project_role_user_form
+from .forms import ProjectFormCreate, ProjectFormEdit, get_project_role_user_form, ImportProjectForm
 from flask_babel import lazy_gettext as _l, pgettext
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy as sa
 import json
+from io import BytesIO
 
 
 @bp.route("/index")
@@ -19,7 +20,7 @@ def project_index():
     archive_projects = db.session.scalars(sa.select(models.Project).where(models.Project.archived == True).order_by(models.Project.created_at.desc())).all()
     ctx = MainPageEnvironment('Project', 'index')()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index all projects")
-    context = {'projects': p, "archive_projects": archive_projects}
+    context = {'projects': p, "archive_projects": archive_projects, 'import_project_form': ImportProjectForm()}
     return render_template('projects/index.html', **context, **ctx)
 
 
@@ -202,3 +203,34 @@ def project_diagrams(project_id: int):
                "tasks_by_status_dataset": json.dumps(list(map(lambda x: x[2], tasks_by_status)))}
     side_libraries.library_required('chartjs')
     return render_template('projects/diagrams.html', **ctx, **context)
+
+
+@bp.route('/<int:project_id>/export')
+def export_current_project(project_id: int):
+    project = db.get_or_404(models.Project, project_id)
+    project_role_can_make_action_or_abort(current_user, project, 'export')
+    json_project_data_for_export = project_export(project)
+    json_data = json.dumps(json_project_data_for_export)
+    params = {'as_attachment': True, 'download_name': f'Greenmine Project {project.title}.json'}
+    buf = BytesIO()
+    buf.write(json_data.encode())
+    buf.seek(0)
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request export project #{project.id}")
+    return send_file(buf, **params)
+
+
+@bp.route('/import', methods=['POST'])
+def import_new_project():
+    form = ImportProjectForm()
+    if form.validate_on_submit():
+        created_project = project_import(form.import_file_data, db.session)
+        if created_project is not None:
+            db.session.add(created_project)
+            db.session.commit()
+            logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the project #{created_project.id}")
+            flash(_l("Import was completed successfully"), 'success')
+        else:
+            flash(_l("Errors when parsing file"), 'error')
+    else:
+        flash(_l("Errors when parsing file"), 'error')
+    return redirect(url_for('projects.project_index'))

@@ -22,6 +22,7 @@ from sqlalchemy import func
 import sqlalchemy.exc as exc
 from sqlalchemy.inspection import inspect
 import sqlalchemy.orm as so
+import sqlalchemy.orm.collections as sacollections
 import sqlalchemy.sql.selectable as sa_selectable
 from bs4 import BeautifulSoup
 from sqlalchemy.orm.session import Session
@@ -31,6 +32,7 @@ import importlib
 import logging
 from flask_babel import lazy_gettext as _l
 from pathlib import Path
+import ipaddress
 
 
 def validates_ip(address: str, error_msg: str = _l("Incorrect IP-address"), error_type: Exception = ValueError) -> str:
@@ -853,85 +855,200 @@ def get_global_objects_with_permissions():
 
 
 def objects_export(obj_list: List[Any]) -> Dict:
+    if not isinstance(obj_list, list):
+        raise TypeError("obj_list must be a list")
     if len(obj_list) == 0:
-        return json.dumps({})
+        return {'string_slugs': [], 'other_instance_ids': []}
     obj = obj_list[0]
-    column_attrs = [i.key for i in inspect(obj.__class__).column_attrs if i.key not in ['id', 'string_slug'] and not i.key.endswith('_id')]
+    column_attrs = [i.key for i in inspect(obj.__class__).column_attrs if i.key not in ['string_slug', 'created_at', 'updated_at'] and not i.key.endswith('_id')]
     relationships = [i for i in inspect(obj.__class__).relationships]
-    data = {}
+    data = {'string_slugs': [], 'other_instance_ids': []}
     if hasattr(obj, 'string_slug'):
         for obj in obj_list:
-            data[obj.string_slug] = {}
+            current_serialized_object = {'string_slug': obj.string_slug}
             for i in column_attrs:
                 if isinstance(getattr(obj, i), datetime.timedelta):
-                    data[obj.string_slug][i] = getattr(obj, i).total_seconds()
+                    current_serialized_object[i] = getattr(obj, i).total_seconds()
+                elif isinstance(getattr(obj, i), datetime.datetime) or isinstance(getattr(obj, i), datetime.date) or isinstance(getattr(obj, i), datetime.time):
+                    current_serialized_object[i] = getattr(obj, i).isoformat()
+                elif isinstance(getattr(obj, i), ipaddress.IPv4Address) or isinstance(getattr(obj, i), ipaddress.IPv4Network):
+                    current_serialized_object[i] = str(getattr(obj, i))
                 else:
-                    data[obj.string_slug][i] = getattr(obj, i)
+                    current_serialized_object[i] = getattr(obj, i)
             for i in relationships:
                 if i.uselist:
-                    data[obj.string_slug][i.key] = []
+                    current_serialized_object[i.key] = []
                     for j in getattr(obj, i.key):
-                        data[obj.string_slug][i.key].append({"id": getattr(j, 'id', None), 'string_slug': getattr(j, 'string_slug', None)})
+                        current_serialized_object[i.key].append({"id": getattr(j, 'id', None), 'string_slug': getattr(j, 'string_slug', None)})
                 else:
-                    data[obj.string_slug][i.key] = {'id': getattr(getattr(obj, i.key), 'id', None), 'string_slug': getattr(getattr(obj, i.key), 'string_slug', None)}
+                    current_serialized_object[i.key] = {'id': getattr(getattr(obj, i.key), 'id', None), 'string_slug': getattr(getattr(obj, i.key), 'string_slug', None)}
+            data['string_slugs'].append(current_serialized_object)
     else:
-        data = {"_other_instance_id": obj.id}
-        
+        for obj in obj_list:
+            current_serialized_object = {'id': obj.id}
+            for i in column_attrs:
+                if isinstance(getattr(obj, i), datetime.timedelta):
+                    current_serialized_object[i] = getattr(obj, i).total_seconds()
+                elif isinstance(getattr(obj, i), datetime.datetime) or isinstance(getattr(obj, i), datetime.date) or isinstance(getattr(obj, i), datetime.time):
+                    current_serialized_object[i] = getattr(obj, i).isoformat()
+                elif isinstance(getattr(obj, i), ipaddress.IPv4Address) or isinstance(getattr(obj, i), ipaddress.IPv4Network):
+                    current_serialized_object[i] = str(getattr(obj, i))
+                else:
+                    current_serialized_object[i] = getattr(obj, i)
+            for i in relationships:
+                if i.uselist:
+                    current_serialized_object[i.key] = [{'id': k.id, 'string_slug': getattr(k, 'string_slug', None)} for k in getattr(obj, i.key)]
+                else:
+                    current_serialized_object[i.key] = {'id': getattr(getattr(obj, i.key), 'id', None), 'string_slug': getattr(getattr(obj, i.key), 'string_slug', None)}
+            data['other_instance_ids'].append(current_serialized_object)
     return data
 
 
-def objects_import(obj_type: Any, obj_json: str, override_exist: bool=False, session: so.Session=db.session) -> bool:
-    try:
-        obj_list: Dict[str, Dict[str, str]] = json.loads(obj_json)
-    except json.decoder.JSONDecodeError:
-        return False
-    if hasattr(obj_type, 'string_slug'):
-        for slug, obj_data in obj_list.items():
-            obj = session.scalars(sa.select(obj_type).where(obj_type.string_slug == slug)).first()
-            if obj is None:
-                curr_obj = obj_type()
-                curr_obj.string_slug = slug
-                session.add(curr_obj)
-            elif override_exist:
-                curr_obj = obj
-            else:
+ObjType =TypeVar("ObjType")
+ImportedObjType =TypeVar("ImportedObjType")
+
+
+def set_object_attributes(current_object: ObjType, object_data: Dict,
+                          imported_objects: Dict[ImportedObjType, Dict[int, ImportedObjType]] | None=None,
+                          session: so.Session=db.session) -> ObjType | None:
+    obj_type = current_object.__class__
+    for attribute_key, attribute_value in object_data.items():
+        if attribute_key == 'string_slug' or attribute_key == 'id' or attribute_key.endswith('_id'):
+            continue
+        if isinstance(attribute_value, dict):
+            related_object_class = inspect(obj_type).relationships[attribute_key].entity.class_
+            if hasattr(related_object_class, 'string_slug'):
+                related_object = session.scalars(sa.select(related_object_class).where(related_object_class.string_slug == attribute_value['string_slug'])).first()
+                setattr(current_object, attribute_key, related_object)
+        elif isinstance(attribute_value, list):
+            related_object_class = inspect(obj_type).relationships[attribute_key].entity.class_
+            if hasattr(related_object_class, 'string_slug'):
+                obj_list = session.scalars(sa.select(related_object_class).where(related_object_class.string_slug.in_([k['string_slug'] for k in attribute_value]))).all()
+                coerce = set if isinstance(getattr(current_object, attribute_key), sacollections.InstrumentedSet) else list
+                setattr(current_object, attribute_key, coerce(obj_list))
+            elif imported_objects is not None and related_object_class in imported_objects:
+                setattr(current_object, attribute_key, [imported_objects[related_object_class][k['id']] for k in attribute_value])
+        elif attribute_key not in inspect(obj_type).column_attrs:
+            logger.error(f"Cannot set attribute {attribute_key} to {attribute_value}: attribute is not exist")
+            return None
+        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type == datetime.timedelta and attribute_value is not None:
+            try:
+                setattr(current_object, attribute_key, datetime.timedelta(seconds=attribute_value))
+            except Exception as e:
+                logger.error(f"Cannot set timedelta object {attribute_key} to {attribute_value}: {e}")
+                return None
+        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type in [datetime.date, datetime.time, datetime.datetime]:
+            try:
+                setattr(current_object, attribute_key, inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type.fromisoformat(attribute_value))
+            except ValueError:
+                logger.error(f"Cannot set datetime object {attribute_key} to {attribute_value}")
+                return None
+        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type in [ipaddress.IPv4Address, ipaddress.IPv4Network]:
+            try:
+                setattr(current_object, attribute_key, inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type(attribute_value))
+            except ipaddress.AddressValueError:
+                logger.error(f"Cannot set IP address object {attribute_key} to {attribute_value}")
+                return None
+        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type == str:
+            setattr(current_object, attribute_key, sanitizer.sanitize(attribute_value))
+        else:
+            setattr(current_object, attribute_key, attribute_value)
+    return current_object
+    
+
+def objects_import(obj_type: ObjType, obj_json: Dict[str, Dict[str, str]], override_exist: bool=False,
+                   session: so.Session=db.session) -> Dict[int, ObjType] | None:
+    created_objects = {}
+    # Objects have id and string_slug, so we find them by string_slug and if not exist - create new object
+    for object_data in obj_json['string_slugs']:
+        obj = session.scalars(sa.select(obj_type).where(obj_type.string_slug == object_data['string_slug'])).first()
+        if obj is None:
+            current_object = obj_type()
+            current_object.string_slug = object_data['string_slug']
+            session.add(current_object)
+        elif override_exist:
+            current_object = obj
+        else:
+            continue
+        current_object = set_object_attributes(current_object, object_data, None, session)
+        if current_object is None:
+            return None
+        created_objects[object_data["id"]] = current_object
+    # Object have no string_slug attribute, so we just create them
+    for object_data in obj_json['other_instance_ids']:
+        current_object = obj_type()
+        current_object = set_object_attributes(current_object, object_data, None, session)
+        if current_object is None:
+            return None
+        created_objects[object_data["id"]] = current_object
+    return created_objects
+
+
+def imported_objects_relations(obj_type: ObjType, obj_json: str, created_objects: Dict[ImportedObjType, Dict[int, ImportedObjType]],
+                               session: so.Session=db.session) -> None:
+    for object_data in obj_json['string_slugs'] + obj_json['other_instance_ids']:
+        current_object = created_objects[obj_type][object_data["id"]]
+        for attribute_key, attribute_value in object_data.items():
+            related_object_class = inspect(obj_type).relationships[attribute_key].entity.class_
+            if related_object_class not in created_objects.keys():
                 continue
-            for key, value in obj_data.items():
-                if not isinstance(value, dict) and not isinstance(value, list):
-                    if inspect(obj_type).column_attrs[key].columns[0].type.python_type == datetime.timedelta and value is not None:
-                        try:
-                            setattr(curr_obj, key, datetime.timedelta(seconds=value))
-                        except Exception as e:
-                            logger.error(f"Cannot set timedelta object {value}: {e}")
-                            return False
-                    elif inspect(obj_type).column_attrs[key].columns[0].type.python_type == str:
-                        setattr(curr_obj, key, sanitizer.sanitize(value))
-                    else:
-                        setattr(curr_obj, key, value)
-                else:
-                    related_object_type = inspect(obj_type).relationships[key].entity.class_
-                    if hasattr(related_object_type, 'string_slug'):
-                        if inspect(obj_type).relationships[key].uselist:
-                            related_object = inspect(obj_type).relationships[key].collection_class(session.scalars(sa.select(related_object_type).where(related_object_type.string_slug.in_([j["string_slug"] for j in value]))).all())
-                        else:
-                            related_object = session.scalars(sa.select(related_object_type).where(related_object_type.string_slug == value['string_slug'])).first()
-                    else:
-                        continue # Later - if import projects, rebuild all links
-                    setattr(curr_obj, key, related_object)
-        return True
+            if isinstance(attribute_value, dict):
+                setattr(current_object, attribute_key, created_objects[related_object_class][attribute_value['id']])
+            elif isinstance(attribute_value, list):
+                setattr(current_object, attribute_key, [created_objects[related_object_class][k['id']] for k in attribute_value])
 
 
-def project_export(project: models.Project) -> dict:
+def project_export(project) -> dict:
     ''' Convert project to dict, that can being serialized to JSON '''
-    simple_attrs = [i.key for i in inspect(models.Project).column_attrs if i.key not in ['id', 'string_slug'] and not i.key.endswith('_id')]
+    project: models.Project = project
+    simple_attrs = [i.key for i in inspect(models.Project).column_attrs if i.key not in ['id', 'string_slug', 'created_at', 'updated_at'] and not i.key.endswith('_id')]
     relationships = list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]
     results = {}
     for attr in simple_attrs:
-        if attr in models.Project.Meta.excluded_export_fields:
-            continue
-        if inspect(models.Project).simple_attrs[attr].columns[0].type.python_type == datetime.timedelta:
+        if inspect(models.Project).column_attrs[attr].columns[0].type.python_type == datetime.timedelta:
             results[attr] = getattr(project, attr).seconds
+        elif inspect(models.Project).column_attrs[attr].columns[0].type.python_type in [datetime.date, datetime.datetime, datetime.time]:
+            results[attr] = getattr(project, attr).isoformat()
         else:
             results[attr] = getattr(project, attr)
     for attr in relationships:
-        results[attr] = objects_export(getattr(project, attr))
+        if getattr(project, attr) is None:
+            results[attr] = None
+        elif not isinstance(getattr(project, attr), list):
+            results[attr] = {'id': getattr(project, attr).id, 'string_slug': getattr(getattr(project, attr), 'string_slug', None)}
+        elif attr == 'participants':
+            results[attr] = [{'user_slug': i.user.string_slug, 'role_slug': i.role.string_slug} for i in project.participants]
+        else:
+            results[attr] = objects_export(getattr(project, attr))
+    return results
+
+
+def project_import(project_json: dict, session: so.Session=db.session):
+    ''' Import project from dict, that can being deserialized from JSON '''
+    project = models.Project()
+    # Set simple attributes for project. Only exist attributes wiih correct values are setted
+    for attr in [i.key for i in inspect(models.Project).column_attrs if i.key not in ['id', 'string_slug'] and not i.key.endswith('_id')]:
+        if inspect(models.Project).column_attrs[attr].columns[0].type.python_type == datetime.timedelta and project_json.get(attr) is not None:
+            setattr(project, attr, datetime.timedelta(seconds=project_json[attr]))
+        elif inspect(models.Project).column_attrs[attr].columns[0].type.python_type in [datetime.date, datetime.datetime, datetime.time] and project_json.get(attr) is not None:
+            setattr(project, attr, inspect(models.Project).column_attrs[attr].columns[0].type.python_type.fromisoformat(project_json[attr]))
+        elif inspect(models.Project).column_attrs[attr].columns[0].type.python_type == str and project_json.get(attr) is not None:
+            setattr(project, attr, sanitizer.sanitize(project_json[attr]))
+        elif project_json.get(attr) is not None:
+            setattr(project, attr, project_json[attr])
+    # Set relationships for project
+    imported_objects: Dict[ObjType, Dict[int, ObjType]] = {}
+    for rel in list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]:
+        if project_json.get(rel) is not None and project_json.get(rel) not in ['{}', '', []]:
+            related_object_class = inspect(models.Project).relationships[rel].entity.class_
+            if inspect(models.Project).relationships[rel].uselist:
+                imported_objects[related_object_class] = objects_import(related_object_class, project_json[rel], session=session)
+            elif project_json[rel]['string_slug'] is not None:
+                setattr(project, rel, session.scalars(sa.select(related_object_class).where(related_object_class.string_slug == project_json[rel]['string_slug'])).first())
+    for rel in list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]:
+        if project_json.get(rel) is not None and inspect(models.Project).relationships[rel].uselist:
+            imported_objects_relations(models.Project, project_json[rel], imported_objects, session=session)
+    session.add(project)
+    for value in imported_objects.values():
+        session.add_all(list(value.values()))
+    return project

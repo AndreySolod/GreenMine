@@ -9,6 +9,9 @@ from app.models import User, Project, ProjectRole, UserRoleHasProject
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
 from flask_login import current_user
+import flask_wtf.file as wtfile
+from flask import request
+import json
 
 
 class ProjectForm(FlaskForm):
@@ -152,3 +155,16 @@ class AdditionalParametersForm(FlaskForm, metaclass=AdditionalParametersFormMeta
 def get_additional_parameters_form(project: Project):
     return type('AdditionalParametersForm', (AdditionalParametersForm,), {'params': project.additional_parameters,
                                                                           'submit': wtforms.SubmitField(_l("Save"))})
+
+
+class ImportProjectForm(FlaskForm):
+    import_file = wtforms.FileField(_l("Templates file:"), validators=[wtfile.FileAllowed(['json'], _l("Only JSON File allowed!"))])
+    submit = wtforms.SubmitField(_l("Import"))
+
+    def validate_import_file(form, field):
+        if field.data is None:
+            raise validators.ValidationError(_l("File is required!"))
+        try:
+            form.import_file_data = json.loads(request.files.get(form.import_file.name).read().decode('utf8'))
+        except json.JSONDecodeError:
+            raise validators.ValidationError(_l("File is not a valid JSON file!"))
