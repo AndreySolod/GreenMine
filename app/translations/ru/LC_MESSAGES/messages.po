@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-28 18:11+1000\n"
-"PO-Revision-Date: 2025-12-28 18:34+1000\n"
+"POT-Creation-Date: 2025-12-29 16:59+1000\n"
+"PO-Revision-Date: 2025-12-29 17:01+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -104,9 +104,9 @@ msgstr "Наименование зоны:"
 #: app/controllers/networks/forms.py:275 app/controllers/networks/forms.py:276
 #: app/controllers/networks/forms.py:282 app/controllers/networks/forms.py:283
 #: app/controllers/notes/forms.py:14 app/controllers/notes/forms.py:27
-#: app/controllers/projects/forms.py:20 app/controllers/projects/forms.py:23
-#: app/controllers/projects/forms.py:25 app/controllers/projects/forms.py:27
-#: app/controllers/projects/forms.py:29 app/controllers/projects/forms.py:37
+#: app/controllers/projects/forms.py:23 app/controllers/projects/forms.py:26
+#: app/controllers/projects/forms.py:28 app/controllers/projects/forms.py:30
+#: app/controllers/projects/forms.py:32 app/controllers/projects/forms.py:40
 #: app/controllers/research_events/forms.py:31
 #: app/controllers/research_events/forms.py:33
 #: app/controllers/research_events/forms.py:52
@@ -155,7 +155,7 @@ msgstr "Это поле является обязательным!"
 #: app/controllers/networks/forms.py:228 app/controllers/networks/forms.py:231
 #: app/controllers/networks/forms.py:258 app/controllers/networks/forms.py:267
 #: app/controllers/notes/forms.py:15 app/controllers/notes/forms.py:28
-#: app/controllers/projects/forms.py:21 app/controllers/research_events/forms.py:32
+#: app/controllers/projects/forms.py:24 app/controllers/research_events/forms.py:32
 #: app/controllers/research_events/forms.py:39
 #: app/controllers/research_events/forms.py:41
 #: app/controllers/research_events/forms.py:47
@@ -423,13 +423,13 @@ msgstr "Обрабатывать данные об операционной си
 #: app/controllers/networks/forms.py:269 app/controllers/notes/forms.py:13
 #: app/controllers/notes/forms.py:16 app/controllers/notes/forms.py:17
 #: app/controllers/notes/forms.py:26 app/controllers/notes/forms.py:29
-#: app/controllers/notes/forms.py:30 app/controllers/projects/forms.py:19
-#: app/controllers/projects/forms.py:22 app/controllers/projects/forms.py:24
-#: app/controllers/projects/forms.py:26 app/controllers/projects/forms.py:28
-#: app/controllers/projects/forms.py:44 app/controllers/projects/forms.py:61
-#: app/controllers/projects/forms.py:107 app/controllers/projects/forms.py:109
-#: app/controllers/projects/forms.py:111 app/controllers/projects/forms.py:113
-#: app/controllers/projects/forms.py:115
+#: app/controllers/notes/forms.py:30 app/controllers/projects/forms.py:22
+#: app/controllers/projects/forms.py:25 app/controllers/projects/forms.py:27
+#: app/controllers/projects/forms.py:29 app/controllers/projects/forms.py:31
+#: app/controllers/projects/forms.py:47 app/controllers/projects/forms.py:64
+#: app/controllers/projects/forms.py:110 app/controllers/projects/forms.py:112
+#: app/controllers/projects/forms.py:114 app/controllers/projects/forms.py:116
+#: app/controllers/projects/forms.py:118
 #: app/controllers/research_events/forms.py:30
 #: app/controllers/research_events/forms.py:33
 #: app/controllers/research_events/forms.py:34
@@ -525,6 +525,7 @@ msgstr "Добавить описание для всех просканиров
 #: app/controllers/admin/credential_templates_forms.py:51
 #: app/controllers/admin/issue_template_forms.py:61
 #: app/controllers/admin/task_templates_forms.py:48
+#: app/controllers/projects/forms.py:162
 #: app/templates/credential_import_templates/index.html:11
 #: app/templates/issue_templates/index.html:10
 #: app/templates/task_templates/index.html:9
@@ -587,8 +588,8 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:52
 #: app/controllers/networks/forms.py:61 app/controllers/networks/forms.py:139
 #: app/controllers/networks/forms.py:203 app/controllers/notes/forms.py:31
-#: app/controllers/projects/forms.py:49 app/controllers/projects/forms.py:92
-#: app/controllers/projects/forms.py:154
+#: app/controllers/projects/forms.py:52 app/controllers/projects/forms.py:95
+#: app/controllers/projects/forms.py:157
 #: app/controllers/research_events/forms.py:70
 #: app/controllers/research_events/forms.py:112 app/controllers/tasks/forms.py:73
 #: app/controllers/users/forms.py:92 app/controllers/users/teams_forms.py:51
@@ -1058,6 +1059,7 @@ msgstr "Шаблон импорта учётных данных успешно �
 #: app/controllers/admin/credential_template_import.py:119
 #: app/controllers/admin/issue_template_routes.py:122
 #: app/controllers/admin/task_template_routes.py:132
+#: app/controllers/projects/routes.py:231
 msgid "Import was completed successfully"
 msgstr "Импорт успешно завершён"
 
@@ -1067,6 +1069,7 @@ msgstr "Импорт успешно завершён"
 #: app/controllers/admin/issue_template_routes.py:126
 #: app/controllers/admin/task_template_routes.py:134
 #: app/controllers/admin/task_template_routes.py:136
+#: app/controllers/projects/routes.py:233 app/controllers/projects/routes.py:235
 msgid "Errors when parsing file"
 msgstr "Ошибка при анализе файла"
 
@@ -1088,7 +1091,7 @@ msgstr "Шаблон импорта учётных данных с указан�
 #: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:47
 #: app/controllers/networks/forms.py:53 app/controllers/networks/forms.py:131
 #: app/controllers/networks/forms.py:196 app/controllers/notes/forms.py:18
-#: app/controllers/projects/forms.py:45 app/controllers/research_events/forms.py:63
+#: app/controllers/projects/forms.py:48 app/controllers/research_events/forms.py:63
 #: app/controllers/research_events/forms.py:108 app/controllers/tasks/forms.py:62
 #: app/controllers/users/forms.py:79 app/controllers/users/teams_forms.py:70
 #: app/controllers/wiki_pages/forms.py:29 app/controllers/wiki_pages/forms.py:50
@@ -1098,12 +1101,14 @@ msgstr "Создать"
 #: app/controllers/admin/credential_templates_forms.py:49
 #: app/controllers/admin/issue_template_forms.py:59
 #: app/controllers/admin/task_templates_forms.py:46
+#: app/controllers/projects/forms.py:161
 msgid "Templates file:"
 msgstr "Файл шаблона:"
 
 #: app/controllers/admin/credential_templates_forms.py:49
 #: app/controllers/admin/issue_template_forms.py:59
 #: app/controllers/admin/task_templates_forms.py:46
+#: app/controllers/projects/forms.py:161
 msgid "Only JSON File allowed!"
 msgstr "Разрешены только файлы JSON!"
 
@@ -1115,12 +1120,14 @@ msgstr "Перезаписать существующие шаблоны зад�
 #: app/controllers/admin/credential_templates_forms.py:55
 #: app/controllers/admin/issue_template_forms.py:65
 #: app/controllers/admin/task_templates_forms.py:52
+#: app/controllers/projects/forms.py:166
 msgid "File is required!"
 msgstr "Требуется файл!"
 
 #: app/controllers/admin/credential_templates_forms.py:59
 #: app/controllers/admin/issue_template_forms.py:69
 #: app/controllers/admin/task_templates_forms.py:56
+#: app/controllers/projects/forms.py:170
 msgid "File is not a valid JSON file!"
 msgstr "Файл не является валидным JSON-файлом!"
 
@@ -1151,8 +1158,8 @@ msgstr "Такой слаг уже зарегистрирован!"
 #: app/controllers/tasks/__init__.py:77 app/controllers/users/routes.py:37
 #: app/helpers/admin_helpers.py:186 app/helpers/admin_helpers.py:238
 #: app/helpers/admin_helpers.py:256 app/helpers/admin_helpers.py:271
-#: app/helpers/main_page_helpers.py:115 app/helpers/main_page_helpers.py:140
-#: app/helpers/main_page_helpers.py:176 app/helpers/users_helpers.py:58
+#: app/helpers/main_page_helpers.py:117 app/helpers/main_page_helpers.py:142
+#: app/helpers/main_page_helpers.py:178 app/helpers/users_helpers.py:58
 #: app/templates/admin/object_type_index.html:69
 #: app/templates/admin/project_role_index.html:63
 #: app/templates/admin/user_positions_index.html:73
@@ -1385,8 +1392,8 @@ msgstr "Учётные данные для логина «%(login)s»"
 #: app/controllers/tasks/__init__.py:80 app/controllers/users/routes.py:40
 #: app/helpers/admin_helpers.py:187 app/helpers/admin_helpers.py:239
 #: app/helpers/admin_helpers.py:257 app/helpers/admin_helpers.py:272
-#: app/helpers/main_page_helpers.py:118 app/helpers/main_page_helpers.py:143
-#: app/helpers/main_page_helpers.py:179
+#: app/helpers/main_page_helpers.py:120 app/helpers/main_page_helpers.py:145
+#: app/helpers/main_page_helpers.py:181
 #: app/templates/admin/object_type_index.html:70
 #: app/templates/admin/project_role_index.html:64
 #: app/templates/admin/user_positions_index.html:74
@@ -1963,8 +1970,8 @@ msgid "Are you sure you want to delete this project?"
 msgstr "Вы уверены в том, что хотите удалить этот проект?"
 
 #: app/controllers/projects/__init__.py:67 app/helpers/main_page_helpers.py:23
-#: app/helpers/main_page_helpers.py:93 app/helpers/main_page_helpers.py:98
-#: app/helpers/main_page_helpers.py:99
+#: app/helpers/main_page_helpers.py:93 app/helpers/main_page_helpers.py:100
+#: app/helpers/main_page_helpers.py:101
 msgid "Add new project"
 msgstr "Добавить новый проект"
 
@@ -1998,7 +2005,7 @@ msgstr ""
 msgid "Additional parameters are successfully updated"
 msgstr "Параметры дополнительной информации успешно обновлены"
 
-#: app/controllers/projects/forms.py:33
+#: app/controllers/projects/forms.py:36
 msgid ""
 "The planned end date of the project must be later than the planned start date"
 msgstr ""
@@ -2895,15 +2902,15 @@ msgstr "Параметры, которые будут связаны с кажд
 msgid "Edit project additional field #%(field_id)s"
 msgstr "Редактировать параметр дополнительной информации для проекта #%(field_id)s"
 
-#: app/helpers/general_helpers.py:37
+#: app/helpers/general_helpers.py:38
 msgid "Incorrect IP-address"
 msgstr "IP-адрес некорректен"
 
-#: app/helpers/general_helpers.py:69
+#: app/helpers/general_helpers.py:70
 msgid "Incorrect MAC-addres"
 msgstr "MAC-адрес некорректен"
 
-#: app/helpers/general_helpers.py:589
+#: app/helpers/general_helpers.py:590
 #: app/templates/admin/authentication_settings.html:48
 #: app/templates/admin/authentication_settings.html:52
 #: app/templates/admin/authentication_settings.html:56
@@ -2922,7 +2929,7 @@ msgstr "MAC-адрес некорректен"
 msgid "Yes"
 msgstr "Да"
 
-#: app/helpers/general_helpers.py:589
+#: app/helpers/general_helpers.py:590
 #: app/templates/admin/authentication_settings.html:48
 #: app/templates/admin/authentication_settings.html:52
 #: app/templates/admin/authentication_settings.html:56
@@ -2941,17 +2948,17 @@ msgstr "Да"
 msgid "No"
 msgstr "Нет"
 
-#: app/helpers/general_helpers.py:604 app/models/credentials.py:129
+#: app/helpers/general_helpers.py:605 app/models/credentials.py:129
 #, python-format
 msgid "Total: %(total)s elements"
 msgstr "Всего: %(total)s элементов"
 
-#: app/helpers/general_helpers.py:616
+#: app/helpers/general_helpers.py:617
 #, python-format
 msgid "Total: %(total)s item(s)"
 msgstr "Всего: %(total)s элементов"
 
-#: app/helpers/general_helpers.py:756
+#: app/helpers/general_helpers.py:757
 msgid "Anonymous"
 msgstr "Анонимная"
 
@@ -2959,7 +2966,7 @@ msgstr "Анонимная"
 msgid "Home page"
 msgstr "Домашняя страница"
 
-#: app/helpers/main_page_helpers.py:20 app/helpers/main_page_helpers.py:96
+#: app/helpers/main_page_helpers.py:20 app/helpers/main_page_helpers.py:98
 msgid "All projects"
 msgstr "Все проекты"
 
@@ -2971,16 +2978,16 @@ msgstr "Список проектов"
 msgid "Root directory"
 msgstr "Корневая директория"
 
-#: app/helpers/main_page_helpers.py:33 app/helpers/main_page_helpers.py:106
-#: app/helpers/main_page_helpers.py:126
+#: app/helpers/main_page_helpers.py:33 app/helpers/main_page_helpers.py:108
+#: app/helpers/main_page_helpers.py:128
 msgid "Add new directory"
 msgstr "Добавить новую директорию"
 
-#: app/helpers/main_page_helpers.py:36 app/helpers/main_page_helpers.py:103
+#: app/helpers/main_page_helpers.py:36 app/helpers/main_page_helpers.py:105
 msgid "Add new page"
 msgstr "Добавить новую страницу"
 
-#: app/helpers/main_page_helpers.py:39 app/helpers/main_page_helpers.py:109
+#: app/helpers/main_page_helpers.py:39 app/helpers/main_page_helpers.py:111
 msgid "Knowledge base"
 msgstr "База знаний"
 
@@ -3001,13 +3008,13 @@ msgstr "Список пользователей"
 msgid "My page"
 msgstr "Моя страница"
 
-#: app/helpers/main_page_helpers.py:54 app/helpers/main_page_helpers.py:153
-#: app/helpers/main_page_helpers.py:160 app/helpers/main_page_helpers.py:161
+#: app/helpers/main_page_helpers.py:54 app/helpers/main_page_helpers.py:155
+#: app/helpers/main_page_helpers.py:162 app/helpers/main_page_helpers.py:163
 msgid "Add new user"
 msgstr "Добавить нового пользователя"
 
-#: app/helpers/main_page_helpers.py:59 app/helpers/main_page_helpers.py:167
-#: app/helpers/main_page_helpers.py:171
+#: app/helpers/main_page_helpers.py:59 app/helpers/main_page_helpers.py:169
+#: app/helpers/main_page_helpers.py:173
 msgid "Add new team"
 msgstr "Добавить новую команду"
 
@@ -3027,112 +3034,116 @@ msgstr "Роли на проектах"
 msgid "Admin"
 msgstr "Администрирование"
 
-#: app/helpers/main_page_helpers.py:95
+#: app/helpers/main_page_helpers.py:95 app/templates/projects/index.html:124
+msgid "Import project"
+msgstr "Импортировать проект"
+
+#: app/helpers/main_page_helpers.py:97
 msgid "List of all projects"
 msgstr "Список всех проектов"
 
-#: app/helpers/main_page_helpers.py:95
+#: app/helpers/main_page_helpers.py:97
 msgid "Projects, created in PCF"
 msgstr "Проекты, созданные в PCF"
 
-#: app/helpers/main_page_helpers.py:108
+#: app/helpers/main_page_helpers.py:110
 msgid "Wiki pages"
 msgstr "Страницы базы знаний"
 
-#: app/helpers/main_page_helpers.py:111
+#: app/helpers/main_page_helpers.py:113
 msgid "Add new Wiki page"
 msgstr "Добавить новую страницу базы знаний"
 
-#: app/helpers/main_page_helpers.py:112
+#: app/helpers/main_page_helpers.py:114
 msgid "Add a page to the knowledge base"
 msgstr "Добавить новую страницу в базу знаний"
 
-#: app/helpers/main_page_helpers.py:118 app/templates/wiki_pages/index.html:215
+#: app/helpers/main_page_helpers.py:120 app/templates/wiki_pages/index.html:215
 msgid "Are you sure you want to delete this page?"
 msgstr "Вы уверены, что хотите удалить эту страницу?"
 
-#: app/helpers/main_page_helpers.py:120
+#: app/helpers/main_page_helpers.py:122
 msgid "Knowledge Base Page"
 msgstr "Страница базы знаний"
 
-#: app/helpers/main_page_helpers.py:123 app/helpers/main_page_helpers.py:124
+#: app/helpers/main_page_helpers.py:125 app/helpers/main_page_helpers.py:126
 msgid "Editing the knowledge base page"
 msgstr "Редактирование страницы базы знаний"
 
-#: app/helpers/main_page_helpers.py:127
+#: app/helpers/main_page_helpers.py:129
 msgid "Add new directory to knowledge base"
 msgstr "Добавить новую директорию в базу знаний"
 
-#: app/helpers/main_page_helpers.py:131 app/helpers/main_page_helpers.py:137
+#: app/helpers/main_page_helpers.py:133 app/helpers/main_page_helpers.py:139
 msgid "Add new critical vulnerability"
 msgstr "Добавить новую критическую уязвимость"
 
-#: app/helpers/main_page_helpers.py:133
+#: app/helpers/main_page_helpers.py:135
 msgid "CVE list"
 msgstr "Список CVE"
 
-#: app/helpers/main_page_helpers.py:134 app/models/issues.py:78
+#: app/helpers/main_page_helpers.py:136 app/models/issues.py:78
 msgid "Critical vulnerabilities"
 msgstr "Критические уязвимости"
 
-#: app/helpers/main_page_helpers.py:136
+#: app/helpers/main_page_helpers.py:138
 msgid "Add a new entry about a critical vulnerability"
 msgstr "Добавить новую запиь о критической уязвимости"
 
-#: app/helpers/main_page_helpers.py:143
+#: app/helpers/main_page_helpers.py:145
 msgid "Are you sure you want to delete this Critical Vulnerability?"
 msgstr "Вы уверены в том, что хотите удалить эту критическую уязвимость?"
 
-#: app/helpers/main_page_helpers.py:145
+#: app/helpers/main_page_helpers.py:147
 #, python-format
 msgid "Critical vulnerability «%(title)s»"
 msgstr "Критическая уязвимость «%(title)s»"
 
-#: app/helpers/main_page_helpers.py:146
+#: app/helpers/main_page_helpers.py:148
 #, python-format
 msgid "Critical vulnerability «CVE-%(year)s-%(identifier)s»"
 msgstr "Критическая уязвимость «CVE-%(year)s-%(identifier)s»"
 
-#: app/helpers/main_page_helpers.py:148
+#: app/helpers/main_page_helpers.py:150
 msgid "Edit critical vulnerability"
 msgstr "Редактировать критическую уязвимость"
 
-#: app/helpers/main_page_helpers.py:149
+#: app/helpers/main_page_helpers.py:151
 #, python-format
 msgid "Edit critical vulnerability «CVE-%(year)s-%(identifier)s»"
 msgstr "Редактировать критическую уязвимость «CVE-%(year)s-%(identifier)s»"
 
-#: app/helpers/main_page_helpers.py:157
+#: app/helpers/main_page_helpers.py:159
 msgid "User list"
 msgstr "Список пользователей"
 
-#: app/helpers/main_page_helpers.py:158
+#: app/helpers/main_page_helpers.py:160
 msgid "All users"
 msgstr "Все пользователи"
 
-#: app/helpers/main_page_helpers.py:164
+#: app/helpers/main_page_helpers.py:166
 msgid "All teams"
 msgstr "Все команды"
 
-#: app/helpers/main_page_helpers.py:169 app/templates/teams/index.html:14
+#: app/helpers/main_page_helpers.py:171 app/templates/teams/index.html:14
 msgid "Team list"
 msgstr "Список команд"
 
-#: app/helpers/main_page_helpers.py:174
+#: app/helpers/main_page_helpers.py:176
 #, python-format
 msgid "Team #%(team_id)s"
 msgstr "Команда #%(team_id)s"
 
-#: app/helpers/main_page_helpers.py:179
+#: app/helpers/main_page_helpers.py:181
 msgid "Are you sure you want to delete this team?"
 msgstr "Вы уверены, что хотите удалить эту команду?"
 
-#: app/helpers/main_page_helpers.py:181
+#: app/helpers/main_page_helpers.py:183
 #, python-format
 msgid "Team #%(team_id)s: «%(team_title)s»"
 msgstr "Команда #%(team_id)s: «%(team_title)s»"
 
-#: app/helpers/main_page_helpers.py:183
+#: app/helpers/main_page_helpers.py:185
 #, python-format
 msgid "Edit team #%(team_id)s"
 msgstr "Редактировать команду #%(team_id)s"
@@ -3146,8 +3157,8 @@ msgstr "Ответить"
 #: app/templates/issues/show.html:85 app/templates/issues/show.html:115
 #: app/templates/issues/show.html:131 app/templates/layout/_macrosses.html:139
 #: app/templates/layout/_macrosses.html:278 app/templates/notes/index.html:23
-#: app/templates/notes/index.html:78 app/templates/projects/index.html:49
-#: app/templates/projects/index.html:82 app/templates/projects/index.html:111
+#: app/templates/notes/index.html:78 app/templates/projects/index.html:50
+#: app/templates/projects/index.html:83 app/templates/projects/index.html:112
 #: app/templates/projects/show.html:50 app/templates/report_templates/index.html:19
 #: app/templates/tasks/show.html:320 app/templates/teams/index.html:19
 #: app/templates/teams/show.html:30
@@ -5246,10 +5257,11 @@ msgstr "Результат выполнения команды"
 #: app/templates/hosts/show.html:493 app/templates/issue_templates/index.html:78
 #: app/templates/issues/show.html:339 app/templates/issues/show.html:364
 #: app/templates/issues/show.html:390 app/templates/notes/index.html:132
-#: app/templates/services/show.html:355 app/templates/services/show.html:380
-#: app/templates/services/show.html:405 app/templates/task_templates/index.html:80
-#: app/templates/tasks/show.html:389 app/templates/tasks/show.html:413
-#: app/templates/tasks/show.html:438 app/templates/wiki_pages/wikipage_show.html:40
+#: app/templates/projects/index.html:125 app/templates/services/show.html:355
+#: app/templates/services/show.html:380 app/templates/services/show.html:405
+#: app/templates/task_templates/index.html:80 app/templates/tasks/show.html:389
+#: app/templates/tasks/show.html:413 app/templates/tasks/show.html:438
+#: app/templates/wiki_pages/wikipage_show.html:40
 msgid "Close"
 msgstr "Закрыть"
 
@@ -5702,12 +5714,12 @@ msgstr "Доступные сети"
 msgid "Availables hosts"
 msgstr "Доступные конечные устройства"
 
-#: app/templates/notes/index.html:11 app/templates/projects/index.html:10
+#: app/templates/notes/index.html:11 app/templates/projects/index.html:11
 #: app/templates/users/index.html:10
 msgid "As list"
 msgstr "Список"
 
-#: app/templates/notes/index.html:16 app/templates/projects/index.html:15
+#: app/templates/notes/index.html:16 app/templates/projects/index.html:16
 #: app/templates/users/index.html:15
 msgid "As grid"
 msgstr "Сетка"
@@ -5819,7 +5831,7 @@ msgstr "Пароли, восстановленные из хэшей"
 msgid "Hash only"
 msgstr "Чисто хэши"
 
-#: app/templates/projects/index.html:20
+#: app/templates/projects/index.html:21
 msgctxt "they"
 msgid "Archived"
 msgstr "Архивные"

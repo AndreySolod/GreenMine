@@ -915,7 +915,7 @@ def set_object_attributes(current_object: ObjType, object_data: Dict,
     for attribute_key, attribute_value in object_data.items():
         if attribute_key == 'string_slug' or attribute_key == 'id' or attribute_key.endswith('_id'):
             continue
-        if isinstance(attribute_value, dict):
+        if isinstance(attribute_value, dict) and attribute_key in inspect(obj_type).relationships:
             related_object_class = inspect(obj_type).relationships[attribute_key].entity.class_
             if hasattr(related_object_class, 'string_slug'):
                 related_object = session.scalars(sa.select(related_object_class).where(related_object_class.string_slug == attribute_value['string_slug'])).first()
@@ -937,13 +937,13 @@ def set_object_attributes(current_object: ObjType, object_data: Dict,
             except Exception as e:
                 logger.error(f"Cannot set timedelta object {attribute_key} to {attribute_value}: {e}")
                 return None
-        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type in [datetime.date, datetime.time, datetime.datetime]:
+        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type in [datetime.date, datetime.time, datetime.datetime] and attribute_value is not None:
             try:
                 setattr(current_object, attribute_key, inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type.fromisoformat(attribute_value))
             except ValueError:
                 logger.error(f"Cannot set datetime object {attribute_key} to {attribute_value}")
                 return None
-        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type in [ipaddress.IPv4Address, ipaddress.IPv4Network]:
+        elif inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type in [ipaddress.IPv4Address, ipaddress.IPv4Network] and attribute_value is not None:
             try:
                 setattr(current_object, attribute_key, inspect(obj_type).column_attrs[attribute_key].columns[0].type.python_type(attribute_value))
             except ipaddress.AddressValueError:
@@ -984,24 +984,27 @@ def objects_import(obj_type: ObjType, obj_json: Dict[str, Dict[str, str]], overr
     return created_objects
 
 
-def imported_objects_relations(obj_type: ObjType, obj_json: str, created_objects: Dict[ImportedObjType, Dict[int, ImportedObjType]],
+def import_objects_relations(obj_type: ObjType, obj_json: Dict[str, Dict], created_objects: Dict[ImportedObjType, Dict[int, ImportedObjType]],
                                session: so.Session=db.session) -> None:
     for object_data in obj_json['string_slugs'] + obj_json['other_instance_ids']:
         current_object = created_objects[obj_type][object_data["id"]]
-        for attribute_key, attribute_value in object_data.items():
-            related_object_class = inspect(obj_type).relationships[attribute_key].entity.class_
-            if related_object_class not in created_objects.keys():
+        for rel in inspect(current_object.__class__).relationships.keys():
+            related_object_class = inspect(current_object.__class__).relationships[rel].entity.class_
+            if related_object_class not in created_objects.keys(): # Objects for this relations not created, and must being skipped - they must already created
                 continue
-            if isinstance(attribute_value, dict):
-                setattr(current_object, attribute_key, created_objects[related_object_class][attribute_value['id']])
-            elif isinstance(attribute_value, list):
-                setattr(current_object, attribute_key, [created_objects[related_object_class][k['id']] for k in attribute_value])
+            if isinstance(object_data[rel], dict) and object_data[rel]['id'] is None: # Related object is None
+                continue
+            if isinstance(object_data[rel], dict):# and attribute_key in inspect(obj_type).relationships:
+                setattr(current_object, rel, created_objects[related_object_class][object_data[rel]['id']])
+            elif isinstance(object_data[rel], list):
+                coerce = set if isinstance(getattr(current_object, rel), sacollections.InstrumentedSet) else list
+                setattr(current_object, rel, coerce([created_objects[related_object_class][k['id']] for k in object_data[rel]]))
 
 
 def project_export(project) -> dict:
     ''' Convert project to dict, that can being serialized to JSON '''
     project: models.Project = project
-    simple_attrs = [i.key for i in inspect(models.Project).column_attrs if i.key not in ['id', 'string_slug', 'created_at', 'updated_at'] and not i.key.endswith('_id')]
+    simple_attrs = [i.key for i in inspect(models.Project).column_attrs if i.key not in ['string_slug', 'created_at', 'updated_at'] and not i.key.endswith('_id')]
     relationships = list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]
     results = {}
     for attr in simple_attrs:
@@ -1011,6 +1014,7 @@ def project_export(project) -> dict:
             results[attr] = getattr(project, attr).isoformat()
         else:
             results[attr] = getattr(project, attr)
+    comment_list: List[models.Comment] = []
     for attr in relationships:
         if getattr(project, attr) is None:
             results[attr] = None
@@ -1020,7 +1024,59 @@ def project_export(project) -> dict:
             results[attr] = [{'user_slug': i.user.string_slug, 'role_slug': i.role.string_slug} for i in project.participants]
         else:
             results[attr] = objects_export(getattr(project, attr))
+            # comments and reactions
+            if len(getattr(project, attr)) == 0:
+                continue
+            object_example = getattr(project, attr)[0]
+            if not hasattr(object_example, 'comments'):
+                continue
+            for obj in getattr(project, attr):
+                comment_list.extend(obj.comments)
+    results['comments'] = [{'id': c.id, 'created_by': c.created_by.string_slug, 'to_object_type': c.to_object_type, 'to_object_id': c.to_object_id,
+                            'text': c.text, 'reply_to': c.reply_to_id} for c in comment_list]
+    reactions_list: List[models.Reaction] = []
+    for c in comment_list:
+        reactions_list.extend(c.reactions)
+    results['reactions'] = [{'id': r.id, 'is_positive': r.is_positive, 'created_by': r.created_by.string_slug, 'to_comment': r.to_comment_id} for r in reactions_list]
     return results
+
+
+def comments_import(comment_list: List[Dict[str, Any]], session: so.Session = db.session) -> Dict[int, Any]:
+    created_comments = {}
+    for c in comment_list:
+        u = session.scalars(sa.select(models.User).where(models.User.string_slug == c['created_by'])).first()
+        if u is None:
+            continue
+        new_comment = models.Comment(created_by=u, text=c['text'])
+        created_comments[c['id']] = new_comment
+    return created_comments
+
+
+def reactions_import(reactions_list: List[Dict[str, Any]], session: so.Session = db.session) -> Dict[int, Any]:
+    created_reactions = {}
+    for r in reactions_list:
+        u = session.scalars(sa.select(models.User).where(models.User.string_slug == r['created_by'])).first()
+        if u is None:
+            continue
+        new_reaction = models.Reaction(is_positive=r['is_positive'], created_by=u)
+        created_reactions[r["id"]] = new_reaction
+    return created_reactions
+
+
+def import_comment_and_reaction_relations(comment_list: List[Dict[str, Any]], comment_dict: Dict[int, Any], reactions_list: List[Dict[str, Any]], reactions_dict: Dict[int, Any]):
+    for c in comment_list:
+        current_comment = comment_dict.get(c["id"])
+        replyed_comment = comment_dict.get(c['reply_to'])
+        if current_comment is None or replyed_comment is None:
+            continue
+        current_comment.reply_to = replyed_comment
+    for r in reactions_list:
+        current_reaction = reactions_dict.get(r["id"])
+        current_comment = comment_dict.get(r["to_comment"])
+        if current_reaction is None or current_comment is None:
+            continue
+        current_reaction.to_comment = current_comment
+
 
 
 def project_import(project_json: dict, session: so.Session=db.session):
@@ -1037,17 +1093,42 @@ def project_import(project_json: dict, session: so.Session=db.session):
         elif project_json.get(attr) is not None:
             setattr(project, attr, project_json[attr])
     # Set relationships for project
-    imported_objects: Dict[ObjType, Dict[int, ObjType]] = {}
+    imported_objects: Dict[ObjType, Dict[int, ObjType]] = {models.Project: {project_json['id']: project}}
     for rel in list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]:
-        if project_json.get(rel) is not None and project_json.get(rel) not in ['{}', '', []]:
-            related_object_class = inspect(models.Project).relationships[rel].entity.class_
-            if inspect(models.Project).relationships[rel].uselist:
+        if project_json.get(rel) is not None and project_json.get(rel) not in ['', []]:
+            if rel == 'hosts':
+                related_object_class = models.Host
+            elif rel == 'services':
+                related_object_class = models.Service
+            else:
+                related_object_class = inspect(models.Project).relationships[rel].entity.class_
+            if rel in ['hosts', 'services'] or inspect(models.Project).relationships[rel].uselist:
                 imported_objects[related_object_class] = objects_import(related_object_class, project_json[rel], session=session)
+                if imported_objects[related_object_class] is None:
+                    return None
             elif project_json[rel]['string_slug'] is not None:
                 setattr(project, rel, session.scalars(sa.select(related_object_class).where(related_object_class.string_slug == project_json[rel]['string_slug'])).first())
+    # Comments and reactions
+    imported_objects[models.Comment] = comments_import(project_json['comments'])
+    imported_objects[models.Reaction] = reactions_import(project_json['reactions'])
+    import_comment_and_reaction_relations(project_json['comments'], imported_objects[models.Comment], project_json['reactions'], imported_objects[models.Reaction])
     for rel in list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]:
-        if project_json.get(rel) is not None and inspect(models.Project).relationships[rel].uselist:
-            imported_objects_relations(models.Project, project_json[rel], imported_objects, session=session)
+        if project_json.get(rel) is not None and (rel in ['hosts', 'services'] or inspect(models.Project).relationships[rel].uselist):
+            if rel == 'hosts':
+                related_object_class = models.Host
+            elif rel == 'services':
+                related_object_class = models.Service
+            elif rel == 'participants':
+                for participant in project_json[rel]:
+                    user = db.session.scalars(sa.select(models.User).where(models.User.string_slug == participant['user_slug'])).first()
+                    role = db.session.scalars(sa.select(models.ProjectRole).where(models.ProjectRole.string_slug == participant['role_slug'])).first()
+                    if user is not None and role is not None:
+                        p = models.UserRoleHasProject(project=project, user=user, role=role)
+                        session.add(p)
+                continue
+            else:
+                related_object_class = inspect(models.Project).relationships[rel].entity.class_
+            import_objects_relations(related_object_class, project_json[rel], imported_objects, session=session)
     session.add(project)
     for value in imported_objects.values():
         session.add_all(list(value.values()))
