@@ -8,10 +8,10 @@
             <div class="card-header">
                 <h6>{{ _("Create by template") }}:</h6>
                 <div class="form-group row">
-                    <select id="task-pattern" name="task-pattern">
-                        <option value="0"></option>
+                    <select class="select2-standard-widged" id="task-pattern" name="task-pattern">
+                        <option value=""></option>
                         {% for template in patterns %}
-                        <option value="{{ template.id }}">{{ template.title }}</option>
+                        <option value="{{ template.id }}">{{ template.title|safe }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -76,20 +76,30 @@
 {% block script %}
 {{ super() }}
 <script nonce="{{ csp_nonce() }}">
-    let pattern = document.getElementById('task-pattern');
-    pattern.addEventListener('change', function(e) {
-        if(e.target.value !== '0') {
-            fetch('{{ url_for("tasks.projecttask_data_by_template", template_id="__templ_id") }}'.replace("__templ_id", e.target.value))
-            .then(response => {if (response.ok) {return response.json()}})
-            .then(response => {
-                document.getElementById("{{ form.title.id }}").value = response.title;
-                document.getElementById("{{ form.tracker_id.id }}").value = response.tracker;
-                document.getElementById("{{ form.priority_id.id }}").value = response.priority;
-                document.getElementById("{{ form.estimation_time_cost.id }}").value = response.eta;
-                CKEDITOR_LIST["{{ form.description.id }}"].setData(response.description)
+    $(document).ready(function() {$("#task-pattern").select2({
+        language: "{{ g.locale }}",
+        placeholder: "{{ _('Select an option') }}",
+        allowClear: true,
+    })
+    });
+    $('#task-pattern').on('select2:select', function(e) {
+        if (e.params.data.id !== null || e.params.data.id !== undefined) {
+            $.ajax({
+                "method": "GET",
+                "url": '{{ url_for("tasks.projecttask_data_by_template", template_id="__templ_id") }}'.replace("__templ_id", e.params.data.id)
+            }).done(function (response) {
+                $('#{{ form.title.id }}')[0].value = response.title;
+                if(response.description !== null) {
+                    CKEDITOR_LIST['{{ form.description.id }}'].setData(response.description);
+                };
+                $('#{{ form.tracker_id.id }}')[0].value = response.tracker;
+                $('#{{ form.priority_id.id }}')[0].value = response.priority;
+                $('#{{ form.estimation_time_cost.id }}')[0].value = response.eta;
+                $('#{{ form.by_template_slug.id }}')[0].value = response.slug;
+            }).fail(function (error) {
+                alert("{{ _('Something went wrong. Try to reload page') }}");
             })
-            .catch(error => { alert("{{ _('Something went wrong. Try to reload page') }}") })
-        };
+        }
     });
 </script>
 {% endblock %}

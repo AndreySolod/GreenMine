@@ -211,6 +211,7 @@ def projecttask_new():
     patterns = db.session.scalars(sa.select(ProjectTaskTemplate).where(ProjectTaskTemplate.archived == False)).all()
     ctx = get_default_environment(ProjectTask(project=project), 'new')
     context = {'form': form, 'patterns': patterns}
+    side_libraries.library_required('select2')
     return render_template('tasks/new.html', **context, **ctx)
 
 

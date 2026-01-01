@@ -59,6 +59,7 @@ class ProjectTaskForm(FlaskForm):
 
 
 class ProjectTaskCreateForm(ProjectTaskForm):
+    by_template_slug = wtforms.HiddenField(_l("%(field_name)s:", field_name=models.ProjectTask.by_template_slug.info["label"]), validators=[validators.Optional()])
     submit = wtforms.SubmitField(_l("Create"))
     submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
 
