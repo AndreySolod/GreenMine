@@ -225,10 +225,15 @@ def import_new_project():
     if form.validate_on_submit():
         created_project = project_import(form.import_file_data, db.session)
         if created_project is not None:
-            db.session.add(created_project)
-            db.session.commit()
-            logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the project #{created_project.id}")
-            flash(_l("Import was completed successfully"), 'success')
+            try:
+                db.session.add(created_project)
+                db.session.commit()
+                logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the project #{created_project.id}")
+                flash(_l("Import was completed successfully"), 'success')
+            except Exception as e:
+                db.session.rollback()
+                logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the project #{created_project.id} but an error occurred: {e}")
+                flash(_l("Import was completed successfully but an error occurred when added the project to the database"), 'error')
         else:
             flash(_l("Errors when parsing file"), 'error')
     else:
