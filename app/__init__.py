@@ -64,8 +64,13 @@ class FlaskGreenMine(Flask):
         # check if all default settings are corrent. Here, because we cannot do it on create_app function, else we getting error in cli
         from app.helpers.general_helpers import check_global_settings_on_init_app
         check_global_settings_on_init_app(self, logger)
+    def init_hooks(self):
+        models = importlib.import_module('app.models')
+        models.Hook.load_hooks(self)
+        models.Hook.configure_listener()
     def run(self, *args, **kwargs):
         self.setting_custom_attributes_for_application()
+        self.init_hooks()
         return super(FlaskGreenMine, self).run(*args, **kwargs)
 
 def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenMine:

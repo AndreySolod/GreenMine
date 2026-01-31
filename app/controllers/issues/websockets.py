@@ -1,4 +1,4 @@
-from app import socketio, db, logger
+from app import socketio, db, logger, sanitizer
 from app.helpers.general_helpers import authenticated_only
 from app.helpers.projects_helpers import get_current_room
 from flask_socketio import emit, join_room
@@ -122,7 +122,7 @@ def edit_proof_of_concept(data):
         issue.proof_of_concept = poc
     issue.proof_of_concept.title = data['proof_of_concept_title']
     issue.proof_of_concept.description = data['proof_of_concept_description']
-    issue.proof_of_concept.source_code = data['proof_of_concept_source_code']
+    issue.proof_of_concept.source_code = sanitizer.escape(data['proof_of_concept_source_code'])
     try:
         issue.proof_of_concept.source_code_language = db.session.scalars(sa.select(models.ProgrammingLanguage).where(models.ProgrammingLanguage.id == int(data['proof_of_concept_source_code_language']))).first()
     except (ValueError, TypeError):

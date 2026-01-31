@@ -18,6 +18,10 @@
                             <td>{{ models.ProjectTaskTemplate.string_slug.info["label"] }}:</td>
                             <td>{{ template.string_slug }}</td>
                         </tr>
+                        <tr>
+                            <td data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.ProjectTaskTemplate.is_default.info['help_text'] }}">{{ models.ProjectTaskTemplate.is_default.info["label"] }}:</td>
+                            <td>{{ _("Yes") if template.is_default else _("No") }}</td>
+                        </tr>
                     </tbody>
                 </table>
                 <h5>{{ models.ProjectTaskTemplate.description.info["label"] }}:</h5>

@@ -1,6 +1,6 @@
 import wtforms
 import wtforms.validators as validators
-from app import db
+from app import db, sanitizer
 from app.controllers.forms import FlaskForm, WysiwygField, TreeSelectMultipleField, Select2MultipleField
 import app.models as models
 from flask_babel import lazy_gettext as _l
@@ -62,9 +62,11 @@ class EditRelatedObjectsForm(FlaskForm):
         self.services.callback = url_for('networks.get_select2_service_data', project_id=issue.project_id)
         self.tasks_by_issue.data = [str(i.id) for i in issue.tasks_by_issue]
         self.proof_of_concept_source_code_language.choices = [(str(i.id), i.title) for i in current_user.programming_languages]
+        self.proof_of_concept_source_code_language.data = str(getattr(issue.proof_of_concept, 'source_code_language_id', ''))
+        print("Debug", getattr(issue.proof_of_concept, 'source_code_language_id', ''))
         self.proof_of_concept_title.data = getattr(issue.proof_of_concept, 'title', '')
         self.proof_of_concept_description.data = getattr(issue.proof_of_concept, 'description', '')
-        self.proof_of_concept_source_code.data = getattr(issue.proof_of_concept, 'source_code', '')
+        self.proof_of_concept_source_code.data = sanitizer.unescape(getattr(issue.proof_of_concept, 'source_code', ''))
     services = Select2MultipleField(models.Service, _l("%(field_name)s:", field_name=models.Issue.services.info["label"]), validators=[validators.Optional()],
                                     id='EditRelatedServicesField', attr_title='treeselecttitle')
     tasks_by_issue = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Issue.tasks_by_issue.info["label"]), validators=[validators.Optional()], id='EditRelatedTasksField')

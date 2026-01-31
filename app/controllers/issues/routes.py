@@ -185,6 +185,7 @@ def issue_show(issue_id):
     ctx = get_default_environment(issue, 'show')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('ckeditor')
+    side_libraries.library_required('ace')
     context = {'issue': issue, 'edit_related_objects': forms.EditRelatedObjectsForm(issue)}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request issue #{issue.id}")
     return render_template('issues/show.html', **context, **ctx)

@@ -86,7 +86,7 @@ class ProofOfConcept(db.Model):
     string_slug: so.Mapped[StringSlug]
     title: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
-    source_code: so.Mapped[str] = so.mapped_column(info={'label': _l("Source code")})
+    source_code: so.Mapped[str] = so.mapped_column(info={'label': _l("Source code"), 'was_escaped': True})
     source_code_language_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('programming_language.id', ondelete='SET NULL'), nullable=False, info={'label': _l("Programming language")})
     source_code_language: so.Mapped["ProgrammingLanguage"] = so.relationship(lazy='joined', info={'label': _l("Programming language")}) # type: ignore
 

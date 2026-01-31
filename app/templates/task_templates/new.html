@@ -15,6 +15,7 @@
                         <div class="card-body">
                             {{ form_element(form, form.title) }}
                             {{ form_element(form, form.string_slug) }}
+                            {{ form_element(form, form.is_default, inline=True) }}
                             {{ form_element(form, form.description) }}
                         </div>
                     </div>

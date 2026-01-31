@@ -1,6 +1,19 @@
 {% extends 'layout/base.html' %}
 {% from 'layout/_macrosses.html' import object_comments, object_history, load_bootstrap_table_js, form_element %}
 
+{% block styles %}
+{{ super() }}
+<style nonce="{{ csp_nonce() }}">
+    #code-wrapper {
+        height: 50vh;
+        width: 100%;
+    }
+    #proof-of-concept-code-data {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+{% endblock %}
 
 {% block page_content %}
 <div class="row gutters">
@@ -395,6 +408,9 @@
             {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_title, inline=True) }}
             {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_description) }}
             {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_source_code_language, inline=True) }}
+            <div id="code-wrapper">
+                <div id="proof-of-concept-code-data"></div>
+            </div>
             {{ form_element(edit_related_objects, edit_related_objects.proof_of_concept_source_code) }}
           </div>
         </div>
@@ -449,11 +465,20 @@
         })
     });
 
+    const proof_of_concept_code_block = ace.edit("proof-of-concept-code-data")
+    let source_code_language_id = document.getElementById("{{ edit_related_objects.proof_of_concept_source_code_language.id }}")
+    proof_of_concept_code_block.session.setMode("ace/mode/" + source_code_language_id.options[source_code_language_id.selectedIndex].textContent.toLowerCase());
+    document.getElementById("{{ edit_related_objects.proof_of_concept_source_code_language.id }}").addEventListener('change', function() {
+        let source_code_language_id = document.getElementById("{{ edit_related_objects.proof_of_concept_source_code_language.id }}")
+        proof_of_concept_code_block.session.setMode("ace/mode/" + source_code_language_id.options[source_code_language_id.selectedIndex].textContent.toLowerCase());
+    });
+    proof_of_concept_code_block.setValue("{{ edit_related_objects.proof_of_concept_source_code.data|escapejs }}")
+
     document.getElementById('edit_proof_of_concept_button').addEventListener('click', function() {
         let proof_of_concept_title = document.getElementById("{{ edit_related_objects.proof_of_concept_title.id }}").value;
         let proof_of_concept_description = CKEDITOR_LIST["{{ edit_related_objects.proof_of_concept_description.id }}"].getData();
         let proof_of_concept_source_code_language = document.getElementById("{{ edit_related_objects.proof_of_concept_source_code_language.id }}").value;
-        let proof_of_concept_source_code = document.getElementById("{{ edit_related_objects.proof_of_concept_source_code.id }}").value;
+        let proof_of_concept_source_code = proof_of_concept_code_block.getValue();
         issueSocket.emit('edit proof of concept', {'proof_of_concept_title': proof_of_concept_title,
                                                    'proof_of_concept_description': proof_of_concept_description,
                                                    'proof_of_concept_source_code_language': proof_of_concept_source_code_language,

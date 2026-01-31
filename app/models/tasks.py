@@ -22,6 +22,7 @@ from flask_socketio import emit
 from flask_login import current_user
 from app.extensions.moment import moment
 from .datatypes import ID, StringSlug, CreatedAt, UpdatedAt, Archived, utcnow
+import importlib
 
 
 class StateToStateTask(db.Model):
@@ -369,6 +370,7 @@ class ProjectTaskTemplate(db.Model):
     task_priority_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskPriority.id, ondelete='SET NULL'), info={'label': _l("Task priority")})
     task_priority: so.Mapped[ProjectTaskPriority] = so.relationship(lazy='select', info={'label': _l("Task priority")})
     task_estimation_time_cost: so.Mapped[Optional[datetime.timedelta]] = so.mapped_column(info={'label': _l("Task time cost estimation")})
+    is_default: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Is default"), 'help_text': _l("This task will be created when a new project is added.")})
 
     def create_task_by_template(self):
         task = ProjectTask(title=self.task_title, description=self.task_description, tracker=self.task_tracker)
@@ -380,3 +382,23 @@ class ProjectTaskTemplate(db.Model):
         verbose_name = _l('Project task template')
         verbose_name_plural = _l('Project task templates')
         icon = 'fa-solid fa-clipboard'
+
+
+@event.listens_for(SessionBase, 'before_commit')
+def create_task_by_template(session: SessionBase):
+    Project = importlib.import_module('app.models').Project
+    projects = [p for p in session.new if isinstance(p, Project) and not hasattr(p, '_no_new_task_added')]
+    default_tasks = session.scalars(sa.select(ProjectTaskTemplate).where(ProjectTaskTemplate.is_default == True)).all()
+    try:
+        state_new = next(filter(lambda x: len(x.can_switch_from_state) == 0, session.scalars(sa.select(TaskState)).all()))
+    except StopIteration:
+        if has_request_context():
+            flash(_l("There is no initial status for this object. The first one was chosen"), 'danger')
+        state_new = session.scalars(sa.select(TaskState)).first()
+    for project in projects:
+        for task in default_tasks:
+            new_task = task.create_task_by_template()
+            new_task.created_by_id = project.created_by_id
+            new_task.state = state_new
+            session.add(new_task)
+            project.tasks.append(new_task)

@@ -1,0 +1,76 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block styles %}
+{{ super() }}
+<style nonce="{{ csp_nonce() }}">
+    #code-wrapper {
+        height: 50vh;
+        width: 100%;
+    }
+    #code_data {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+
+{% block page_content %}
+<div class="container-fluid">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ _("Hook property") }}:</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_element(form, form.title) }}
+                        {{ form_element(form, form.description) }}
+                        {{ form_element(form, form.on_object) }}
+                        {{ form_element(form, form.on_action) }}
+                        {{ form_element(form, form.priority) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>{{ models.Hook.code.info["label"] }}:</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="code-wrapper">
+                            <div id="code_data"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    let hook_code = ace.edit('code_data');
+    hook_code.session.setMode("ace/mode/python");
+    //hook_code.setTheme("ace/theme/monokai");
+
+    document.getElementById("{{ form.submit.id }}").addEventListener("click", () => {
+        document.getElementById("{{ form.code.id }}").value = hook_code.getValue();
+    });
+
+    $(document).ready(function() {
+        hook_code.setValue("{{ form.code.data|escapejs }}");
+    });
+
+</script>
+{% endblock %}

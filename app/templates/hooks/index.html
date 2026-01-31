@@ -1,0 +1,98 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row gutters">
+        <div class="col-12">
+            <table class="table" id="hooks-table" data-pagination="true"
+                                                  data-search="true"
+                                                  data-show-columns="true"
+                                                  data-show-toggle="true"
+                                                  data-show-export="true"
+                                                  data-show-multi-sort="true"
+                                                  data-filter-control="true"
+                                                  data-buttons-class="primary"
+                                                  data-cookie="true"
+                                                  data-cookie-id-table="AdminHooksIndex"
+                                                  data-cookie-storage="localStorage">
+            <thead>
+                <tr>
+                    <th data-field="id" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Hook.id.info["label"] }}</th>
+                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Hook.title.info['label'] }}</th>
+                    <th data-field="description" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Hook.description.info["label"] }}</th>
+                    <th data-field="on_object" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Hook.on_object.info["label"]}}</th>
+                    <th data-field="on_action" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Hook.on_action.info["label"]}}</th>
+                    <th data-field="priority" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Hook.priority.info['label'] }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objs %}
+                <tr style="cursor:pointer" class="with-context-menu-hook">
+                    <td>{{ obj.id }}</td>
+                    <td>{{ obj.title }}</td>
+                    <td>{{ sanitizer.pure_text(obj.description) }}</td>
+                    <td>{{ gettext(obj.on_object.value) }}</td>
+                    <td>{{ gettext(obj.on_action.value) }}</td>
+                    <td>{{ obj.priority }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $(function() {
+        $('#hooks-table').bootstrapTable({
+                  icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+                  onClickRow: function(row, element, field) {
+                    location = "{{ url_for('admin.hook_edit', hook_id='__hook_id') }}".replace("__hook_id", row.id)
+                  }
+              })
+      })
+      $(function () {
+        $.contextMenu({
+            selector: '.with-context-menu-hook',
+            callback: function (key, options) {
+                let hook_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                if (key === 'edit') {
+                    window.open("{{ url_for('admin.hook_edit', hook_id='__hook_id') }}".replace("__hook_id", hook_id), '_blank').focus()
+                }
+                else if (key === 'delete') {
+                    if(confirm('{{ _("Are you sure you want to delete this hook?") }}')) {
+                        fetch("{{ url_for('admin.hook_delete', hook_id='__hook_id') }}".replace("__hook_id", hook_id), {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token() }}'
+                            }
+                        }).then(function(response) {
+                            if(response.ok) {
+                                options.$trigger.parent().parent().bootstrapTable('remove', {field: 'id', values: [hook_id]});
+                                $.notify("{{ _('Hook #%(hook_id)s has been successfully deleted', hook_id='__hook_id') }}".replace('__hook_id', hook_id), "success", {
+                                    clickToHide: true,
+                                    autoHide: true,
+                                    autoHideDelay: 5000,
+                                    globalPosition: 'top right'
+                                });
+                            }
+                            else {
+                                alert('{{ _("Error deleting hook") }}');
+                            }
+                        });
+                    }
+                }
+            },
+            items: {
+                "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                "delete": { name: '{{ _("Delete") }}', icon: 'delete' },
+            }
+        });
+    });
+</script>
+
+{% endblock %}

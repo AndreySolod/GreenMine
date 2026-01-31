@@ -25,3 +25,4 @@ import app.controllers.admin.authentication_routes
 import app.controllers.admin.project_additional_parameters_routes
 import app.controllers.admin.routes_global_permission_actions
 import app.controllers.admin.consoles
+import app.controllers.admin.hooks_routes

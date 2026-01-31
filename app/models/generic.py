@@ -1,6 +1,6 @@
-from app import db, sanitizer
+from app import db, sanitizer, logger
 from app.helpers.projects_helpers import create_history, load_history_script
-from typing import List, Optional
+from typing import List, Optional, Dict, Tuple, Any
 from sqlalchemy import event
 from .datatypes import JSONType, ID, CreatedAt, UpdatedAt, utcnow
 import sqlalchemy as sa
@@ -15,6 +15,8 @@ from flask_babel import gettext
 from flask_login import current_user
 from flask_socketio import emit
 from flask_sqlalchemy.model import camel_to_snake_case # Function to convert class name to table name in flask-sqlalchemy. Maybe change later...
+import enum
+from flask import current_app, Flask
 
 
 class Reaction(db.Model):
@@ -230,4 +232,82 @@ def clean_all_model_fields_from_xss(session):
                     while len(sanitizer.sanitize(now_attr_data)) > a.columns[0].type.length:
                         now_attr_data = now_attr_data[:len(now_attr_data) - 1:]
                 setattr(o, a.key, sanitizer.sanitize(now_attr_data))
-            
+
+
+class ObjectWithHook(enum.Enum):
+    USER = "User"
+    ISSUE = "Issue"
+    PROJECT = "Project"
+    PROJECTTASK = "ProjectTask"
+    CHATMESSAGE = "ChatMessage"
+    CREDENTIAL = "Credential"
+    NETWORK = "Network"
+    HOST = "Host"
+    SERVICE = "Service"
+    NOTE = "Note"
+    WIKIPAGE = "WikiPage"
+    PENTESTRESEARCHEVENT = "PentestResearchEvent"
+    PENTESTORGANIZATIONDETECTIONEVENT = "PentestOrganizationDetectionEvent"
+
+
+class ObjectWithHookAction(enum.Enum):
+    CREATE = "Creation"
+    UPDATE = "Updating"
+    DESTROY = "Deletion"
+    ADD_COMMENT = "Adding a comment"
+
+
+class Hook(db.Model):
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
+    description: so.Mapped[str | None] = so.mapped_column(info={'label': _l("Description")})
+    created_at: so.Mapped[CreatedAt]
+    on_object: so.Mapped[ObjectWithHook] = so.mapped_column(info={'label': _l("On object")})
+    on_action: so.Mapped[ObjectWithHookAction] = so.mapped_column(info={'label': _l("On action")})
+    priority: so.Mapped[int] = so.mapped_column(default=1, info={'label': _l("Priority"), 'help_text': _l("Higher priority hooks are executed after lower priority hooks.")})
+    code: so.Mapped[str] = so.mapped_column(info={'label': _l("Code")})
+
+    def load_model_by_name(self):
+        models = importlib.import_module('app.models')
+        return getattr(models, self.on_object)
+    
+    @classmethod
+    def load_hooks(cls, app: Flask):
+        models = importlib.import_module("app.models")
+        if not hasattr(app, 'hooks') or app.hooks == {}:
+            app.hooks = {}
+            for obj in ObjectWithHook:
+                for action in ObjectWithHookAction:
+                    app.hooks[(getattr(models, obj.value), action)] = []
+        with app.app_context():
+            for hook in db.session.scalars(sa.select(cls).order_by(cls.priority.asc())).all():
+                compiled_code = compile(hook.code, hook.title, 'exec')
+                app.hooks[(getattr(models, hook.on_object.value), hook.on_action)].append(compiled_code)
+    
+    @classmethod
+    def configure_listener(cls):
+        logger.info("Configure listeners")
+        @event.listens_for(SessionBase, 'before_commit')
+        def execute_all_hooks(session: SessionBase):
+            logger.info("Execute hooks")
+            for condition, hooks in current_app.hooks.items():
+                if condition[1] == ObjectWithHookAction.CREATE:
+                    hooked_objects = [o for o in session.new if isinstance(o, condition[0])]
+                elif condition[1] == ObjectWithHookAction.UPDATE:
+                    hooked_objects = [o for o in session.dirty if isinstance(o, condition[0])]
+                elif condition[1] == ObjectWithHookAction.DESTROY:
+                    hooked_objects = [o for o in session.deleted if isinstance(o, condition[0])]
+                elif condition[1] == ObjectWithHookAction.ADD_COMMENT:
+                    hooked_objects = [o.to_object for o in session.new if isinstance(o, Comment) and o.to_object.__class__ == condition[0]]
+                for h in hooked_objects:
+                    for hook in hooks:
+                        try:
+                            exec(hook, {'db': db, 'this': h, 'session': session, 'app': current_app})
+                        except Exception as e:
+                            logger.error(f"Exception when run Hook #{id}: {e.with_traceback()}")
+                            continue
+
+    class Meta:
+        verbose_name = _l("Hook")
+        verbose_name_plural = _l("Hooks")
+        icon = "fa-solid fa-fire-burner"

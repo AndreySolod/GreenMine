@@ -124,7 +124,8 @@ class DefaultSidebar:
         se5 = SidebarElement(models.FileData.Meta.verbose_name_plural, url_for('admin.admin_file_index'), models.FileData.Meta.icon, address=='admin_file_index')
         sel61 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), address=='background_tasks_index')
         sel62 = SidebarElementSublink(_l("Background task options"), url_for('admin.background_tasks_options_index'), address=='background_tasks_options_index')
-        se6 = SidebarElement(_l("Background tasks"), url_for('admin.background_tasks_index'), "fa-solid fa-bars-progress", address in ['background_tasks_index', 'background_tasks_options_index'], [sel61, sel62])
+        sel63 = SidebarElementSublink(_l("Hooks"), url_for('admin.hook_index'), address in ['hook_index', 'hook_new', 'hook_edit'])
+        se6 = SidebarElement(_l("Background tasks"), url_for('admin.background_tasks_index'), "fa-solid fa-bars-progress", address in ['background_tasks_index', 'background_tasks_options_index', 'hook_index', 'hook_new', 'hook_edit'], [sel61, sel62, sel63])
         sel71 = SidebarElementSublink(models.ProjectRole.Meta.verbose_name_plural, url_for('admin.project_role_index'), address=='project_role_index')
         sel72 = SidebarElementSublink(_l("Add new project role"), url_for('admin.project_role_new'), address=='project_role_new')
         sel73 = SidebarElementSublink(_l("Edit role permissions"), url_for('admin.project_role_permissions'), address=='project_role_permissions')
@@ -291,6 +292,16 @@ class DefaultEnvironment:
             case 'console':
                 title = _l("Console")
                 current_object = CurrentObjectInfo(title, "fa-solid fa-terminal")
+            case 'hook_index':
+                title = _l("All hooks")
+                act1 = CurrentObjectAction(_l("Add new hook"), "fa-solid fa-square-plus", url_for('admin.hook_new'))
+                current_object = CurrentObjectInfo(title, models.Hook.Meta.icon, subtitle=_l("Hooks are used to execute custom code when certain events occur."), actions=[act1])
+            case 'hook_new':
+                title = _l("Add new hook")
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus")
+            case 'hook_edit':
+                title = _l("Edit hook #%(hook_id)s", hook_id=obj.id)
+                current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
 
         sidebar_data = DefaultSidebar(address, obj)()
         self.context = {'title': title, 'current_object': current_object,

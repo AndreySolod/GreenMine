@@ -25,6 +25,7 @@ class TaskTemplateForm(FlaskForm):
     task_tracker_id = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_tracker_id.info["label"]), validators=[validators.Optional()])
     task_priority_id = wtforms.SelectField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_priority_id.info["label"]), validators=[validators.Optional()])
     task_estimation_time_cost = wtforms.IntegerField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.task_estimation_time_cost.info["label"]), validators=[validators.Optional()])
+    is_default = wtforms.BooleanField(_l("%(field_name)s:", field_name=ProjectTaskTemplate.is_default.info["label"]), description=ProjectTaskTemplate.is_default.info["help_text"], validators=[validators.Optional()])
 
     def validate_string_slug(form, field):
         if form.task_template is not None and form.task_template.string_slug == field.data:

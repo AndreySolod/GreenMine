@@ -224,6 +224,7 @@ def import_new_project():
     form = ImportProjectForm()
     if form.validate_on_submit():
         created_project = project_import(form.import_file_data, db.session)
+        created_project._no_new_task_added = True
         if created_project is not None:
             try:
                 db.session.add(created_project)
