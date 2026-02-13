@@ -32,7 +32,7 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
     if 'hash_type' in element:
         cred.hash_type = db.session.scalars(sa.select(models.HashType).where(models.HashType.id == int(element['hash_type']))).first()
     if 'check_wordlist' in element:
-        cred.check_wordlist_id = int(element['check_wordlist'])
+        cred.check_wordlist = db.session.scalars(sa.select(models.CheckWordlist).where(models.CheckWordlist.id == int(element['check_wordlist']))).first()
     if 'services' in element:
         svc = session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, element['services']))))).all()
         cred.services.update(svc)
