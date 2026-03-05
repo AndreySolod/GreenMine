@@ -83,11 +83,16 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
                                                                                 models.Credential.project_id==project_id))).all()
             for c in cred:
                 set_credential_data(c, e, project_id, session)
+                c.updated_by_id = created_by_id
+        is_new = False
         if cred is None:
+            is_new = True
             e.setdefault('login', '-')
             cred = models.Credential(login=sanitizer.escape(e['login']), created_by_id=created_by_id, project_id=project_id)
         if not isinstance(cred, list):
             set_credential_data(cred, e, project_id, session)
+            if not is_new:
+                cred.updated_by_id = created_by_id
     session.commit()
             
 

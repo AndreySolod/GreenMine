@@ -227,7 +227,7 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
                 elif old_val:
                     changes['changes'].append({"action": "delete_paramether", "attrs": {'lazy_name': str(attr_label), 'old_value': old_val[0].title}})
                     changed = True
-                elif new_val:
+                elif new_val and new_val[0]:
                     changes['changes'].append({"action": 'add_paramether', "attrs": {'lazy_name': str(attr_label), 'new_value': new_val[0].title}})
                     changed = True
             # Updating Many-To-Many Relationships:
