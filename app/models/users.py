@@ -225,7 +225,7 @@ class User(UserMixin, db.Model):
 
     def get_js_list_programming_languages(self):
         ''' Returns a list of programming languages in json format for CKEditor '''
-        return json.dumps({'languages': [{'language': i.alias, 'label': i.title} for i in self.programming_languages]})
+        return json.dumps([{'language': i.alias, 'label': i.title} for i in self.programming_languages])
 
     def __repr__(self):
         return f"<User '{self.login}' with id={self.id}>"

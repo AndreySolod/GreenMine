@@ -383,7 +383,6 @@
 {{ icons|escapejs }}
 {% endmacro %}
 
-
 {% macro load_bootstrap_table_js(table_id, link_class, link_attr, forbidden_field=[]) %}
 <script nonce="{{ csp_nonce() }}">
   $(function() {
@@ -399,7 +398,30 @@
 </script>
 {% endmacro %}
 
-{% macro load_ckeditor_script(models) %}
+
+{% macro get_current_user_languages(current_user) %}
+{% if current_user == none %}
+{% set languages = json.dumps([
+  { "language": 'plaintext', "label": "Plaintext" },
+  { "language": 'css', "label": 'CSS' },
+  { "language": 'html', "label": 'HTML' },
+  { "language": 'python', "label": 'Python' },
+  { "language": 'cpp', "label": 'C++' },
+  { "language": 'ruby', "label": "Ruby" },
+  { "language": "go", "label": "GO" },
+  { "language": "java", "label": "Java" },
+  { "language": 'javascript', "label": "JavaScript" },
+  { "language": 'xml', "label": 'XML' },
+  { "language": 'bash', "label": "Bash" },
+  { "language": 'powershell', "label": "PowerShell" },
+]) %}
+{% else %}
+{% set languages = current_user.get_js_list_programming_languages() %}
+{% endif %}
+{{ languages|escapejs }}
+{% endmacro %}
+
+{% macro load_ckeditor_script(models, current_user) %}
 <script type="importmap" nonce="{{ csp_nonce() }}">
 		{
 			"imports": {
@@ -698,7 +720,11 @@ const editorConfig = {
 	table: {
 		contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']
 	},
-	translations: [translations]
+	translations: [translations],
+  codeBlock: {
+    languages: JSON.parse("{{ get_current_user_languages(current_user).strip() }}"),
+  },
+
 };
 
 var CKEDITOR_LIST = {};

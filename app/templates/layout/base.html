@@ -191,7 +191,7 @@
 	{% endif %}
 
 	{% if side_libraries.is_library_required('ckeditor') %}
-	{{ load_ckeditor_script(models) }}
+	{{ load_ckeditor_script(models, current_user) }}
 	{% endif %}
 	{% if side_libraries.is_library_required('bootstrap_table') %}
 	{% if g.locale == 'ru' %}
