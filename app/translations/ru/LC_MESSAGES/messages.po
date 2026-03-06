@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-31 19:29+1000\n"
-"PO-Revision-Date: 2026-01-31 19:35+1000\n"
+"POT-Creation-Date: 2026-03-06 14:25+1000\n"
+"PO-Revision-Date: 2026-03-06 14:34+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -17,14 +17,56 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 "
 "&& (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Generated-By: Babel 2.17.0\n"
+"Generated-By: Babel 2.18.0\n"
 "X-Generator: Poedit 3.8\n"
 
 #: app/__init__.py:49
 msgid "To perform this action, you need to log in"
 msgstr "Для выполнения этого действия необходимо авторизоваться"
 
-#: app/__init__.py:230
+#: app/__init__.py:147 app/helpers/general_helpers.py:590
+#: app/templates/admin/authentication_settings.html:48
+#: app/templates/admin/authentication_settings.html:52
+#: app/templates/admin/authentication_settings.html:56
+#: app/templates/admin/authentication_settings.html:60
+#: app/templates/admin/authentication_settings.html:82
+#: app/templates/admin/user_positions_index.html:38
+#: app/templates/admin/user_positions_index.html:43
+#: app/templates/hosts/index.html:292 app/templates/hosts/show.html:45
+#: app/templates/hosts/show.html:617 app/templates/networks/index.html:356
+#: app/templates/project_additional_parameters/index.html:23
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:6
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:14
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:72
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:80
+#: app/templates/services/index.html:142 app/templates/services/show.html:48
+#: app/templates/task_templates/index.html:67
+#: app/templates/task_templates/show.html:23
+msgid "Yes"
+msgstr "Да"
+
+#: app/__init__.py:147 app/helpers/general_helpers.py:590
+#: app/templates/admin/authentication_settings.html:48
+#: app/templates/admin/authentication_settings.html:52
+#: app/templates/admin/authentication_settings.html:56
+#: app/templates/admin/authentication_settings.html:60
+#: app/templates/admin/authentication_settings.html:82
+#: app/templates/admin/user_positions_index.html:40
+#: app/templates/admin/user_positions_index.html:45
+#: app/templates/hosts/index.html:292 app/templates/hosts/show.html:48
+#: app/templates/hosts/show.html:617 app/templates/networks/index.html:356
+#: app/templates/project_additional_parameters/index.html:25
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:6
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:14
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:72
+#: app/templates/services/access_protocols_parameter_templates/snmp.html:80
+#: app/templates/services/index.html:142 app/templates/services/show.html:48
+#: app/templates/task_templates/index.html:67
+#: app/templates/task_templates/show.html:23
+msgid "No"
+msgstr "Нет"
+
+#: app/__init__.py:235
 #, python-format
 msgid ""
 "Internal server error. Please report on GitVerse about this issue (log file in "
@@ -308,8 +350,8 @@ msgid "Process host operating system data:"
 msgstr "Обрабатывать данные об операционной системе хоста:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:63
-#: app/action_modules/Mass_import_creds/__init__.py:123
-#: app/action_modules/Mass_import_creds/__init__.py:124
+#: app/action_modules/Mass_import_creds/__init__.py:153
+#: app/action_modules/Mass_import_creds/__init__.py:154
 #: app/action_modules/NmapScan/__init__.py:98
 #: app/controllers/admin/authentication_forms.py:12
 #: app/controllers/admin/authentication_forms.py:13
@@ -383,7 +425,8 @@ msgstr "Обрабатывать данные об операционной си
 #: app/controllers/credentials/forms.py:27 app/controllers/credentials/forms.py:28
 #: app/controllers/credentials/forms.py:29 app/controllers/credentials/forms.py:30
 #: app/controllers/credentials/forms.py:31 app/controllers/credentials/forms.py:32
-#: app/controllers/credentials/forms.py:33 app/controllers/credentials/forms.py:51
+#: app/controllers/credentials/forms.py:33 app/controllers/credentials/forms.py:34
+#: app/controllers/credentials/forms.py:35 app/controllers/credentials/forms.py:52
 #: app/controllers/cves/forms.py:16 app/controllers/cves/forms.py:17
 #: app/controllers/cves/forms.py:20 app/controllers/cves/forms.py:23
 #: app/controllers/cves/forms.py:25 app/controllers/cves/forms.py:27
@@ -590,7 +633,7 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/admin/report_template_forms.py:24
 #: app/controllers/admin/roles_forms.py:38 app/controllers/admin/roles_forms.py:90
 #: app/controllers/admin/task_templates_forms.py:43
-#: app/controllers/credentials/forms.py:42 app/controllers/cves/forms.py:52
+#: app/controllers/credentials/forms.py:43 app/controllers/cves/forms.py:52
 #: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:52
 #: app/controllers/networks/forms.py:61 app/controllers/networks/forms.py:139
 #: app/controllers/networks/forms.py:203 app/controllers/notes/forms.py:31
@@ -662,19 +705,19 @@ msgstr ""
 "проэксплуатировать известные уязвимости (такие как CVE-2013-4786) и сохранить "
 "результаты в базу данных"
 
-#: app/action_modules/Mass_import_creds/__init__.py:112
+#: app/action_modules/Mass_import_creds/__init__.py:141
 msgid "Login column number:"
 msgstr "Номер столбца логина:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:113
+#: app/action_modules/Mass_import_creds/__init__.py:142
 msgid "Password hash column number:"
 msgstr "Номер столбца хэша пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:114
+#: app/action_modules/Mass_import_creds/__init__.py:143
 msgid "Credential description column number:"
 msgstr "Номер столбца дополнительного описания учётных данных:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:114
+#: app/action_modules/Mass_import_creds/__init__.py:143
 msgid ""
 "If credential is exists, the value of this field will be added to the end of the "
 "current one."
@@ -682,67 +725,79 @@ msgstr ""
 "Если учётные данные существуют, значение этого поля будет добавлено в конец к "
 "существующему полю."
 
-#: app/action_modules/Mass_import_creds/__init__.py:115
+#: app/action_modules/Mass_import_creds/__init__.py:144
 msgid "Password column number:"
 msgstr "Номер столбца пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:116
+#: app/action_modules/Mass_import_creds/__init__.py:145
+msgid "Is admin column number:"
+msgstr "Номер столбца флага администратора:"
+
+#: app/action_modules/Mass_import_creds/__init__.py:145
+msgid "Set to True for all values other than empty"
+msgstr "Устанавливается как \"Да\" для всех значений, отличных от пустого"
+
+#: app/action_modules/Mass_import_creds/__init__.py:146
 #: app/action_modules/Mass_import_scan_data/__init__.py:65
 msgid "Column delimither:"
 msgstr "Разделитель столбцов:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:116
+#: app/action_modules/Mass_import_creds/__init__.py:146
 #: app/action_modules/Mass_import_scan_data/__init__.py:65
 msgid "The symbol by which the rows will be divided into columns"
 msgstr "Символ, по которому строки будут разделены на столбцы"
 
-#: app/action_modules/Mass_import_creds/__init__.py:117
+#: app/action_modules/Mass_import_creds/__init__.py:147
 msgid "Static login:"
 msgstr "Статический логин:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:117
+#: app/action_modules/Mass_import_creds/__init__.py:147
 msgid "The login that will match all the lines"
 msgstr "Логин, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:118
+#: app/action_modules/Mass_import_creds/__init__.py:148
 msgid "Static password hash:"
 msgstr "Статический хэш пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:118
-#: app/action_modules/Mass_import_creds/__init__.py:122
+#: app/action_modules/Mass_import_creds/__init__.py:148
+#: app/action_modules/Mass_import_creds/__init__.py:152
 msgid "The password that will match all the lines"
 msgstr "Пароль, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:119
+#: app/action_modules/Mass_import_creds/__init__.py:149
 msgid "Static hash type:"
 msgstr "Статический тип хэша:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:119
+#: app/action_modules/Mass_import_creds/__init__.py:149
 msgid "An hash type, that will be added to all the lines"
 msgstr "Тип хэша, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:120
+#: app/action_modules/Mass_import_creds/__init__.py:150
 msgid "Static check wordlist:"
 msgstr "Статическое значение \"Проверен на словаре\":"
 
-#: app/action_modules/Mass_import_creds/__init__.py:121
+#: app/action_modules/Mass_import_creds/__init__.py:151
 msgid "Static description:"
 msgstr "Статическое описание:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:121
+#: app/action_modules/Mass_import_creds/__init__.py:151
 msgid "An description string, that will be added to all credentials"
 msgstr "Строка описания, которая будет добавлена всем учётным данным"
 
-#: app/action_modules/Mass_import_creds/__init__.py:122
+#: app/action_modules/Mass_import_creds/__init__.py:152
 msgid "Static password:"
 msgstr "Статический пароль:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:125
+#: app/action_modules/Mass_import_creds/__init__.py:155
+msgid "Statis is admin:"
+msgstr "Статический администратор:"
+
+#: app/action_modules/Mass_import_creds/__init__.py:156
 #: app/action_modules/Mass_import_scan_data/__init__.py:66
 msgid "Content:"
 msgstr "Содержимое:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:125
+#: app/action_modules/Mass_import_creds/__init__.py:156
 msgid ""
 "Input content to add here (one credential per line with attribute, separated by "
 "column delimither)"
@@ -750,12 +805,12 @@ msgstr ""
 "Введите содержимое для импорта сюда (по одному объекту учётных данных с "
 "атрибутами, разделёнными по заданному символу)"
 
-#: app/action_modules/Mass_import_creds/__init__.py:126
+#: app/action_modules/Mass_import_creds/__init__.py:157
 #: app/action_modules/Mass_import_scan_data/__init__.py:67
 msgid "File:"
 msgstr "Файл:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:126
+#: app/action_modules/Mass_import_creds/__init__.py:157
 msgid ""
 "A file with credentials to add (one credential per line, separated by column "
 "delimither)"
@@ -763,11 +818,11 @@ msgstr ""
 "Файл с учётными данным для добавления (по одному объекту учётных данных на "
 "строку, разделённым по заданному символу)"
 
-#: app/action_modules/Mass_import_creds/__init__.py:126
+#: app/action_modules/Mass_import_creds/__init__.py:157
 msgid "Only .txt file are allowed!"
 msgstr "Разрешены только файлы .txt!"
 
-#: app/action_modules/Mass_import_creds/__init__.py:127
+#: app/action_modules/Mass_import_creds/__init__.py:158
 #: app/action_modules/Mass_import_scan_data/__init__.py:68
 #: app/controllers/networks/forms.py:284 app/helpers/admin_helpers.py:164
 #: app/templates/chats/index.html:45 app/templates/hosts/show.html:478
@@ -775,25 +830,25 @@ msgstr "Разрешены только файлы .txt!"
 msgid "Add"
 msgstr "Добавить"
 
-#: app/action_modules/Mass_import_creds/__init__.py:131
-#: app/action_modules/Mass_import_creds/__init__.py:135
+#: app/action_modules/Mass_import_creds/__init__.py:162
+#: app/action_modules/Mass_import_creds/__init__.py:166
 #: app/action_modules/Mass_import_scan_data/__init__.py:72
 #: app/action_modules/Mass_import_scan_data/__init__.py:76
 msgid "At least one of the two fields is required: 'Content' or 'File'!"
 msgstr "Как минимум одно из двух полей 'Содержимое' или 'Файл' необходимо!"
 
-#: app/action_modules/Mass_import_creds/__init__.py:140
-#: app/action_modules/Mass_import_creds/__init__.py:142
+#: app/action_modules/Mass_import_creds/__init__.py:172
+#: app/action_modules/Mass_import_creds/__init__.py:175
 #: app/action_modules/Mass_import_scan_data/__init__.py:81
 #: app/action_modules/Mass_import_scan_data/__init__.py:83
 msgid "Incorrect input delimiter - not enough columns to parse"
 msgstr "Некорректный символ разделителя - недостаточно столбцов"
 
-#: app/action_modules/Mass_import_creds/__init__.py:201
+#: app/action_modules/Mass_import_creds/__init__.py:244
 msgid "Mass import a credential data"
 msgstr "Множественный импорт учётных данных"
 
-#: app/action_modules/Mass_import_creds/__init__.py:202
+#: app/action_modules/Mass_import_creds/__init__.py:245
 msgid ""
 "Creates or updates credentials from the transferred file, split according to the "
 "specified separator"
@@ -1065,7 +1120,7 @@ msgstr "Шаблон импорта учётных данных успешно �
 #: app/controllers/admin/credential_template_import.py:119
 #: app/controllers/admin/issue_template_routes.py:122
 #: app/controllers/admin/task_template_routes.py:132
-#: app/controllers/projects/routes.py:232
+#: app/controllers/projects/routes.py:233
 msgid "Import was completed successfully"
 msgstr "Импорт успешно завершён"
 
@@ -1075,7 +1130,7 @@ msgstr "Импорт успешно завершён"
 #: app/controllers/admin/issue_template_routes.py:126
 #: app/controllers/admin/task_template_routes.py:134
 #: app/controllers/admin/task_template_routes.py:136
-#: app/controllers/projects/routes.py:238 app/controllers/projects/routes.py:240
+#: app/controllers/projects/routes.py:239 app/controllers/projects/routes.py:241
 msgid "Errors when parsing file"
 msgstr "Ошибка при анализе файла"
 
@@ -1094,7 +1149,7 @@ msgstr "Шаблон импорта учётных данных с указан�
 #: app/controllers/admin/report_template_forms.py:19
 #: app/controllers/admin/roles_forms.py:27
 #: app/controllers/admin/task_templates_forms.py:39
-#: app/controllers/credentials/forms.py:37 app/controllers/cves/forms.py:48
+#: app/controllers/credentials/forms.py:38 app/controllers/cves/forms.py:48
 #: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:47
 #: app/controllers/networks/forms.py:53 app/controllers/networks/forms.py:131
 #: app/controllers/networks/forms.py:196 app/controllers/notes/forms.py:18
@@ -1170,7 +1225,7 @@ msgstr "Такой слаг уже зарегистрирован!"
 #: app/templates/admin/object_type_index.html:69
 #: app/templates/admin/project_role_index.html:63
 #: app/templates/admin/user_positions_index.html:73
-#: app/templates/credentials/index.html:186 app/templates/hooks/index.html:91
+#: app/templates/credentials/index.html:202 app/templates/hooks/index.html:91
 #: app/templates/hosts/excluded-index.html:117 app/templates/hosts/index.html:407
 #: app/templates/networks/index.html:432
 #: app/templates/project_additional_parameters/admin_index.html:134
@@ -1383,7 +1438,7 @@ msgid "Add multiple credentials"
 msgstr "Импортировать учётные данные"
 
 #: app/controllers/credentials/__init__.py:48
-#: app/controllers/credentials/__init__.py:60 app/models/credentials.py:134
+#: app/controllers/credentials/__init__.py:60 app/models/credentials.py:160
 #: app/models/networks.py:544 app/models/projects.py:38
 msgid "Credentials"
 msgstr "Учётные данные"
@@ -1428,7 +1483,7 @@ msgstr "Учётные данные для логина «%(login)s»"
 #: app/templates/admin/project_role_index.html:64
 #: app/templates/admin/user_positions_index.html:74
 #: app/templates/credential_import_templates/index.html:17
-#: app/templates/credentials/index.html:198
+#: app/templates/credentials/index.html:214
 #: app/templates/credentials/pentest-index.html:105
 #: app/templates/hooks/index.html:92 app/templates/hosts/index.html:409
 #: app/templates/issue_templates/index.html:16
@@ -1492,30 +1547,30 @@ msgstr "Редактировать учётные данные"
 msgid "The dictionary for which the verification was performed/is planned"
 msgstr "Словарь, по которому была выполнена/планируется к выполнению проверка"
 
-#: app/controllers/credentials/forms.py:38 app/controllers/issues/forms.py:48
+#: app/controllers/credentials/forms.py:39 app/controllers/issues/forms.py:48
 #: app/controllers/networks/forms.py:54 app/controllers/networks/forms.py:132
 #: app/controllers/tasks/forms.py:64
 msgid "Create and add another one"
 msgstr "Создать и добавить ещё"
 
-#: app/controllers/credentials/routes.py:70
+#: app/controllers/credentials/routes.py:72
 #, python-format
 msgid "Credential for «%(login)s» has been successfully added"
 msgstr "Учётные данные для «%(login)s» успешно добавлены"
 
-#: app/controllers/credentials/routes.py:118
+#: app/controllers/credentials/routes.py:122
 #, python-format
 msgid "Credential #%(cred_id)s successfully changed"
 msgstr "Учётные данные #%(cred_id)s успешно изменены"
 
-#: app/controllers/credentials/routes.py:135
-#: app/templates/credentials/index.html:175
+#: app/controllers/credentials/routes.py:139
+#: app/templates/credentials/index.html:191
 #: app/templates/credentials/pentest-index.html:85
 #, python-format
 msgid "Credential #%(cred_id)s has been successfully deleted"
 msgstr "Учётные данные #%(cred_id)s успешно удалены"
 
-#: app/controllers/credentials/routes.py:169
+#: app/controllers/credentials/routes.py:173
 msgid "The credential import module has been successfully launched"
 msgstr "Модуль импорта учётных данных успешно запущен"
 
@@ -2077,7 +2132,7 @@ msgctxt "man"
 msgid "Missing"
 msgstr "Отсутствует"
 
-#: app/controllers/projects/routes.py:236
+#: app/controllers/projects/routes.py:237
 msgid ""
 "Import was completed successfully but an error occurred when added the project "
 "to the database"
@@ -2331,7 +2386,7 @@ msgid "%(field_name)s"
 msgstr "%(field_name)s"
 
 #: app/controllers/users/forms.py:15 app/models/credentials.py:100
-#: app/models/credentials.py:172 app/models/global_settings.py:11
+#: app/models/credentials.py:198 app/models/global_settings.py:11
 msgid "Password"
 msgstr "Пароль"
 
@@ -2957,7 +3012,7 @@ msgstr "Добавить новый хук"
 msgid "Hooks are used to execute custom code when certain events occur."
 msgstr ""
 "Хуки используются для выполнения пользовательского кода при возникновении "
-"определённых событий"
+"определённых событий."
 
 #: app/helpers/admin_helpers.py:303
 #, python-format
@@ -2972,49 +3027,8 @@ msgstr "IP-адрес некорректен"
 msgid "Incorrect MAC-addres"
 msgstr "MAC-адрес некорректен"
 
-#: app/helpers/general_helpers.py:590
-#: app/templates/admin/authentication_settings.html:48
-#: app/templates/admin/authentication_settings.html:52
-#: app/templates/admin/authentication_settings.html:56
-#: app/templates/admin/authentication_settings.html:60
-#: app/templates/admin/authentication_settings.html:82
-#: app/templates/admin/user_positions_index.html:38
-#: app/templates/admin/user_positions_index.html:43
-#: app/templates/hosts/index.html:292 app/templates/hosts/show.html:45
-#: app/templates/hosts/show.html:617 app/templates/networks/index.html:356
-#: app/templates/project_additional_parameters/index.html:23
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:6
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:14
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:72
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:80
-#: app/templates/services/index.html:142 app/templates/services/show.html:48
-#: app/templates/task_templates/index.html:67
-#: app/templates/task_templates/show.html:23
-msgid "Yes"
-msgstr "Да"
-
-#: app/helpers/general_helpers.py:590
-#: app/templates/admin/authentication_settings.html:48
-#: app/templates/admin/authentication_settings.html:52
-#: app/templates/admin/authentication_settings.html:56
-#: app/templates/admin/authentication_settings.html:60
-#: app/templates/admin/authentication_settings.html:82
-#: app/templates/admin/user_positions_index.html:40
-#: app/templates/admin/user_positions_index.html:45
-#: app/templates/hosts/index.html:292 app/templates/hosts/show.html:48
-#: app/templates/hosts/show.html:617 app/templates/networks/index.html:356
-#: app/templates/project_additional_parameters/index.html:25
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:6
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:14
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:72
-#: app/templates/services/access_protocols_parameter_templates/snmp.html:80
-#: app/templates/services/index.html:142 app/templates/services/show.html:48
-#: app/templates/task_templates/index.html:67
-#: app/templates/task_templates/show.html:23
-msgid "No"
-msgstr "Нет"
-
-#: app/helpers/general_helpers.py:605 app/models/credentials.py:129
+#: app/helpers/general_helpers.py:605 app/models/credentials.py:131
+#: app/models/credentials.py:142
 #, python-format
 msgid "Total: %(total)s elements"
 msgstr "Всего: %(total)s элементов"
@@ -3255,7 +3269,7 @@ msgstr "Добавил(а)"
 msgid "Project"
 msgstr "Проект"
 
-#: app/models/chats.py:19 app/models/credentials.py:173 app/models/generic.py:67
+#: app/models/chats.py:19 app/models/credentials.py:199 app/models/generic.py:67
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -3296,7 +3310,7 @@ msgid "Add hash prototype"
 msgstr "Добавить прототип хэша"
 
 #: app/models/credentials.py:38 app/models/credentials.py:60
-#: app/models/credentials.py:146 app/models/credentials.py:170
+#: app/models/credentials.py:172 app/models/credentials.py:196
 #: app/models/datatypes.py:159 app/models/files.py:13 app/models/files.py:44
 #: app/models/generic.py:262 app/models/global_settings.py:45
 #: app/models/global_settings.py:51 app/models/issues.py:19 app/models/issues.py:34
@@ -3414,7 +3428,7 @@ msgstr "Добавил(а)"
 msgid "Updated by"
 msgstr "Изменил(а)"
 
-#: app/models/credentials.py:92 app/models/credentials.py:171
+#: app/models/credentials.py:92 app/models/credentials.py:197
 #: app/models/users.py:153
 msgid "Login"
 msgstr "Логин"
@@ -3448,20 +3462,32 @@ msgstr "Источник компрометации"
 msgid "An source host in which a credential were be founded"
 msgstr "Конечное устройство, на котором были найдены учётные данные"
 
-#: app/models/credentials.py:111
+#: app/models/credentials.py:108
+msgid "Is administrator"
+msgstr "Администратор"
+
+#: app/models/credentials.py:109
+msgid "Empty password"
+msgstr "Пустой пароль"
+
+#: app/models/credentials.py:113
 #, python-format
 msgid "Credential #%(cred_id)s for login «%(login)s»"
 msgstr "Учётные данные #%(cred_id)s для логина «%(login)s»"
 
-#: app/models/credentials.py:133
+#: app/models/credentials.py:153
+msgid "(Empty)"
+msgstr "(Пустой)"
+
+#: app/models/credentials.py:159
 msgid "Credential"
 msgstr "Учётные данные"
 
-#: app/models/credentials.py:137
+#: app/models/credentials.py:163
 msgid "Add new credential"
 msgstr "Добавить новые учётные данные"
 
-#: app/models/credentials.py:138 app/models/issues.py:168 app/models/networks.py:86
+#: app/models/credentials.py:164 app/models/issues.py:168 app/models/networks.py:86
 #: app/models/networks.py:392 app/models/networks.py:617 app/models/notes.py:48
 #: app/models/pentest_events.py:140 app/models/pentest_events.py:180
 #: app/models/projects.py:101 app/models/report_templates.py:23
@@ -3469,18 +3495,18 @@ msgstr "Добавить новые учётные данные"
 msgid "Show object list"
 msgstr "Просматривать список объектов"
 
-#: app/models/credentials.py:138
+#: app/models/credentials.py:164
 msgid "Show created object list"
 msgstr "Просматривать список созданных объектов"
 
-#: app/models/credentials.py:138 app/models/issues.py:168 app/models/networks.py:86
+#: app/models/credentials.py:164 app/models/issues.py:168 app/models/networks.py:86
 #: app/models/networks.py:392 app/models/networks.py:617 app/models/notes.py:48
 #: app/models/pentest_events.py:140 app/models/pentest_events.py:180
 #: app/models/tasks.py:220
 msgid "Create new object"
 msgstr "Создавать новые объекты"
 
-#: app/models/credentials.py:138 app/models/issues.py:79 app/models/issues.py:168
+#: app/models/credentials.py:164 app/models/issues.py:79 app/models/issues.py:168
 #: app/models/networks.py:86 app/models/networks.py:392 app/models/networks.py:617
 #: app/models/pentest_events.py:140 app/models/pentest_events.py:180
 #: app/models/projects.py:97 app/models/tasks.py:220 app/models/users.py:269
@@ -3488,14 +3514,14 @@ msgstr "Создавать новые объекты"
 msgid "Show object card"
 msgstr "Просматривать карточку объекта"
 
-#: app/models/credentials.py:139 app/models/issues.py:169 app/models/networks.py:87
+#: app/models/credentials.py:165 app/models/issues.py:169 app/models/networks.py:87
 #: app/models/networks.py:393 app/models/networks.py:618 app/models/notes.py:48
 #: app/models/pentest_events.py:141 app/models/pentest_events.py:181
 #: app/models/projects.py:97 app/models/tasks.py:221
 msgid "Edit and update object"
 msgstr "Редактировать и изменять объект"
 
-#: app/models/credentials.py:139 app/models/issues.py:79 app/models/issues.py:169
+#: app/models/credentials.py:165 app/models/issues.py:79 app/models/issues.py:169
 #: app/models/networks.py:87 app/models/networks.py:393 app/models/networks.py:618
 #: app/models/notes.py:49 app/models/pentest_events.py:141
 #: app/models/pentest_events.py:181 app/models/projects.py:97
@@ -3504,84 +3530,84 @@ msgstr "Редактировать и изменять объект"
 msgid "Delete object"
 msgstr "Удалять объект"
 
-#: app/models/credentials.py:139 app/models/issues.py:169 app/models/networks.py:87
+#: app/models/credentials.py:165 app/models/issues.py:169 app/models/networks.py:87
 #: app/models/networks.py:393 app/models/networks.py:618
 #: app/models/pentest_events.py:141 app/models/pentest_events.py:181
 #: app/models/tasks.py:221
 msgid "Add comment to object"
 msgstr "Добавлять комментарии к объекту"
 
-#: app/models/credentials.py:140 app/models/issues.py:170 app/models/networks.py:88
+#: app/models/credentials.py:166 app/models/issues.py:170 app/models/networks.py:88
 #: app/models/networks.py:394 app/models/networks.py:619
 #: app/models/pentest_events.py:142 app/models/pentest_events.py:182
 #: app/models/tasks.py:222
 msgid "Show comment list of object"
 msgstr "Просматривать список комментариев к объекту"
 
-#: app/models/credentials.py:140 app/models/issues.py:170 app/models/networks.py:88
+#: app/models/credentials.py:166 app/models/issues.py:170 app/models/networks.py:88
 #: app/models/networks.py:394 app/models/networks.py:619
 #: app/models/pentest_events.py:142 app/models/pentest_events.py:182
 #: app/models/tasks.py:222
 msgid "Show object history"
 msgstr "Просматривать историю объекта"
 
-#: app/models/credentials.py:147 app/models/tasks.py:365
+#: app/models/credentials.py:173 app/models/tasks.py:365
 msgid "Template description"
 msgstr "Описание шаблона"
 
-#: app/models/credentials.py:148
+#: app/models/credentials.py:174
 msgid "Login column number"
 msgstr "Номер столбца логина"
 
-#: app/models/credentials.py:149
+#: app/models/credentials.py:175
 msgid "Password hash column number"
 msgstr "Номер столбца хэша пароля"
 
-#: app/models/credentials.py:150
+#: app/models/credentials.py:176
 msgid "Additional description column number"
 msgstr "Номер столбца дополнительного описания учётных данных"
 
-#: app/models/credentials.py:151
+#: app/models/credentials.py:177
 msgid "Password column number"
 msgstr "Номер столбца пароля"
 
-#: app/models/credentials.py:152
+#: app/models/credentials.py:178
 msgid "Static login"
 msgstr "Статический логин"
 
-#: app/models/credentials.py:153
+#: app/models/credentials.py:179
 msgid "Static password hash"
 msgstr "Статический хэш пароля"
 
-#: app/models/credentials.py:154 app/models/credentials.py:155
+#: app/models/credentials.py:180 app/models/credentials.py:181
 msgid "Static hash type"
 msgstr "Статический тип хэша"
 
-#: app/models/credentials.py:156 app/models/credentials.py:157
+#: app/models/credentials.py:182 app/models/credentials.py:183
 msgid "Static check wordlist"
 msgstr "Статическое значение \"Проверен на словаре\""
 
-#: app/models/credentials.py:158
+#: app/models/credentials.py:184
 msgid "Static description"
 msgstr "Статическое описание"
 
-#: app/models/credentials.py:161
+#: app/models/credentials.py:187
 msgid "Credential import template"
 msgstr "Шаблон импорта учётных данных"
 
-#: app/models/credentials.py:162
+#: app/models/credentials.py:188
 msgid "Credential import templates"
 msgstr "Шаблоны импорта учётных данных"
 
-#: app/models/credentials.py:176
+#: app/models/credentials.py:202
 msgid "Default credential"
 msgstr "Учётные данные по умолчанию"
 
-#: app/models/credentials.py:177
+#: app/models/credentials.py:203
 msgid "Default credentials"
 msgstr "Учётные данные по умолчанию"
 
-#: app/models/credentials.py:178
+#: app/models/credentials.py:204
 msgid ""
 "Factory credentials installed by default by various manufacturers on their "
 "devices"
@@ -3589,7 +3615,7 @@ msgstr ""
 "Заводские учетные данные, установленные по умолчанию различными производителями "
 "на их устройствах"
 
-#: app/models/credentials.py:179
+#: app/models/credentials.py:205
 msgid "Add new default credential"
 msgstr "Добавить новые учётные данные по умолчанию"
 
@@ -5042,7 +5068,7 @@ msgstr "Оценка временных затрат задачи"
 
 #: app/models/tasks.py:373
 msgid "This task will be created when a new project is added."
-msgstr "Эта задача будет создана после добавления нового проекта"
+msgstr "Эта задача будет создана после добавления нового проекта."
 
 #: app/models/tasks.py:382
 msgid "Project task template"
@@ -5475,7 +5501,7 @@ msgstr "Параметры, добавляемые к обрабатываемы
 msgid "Export as"
 msgstr "Экспортировать в формате"
 
-#: app/templates/credentials/index.html:185
+#: app/templates/credentials/index.html:201
 #: app/templates/credentials/pentest-index.html:95
 #: app/templates/hosts/excluded-index.html:116 app/templates/hosts/index.html:406
 #: app/templates/networks/index.html:431 app/templates/services/index.html:237
@@ -5485,7 +5511,7 @@ msgstr "Экспортировать в формате"
 msgid "Open in new tab"
 msgstr "Открыть в новой вкладке"
 
-#: app/templates/credentials/index.html:188
+#: app/templates/credentials/index.html:204
 #: app/templates/credentials/pentest-index.html:97
 #: app/templates/credentials/show.html:308
 msgid "Copy"
@@ -5511,62 +5537,39 @@ msgstr ""
 msgid "Parameters for getting data from records"
 msgstr "Параметры для получения данных из записей"
 
-#: app/templates/credentials/multiple_import.html:43
+#: app/templates/credentials/multiple_import.html:44
 msgid "Static data paramethers"
 msgstr "Статические параметры"
 
-#: app/templates/credentials/multiple_import.html:44
+#: app/templates/credentials/multiple_import.html:45
 msgid "These parameters will be added to each new and/or existing object"
 msgstr "Эти параметры будут добавлены каждому новому и/или существующему объекту"
 
-#: app/templates/credentials/multiple_import.html:44
+#: app/templates/credentials/multiple_import.html:45
 msgid "Parameter for adding to data from records"
 msgstr "Параметры для добавления данным к записям"
 
-#: app/templates/credentials/multiple_import.html:61
+#: app/templates/credentials/multiple_import.html:63
 msgid "Content paramether"
 msgstr "Параметры содержимого"
 
-#: app/templates/credentials/multiple_import.html:62
-msgid "Conversation rules:"
-msgstr "Правила преобразования:"
+#: app/templates/credentials/multiple_import.html:64
+msgid "See conversation rules in the docs"
+msgstr "Смотри правила преобразования в документации"
 
 #: app/templates/credentials/multiple_import.html:64
-msgid "Static parameters take precedence over parsing parameters"
-msgstr "Статические параметры имеют приоритет перед параметрами анализа данных"
-
-#: app/templates/credentials/multiple_import.html:66
-msgid ""
-"If the combination «Login:password» or «Login:password hash» already exists, the "
-"existing record will be taken"
-msgstr ""
-"Если комбинация «Логин:пароль» или «Логин:хэш пароля» уже существует, будет "
-"взята существующая запись"
-
-#: app/templates/credentials/multiple_import.html:68
-msgid ""
-"If there is a hash without a login, the data will be substituted for all objects "
-"with this hash"
-msgstr ""
-"Если есть хэш без логина - данные будут подставлены всем объектам с данным хэшом"
-
-#: app/templates/credentials/multiple_import.html:70
-msgid "Column index started from 0"
-msgstr "Номера столбцов начинаются с 0"
-
-#: app/templates/credentials/multiple_import.html:70
 msgid "Data that will be uploaded and converted into objects."
 msgstr "Данные, которые будут загружены и преобразованы в объекты."
 
-#: app/templates/credentials/new.html:43
+#: app/templates/credentials/new.html:45
 msgid "Help:"
 msgstr "Справка:"
 
-#: app/templates/credentials/new.html:46
+#: app/templates/credentials/new.html:48
 msgid "Hash options are also possible:"
 msgstr "Так же возможны следующие варианты хэша:"
 
-#: app/templates/credentials/new.html:64
+#: app/templates/credentials/new.html:66
 msgid "Error when trying to connect the server"
 msgstr "Ошибка при попытке подключения к серверу"
 
@@ -5789,7 +5792,7 @@ msgstr "Выйти"
 msgid "Add new comment"
 msgstr "Добавить комментарий"
 
-#: app/templates/layout/_macrosses.html:697
+#: app/templates/layout/_macrosses.html:719
 msgid "Enter text here"
 msgstr "Введите текст здесь"
 
@@ -6710,3 +6713,23 @@ msgstr "Содержание"
 #~ "The column with the IP address of the host from which the data was received"
 #~ msgstr ""
 #~ "Столбец с IP-адресом конечного устройства, с которого эти данные были получены"
+
+#~ msgid "Static parameters take precedence over parsing parameters"
+#~ msgstr "Статические параметры имеют приоритет перед параметрами анализа данных"
+
+#~ msgid ""
+#~ "If the combination «Login:password» or «Login:password hash» already exists, "
+#~ "the existing record will be taken"
+#~ msgstr ""
+#~ "Если комбинация «Логин:пароль» или «Логин:хэш пароля» уже существует, будет "
+#~ "взята существующая запись"
+
+#~ msgid ""
+#~ "If there is a hash without a login, the data will be substituted for all "
+#~ "objects with this hash"
+#~ msgstr ""
+#~ "Если есть хэш без логина - данные будут подставлены всем объектам с данным "
+#~ "хэшом"
+
+#~ msgid "Column index started from 0"
+#~ msgstr "Номера столбцов начинаются с 0"

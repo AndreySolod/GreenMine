@@ -137,7 +137,7 @@ class Credential(HasComment, db.Model, HasHistory):
             m2m_max_items = current_app.config['GlobalSettings'].m2m_max_items
         except (KeyError, RuntimeError):
             m2m_max_items = 7
-        services =  ";<br>\n".join([str(i.host.ip_address) + str(i.port) for i in list(self.services)[:m2m_max_items:]])
+        services =  ";<br>\n".join([str(i.host.ip_address) + ":" + str(i.port) for i in list(self.services)[:m2m_max_items:]])
         if len(self.services) > m2m_max_items:
             services += ";<br>\n" + str(_l('Total: %(total)s elements', total=len(self.servies)))
         return services
