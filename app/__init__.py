@@ -140,6 +140,11 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
         if string is None:
             return ""
         return string
+    @app.template_filter("bool_to_pretty_string")
+    def add_template_filter_bool_to_pretty_string(value: Optional[bool]) -> str:
+        if value is None:
+            return ""
+        return _l("Yes") if value else _l("No")
 
     # blueprints
     from app.controllers import bp as extensions_bp

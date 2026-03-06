@@ -64,6 +64,8 @@ def credential_new():
         cred = Credential()
         form.populate_obj(db.session, cred, current_user)
         cred.project_id = project_id
+        if cred.is_empty:
+            cred.password = ''
         db.session.add(cred)
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' create new credential #{cred.id}")
@@ -113,6 +115,8 @@ def credential_edit(credential_id):
     if form.validate_on_submit():
         form.populate_obj(db.session, cred)
         cred.updated_by_id = current_user.id
+        if cred.is_empty:
+            cred.password = ''
         db.session.commit()
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit credential #{cred.id}")
         flash(_l('Credential #%(cred_id)s successfully changed', cred_id=credential_id), 'success')

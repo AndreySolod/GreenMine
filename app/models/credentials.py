@@ -105,6 +105,8 @@ class Credential(HasComment, db.Model, HasHistory):
     received_from: so.Mapped[Set["Host"]] = so.relationship(secondary=CredentialByReceivedHost.__table__, primaryjoin=id==CredentialByReceivedHost.credential_id, # type: ignore
                                                              secondaryjoin="CredentialByReceivedHost.host_id==Host.id", lazy='select',
                                                              info={'label': _l("Comprometation source"), 'help_text': _l("An source host in which a credential were be founded")})
+    is_admin: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Is administrator")})
+    is_empty: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Empty password")})
 
     @property
     def fulltitle(self):
@@ -128,6 +130,30 @@ class Credential(HasComment, db.Model, HasHistory):
         if len(self.received_from) > m2m_max_items:
             received_from += ";<br>\n" + str(_l('Total: %(total)s elements', total=len(self.received_from)))
         return received_from
+    
+    @property
+    def services_as_text(self):
+        try:
+            m2m_max_items = current_app.config['GlobalSettings'].m2m_max_items
+        except (KeyError, RuntimeError):
+            m2m_max_items = 7
+        services =  ";<br>\n".join([str(i.host.ip_address) + str(i.port) for i in list(self.services)[:m2m_max_items:]])
+        if len(self.services) > m2m_max_items:
+            services += ";<br>\n" + str(_l('Total: %(total)s elements', total=len(self.servies)))
+        return services
+    
+    @so.validates("password_hash")
+    def validates_ip_address(self, key, password_hash):
+        if isinstance(password_hash, str):
+            return password_hash.lower()
+    
+    @property
+    def pretty_password(self):
+        if self.is_empty:
+            return '<span style="color:grey">' + _l("(Empty)") + "</span>"
+        elif self.password is None:
+            return ''
+        return self.password
 
     class Meta:
         verbose_name = _l("Credential")

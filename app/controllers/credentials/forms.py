@@ -31,7 +31,8 @@ class CredentialForm(FlaskForm):
     services = Select2MultipleField(models.Service, label=_l("%(field_name)s:", field_name=models.Credential.services.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
     is_pentest_credentials = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_pentest_credentials.info["label"]), default=False)
     received_from = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Credential.received_from.info["label"]), description=models.Credential.received_from.info["help_text"], validators=[validators.Optional()], attr_title="treeselecttitle")
-
+    is_admin = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_admin.info["label"]), validators=[validators.Optional()])
+    is_empty = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_empty.info["label"]), validators=[validators.Optional()])
 
 class CredentialCreateForm(CredentialForm):
     submit = wtforms.SubmitField(_l("Create"))
