@@ -38,7 +38,6 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
     if 'check_wordlist' in element:
         cred.check_wordlist = db.session.scalars(sa.select(models.CheckWordlist).where(models.CheckWordlist.id == int(element['check_wordlist']))).first()
     if 'is_admin' in element:
-        print(element['is_admin'])
         cred.is_admin = element['is_admin'] not in ['', None]
     if 'services' in element:
         svc = session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, element['services']))))).all()
@@ -193,7 +192,7 @@ class CredentialMultipleAddForm(FlaskForm):
             parse_attrs['description'] = self.description_position.data
         if self.password_position.data is not None:
             parse_attrs['password'] = self.password_position.data
-        if self.is_admin_position is not None:
+        if self.is_admin_position.data is not None:
             parse_attrs['is_admin'] = self.is_admin_position.data
         processed_data = []
         for line in parse_data.strip().split("\n"):
@@ -211,7 +210,6 @@ class CredentialMultipleAddForm(FlaskForm):
                 elif key == 'password' and self.static_password.data:
                     current_elem[key] = self.static_password.data.strip()
                 elif key == 'is_admin' and self.static_is_admin.data:
-                    print(self.static_is_admin.data)
                     current_elem['is_admin'] = True
                 else: # It's normal -i.e. not static data. trying to get it from sources
                     try:
