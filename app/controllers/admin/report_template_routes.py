@@ -70,7 +70,7 @@ def report_template_edit(template_id: str):
         templ.description = templ.description.replace('\n', ' ').replace('\r', ' ')
         if form.template.data:
             db.session.delete(templ.template)
-            templ_pattern = models.FileData(title=form.template.data.filename, description=_l("Template for Report Templates %(templ_name)s", templ_name=form.title.data))
+            templ_pattern = models.FileData(title=form.template.data.filename, description=str(_l("Template for Report Templates %(templ_name)s", templ_name=form.title.data)))
             templ_pattern.extension = form.template.data.filename.split('.')[-1]
             templ_pattern.data = form.template.data.read()
             templ.template = templ_pattern

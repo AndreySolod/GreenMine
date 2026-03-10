@@ -11,6 +11,7 @@ from flask_babel import lazy_gettext as _l
 from app.helpers.roles import project_role_can_make_action_or_abort
 import jinja2
 from io import BytesIO
+import importlib
 
 
 @bp.route('/index')
@@ -45,17 +46,17 @@ def generate_report_from_template(template_id):
             template_data.write(report_template.template.data)
             template_data.seek(0)
             env = docxtpl.DocxTemplate(template_file=template_data)
-            env.render({'project': project, 'user': current_user})
+            env.render({'project': project, 'user': current_user, 'db': db, 'sa': sa, 'models': importlib.import_module('app.models')})
             result = BytesIO()
             env.save(result)
         else:
             env = jinja2.Environment(loader=jinja2.BaseLoader).from_string(report_template.template.data.decode())
             result = BytesIO()
-            result.write(env.render(project=project, user=current_user).encode())
+            result.write(env.render(project=project, user=current_user, db=db, sa=sa, models=importlib.import_module('app.models')).encode())
         title = report_template.template.title
     except Exception as e:
         result = BytesIO()
-        result.write(f"Error when parsing a template: {e}")
+        result.write(f"Error when parsing a template: {e}".encode())
         title = "ERROR Report.txt"
     result.seek(0)
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' generate new report from template #{template_id} on project #{project_id}")
