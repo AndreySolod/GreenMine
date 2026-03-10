@@ -27,7 +27,7 @@
                         </thead>
                         <tbody>
                             {% for action_module in action_modules %}
-                            <tr data-action-module-name="{{ action_module.__class__.__name__ }}">
+                            <tr id="{{ action_module.__class__.__name__ }}">
                                 <td>{{ action_module.title }}</td>
                                 <td>{{ action_module.description }}</td>
                             </tr>
@@ -49,7 +49,7 @@
             return {css: { cursor: 'pointer' } };
         },
         onDblClickRow: function(row, element, field) {
-            location = ("{{ url_for('action_modules.module_run', project_id=project.id, module_name='__module_name') }}".replace('__module_name', row._data["action-module-name"]))
+            location = ("{{ url_for('action_modules.module_run', project_id=project.id, module_name='__module_name') }}".replace('__module_name', element[0].id))
         },
         icons: JSON.parse("{{ bootstrap_table_icons().strip() }}")
     });
