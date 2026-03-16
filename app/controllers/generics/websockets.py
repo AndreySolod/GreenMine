@@ -24,9 +24,12 @@ def socketio_join_room(data):
     except (AttributeError, TypeError, ValueError, exc.MultipleResultsFound, exc.NoResultFound):
         logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join unexist generic room: {data}")
         return None
-    if not project_role_can_make_action(current_user, obj, 'show_comments'):
-        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join generic room #{data}, in which he has no rights to")
-        return None
+    try:
+        if not project_role_can_make_action(current_user, obj, 'show_comments'):
+            logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to join generic room #{data}, in which he has no rights to")
+            return None
+    except ValueError:
+        pass
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' was joined to generic room #{data}")
     join_room(data, namespace="/generic")
 

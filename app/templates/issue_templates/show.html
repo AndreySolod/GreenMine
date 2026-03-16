@@ -55,7 +55,7 @@
                             {% if template.issue_cve_id == none %}
                             <td></td>
                             {% else %}
-                            <td><a href="{{ url_for('cves.cve_show', cve_id=template.issue_cve_id) }}">{{ template.cve.title }}</a></td>
+                            <td><a href="{{ url_for('cves.cve_show', cve_id=template.issue_cve_id) }}">{{ template.issue_cve.title }}</a></td>
                             {% endif %}
                         </tr>
                     </tbody>

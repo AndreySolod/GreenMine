@@ -37,11 +37,15 @@
                         </tr>
                         <tr>
                             <td>{{ models.Issue.cve.info['label'] }}:</td>
+                            {% if issue.cve != none %}
+                            <td><a href="{{ url_for('cves.cve_show', cve_id=issue.cve.id) }}">{{ issue.cve.title|suppress_none|safe }}</a></td>
+                            {% else %}
                             <td>{{ issue.cve.title|suppress_none|safe }}</td>
+                            {% endif %}
                         </tr>
                         {% if issue.cve != none %}
                         <tr>
-                            <td>{{ issue.cve.__class__.description.info['label'] }}:</td>
+                            <td>{{ issue.cve.__class__.description.info['label'] }} ({{ models.Issue.cve.info["label"] }}):</td>
                             <td>{{ issue.cve.description|safe }}</td>
                         </tr>
                         {% endif %}
