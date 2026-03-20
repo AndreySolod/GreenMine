@@ -1,6 +1,7 @@
 from app.controllers.forms import FlaskForm, WysiwygField
 from app import db
 from app.models import IssueTemplate, Issue, CriticalVulnerability
+from app.controllers.forms import Select2Field
 import wtforms
 import wtforms.validators as validators
 import flask_wtf.file as wtfile
@@ -8,7 +9,7 @@ from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
 import app.models as models
 import json
-from flask import request
+from flask import request, url_for, g
 
 
 def required_validators(column):
@@ -27,6 +28,9 @@ class IssueTemplateForm(FlaskForm):
         super(IssueTemplateForm, self).__init__(*args, **kwargs)
         self.issue_template = template
         self.issue_cve_id.choices = [('0', '')] + db.session.execute(db.select(CriticalVulnerability.id, CriticalVulnerability.title)).all()
+        self.issue_cve_id.callback = url_for('cves.get_cve_select2_data')
+        self.issue_cve_id.locale = g.locale
+        self.issue_cve_id.validate_funcs = lambda x: db.session.scalars(sa.select(models.CriticalVulnerability).where(models.CriticalVulnerability.id == int(x))).first() is not None
     title = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.title.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=IssueTemplate.title.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(IssueTemplate.title.type.length)))])
     string_slug = wtforms.StringField(_l("%(field_name)s:", field_name=IssueTemplate.string_slug.info["label"]), validators=[validators.DataRequired(message=_l("This field is mandatory!")), validators.Length(max=IssueTemplate.string_slug.type.length, message=_l("This field must not exceed %(length)s characters in length", length=str(IssueTemplate.string_slug.type.length)))])
     description = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.description.info["label"]), validators=[validators.Optional()])
@@ -37,7 +41,7 @@ class IssueTemplateForm(FlaskForm):
     issue_riscs = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.issue_riscs.info["label"]), validators=required_validators(Issue.riscs))
     issue_references = WysiwygField(_l("%(field_name)s:", field_name=IssueTemplate.issue_references.info["label"]), validators=required_validators(Issue.references))
     issue_cvss = wtforms.FloatField(_l("%(field_name)s:", field_name=IssueTemplate.issue_cvss.info["label"]), validators=required_validators(Issue.cvss))
-    issue_cve_id = wtforms.SelectField(_l("%(field_name)s:", field_name=IssueTemplate.issue_cve_id.info["label"]), validators=required_validators(Issue.cve_id))
+    issue_cve_id = Select2Field(models.CriticalVulnerability, label=_l("%(field_name)s:", field_name=IssueTemplate.issue_cve_id.info["label"]), validators=required_validators(Issue.cve_id))
 
     def validate_string_slug(form, field):
         another_issue_template = db.session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == field.data.strip())).first()

@@ -1,4 +1,4 @@
-from flask import render_template, abort, redirect, url_for, flash, request
+from flask import render_template, abort, redirect, url_for, flash, request, jsonify, current_app
 from flask_login import current_user
 from app.controllers.cves import bp
 from app.models import CriticalVulnerability, ProgrammingLanguage, VulnerableEnvironmentType
@@ -9,6 +9,8 @@ from .forms import CriticalVulnerabilityCreateForm, CriticalVulnerabilityEditFor
 import json
 from flask_babel import lazy_gettext as _l
 from app.helpers.roles import user_position_can_make_action_or_abort
+import sqlalchemy as sa
+import sqlalchemy.exc as exc
 
 
 @bp.route('/index')
@@ -105,3 +107,32 @@ def cve_delete(cve_id):
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' delete cve #{cve_id}")
     flash(_l("Critical vulnerability has been successvully deleted"), 'success')
     return redirect(url_for('cves.cve_index'))
+
+
+@bp.route('/cvss-by-cve/<cve_id>')
+def get_issue_cvss_by_cve(cve_id: str):
+    try:
+        cve = db.session.scalars(sa.select(CriticalVulnerability).where(CriticalVulnerability.id == int(cve_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        logger.warning("Erorr when trying to obtain cvss by cve_id")
+        abort(400)
+    return jsonify({'cvss': cve.cvss})
+
+
+@bp.route('get-cve-select2-data')
+def get_cve_select2_data():
+    try:
+        page = int(request.args.get('page'))
+    except TypeError:
+        page = 1
+    except ValueError:
+        abort(400)
+    user_position_can_make_action_or_abort(current_user, CriticalVulnerability, 'index')
+    query = request.args.get('term') if request.args.get('term') else ''
+    data = db.session.scalars(sa.select(CriticalVulnerability).where(CriticalVulnerability.title.ilike('%' + query + '%'))
+                                        .limit(current_app.config["GlobalSettings"].pagination_element_count_select2 + 1)
+                                        .offset((page - 1) * current_app.config["GlobalSettings"].pagination_element_count_select2)).all()
+    more = len(data) == current_app.config["GlobalSettings"].pagination_element_count_select2 + 1
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request critical vulnerability via select2-data")
+    result = {'results': [{'id': i.id, 'text': i.title} for i in data[:min(len(data), current_app.config["GlobalSettings"].pagination_element_count_select2):]], 'pagination': {'more': more}}
+    return jsonify(result)

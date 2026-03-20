@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, url_for, request, abort, jso
 from flask_login import current_user
 from app.controllers.issues import bp
 from app import db, side_libraries, logger
-from app.models import Issue, Project, IssueStatus, IssueTemplate
+from app.models import Issue, Project, IssueStatus, IssueTemplate, CriticalVulnerability
 from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, BootstrapTableSearchParams
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.issues.forms as forms

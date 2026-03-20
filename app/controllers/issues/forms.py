@@ -1,7 +1,7 @@
 import wtforms
 import wtforms.validators as validators
 from app import db, sanitizer
-from app.controllers.forms import FlaskForm, WysiwygField, TreeSelectMultipleField, Select2MultipleField
+from app.controllers.forms import FlaskForm, WysiwygField, TreeSelectMultipleField, Select2MultipleField, Select2Field
 import app.models as models
 from flask_babel import lazy_gettext as _l
 from flask import url_for, g
@@ -22,6 +22,9 @@ class IssueForm(FlaskForm):
         self.hosts.callback = url_for('networks.get_select2_host_data', project_id=project_id)
         self.hosts.locale = g.locale
         self.hosts.validate_funcs = lambda x: validate_host(project_id, x)
+        self.cve_id.callback = url_for('cves.get_cve_select2_data')
+        self.cve_id.locale = g.locale
+        self.cve_id.validate_funcs = lambda x: db.session.scalars(sa.select(models.CriticalVulnerability).where(models.CriticalVulnerability.id == int(x))).first() is not None
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Issue.title.info["label"]),
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=models.Issue.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Issue.title.type.length))])
@@ -35,7 +38,7 @@ class IssueForm(FlaskForm):
     references = WysiwygField(_l("%(field_name)s:", field_name=models.Issue.references.info["label"]),
                               validators=[validators.Optional()], description=_l("Additional links with information about the problem"))
     cvss = wtforms.FloatField(_l("%(field_name)s:", field_name=models.Issue.cvss.info["label"]), validators=[validators.Optional()])
-    cve_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Issue.cve_id.info["label"]), validators=[validators.Optional()])
+    cve_id = Select2Field(models.CriticalVulnerability, label=_l("%(field_name)s:", field_name=models.Issue.cve_id.info["label"]), validators=[validators.Optional()])
     status_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Issue.status_id.info["label"]), validators=[validators.Optional()])
     services = Select2MultipleField(models.Service, label=_l("%(field_name)s:", field_name=models.Issue.services.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
     hosts = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Issue.hosts.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')

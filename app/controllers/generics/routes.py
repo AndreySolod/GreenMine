@@ -9,7 +9,7 @@ import importlib
 
 @bp.route('/enumeration_objects/<object_class>/list')
 @login_required
-def enumeration_object_list(object_class):
+def enumeration_object_list(object_class: str):
     modules = importlib.import_module('app.models')
     try:
         page = int(request.args.get('page'))

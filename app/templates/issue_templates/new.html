@@ -46,3 +46,25 @@
     </div>
 </div>
 {% endblock %}
+
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $('#{{ form.issue_cve_id.id }}').on('select2:select', function(e) {
+        if (e.params.data.id !== null || e.params.data.id !== undefined) {
+            $.ajax({
+                "method": "GET",
+                "url": '{{ url_for("cves.get_issue_cvss_by_cve", cve_id="__cve_id") }}'.replace("__cve_id", e.params.data.id)
+            }).done(function (response) {
+                let cvss_value = $('#{{ form.issue_cvss.id }}')[0].value;
+                if (cvss_value === '' || cvss_value === undefined) {
+                    $('#{{ form.issue_cvss.id }}')[0].value = response.cvss;
+                }
+            }).fail(function (error) {
+                alert("{{ _('Something went wrong. Try to reload page') }}");
+            })
+        }
+    });
+</script>
+{% endblock %}

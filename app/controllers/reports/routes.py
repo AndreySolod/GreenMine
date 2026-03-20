@@ -1,4 +1,4 @@
-from app import db, logger
+from app import db, logger, sanitizer
 from app.controllers.reports import bp
 from flask_login import current_user
 from flask import request, render_template, abort, send_file
@@ -11,6 +11,7 @@ from flask_babel import lazy_gettext as _l
 from app.helpers.roles import project_role_can_make_action_or_abort
 import jinja2
 from io import BytesIO
+from bs4 import BeautifulSoup
 import importlib
 
 
@@ -46,7 +47,8 @@ def generate_report_from_template(template_id):
             template_data.write(report_template.template.data)
             template_data.seek(0)
             env = docxtpl.DocxTemplate(template_file=template_data)
-            env.render({'project': project, 'user': current_user, 'db': db, 'sa': sa, 'models': importlib.import_module('app.models')})
+            env.render({'project': project, 'user': current_user, 'db': db, 'sa': sa, 'models': importlib.import_module('app.models'), 'sanitizer': sanitizer,
+                        'BeautifulSoup': BeautifulSoup})
             result = BytesIO()
             env.save(result)
         else:
