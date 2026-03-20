@@ -236,7 +236,7 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
                 for related_obj in list(attrs[rel_obj_class.key].history.added) + list(attrs[rel_obj_class.key].history.deleted):
                     # touch related objects to update him
                     if hasattr(related_obj, 'history'):
-                        if rel_obj_class.back_populates != '' and rel_obj_class.back_populates is not None:
+                        if rel_obj_class.back_populates not in ["", None]:
                             getattr(related_obj, rel_obj_class.back_populates)
                         elif isinstance(rel_obj_class.backref, str):
                             # if backref is setted as string

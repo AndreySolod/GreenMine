@@ -63,15 +63,19 @@ class EditRelatedObjectsForm(FlaskForm):
         self.services.data = [str(i.id) for i in issue.services]
         self.services.locale = g.locale
         self.services.callback = url_for('networks.get_select2_service_data', project_id=issue.project_id)
+        self.hosts.data = [str(i.id) for i in issue.hosts]
+        self.hosts.locale = g.locale
+        self.hosts.callback = url_for('networks.get_select2_host_data', project_id=issue.project_id)
         self.tasks_by_issue.data = [str(i.id) for i in issue.tasks_by_issue]
         self.proof_of_concept_source_code_language.choices = [(str(i.id), i.title) for i in current_user.programming_languages]
         self.proof_of_concept_source_code_language.data = str(getattr(issue.proof_of_concept, 'source_code_language_id', ''))
-        print("Debug", getattr(issue.proof_of_concept, 'source_code_language_id', ''))
         self.proof_of_concept_title.data = getattr(issue.proof_of_concept, 'title', '')
         self.proof_of_concept_description.data = getattr(issue.proof_of_concept, 'description', '')
         self.proof_of_concept_source_code.data = sanitizer.unescape(getattr(issue.proof_of_concept, 'source_code', ''))
     services = Select2MultipleField(models.Service, _l("%(field_name)s:", field_name=models.Issue.services.info["label"]), validators=[validators.Optional()],
                                     id='EditRelatedServicesField', attr_title='treeselecttitle')
+    hosts = Select2MultipleField(models.Host, _l("%(field_name)s:", field_name=models.Issue.hosts.info["label"]), validators=[validators.Optional()],
+                                    id='EditRelatedHostsField', attr_title='treeselecttitle')
     tasks_by_issue = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Issue.tasks_by_issue.info["label"]), validators=[validators.Optional()], id='EditRelatedTasksField')
     proof_of_concept_title = wtforms.StringField(_l("%(field_name)s:", field_name=models.ProofOfConcept.title.info["label"]), validators=[validators.InputRequired(message=_l("This field is mandatory!")),
                                                                                                                                           validators.Length(max=models.ProofOfConcept.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.ProofOfConcept.title.type.length))])

@@ -64,6 +64,38 @@ def edit_related_services(data):
         emit('change related issues', {'rows': new_issues},
             namespace='/service', to=str(service.id))
 
+@socketio.on('edit related hosts', namespace='/issue')
+@authenticated_only
+def edit_related_hosts(data):
+    r = get_current_room()
+    if r is None:
+        return False
+    issue_id, current_room_name = r
+    try:
+        issue = db.session.scalars(sa.select(models.Issue).where(models.Issue.id == int(issue_id))).one()
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        return None
+    if not project_role_can_make_action(current_user, issue, 'update'):
+        return None
+    try:
+        hosts = db.session.scalars(sa.select(models.Host).join(models.Host.from_network)
+                                      .where(sa.and_(models.Host.id.in_([int(i) for i in data['related_hosts']]),
+                                                                          models.Network.project_id==issue.project_id))).all()
+        updated_hosts = set(issue.hosts)
+        updated_hosts = updated_hosts.union(set(hosts))
+        issue.hosts = set(hosts)
+        db.session.commit()
+    except (ValueError, TypeError, KeyError):
+        print("Exception here!")
+        return None
+    new_hosts = []
+    for i in issue.hosts:
+        ns = {'id': i.id, 'title': i.title, 'ip_address': str(i.ip_address), "dnsnames": i.dnsnames_as_text, "operation_system_family": getattr(i.operation_system_family, 'title', ""), "operation_system_gen": i.operation_system_gen}
+        new_hosts.append(ns)
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' edit related hosts on issue #{issue.id}")
+    emit('change related hosts', {'rows': new_hosts},
+         namespace='/issue', to=current_room_name)
+
 
 @socketio.on('edit related tasks', namespace='/issue')
 @authenticated_only

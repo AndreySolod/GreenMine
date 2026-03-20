@@ -133,13 +133,13 @@ class Issue(HasComment, db.Model, HasHistory):
     status_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('issue_status.id', ondelete='SET NULL'), info={'label': _l('Status')})
     status: so.Mapped['IssueStatus'] = so.relationship(lazy='joined', info={'label': _l('Status')})
     services: so.Mapped[Set["Service"]] = so.relationship(secondary=IssueHasService.__table__, # type: ignore
-                                                                     primaryjoin='Issue.id==IssueHasService.issue_id',
+                                                                     primaryjoin=id==IssueHasService.issue_id,
                                                                      secondaryjoin='Service.id==IssueHasService.service_id',
                                                                      back_populates="issues",
                                                                      info={'label': _l('Related services')})
     hosts: so.Mapped[Set["Host"]] = so.relationship(secondary=IssueHasHost.__table__, # type: ignore
-                                                    primaryjoin='Issue.id==IssueHasHost.issue_id',
-                                                    secondaryjoin='Host.id==IssueHasHost.host_id',
+                                                    primaryjoin=id==IssueHasHost.issue_id,
+                                                    secondaryjoin='IssueHasHost.host_id==Host.id',
                                                     back_populates="issues",
                                                     info={'label': _l('Related hosts')})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete="CASCADE"), info={'label': _l("Project")})

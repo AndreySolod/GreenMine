@@ -293,7 +293,7 @@ class Host(HasComment, db.Model, HasHistory):
     compromised: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Already compromised"), "description" :_l("If true, the host has been completely compromised")}, server_default=sa.false())
     issues: so.Mapped[Set[Issue]] = so.relationship(secondary="issue_has_host",
                                                     primaryjoin="Host.id==IssueHasHost.host_id",
-                                                    secondaryjoin="Issue.id==IssueHasHost.host_id",
+                                                    secondaryjoin="IssueHasHost.issue_id==Issue.id",
                                                     back_populates='hosts', info={'label': _l("Related issues")})
     accessible_services: so.Mapped[Set["Service"]] = so.relationship(secondary="accessible_service_has_host",
                                                                      primaryjoin="Host.id==AccessibleServiceHasHost.host_id",
@@ -383,6 +383,17 @@ class Host(HasComment, db.Model, HasHistory):
         self_ifaces = self.interfaces.copy()
         for i in self_ifaces:
             self.drop_interface(i)
+    
+    @property
+    def dnsnames_as_text(self):
+        try:
+            m2m_max_items = current_app.config['GlobalSettings'].m2m_max_items
+        except (KeyError, RuntimeError):
+            m2m_max_items = 7
+        dnsnames =  ";<br>\n".join([str(i.title) for i in list(self.dnsnames)[:m2m_max_items:]])
+        if len(self.dnsnames) > m2m_max_items:
+            dnsnames += ";<br>\n" + str(_l('Total: %(total)s elements', total=len(self.dnsnames)))
+        return dnsnames
 
     class Meta:
         verbose_name = _l("Host")

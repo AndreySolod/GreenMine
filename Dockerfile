@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.14
 
 RUN apt update && apt -y dist-upgrade && mkdir /greenmine \
     && apt install -y wget apt-transport-https ca-certificates python3 python-is-python3 python3-pip nmap

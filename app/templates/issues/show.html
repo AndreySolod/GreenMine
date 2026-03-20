@@ -86,6 +86,14 @@
                             {{ _("Related tasks") }}</button>
                     </li>
                     {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=issue.project) %}
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="hosts-tab" data-bs-toggle="tab"
+                            data-bs-target="#hosts" type="button" role="tab" aria-controls="home"
+                            aria-selected="false"><i class="{{ models.Host.Meta.icon }}"></i>
+                            {{ _("Related hosts") }}</button>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
             <div class="card-body">
@@ -268,6 +276,52 @@
                         </table>
                     </div>
                     {% endif %}
+                    {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=issue.project) %}
+                    <div class="tab-pane fade" id="hosts" role="tabpanel" aria-labelledby="hosts-tab">
+                        <div id="hosts-toolbar">
+                        {% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+                        <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#modalEditRelatedHosts" data-toggle="tooltip" data-placement="top" title="{{ _('Edit related hosts') }}"><i class="fa-solid fa-link"></i></button>
+                        {% endif %}
+                        </div>
+                        <table class="table" id="hosts-table" data-toolbar="#hosts-toolbar"
+                                             data-page-size="5"
+                                             data-pagination="true"
+                                             data-search="true" 
+                                            data-show-columns="true"
+                                            data-show-toggle="true"
+                                            data-show-export="true"
+                                            data-show-multi-sort="true"
+                                            data-filter-control="true"
+                                            data-buttons-class="primary"
+                                            data-row-style="default_row_style"
+                                            data-cookie="true"
+                                            data-cookie-id-table="HostsByIssueShow"
+                                            data-cookie-storage="localStorage">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-sortable="true" data-align="center">{{ models.Host.id.info["label"] }}</th>
+                                    <th data-field="title" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.title.info["label"] }}</th>
+                                    <th data-field="ip_address" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.ip_address.info["label"] }}</th>
+                                    <th data-field="dnsnames" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.dnsnames.info["label"] }}</th>
+                                    <th data-field="operation_system_family" data-sortable="true" data-align="center" data-filter-control="select">{{ models.Host.operation_system_family.info["label"] }}</th>
+                                    <th data-field="operation_system_gen" data-sortable="true" data-align="center" data-filter-control="input">{{ models.Host.operation_system_gen.info["label"] }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for host in issue.hosts %}
+                                <tr style="cursor:pointer">
+                                    <td>{{ host.id }}</td>
+                                    <td>{{ host.title|suppress_none }}</td>
+                                    <td>{{ host.ip_address }}</td>
+                                    <td>{{ host.dnsnames_as_text }}</td>
+                                    <td>{{ getattr(host.operation_system_family, 'title', "") }}</td>
+                                    <td>{{ host.operation_system_gen }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -396,6 +450,32 @@
 </div>
 {% endif %}
 
+{# modal window to edit related hosts #}
+{% if roles.project_role_can_make_action(current_user, issue, 'update') %}
+<div class="modal fade modal-xl" id="modalEditRelatedHosts" tabindex="-1" aria-labelledby="modalEditRelatedHostsLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalEditRelatedHostsLabel">{{ _("Edit related hosts") }}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ _('Close') }}"></button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 position-relative">
+          <div class="form-group">
+            {{ form_element(edit_related_objects, edit_related_objects.hosts) }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="edit_related_hosts_button" class="btn btn-primary">{{ _("Save") }}</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {# modal window to edit Proof of Concept #}
 {% if roles.project_role_can_make_action(current_user, issue, 'update') %}
 <div class="modal fade modal-xl" id="modalEditProofOfConcept" tabindex="-1" aria-labelledby="modalEditProofOfConceptLabel"
@@ -434,6 +514,7 @@
 {% block script %}
 {{ super() }}
 {{ load_bootstrap_table_js("services-table", "networks.service_show", "service_id") }}
+{{ load_bootstrap_table_js("hosts-table", "networks.host_show", "host_id") }}
 {{ load_bootstrap_table_js("tasks-table", "tasks.projecttask_show", "projecttask_id") }}
 <script nonce="{{ csp_nonce() }}">
     function default_row_style(row, index) {
@@ -450,9 +531,21 @@
         issueSocket.emit('edit related services', {'related_services': related_services});
         bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedServices')).hide();
     });
+    document.getElementById('edit_related_hosts_button').addEventListener('click', function() {
+        let related_hosts = Array.from(document.getElementById("{{ edit_related_objects.hosts.id }}").options) // Convert options to an array
+        .filter(option => option.selected)      // Filter selected options
+        .map(option => option.value);
+        issueSocket.emit('edit related hosts', {'related_hosts': related_hosts});
+        bootstrap.Modal.getInstance(document.getElementById('modalEditRelatedHosts')).hide();
+    });
     issueSocket.on('change related services', function(data) {
         $(function() {
             $('#services-table').bootstrapTable('load', data.rows);
+        })
+    });
+    issueSocket.on('change related hosts', function(data) {
+        $(function() {
+            $('#hosts-table').bootstrapTable('load', data.rows);
         })
     });
 
