@@ -1,5 +1,8 @@
 import importlib
 import logging.handlers
+import sys
+import atexit
+import signal
 from flask import Flask, current_app, request, g, has_app_context, has_request_context, render_template
 from config import DevelopmentConfig
 from flask_sqlalchemy import SQLAlchemy
@@ -19,9 +22,12 @@ from app.extensions.sanitizer import TextSanitizerManager
 from app.extensions.moment import Moment
 from app.extensions.side_libraries import SideLibraries
 from app.extensions.security import PasswordPolicyManager
+from app.extensions.task_processor import TaskProcessor
+from app.extensions.webpush import WebPusher
 from flask_socketio import SocketIO
 from app.action_modules import AutomationModules
 import werkzeug.exceptions
+from werkzeug.serving import is_running_from_reloader
 from pathlib import Path
 from typing import Optional
 import logging
@@ -56,6 +62,8 @@ automation_modules = AutomationModules()
 babel = Babel()
 csp = CSPManager()
 sanitizer = TextSanitizerManager()
+task_processor = TaskProcessor()
+web_pusher = WebPusher(icon_path="/static/img/favicon_white.webp")
 side_libraries = SideLibraries(libraries_file=Path(__file__).parent / "static_config_paths.yml", always_required_libraries=['notify', 'socketio'])
 password_policy = PasswordPolicyManager(change_password_callback='users.user_change_password_callback', exempt_bp=set(['files']), exempt_endpoint=set(["generic.get_current_user_theme_style", "generic.get_ckeditor_styles"]))
 
@@ -68,9 +76,27 @@ class FlaskGreenMine(Flask):
         models = importlib.import_module('app.models')
         models.Hook.load_hooks(self)
         models.Hook.configure_listener()
+    
+    def _graceful_shutdown(self, signum=None, frame=None):
+        """We stop the background thread and terminate the process."""
+        logger.info("Graceful shutdown initiated by signal %s", signum)
+        if hasattr(self, 'task_processor'):
+            self.task_processor.stop(wait=True)
+        sys.exit(0)
+
+    def init_task_processor(self):
+        self.task_processor = task_processor
+        self.task_processor.start(self)
+        signal.signal(signal.SIGINT, self._graceful_shutdown)
+        if not hasattr(self, '_cleanup_registered'):
+            atexit.register(lambda: self.task_processor.stop(wait=True)) 
+            self._cleanup_registered = True
+
     def run(self, *args, **kwargs):
         self.setting_custom_attributes_for_application()
         self.init_hooks()
+        if not self.debug or is_running_from_reloader():
+            self.init_task_processor()
         return super(FlaskGreenMine, self).run(*args, **kwargs)
 
 def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenMine:
@@ -90,6 +116,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     side_libraries.init_app(app)
     sanitizer.init_app(app)
     password_policy.init_app(app)
+    web_pusher.init_app(app)
 
     # register automation module as project_object_with_permissions:
     from app.helpers.admin_helpers import project_object_with_permissions
@@ -110,7 +137,12 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
         elif app.config["GlobalSettings"].default_language.string_slug != 'auto':
             return app.config["GlobalSettings"].default_language.code
         
-        return request.accept_languages.best_match(app.config["LANGUAGES"])
+        bm = request.accept_languages.best_match(app.config["LANGUAGES"])
+        if current_user.is_authenticated and current_user.last_used_language_code != bm:
+            current_user.last_used_language_code = bm
+            db.session.add(current_user)
+            db.session.commit()
+        return bm
     babel.init_app(app, locale_selector=get_locale)
 
     # set context processor
@@ -126,7 +158,8 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
                 'getattr': getattr, 'is_empty_string': is_empty_string,
                 'is_archived': False, 'models': importlib.import_module('app.models'),
                 'GlobalSettings': current_app.config["GlobalSettings"], 'need_socetio': False,
-                'roles': importlib.import_module('app.helpers.roles'), 'enumerate': enumerate}
+                'roles': importlib.import_module('app.helpers.roles'), 'enumerate': enumerate,
+                'vapid_public_key': web_pusher.public_key()}
     
     @app.template_filter('escapejs')
     def add_template_filter_escapejs(string: str | dict) -> Markup:

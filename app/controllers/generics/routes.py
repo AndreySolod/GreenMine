@@ -1,7 +1,7 @@
 from app.controllers.generics import bp
 from app import db, logger
 import sqlalchemy as sa
-from flask import request, abort, jsonify, current_app, make_response
+from flask import request, abort, jsonify, current_app, make_response, url_for
 from flask_login import current_user, login_required
 from app.helpers.admin_helpers import get_enumerated_objects
 import importlib
@@ -122,3 +122,38 @@ def get_ckeditor_styles():
     response = make_response(styles)
     response.headers['Content-Type'] = 'text/css'
     return response
+
+@bp.route('/manifest.json')
+def get_manifest():
+    ''' Returned an manifest.json file '''
+    if current_user.is_authenticated:
+        background_color = current_user.theme_style.main_content_background_color
+        theme_color = current_user.theme_style.main_color
+    else:
+        background_color = '#e6ecf3'
+        theme_color = '#0a7700'
+    manifest = {
+        "short_name": "GreenMine",
+        "name": "GreenMine - Pentest Collaboration Platform",
+        "start_url": "/",
+        "display": "standalone",
+        "scope": "/",
+        "background_color": background_color,
+        "theme_color": theme_color,
+        "favicon": {
+            "href": url_for('static', filename='img/favicon.webp')
+        },
+        "icons": [
+            {
+                "src": url_for('static', filename="img/favicon_192.png"),
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": url_for('static', filename="img/favicon_32.png"),
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    }
+    return jsonify(manifest)

@@ -48,33 +48,37 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
 
 def process_credentials_multiple_import_data(project_id: int, processed_data: List[Dict[str, str]], created_by_id: int, session:so.Session) -> None:
     for e in processed_data:
-        if all([i in e for i in ("login", "password", "received_from")]):
-            creds =  session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e['login'],
+        if all([i in e for i in ("domain", "login", "password", "received_from")]):
+            creds =  session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+                                                                                models.Credential.login == e['login'],
                                                                                 models.Credential.password == e['password'],
                                                                                 models.Credential.project_id == project_id))).all()
             for i in creds:
                 i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
                 i.updated_by_id = created_by_id
-        if all([i in e for i in ("login", "password_hash", "hash_type", "received_from")]):
+        if all([i in e for i in ("domain", "login", "password_hash", "hash_type", "received_from")]):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).first()
-            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e['login'],
+            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+                                                                               models.Credential.login == e['login'],
                                                                                models.Credential.password_hash == e['password_hash'].strip().lower(),
                                                                                models.Credential.hash_type_id == hash_type_id,
                                                                                models.Credential.project_id == project_id))).all()
             for i in creds:
                 i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
                 i.updated_by_id = created_by_id
-        if all([i in e for i in ("login", "password", "is_admin", "services")]):
-            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e['login'],
+        if all([i in e for i in ("domain", "login", "password", "is_admin", "services")]):
+            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+                                                                               models.Credential.login == e['login'],
                                                                                models.Credential.password == e['password'],
                                                                                models.Credential.is_admin == e['is_admin'],
                                                                                models.Credential.project_id == project_id))).all()
             for i in creds:
                 i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
                 i.updated_by_id = created_by_id
-        if all([i in e for i in ("login", "password_hash", "hash_type", "is_admin", "services")]):
+        if all([i in e for i in ("domain", "login", "password_hash", "hash_type", "is_admin", "services")]):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).first()
-            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e['login'],
+            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+                                                                               models.Credential.login == e['login'],
                                                                                models.Credential.password_hash == e['password_hash'].strip().lower(),
                                                                                models.Credential.hash_type_id == hash_type_id,
                                                                                models.Credential.is_admin == e['is_admin'],
@@ -96,18 +100,32 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
                     i.check_wordlist_id = session.scalars(sa.select(models.CheckWordlist.id).where(models.CheckWordlist.id == int(e['check_wordlist']))).first()
         # Now check - if this credential is exist
         creds = []
+        if all([i in e for i in ("domain", "login", "password", 'is_admin')]):
+            creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+                                                                                    models.Credential.login == e['login'],
+                                                                                    models.Credential.password == e['password'],
+                                                                                    models.Credential.is_admin == e['is_admin'],
+                                                                                    models.Credential.project_id == project_id))).all())
+        if all([i in e for i in ("domain", "login", "password_hash", "hash_type", "is_admin")]):
+            hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).one()
+            creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+                                                                                    models.Credential.login == e['login'],
+                                                                                    models.Credential.password_hash == e['password_hash'].strip().lower(),
+                                                                                    models.Credential.hash_type_id == hash_type_id,
+                                                                                    models.Credential.is_admin == e['is_admin'],
+                                                                                    models.Credential.project_id == project_id))).all())
         if all([i in e for i in ("login", "password", 'is_admin')]):
             creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e['login'],
-                                                                                     models.Credential.password == e['password'],
-                                                                                     models.Credential.is_admin == e['is_admin'],
-                                                                                     models.Credential.project_id == project_id))).all())
+                                                                                    models.Credential.password == e['password'],
+                                                                                    models.Credential.is_admin == e['is_admin'],
+                                                                                    models.Credential.project_id == project_id))).all())
         if all([i in e for i in ("login", "password_hash", "hash_type", "is_admin")]):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).one()
             creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.login == e['login'],
-                                                                                     models.Credential.password_hash == e['password_hash'].strip().lower(),
-                                                                                     models.Credential.hash_type_id == hash_type_id,
-                                                                                     models.Credential.is_admin == e['is_admin'],
-                                                                                     models.Credential.project_id == project_id))).all())
+                                                                                    models.Credential.password_hash == e['password_hash'].strip().lower(),
+                                                                                    models.Credential.hash_type_id == hash_type_id,
+                                                                                    models.Credential.is_admin == e['is_admin'],
+                                                                                    models.Credential.project_id == project_id))).all())
         if all([i in e for i in ("password_hash", "hash_type")]) and (not "login" in e):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).first()
             creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.password_hash == e['password_hash'],
@@ -117,6 +135,12 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
             e.setdefault('login', '-')
             cred = models.Credential(login=sanitizer.escape(e['login']), created_by_id=created_by_id, project_id=project_id)
             set_credential_data(cred, e, project_id, session)
+        else:
+            for cred in creds:
+                cred.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
+                if cred.check_wordlist_id is None:
+                    cred.check_wordlist_id = session.scalars(sa.select(models.CheckWordlist.id).where(models.CheckWordlist.id == int(e['check_wordlist']))).first()
+                cred.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
     session.commit()
             
 
@@ -143,7 +167,10 @@ class CredentialMultipleAddForm(FlaskForm):
     description_position = wtforms.IntegerField(_l("Credential description column number:"), description=_l("If credential is exists, the value of this field will be added to the end of the current one."), validators=[validators.Optional()])
     password_position = wtforms.IntegerField(_l("Password column number:"), validators=[validators.Optional()])
     is_admin_position = wtforms.IntegerField(_l("Is admin column number:"), description=_l("Set to True for all values other than empty"), validators=[validators.Optional()])
-    delimiter = wtforms.StringField(_l("Column delimither:"), default=":", validators=[], description=_l("The symbol by which the rows will be divided into columns"))
+    domain_position = wtforms.IntegerField(_l("Domain column number:"), validators=[validators.Optional()])
+    delimiter = wtforms.StringField(_l("Column delimiter:"), default=":", validators=[], description=_l("The symbol by which the rows will be divided into columns"))
+    domain_delimiter = wtforms.StringField(_l("Domain delimiter:"), default="\\", validators=[validators.Optional()], description=_l("The symbol by which the column 'login' will be divided into login and domain. Leave blank to skip this function"))
+    static_domain = wtforms.StringField(_l("Static domain:"), description=_l("The domain that will match all the lines"), validators=[validators.Optional()])
     static_login = wtforms.StringField(_l("Static login:"), description=_l("The login that will match all the lines"))
     static_password_hash = wtforms.StringField(_l("Static password hash:"), validators=[validators.Optional()], description=_l("The password that will match all the lines"))
     static_hash_type = Select2Field(models.HashType, label=_l("Static hash type:"), description=_l("An hash type, that will be added to all the lines"), validators=[validators.Optional()])
@@ -153,7 +180,7 @@ class CredentialMultipleAddForm(FlaskForm):
     static_received_from = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Credential.received_from.info["label"]), description=models.Credential.received_from.info["help_text"], validators=[validators.Optional()], attr_title="treeselecttitle")
     static_services = Select2MultipleField(models.Service, label=_l("%(field_name)s:", field_name=models.Credential.services.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
     static_is_admin = wtforms.BooleanField(_l("Statis is admin:"), validators=[validators.Optional()])
-    content_data = wtforms.TextAreaField(_l("Content:"), description=_l("Input content to add here (one credential per line with attribute, separated by column delimither)"))
+    content_data = wtforms.TextAreaField(_l("Content:"), description=_l("Input content to add here (one credential per line with attribute, separated by column delimither)"), render_kw={'rows': 10})
     file_data = wtforms.FileField(_l("File:"), description=_l("A file with credentials to add (one credential per line, separated by column delimither)"), validators=[FileAllowed(set(["txt"]), message=_l("Only .txt file are allowed!")), validators.Optional()])
     submit = wtforms.SubmitField(_l("Add"))
 
@@ -194,6 +221,8 @@ class CredentialMultipleAddForm(FlaskForm):
             parse_attrs['password'] = self.password_position.data
         if self.is_admin_position.data is not None:
             parse_attrs['is_admin'] = self.is_admin_position.data
+        if self.domain_position.data is not None:
+            parse_attrs['domain'] = self.domain_position.data
         processed_data = []
         for line in parse_data.strip().split("\n"):
             if line == '':
@@ -211,6 +240,8 @@ class CredentialMultipleAddForm(FlaskForm):
                     current_elem[key] = self.static_password.data.strip()
                 elif key == 'is_admin' and self.static_is_admin.data:
                     current_elem['is_admin'] = True
+                elif key == 'domain' and self.static_domain.data:
+                    current_elem['domain'] = self.static_domain.data.strip()
                 else: # It's normal -i.e. not static data. trying to get it from sources
                     try:
                         line_data = line[value]

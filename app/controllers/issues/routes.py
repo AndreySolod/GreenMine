@@ -40,7 +40,7 @@ def issue_data_index():
         abort(400)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': Issue,
-                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
+                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve', 'order_number'],
                                                      'base_select': lambda x: x.where(db.and_(Issue.project_id==project_id, Issue.archived == False))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
@@ -73,7 +73,7 @@ def exist_issue_data_index():
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     aliased = so.aliased(IssueStatus)
     additional_params: BootstrapTableSearchParams = {'obj': Issue,
-                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
+                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve', 'order_number'],
                                                      'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived == False, aliased.string_slug != 'fixed'))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request exist issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
@@ -106,7 +106,7 @@ def positive_issue_data_index():
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     aliased = so.aliased(IssueStatus)
     additional_params: BootstrapTableSearchParams = {'obj': Issue,
-                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve'],
+                                                     'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve', 'order_number'],
                                                      'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived==False, aliased.string_slug == 'fixed'))}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request positive issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
@@ -233,7 +233,7 @@ def issue_carousel():
     project = get_or_404(db.session, Project, project_id)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project=project)
     confirmed_status = db.session.scalars(sa.select(IssueStatus).where(IssueStatus.string_slug == 'confirmed')).one()
-    issues = db.session.scalars(sa.select(Issue).where(Issue.project_id==project_id, Issue.archived==False, Issue.status_id == confirmed_status.id).order_by(sa.desc(Issue.cvss))).all()
+    issues = db.session.scalars(sa.select(Issue).where(Issue.project_id==project_id, Issue.archived==False, Issue.status_id == confirmed_status.id).order_by(Issue.order_number.asc())).all()
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request carousel for project #{project_id}")
     ctx = get_default_environment(Issue(project=project), 'carousel')
     context = {'issues': issues}

@@ -31,5 +31,7 @@ gostcrypto
 psycopg
 gunicorn
 gevent-websocket
+py_vapid
+pywebpush
 git+https://gitverse.ru/NekiyUser/CVE-2022-1026
 git+https://gitverse.ru/NekiyUser/pymetasploit

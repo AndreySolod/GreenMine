@@ -60,7 +60,7 @@ class ProjectAdditionalFieldData(db.Model):
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={"label": _l("Updated by")}) # type: ignore
     field_type_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectAdditionalField.id, ondelete='CASCADE'), info={'label': _l("Field type")})
     field_type: so.Mapped[ProjectAdditionalField] = so.relationship(lazy='select', back_populates="project_fields", info={'label': _l("Field type")})
-    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l("Project")})
+    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l("Project")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', info={'label': _l("Project")}, back_populates='additional_parameters') # type: ignore
     data: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Field data"), 'was_escaped': True})
 

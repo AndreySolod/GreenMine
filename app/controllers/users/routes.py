@@ -46,6 +46,12 @@ def user_show(user_id):
         if current_user.position.is_administrator:
             acts.append(act4)
             acts.append(act5)
+        if u.id == current_user.id:
+            if not u.webpush_enabled:
+                act6 = CurrentObjectAction(_l("Enable webpush"), "fa-solid fa-bell", "", btn_class="btn-secondary", action_type="button_javascript", action_id="change_webpush_data")
+            else:
+                act6 = CurrentObjectAction(_l("Disable webpush"), "fa-solid fa-bell-slash", "", btn_class="btn-secondary", action_type="button_javascript", action_id="change_webpush_data")
+            acts.append(act6)
         acts.append(act3)
         current_object = CurrentObjectInfo(_l("User #%(user_id)s: %(user_title)s", user_id=u.id, user_title=u.title), "fa-solid fa-user-tie", actions=acts)
     else:

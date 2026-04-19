@@ -182,7 +182,7 @@ class SidebarElement:
 
 
 class CurrentObjectAction:
-    def __init__(self, title: str, icon: str, link: str, action_type: str="a_href", confirm: str='', btn_class: str="btn-primary", method: str="GET"):
+    def __init__(self, title: str, icon: str, link: str, action_type: str="a_href", confirm: str='', btn_class: str="btn-primary", method: str="GET", action_id: str | None = None):
         self.title = title
         self.icon = icon
         self.link = link
@@ -190,6 +190,7 @@ class CurrentObjectAction:
         self.confirm = confirm
         self.btn_class = btn_class
         self.method = method
+        self.action_id = action_id
         self.unique_identifier = random_string(10)
 
     def button(self) -> str:
@@ -200,6 +201,8 @@ class CurrentObjectAction:
                 return '<a href="{}" class="btn {}" data-toggle="tooltip" data-placement="left" title="{}" {}><i class="{}"></i></a>'.format(self.link, self.btn_class, self.title, self.confirm, self.icon)
             elif (self.action_type == "button_modal"):
                 return '<a href="#" class="btn {}" data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#{}" title="{}" {}><i class="{}"></i></a>'.format(self.btn_class, self.link, self.title, self.confirm, self.icon)
+            elif self.action_type == 'button_javascript':
+                return f'<a href="#" id={self.action_id} class="btn {self.btn_class}" data-toggle="tooltip" data-placement="left" title="{self.title}"><i class="{self.icon}"></i></a>'
         elif self.method == 'DELETE':
             element_id = 'a_confirm' + random_string(20)
             script = f"document.getElementById('{element_id}').addEventListener('click', function() {{if(confirm('{self.confirm}')) {{ document.getElementById('{self.unique_identifier}').submit() }} }});"

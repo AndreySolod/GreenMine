@@ -36,9 +36,11 @@ def get_user_notification(data):
     user_id, current_room_name = r
     try:
         notification = db.session.scalars(sa.select(models.UserNotification).where(models.UserNotification.id == int(data['notification_id']))).one()
-    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound) as e:
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' requested incorrect notification #{data['notification_id']}")
         return None
     if notification.to_user_id != current_user.id:
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' requested notification #{notification.id}, in which he has no rights to")
         return None
     if data['lang'] in current_app.config['LANGUAGES']:
         lang = data['lang']

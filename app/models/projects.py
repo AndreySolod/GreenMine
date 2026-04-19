@@ -129,7 +129,7 @@ class ProjectRole(db.Model):
 class UserRoleHasProject(db.Model):
     user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id', ondelete='CASCADE'), primary_key=True, info={'label': _l("User")})
     user: so.Mapped['User'] = so.relationship(lazy='joined', back_populates="project_roles", info={'label': _l("User")}) # type: ignore
-    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Project.id, ondelete='CASCADE'), primary_key=True, info={'label': _l('Project')})
+    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Project.id, ondelete='CASCADE'), index=True, primary_key=True, info={'label': _l('Project')})
     project: so.Mapped[Project] = so.relationship(lazy='joined', info={'label': _l("Project")}, back_populates='participants')
     role_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectRole.id, ondelete='CASCADE'), primary_key=True, info={'label': _l("Project role")})
     role: so.Mapped[ProjectRole] = so.relationship(lazy='joined', info={'label': _l("Project role")})

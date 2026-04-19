@@ -1,8 +1,13 @@
 import os
 import secrets
+from py_vapid import Vapid
+from pathlib import Path
+import sys
+import logging
+logger = logging.getLogger("Configuration")
 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = Path(os.path.dirname(__file__))
 
 
 class DevelopmentConfig:
@@ -17,7 +22,7 @@ class DevelopmentConfig:
     except (ValueError, TypeError):
         WTF_CSRF_TIME_LIMIT = 3600
     APPLICATION_ROOT = os.environ.get("APPLICATION_ROOT") or "/"
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + str((basedir / 'app.db').absolute())
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     REST_FORBIDDEN_ATTRIBUTES = os.environ.get("REST_FORBIDDEN_ATTRIBUTES").split(",") if os.environ.get("REST_FORBIDDEN_ATTRIBUTES") else ["User.password_hash", "User.token", "User.token_expiration"]
     TOKEN_EXPIRATION = os.environ.get('TOKEN_EXPIRATION') or 365 * 24 * 60 * 60
@@ -42,6 +47,34 @@ class DevelopmentConfig:
     METASPLOIT_PORT = os.environ.get("METASPLOIT_PORT") or "55553"
     METASPLOIT_PASSWORD = os.environ.get("METASPLOIT_PASSWORD") or "secret"
     METASPLOIT_VERIFY_SSL = os.environ.get("METASPLOIT_VERIFY_SSL") == "True"
+    VAPID_PRIVATE_KEY = os.environ.get("VAPID_PRIVATE_KEY") or None
+    if VAPID_PRIVATE_KEY is not None:
+        try:
+            with open(VAPID_PRIVATE_KEY, 'rb') as f:
+                VAPID_PRIVATE_KEY = Vapid().from_pem(f.read())
+        except Exception as e:
+            logger.error(f"Cannot load Vapid private key: {e}")
+            sys.exit(1)
+    elif os.path.exists(basedir / "vapid.key") and os.path.isfile(basedir / "vapid.key"):
+        logger.info(f"Gain vapid key from file {basedir / "vapid.key"}")
+        try:
+            with open(basedir / "vapid.key", 'rb') as f:
+                VAPID_PRIVATE_KEY = Vapid().from_pem(f.read())
+        except Exception as e:
+            logger.error(f"Cannor load Vapid private key: {e}")
+            sys.exit(1)
+    else:
+        logger.warning("Generate new Vapid private key")
+        VAPID_PRIVATE_KEY = Vapid()
+        VAPID_PRIVATE_KEY.generate_keys()
+        try:
+            with open(basedir / "vapid.key", 'wb') as f:
+                f.write(VAPID_PRIVATE_KEY.private_pem())
+                logger.info(f"Write new Vapid private key into {(basedir / "vapid.key").absolute()}")
+        except Exception as e:
+            logger.error(f"Exception when write new Vapid private key into {(basedir / "vapid.key").absolute()}: {e}")
+            sys.exit(1)
+    VAPID_EMAIL = os.environ.get("VAPID_EMAIL") or "your-email@example.com"
 
 
 class ProductionConfig(DevelopmentConfig):
@@ -62,5 +95,5 @@ class ProductionConfig(DevelopmentConfig):
 
 class TestConfig(DevelopmentConfig):
     SECRET_KEY = 'secret'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test_database.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + str((basedir / 'test_database.db').absolute())
     WTF_CSRF_ENABLED = False

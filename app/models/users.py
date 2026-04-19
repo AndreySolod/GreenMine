@@ -1,4 +1,4 @@
-from app import db, login, logger
+from app import db, login, logger, web_pusher
 from flask import current_app, url_for
 from app.helpers.general_helpers import random_string
 from app.helpers.users_helpers import generate_avatar
@@ -8,7 +8,7 @@ import datetime
 import os
 import os.path
 import random
-from typing import List, Optional, Dict, Set
+from typing import List, Optional, Dict, Set, Any
 from app.extensions.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import sqlalchemy as sa
@@ -19,12 +19,12 @@ from sqlalchemy.ext.hybrid import hybrid_property
 import sqlalchemy.exc as exc
 from .generic import Comment, Reaction
 from .files import FileData
-from flask_babel import lazy_gettext as _l
+from flask_babel import lazy_gettext as _l, force_locale, gettext
 import secrets
 import json
 from .global_settings import ApplicationLanguage
 from .projects import ProjectRole
-from .datatypes import ID, StringSlug, CreatedAt, Archived, utcnow
+from .datatypes import ID, StringSlug, CreatedAt, Archived, utcnow, ImmutableJSONType
 
 
 @project_enumerated_object
@@ -185,7 +185,10 @@ class User(UserMixin, db.Model):
     environment_setting: so.Mapped["UserEnvironmentSetting"] = so.relationship(back_populates='to_user', lazy='joined', cascade='all, delete-orphan', info={'label': _l("Environment settings")})
     preferred_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('application_language.id', ondelete='SET NULL'), info={'label': _l("Preferred language")})
     preferred_language: so.Mapped["ApplicationLanguage"] = so.relationship(lazy='select', info={'label': _l("Preferred language")}) # type: ignore
+    last_used_language_code: so.Mapped[Optional[str]] = so.mapped_column(sa.String(7), info={'label': _l("Last used language")}) # This is last preferred language for user if he use preferred_language 'auto'
     project_roles: so.Mapped[List["UserRoleHasProject"]] = so.relationship(lazy='select', cascade="all,delete", info={'label': _l("Roles on project")}, back_populates="user") # type: ignore
+    webpush_enabled: so.Mapped[Optional[bool]] = so.mapped_column(info={'label': _l("WebPush enabled")})
+    subscription_info: so.Mapped[Optional[Dict[str, Any]]] = so.mapped_column(ImmutableJSONType, info={'label': _l("Subscription info")})
 
     @hybrid_property
     def title(self):
@@ -254,7 +257,7 @@ class User(UserMixin, db.Model):
             last_name = random.choice(last_names)
             first_name = random.choice(first_names)
             middle_name = random.choice(middle_names)
-            email = login + "@mental-hospital.ru"
+            email = login + "@mental_hospital.ru"
         user = cls(login=login, first_name=first_name, last_name=last_name, middle_name=middle_name,
                    email=email, position=default_position, programming_languages=programming_languages,
                    programming_language_theme=programming_language_theme, theme_style=theme_style, manager=admin_user)
@@ -262,6 +265,13 @@ class User(UserMixin, db.Model):
         user.password_expired_date = utcnow() + datetime.timedelta(days=365)
         user.is_password_expired = True
         return user
+    
+    def send_webpush_notification(self, title: str, title_params: Dict[str, str], message: str, message_params: Dict[str, str], url: str | None, **params):
+        if self.webpush_enabled:
+            with force_locale(self.last_used_language_code):
+                if url is None:
+                    url = '/'
+                web_pusher.send(self.subscription_info, gettext(title, **title_params), gettext(message, **message_params), url, **params)
 
     class Meta:
         verbose_name = _l("User")

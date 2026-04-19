@@ -96,3 +96,32 @@
 
 
 {% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}" lang="javascript">
+  user_webpush_subscribed = "{{ user.webpush_enabled }}" == 'True'
+  document.getElementById("change_webpush_data")?.addEventListener('click', function(e) {
+    if(user_webpush_subscribed) {
+      unsubscribeFromPush("{{ url_for('main_page.unsubscribe_webpush') }}", "{{ csrf_token() }}").then(response => {
+        alert("{{ _('Webpush disabled') }}");
+        user_webpush_subscribed = false;
+        let change_webpush_data = document.getElementById('change_webpush_data');
+        change_webpush_data.innerHTML = "<i class='fa fa-bell'></i>";
+        change_webpush_data.setAttribute('title', "{{ _('Enable webpush') }}");
+        change_webpush_data.setAttribute('aria-label', "{{ _('Enable webpush') }}");
+        change_webpush_data.setAttribute('data-bs-original-title', '{{ _("Enable webpush") }}');
+      });
+    } else {
+      subscribeToPush("{{ vapid_public_key }}", "{{ url_for('main_page.subscribe_webpush') }}", "{{ csrf_token() }}").then(response => {
+        alert("{{ _('Webpush enabled') }}");
+        user_webpush_subscribed = true;
+        let change_webpush_data = document.getElementById('change_webpush_data');
+        change_webpush_data.innerHTML = "<i class='fa fa-bell-slash'></i>";
+        change_webpush_data.setAttribute('title', "{{ _('Disable webpush') }}");
+        change_webpush_data.setAttribute('aria-label', "{{ _('Disable webpush') }}");
+        change_webpush_data.setAttribute('data-bs-original-title', '{{ _("Disable webpush") }}');
+      });
+    }
+  })</script>
+{% endblock %}

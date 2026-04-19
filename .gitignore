@@ -4,3 +4,4 @@ messages.pot
 logs/*
 postgres
 .pytest_cache
+vapid.key

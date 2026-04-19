@@ -1,4 +1,4 @@
-from app import socketio, db, logger
+from app import socketio, db, logger, sanitizer
 from app.helpers.general_helpers import authenticated_only
 from app.helpers.projects_helpers import get_current_room
 from flask_socketio import emit, join_room
@@ -9,6 +9,7 @@ import app.models as models
 import sqlalchemy as sa
 import sqlalchemy.exc as exc
 from app.helpers.roles import project_role_can_make_action
+from flask_babel import lazy_gettext as _l
 
 
 @socketio.on("join_room", namespace="/chats")
@@ -41,3 +42,13 @@ def add_comment(data):
     emit('create_comment', {'text': data['text'], 'created_by_title': current_user.title, 'created_by_id': current_user.id,
           'created_by_ava': url_for('files.download_file', file_id=current_user.avatar_id), 'created_at': moment(cm.created_at).fromNow()},
           namespace="/chats", to=current_room_name)
+    project_user_roles = db.session.scalars(sa.select(models.UserRoleHasProject).where(models.UserRoleHasProject.project_id == current_room)).all()
+    project_users = set([project_user_role.user for project_user_role in project_user_roles])
+    _ = _l("New comment in project #%(project_id)s: «%(comment_text)s»")
+    for user in project_users:
+        if project_role_can_make_action(user, models.ChatMessage(), 'index', project_id=current_room) and user != current_user:
+            notif = {'to_user': user, 'by_user': current_user, 'description': 'New comment in project #%(project_id)s: «%(comment_text)s»'}
+            notif['technical_info'] = {'project_id': current_room, 'comment_text': sanitizer.pure_text(data['text'])}
+            notif['link_to_object'] = url_for('chats.index', project_id=current_room)
+            notif['require_webpush'] = True
+            models.UserNotification.create_notification(**notif)

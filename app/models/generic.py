@@ -1,6 +1,6 @@
-from app import db, sanitizer, logger
+from app import db, sanitizer, logger, task_processor
 from app.helpers.projects_helpers import create_history, load_history_script
-from typing import List, Optional, Dict, Tuple, Any
+from typing import List, Optional, Dict, Tuple, Any, Callable
 from sqlalchemy import event
 from .datatypes import JSONType, ID, CreatedAt, UpdatedAt, utcnow
 import sqlalchemy as sa
@@ -194,22 +194,67 @@ class UserNotification(db.Model):
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
     technical_info: so.Mapped[Optional[dict]] = so.mapped_column(JSONType(), info={'label': _l("Technical detaled")})
     link_to_object: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Link to object")})
+    require_webpush: so.Mapped[bool] = so.mapped_column(info={'label': _l("Require Web push Notification")}, server_default=sa.true(), default=sa.true())
     created_at: so.Mapped[CreatedAt]
 
     class Meta:
         verbose_name = _l("Notification")
         verbose_name_plural = _l("Notifications")
+    
+    @classmethod
+    def create_notification(cls, **notification_attrs):
+        def create_notification(notification: UserNotification):
+            try:
+                db.technical_session.add(notification)
+                db.technical_session.commit()
+            except Exception as e:
+                logger.exception(f"Exception when create new notification: {e}")
+                db.technical_session.rollback()
+        notification = cls(description=notification_attrs.get('description'),
+                           link_to_object=notification_attrs.get('link_to_object'),
+                           technical_info=notification_attrs.get('technical_info'))
+        if 'by_user' in notification_attrs:
+            notification.by_user_id = notification_attrs['by_user'].id
+        elif 'by_user_id' in notification_attrs:
+            notification.by_user_id = notification_attrs['by_user_id']
+        else:
+            raise ValueError("Notification attributes does not contains by_user or by_user_id attribute")
+        if 'to_user' in notification_attrs:
+            notification.to_user_id = notification_attrs['to_user'].id
+        elif 'to_user_id' in notification_attrs:
+            notification.to_user_id = notification_attrs['to_user_id']
+        else:
+            raise ValueError("Notification attributes does not contains to_user or to_user_id attribute")
+        if 'require_webpush' in notification_attrs:
+            notification.require_webpush = notification_attrs['require_webpush']
+        task_processor.add_task(create_notification, notification)
 
 
 @event.listens_for(UserNotification, 'after_insert')
-def emit_signal_new_notification_to_user(mapper, connection, target):
-    emit('new notification', {'notification_id': target.id}, namespace='/user', to=str(target.to_user_id))
+def mark_new_notification_as_pending_to_emit_signal(mapper, connection, target: UserNotification):
+    if hasattr(so.object_session(target), '_pending_notifications'):
+        so.object_session(target)._pending_notifications.append(target)
+    else:
+        so.object_session(target)._pending_notifications = [target]
 
 
 @event.listens_for(SessionBase, 'after_commit')
-def commit_technical_session_after_default_session(session):
-    if (not 'is_technical' in session.info):
-        db.technical_session.commit()
+def emit_signals_new_notification_to_user(session: SessionBase):
+    if not hasattr(session, '_pending_notifications'):
+        return
+    for target in session._pending_notifications:
+        emit('new notification', {'notification_id': target.id}, namespace='/user', to=str(target.to_user_id))
+        if target.require_webpush:
+            _l("New GreenMine Notification")
+            try:
+                User = inspect(UserNotification).relationships['to_user'].entity.class_
+                to_user = db.session.scalars(sa.select(User).where(User.id == target.to_user_id)).first()
+                to_user.send_webpush_notification(title="New GreenMine Notification", title_params={},
+                                                        message=target.description, message_params=target.technical_info,
+                                                        url=target.link_to_object, timestamp=target.created_at.isoformat())
+            except Exception as e:
+                logger.exception(f"Exception when send webpush notification: {e}")
+    session._pending_notifications = []
 
 
 @event.listens_for(SessionBase, 'before_commit')
@@ -287,9 +332,10 @@ class Hook(db.Model):
     @classmethod
     def configure_listener(cls):
         logger.info("Configure listeners")
-        @event.listens_for(SessionBase, 'before_commit')
-        def execute_all_hooks(session: SessionBase):
-            logger.info("Execute hooks")
+        @event.listens_for(SessionBase, 'after_flush')
+        def save_all_hooks_in_session(session: SessionBase, flush_context):
+            logger.info("Save hooks to further execute")
+            session._hooked_objects = []
             for condition, hooks in current_app.hooks.items():
                 if condition[1] == ObjectWithHookAction.CREATE:
                     hooked_objects = [o for o in session.new if isinstance(o, condition[0])]
@@ -300,12 +346,32 @@ class Hook(db.Model):
                 elif condition[1] == ObjectWithHookAction.ADD_COMMENT:
                     hooked_objects = [o.to_object for o in session.new if isinstance(o, Comment) and o.to_object.__class__ == condition[0]]
                 for h in hooked_objects:
-                    for hook in hooks:
-                        try:
-                            exec(hook, {'db': db, 'this': h, 'session': session, 'app': current_app})
-                        except Exception as e:
-                            logger.error(f"Exception when run Hook #{id}: {e.with_traceback()}")
-                            continue
+                    session._hooked_objects.append({'obj': h, 'hooks': hooks})
+        
+        @event.listens_for(SessionBase, 'after_commit')
+        def execute_all_hooks(session: SessionBase):
+            logger.info("Added all hooks to execute as background task")
+            if not hasattr(session, '_hooked_objects'):
+                logger.warning("Session does not have hooked objects")
+                return None
+            if hasattr(session, '_hooks_processed') and session._hooks_processed:
+                logger.info("Hooks already processed for this session, skipping")
+                return
+            session._hooks_processed = True
+            for h in session._hooked_objects:
+                for hook in h['hooks']:
+                    Hook.exec_hook(hook, h['obj'])
+    
+    @staticmethod
+    def exec_hook(hook, obj: Any):
+        def execute_hook(hook, obj):
+            try:
+                new_obj = db.technical_session.scalars(sa.select(obj.__class__).where(obj.__class__.id == obj.id)).first()
+                exec(hook, {'db': db, 'this': new_obj, 'session': db.technical_session, 'app': current_app._get_current_object(), 'sa': sa,
+                            'sanitizer': sanitizer, 'logger': logger})
+            except Exception as e:
+                logger.exception(f"Exception when run Hook")
+        task_processor.add_task(execute_hook, hook, obj)
 
     class Meta:
         verbose_name = _l("Hook")

@@ -9,7 +9,8 @@
 	<meta name="author" content="Tovarisch Stalin" />
 	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.webp') }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% if title %}{{ title }} - PCF{% else %}{{ _("Welcome to PCF") }}{% endif %}{% endblock %}</title>
+	 <link rel="manifest" href="{{ url_for('generic.get_manifest') }}">
+    <title>{% block title %}{% if title %}{{ title }} - GreenMine{% else %}{{ _("Welcome to GreenMine") }}{% endif %}{% endblock %}</title>
     {% block styles %}
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" nonce="{{ csp_nonce() }}">
 		{% if not current_user.is_anonymous and current_user.programming_language_theme != none %}
@@ -183,6 +184,24 @@
 			</script>
 		{% endfor %}
 	{% endwith %}
+	{% endif %}
+	{# Process WebPush Subscribe #}
+	<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='js/webpush_client.js') }}"></script>
+	{% if current_user.is_authenticated and current_user.webpush_enabled == none %}
+	<script nonce="{{ csp_nonce() }}">
+		if (navigator.serviceWorker && 'PushManager' in window) {
+			initServiceWorker('{{ url_for("main_page.service_worker") }}', '{{ url_for("main_page.subscribe_webpush") }}', "{{ csrf_token() }}").then((state) => {
+				if (state === 'prompt') {
+					subscribeToPush("{{ vapid_public_key }}", "{{ url_for('main_page.subscribe_webpush') }}", "{{ csrf_token() }}").then(result => {})
+				}
+				else if (state === 'denied') {
+					unsubscribeFromPush("{{ url_for('main_page.unsubscribe_webpush') }}", "{{ csrf_token() }}").then(result => {});
+				}
+			})
+		} else {
+			console.warn('Push-notification did not support in this browser');
+		}
+	</script>
 	{% endif %}
 	<script src="{{ url_for('static', filename='js/unifyMenu.js') }}" nonce="{{ csp_nonce() }}"></script>
 	<script src="{{ url_for('static', filename='js/onoffcanvas.js') }}" nonce="{{ csp_nonce() }}"></script>

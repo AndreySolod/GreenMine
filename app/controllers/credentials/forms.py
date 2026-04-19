@@ -33,6 +33,8 @@ class CredentialForm(FlaskForm):
     received_from = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Credential.received_from.info["label"]), description=models.Credential.received_from.info["help_text"], validators=[validators.Optional()], attr_title="treeselecttitle")
     is_admin = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_admin.info["label"]), validators=[validators.Optional()])
     is_empty = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_empty.info["label"]), validators=[validators.Optional()])
+    domain = wtforms.StringField(_l("%(field_name)s:", field_name=models.Credential.domain.info["label"]), 
+                                validators=[validators.Length(max=models.Credential.domain.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Credential.domain.type.length)), validators.Optional()])
 
 class CredentialCreateForm(CredentialForm):
     submit = wtforms.SubmitField(_l("Create"))

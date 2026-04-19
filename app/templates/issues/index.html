@@ -81,6 +81,13 @@
                         filterControl: 'input',
                         sortable: true,
                         align: 'center',
+                    },
+                    {
+                        field: "order_number",
+                        title: '{{ Issue.order_number.info["label"] }}',
+                        sortable: true,
+                        align: 'center',
+                        filterControl: 'input'
                     }
                     ],
                     icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),

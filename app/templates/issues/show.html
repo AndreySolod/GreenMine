@@ -32,6 +32,10 @@
                                     issue.status.title|suppress_none }}</span></td>
                         </tr>
                         <tr>
+                            <td data-toggle="tooltip" data-placement="top" data-bs-title="{{ models.Issue.order_number.info['help_text'] }}">{{ models.Issue.order_number.info['label'] }}:</td>
+                            <td>{{ issue.order_number|suppress_none }}</td>
+                        </tr>
+                        <tr>
                             <td>{{ models.Issue.cvss.info['label'] }}:</td>
                             <td>{{ issue.cvss|suppress_none|safe }}</td>
                         </tr>

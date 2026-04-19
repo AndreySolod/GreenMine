@@ -39,7 +39,7 @@ class Network(HasComment, db.Model, HasHistory):
     asn: so.Mapped[Optional[str]] = so.mapped_column(sa.String(20), info={'label': _l('ASN')})
     connect_cmd: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("The connection command")})
     to_hosts: so.Mapped[List["Host"]] = so.relationship(back_populates="from_network", foreign_keys="Host.from_network_id", cascade="all, delete-orphan", info={'label': _l("Avaliable connection to host"), 'help_text': _l("Connection to the following host is avaliable from this subnet")})
-    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l("Project")})
+    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l("Project")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates='networks', info={'label': _l("Project")}) # type: ignore
     can_see_network: so.Mapped[Set["Network"]] = so.relationship(secondary='mutual_network_visibility',
                                                                  primaryjoin="Network.id==MutualNetworkVisibility.from_network_id",

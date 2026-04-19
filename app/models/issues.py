@@ -142,7 +142,7 @@ class Issue(HasComment, db.Model, HasHistory):
                                                     secondaryjoin='IssueHasHost.host_id==Host.id',
                                                     back_populates="issues",
                                                     info={'label': _l('Related hosts')})
-    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete="CASCADE"), info={'label': _l("Project")})
+    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete="CASCADE"), index=True, info={'label': _l("Project")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates="issues", info={'label': _l("Project")}) # type: ignore
     tasks_by_issue: so.Mapped[List["ProjectTask"]] = so.relationship(secondary=IssueHasTask.__table__, # type: ignore
                                                                      primaryjoin='Issue.id==IssueHasTask.issue_id',
@@ -151,6 +151,7 @@ class Issue(HasComment, db.Model, HasHistory):
                                                                      info={'label': _l("Related tasks")})
     proof_of_concept_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProofOfConcept.id, ondelete='SET NULL'), info={'label': _l("Proof of Concept")})
     proof_of_concept: so.Mapped['ProofOfConcept'] = so.relationship(lazy='select', info={'label': _l("Proof of Concept")})
+    order_number: so.Mapped[Optional[int]] = so.mapped_column(index=True, info={'label': _l("Order Number"), 'help_text': _l("The serial number in which the problem will be displayed")})
 
     @property
     def fulltitle(self):

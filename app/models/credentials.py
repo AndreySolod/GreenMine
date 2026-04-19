@@ -81,7 +81,7 @@ class CredentialByReceivedHost(db.Model):
 class Credential(HasComment, db.Model, HasHistory):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     archived: so.Mapped[Archived]
-    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), info={'label': _l('Project')})
+    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l('Project')})
     project: so.Mapped["Project"] = db.relationship(lazy='select', back_populates="credentials", info={'label': _l('Project')}) # type: ignore
     created_at: so.Mapped[CreatedAt]
     created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Created by')})
@@ -98,6 +98,7 @@ class Credential(HasComment, db.Model, HasHistory):
                                                                    info={'label': _l("Checked on wordlist")})
     check_wordlist: so.Mapped['CheckWordlist'] = so.relationship(lazy='select', info={'label': _l("Checked on wordlist")})
     password: so.Mapped[Optional[str]] = so.mapped_column(sa.String(70), info={'label': _l('Password')})
+    domain: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Domain")})
     services: so.Mapped[Set["Service"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin=id==CredentialByService.credential_id, # type: ignore
                                                            secondaryjoin='CredentialByService.service_id==Service.id', back_populates='credentials',
                                                            lazy='select', info={'label': _l("Related services")})
@@ -114,7 +115,10 @@ class Credential(HasComment, db.Model, HasHistory):
     
     @property
     def treeselecttitle(self):
-        return f'{self.login}:{self.password}'
+        if self.domain is not None:
+            return f'{self.domain}/{self.login}:{self.password}'
+        else:
+            return f"{self.login}:{self.password}"
 
     @property
     def service_list_as_text(self):

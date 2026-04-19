@@ -137,7 +137,7 @@ class ProjectTask(HasComment, db.Model, HasHistory):
                                                                  info={'label': _l("Priority"),
                                                                        'help_text': _l("The assigned priority of the task. Simplifies filtering by tasks")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id',
-                                                  ondelete='CASCADE'), info={'label': _l("Project"), 'help_text': _l("The project to which the task belongs")})
+                                                  ondelete='CASCADE'), index=True, info={'label': _l("Project"), 'help_text': _l("The project to which the task belongs")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates="tasks", info={'label': _l("Project"), 'help_text': _l("The project to which the task belongs")}) # type: ignore
     state_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(TaskState.id, ondelete='SET NULL'), info={'label': _l("Status"), 'help_text': _l("The status of a task is the state in which the task is located")})
     state: so.Mapped["TaskState"] = so.relationship(lazy='select', info={'label': _l("Status"), 'help_text': _l("The status of a task is the state in which the task is located")})
@@ -305,38 +305,37 @@ def create_new_notification_object_if_task_has_assigned_to_attribute(mapper, con
     _l("A new task #%(task_id)s: «%(task_title)s» has been assigned to you")
     new_target = db.session.get(ProjectTask, target.id)
     if new_target.assigned_to and new_target.assigned_to.id != new_target.created_by_id:
-        notif = UserNotification(to_user_id=new_target.assigned_to.id, description='A new task #%(task_id)s: «%(task_title)s» has been assigned to you')
-        notif.technical_info = {'task_id': new_target.id, 'task_title': new_target.title}
-        notif.link_to_object = url_for('tasks.projecttask_show', projecttask_id=new_target.id)
+        notif = {'to_user_id': new_target.assigned_to.id, 'description': 'A new task #%(task_id)s: «%(task_title)s» has been assigned to you'}
+        notif["technical_info"] = {'task_id': new_target.id, 'task_title': new_target.title}
+        notif['link_to_object'] = url_for('tasks.projecttask_show', projecttask_id=new_target.id)
         if current_user == None or current_user.is_anonymous:
-            notif.by_user = new_target.created_by
+            notif['by_user'] = new_target.created_by
         else:
-            notif.by_user_id = current_user.id
-        db.technical_session.add(notif)
+            notif['by_user_id'] = current_user.id
+        UserNotification.create_notification(**notif)
 
 
 @event.listens_for(ProjectTask, 'after_update')
 def create_notification_if_changed_with_assigned_user(mapper, connection, target):
     """ Added User notification in database to render him on template """
     _l("The task #%(task_id)s, that is in your responsibility has been changed")
-    _l("A new task #%(task_id)s: «%(task_title)s» has been assigned to you")
     # check if assigned_to is changed:
     assign_history = list(inspect(target).attrs.assigned_to.history.added) + list(inspect(target).attrs.assigned_to.history.deleted)
     assign_history += list(inspect(target).attrs.assigned_to_id.history.added) + list(inspect(target).attrs.assigned_to_id.history.deleted)
     assigned_to = get_current_attr(target, 'assigned_to')
     if (assigned_to and current_user != None and not current_user.is_anonymous and current_user.id != assigned_to.id and len(assign_history) != 0):
-        notif = UserNotification(to_user_id=assigned_to.id, description='A new task #%(task_id)s: «%(task_title)s» has been assigned to you')
+        notif = {'to_user_id': assigned_to.id, 'description': 'A new task #%(task_id)s: «%(task_title)s» has been assigned to you'}
     elif assigned_to and current_user != None and not current_user.is_anonymous and assigned_to.id != current_user.id and task_was_changed(target):
-        notif = UserNotification(to_user_id=assigned_to.id, description='The task #%(task_id)s, that is in your responsibility has been changed')
+        notif = {'to_user_id': assigned_to.id, 'description': 'The task #%(task_id)s, that is in your responsibility has been changed'}
     else:
         return None
-    notif.technical_info = {'task_id': target.id, 'task_title': target.title}
-    notif.link_to_object  = url_for('tasks.projecttask_show', projecttask_id=target.id)
+    notif['technical_info'] = {'task_id': target.id, 'task_title': target.title}
+    notif['link_to_object']  = url_for('tasks.projecttask_show', projecttask_id=target.id)
     if not has_request_context() or current_user.is_anonymous:
-        notif.by_user = target.updated_by
+        notif['by_user'] = target.updated_by
     else:
-        notif.by_user_id = current_user.id
-    db.technical_session.add(notif)
+        notif['by_user_id'] = current_user.id
+    UserNotification.create_notification(**notif)
 
 
 @event.listens_for(Comment, 'after_insert')
@@ -345,16 +344,16 @@ def create_notification_to_assigned_to_user_task_when_comment_added(mapper, conn
     _l("A comment has been added to task #%(task_id)s, which is your responsibility.")
     if target.to_object.__class__.__name__ == 'ProjectTask':
         assigned_to = get_current_attr(target.to_object, 'assigned_to')
-        if assigned_to is None:
+        if assigned_to is None or (has_request_context() and current_user == assigned_to):
             return None
-        notif = UserNotification(to_user_id=assigned_to.id, description="A comment has been added to task #%(task_id)s, which is your responsibility.")
-        notif.technical_info = {'task_id': target.to_object.id}
-        notif.link_to_object = url_for('tasks.projecttask_show', projecttask_id=target.to_object.id)
+        notif = {"to_user_id": assigned_to.id, "description": "A comment has been added to task #%(task_id)s, which is your responsibility."}
+        notif['technical_info'] = {'task_id': target.to_object.id}
+        notif['link_to_object'] = url_for('tasks.projecttask_show', projecttask_id=target.to_object.id)
         if not has_request_context() or current_user.is_anonymous:
-            notif.by_user = target.created_by
+            notif['by_user'] = target.created_by
         else:
-            notif.by_user_id = current_user.id
-        db.technical_session.add(notif)
+            notif['by_user_id'] = current_user.id
+        UserNotification.create_notification(**notif)
 
 
 class ProjectTaskTemplate(db.Model):

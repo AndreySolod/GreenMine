@@ -43,9 +43,18 @@ class IssueForm(FlaskForm):
     services = Select2MultipleField(models.Service, label=_l("%(field_name)s:", field_name=models.Issue.services.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
     hosts = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Issue.hosts.info["label"]), validators=[validators.Optional()], attr_title='treeselecttitle')
     tasks_by_issue = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Issue.tasks_by_issue.info["label"]), validators=[validators.Optional()])
+    order_number = wtforms.IntegerField(_l("%(field_name)s:", field_name=models.Issue.order_number.info["label"]), validators=[validators.Optional()],
+                                        description=models.Issue.order_number.info['help_text'])
 
 
 class IssueCreateForm(IssueForm):
+    def __init__(self, project_id, *args, **kwargs):
+        super().__init__(project_id, *args, **kwargs)
+        max_order_number = db.session.scalars(sa.select(models.Issue.order_number).where(models.Issue.project_id == project_id)
+                                              .order_by(models.Issue.order_number.desc()).limit(1)).first()
+        if max_order_number is None:
+            max_order_number = 0
+        self.order_number.data = max_order_number + 1
     by_template_slug = wtforms.StringField(_l("%(field_name)s:", field_name=models.Issue.by_template_slug.info["label"]), validators=[validators.Optional()])
     submit = wtforms.SubmitField(_l('Create'))
     submit_and_add_new = wtforms.SubmitField(_l("Create and add another one"))
