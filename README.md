@@ -1,97 +1,146 @@
 # GreenMine
 
-Это полностью переработанный проект известного [Pentest Collaboration Framework](https://gitlab.com/invuls/pentest-projects/pcf), созданный как отдельный проект для исправления множества архитектурных недочётов и ошибок оригинального проекта, с сохранением основных идей.
+![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Docker](https://img.shields.io/badge/docker-supported-blue)
 
-## Основные преимущества
+This is a completely redesigned project based on the well-known [Pentest Collaboration Framework](https://gitlab.com/invuls/pentest-projects/pcf), created as a separate project to fix many architectural flaws and errors of the original project while preserving its core ideas.
 
-1. Полностью переписанная система миграции - теперь внесение изменений в базу данных осуществляется через SQLAlchemy, что позволяет как автоматически перестраивать базу данных при обновлении, так и избежать большинства ошибок оригинала - когда ни одно ошибочно вгесённое значение нельзя было исправить. Кроме того, доработки и обновления должны стать куда проще;
+## Table of Contents
 
-2. Добавлена и доработана вкладка задач - разработана по примеру большинства приложений для управления проектами;
+- [GreenMine](#greenmine)
+  - [Table of Contents](#table-of-contents)
+  - [Quick Start](#quick-start)
+    - [Using Docker (Recommended)](#using-docker-recommended)
+    - [Manual Installation](#manual-installation)
+  - [Main Advantages](#main-advantages)
+  - [What is not implemented from the original project, what is planned to be implemented](#what-is-not-implemented-from-the-original-project-what-is-planned-to-be-implemented)
+  - [Installing Dependencies](#installing-dependencies)
+    - [Debian-based systems](#debian-based-systems)
+  - [Configuring Application Parameters](#configuring-application-parameters)
+  - [Main Commands](#main-commands)
+  - [Automatic Error Correction](#automatic-error-correction)
+  - [User Logins](#user-logins)
+  - [Running in Debug Mode](#running-in-debug-mode)
+  - [Running via Docker](#running-via-docker)
+  - [Hooks](#hooks)
+  - [Acknowledgments](#acknowledgments)
+  - [License](#license)
 
-3. Для большинства объектов добавлены поля "Описание", куда через WYSIWYG-редактор можно вносить дополнительные данные;
+## Quick Start
 
-4. Для объектов добавлены примечания, куда можно сохранять процесс своей работы в текстовом виде;
+### Using Docker (Recommended)
+```bash
+git clone https://gitverse.ru/NekiyUser/GreenMine
+cd GreenMine
+docker compose up
+```
+Access the application at http://localhost
 
-5. Добавлена история изменения для большинства объектов - теперь все изменения для большинства объектов логируются и отображаются в отдельной вкладке;
+Default credentials: admin/admin and worker/worker
 
-6. Заменена стандартная таблица отображения списка объектов (служб, хостов, проблем и т.д.) на ajax-таблицу, подтягивающую данные для отображения на странице с бек-энда динамически. Это позволит решить проблему как загрузки всей таблицы на страницу и неоправданного расхода памяти (иногда страницы и вообще не грузились), так и проблему отображения длинных полей - для паролей поле "хэш" не заполнялось именно потому, что в противном случае остальные пароли уезжали за пределы страницы;
+### Manual Installation
+1. Install Python 3.8+ and Redis
+2. Create virtual environment: `python -m venv venv`
+3. Activate: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Initialize database: `FLASK_APP=GreenMine flask greenmine db-init`
+6. Load default value to database: `FLASK_APP=GreenMine flask greenmine update-database-value`
+7. Run (develop mode): `./GreenMine.py`
 
-7. Мелкая доработка - теперь при внесении хэша к списку скомпрометированных учётных записей GreenMine сам предлагает его тип. Кроме того, при выборе типа хэша GreenMine предлагает его HashCat и John-режимы;
+## Main Advantages
 
-8. Для проекта по аналогии с системами управления введены роли пользователей, а также возможности настроить разрешения на действия для соответствующих ролей (например, для наблюдателей - установить возможность только просматривать объекты, но не редактировать их). Введено понятие "администратора" - это человек, обладающий всеми возможными ролями на проекте, и которому доступны все действия (а также доступ к панели администрирования). Также есть лидер проекта - ему доступны все действия, но только на своём проекте.
+1. **Completely rewritten migration system** – database changes are now handled via SQLAlchemy, which allows automatic database rebuilding during updates and avoids most of the original errors where incorrectly inserted values could not be corrected. Additionally, improvements and updates should become much easier;
 
-9. Добавлена панель администратора, на которой можно добавить объекты перечисления (также называемые "Справочниками"), просмотреть список всех файлов, удалить какие-то файлы, добавить шаблоны отчётов/задач/проблем и т.д;
+2. **Added and improved task tab** – designed following the example of most project management applications;
 
-10. Вследствие изменения системы миграции переделаны системы отчётов - теперь каждый шаблон отчётов получает переменную "project", представляющую из себя объект типа "Project", внутри которого и находятся все необходиме данные для создания отчёта;
+3. **Added "Description" fields for most objects** – where additional data can be entered via a WYSIWYG editor;
 
-11. Добавлена поддержка мультиязычности. Приложение переведено на русский и английские языки;
+4. **Added notes for objects** – where you can save your work process in text form;
 
-12. Заметки и редактирование заметок переведены на веб-сокеты - это позволяет избежать проблемы с "Несохраняющимися" заметками;
+5. **Added change history for most objects** – now all changes for most objects are logged and displayed in a separate tab;
 
-13. Для хостов добавлены поля "MAC-адрес" (с автоматическим определением производителя по MAC-адресу), "Тип устройства", "Производитель устройства", "Модель устройства";
+6. **Replaced the standard object list display table (services, hosts, issues, etc.)** with an AJAX table that dynamically pulls data from the backend for page display. This solves both the problem of loading the entire table onto the page and unnecessary memory consumption (sometimes pages wouldn't load at all), as well as the problem of displaying long fields – the "hash" field for passwords was not filled precisely because otherwise other passwords would overflow beyond the page;
 
-14. Для сервисов добавлено поле "Скриншот веб-интерфейса" - это должно значительно ускорить этап инвентаризации в организации. Кроме того, добавлено поле "техническая информация", которую заполняет импорт из Nmap своими данными из скриптов;
+7. **Minor improvement** – when entering a hash into the list of compromised credentials, GreenMine now suggests its type. Additionally, when selecting a hash type, GreenMine suggests its HashCat and John modes;
 
-15. Утилиты для экспорта убраны - теперь экспорт можно делать прямо на странице списка всех объектов. Кроме того, доработана фильтрация - теперь фильтрацию можно производить как по всем полям одновременно, так и по каждому полю индивидуально;
+8. **Introduced user roles for projects** similar to management systems, as well as the ability to configure action permissions for corresponding roles (e.g., for observers – set the ability to only view objects but not edit them). The concept of an "administrator" is introduced – a person who has all possible roles on the project and has access to all actions (as well as access to the administration panel). There is also a project leader – they have access to all actions, but only on their own project.
 
-16. Убраны почти все утилиты по импорту из других систем (осталась только самая основная - импорт из Nmap/Masscan, причём функционал частично переделан для добавления информации из новых полей.) - вследствие полной переработки общей концепции данных утилит. Теперь они представляют из себя бэкграунд-задачи, что должно решить проблему "Зависшего" веб-интерфейса для пользователей при попытке импорта большого файла. Кроме того, добавлена утилита "Инвентаризатор" - она позволяет указать список портов для сканирования, и сделать их скриншоты веб-интерфейсов (как по http, так и по https);
+9. **Added an administration panel** where you can add enumeration objects (also called "Reference Books"), view the list of all files, delete some files, add report/task/issue templates, etc.;
 
-17. Импорт из Nmap теперь может читать даже файлы незаконченных сканов - если файл невозможно прочитать, он пытается его дописать и прочитать.
+10. **Due to changes in the migration system, report systems have been redesigned** – now each report template receives a "project" variable, which is an object of type "Project", containing all the necessary data for report creation;
 
-18. Сообщения чата - теперь на веб-сокетах, и, что самое главное - они работают!
+11. **Added multilingual support**. The application is translated into Russian and English;
 
-19. Мелкие правки интерфейса - добавлены аватары пользователей, уведомления (идут через веб-сокеты), возможность выбора темы (цветового оформления), автоматическое заполнение БД изначальными значениями, минификация трафика;
+12. **Notes and note editing have been moved to WebSockets** – this avoids the problem of "unsaved" notes;
 
-20. Тип хэширования для сохранения паролей - Streebog512;
+13. **Added fields for hosts**: "MAC address" (with automatic vendor detection by MAC address), "Device type", "Device manufacturer", "Device model";
 
-21. Доработано логирование - теперь можно вести отдельный лог действий пользователя, а не только стандартный лог Flask.
+14. **Added field for services**: "Web interface screenshot" – this should significantly speed up the inventory stage in an organization. Additionally, a "technical information" field is added, which is filled by Nmap import with its own data from scripts;
 
-22. Добавлена Content Security Policy, что увеличивает безопасность приложения;
+15. **Export utilities have been removed** – now export can be done directly on the page listing all objects. Additionally, filtering has been improved – now filtering can be performed both across all fields simultaneously and for each field individually;
 
-23. Этап инвентаризации сервисов теперь проводится в том числе и через отдельную вкладку в веб-интерфейсе, что позволяет проводить его быстрее;
+16. **Removed almost all import utilities from other systems** (only the most basic one remains – import from Nmap/Masscan, with functionality partially redesigned to add information to new fields.) – due to a complete overhaul of the general data concept of these utilities. They are now background tasks, which should solve the problem of a "frozen" web interface for users when trying to import a large file. Additionally, an "Inventory Scanner" utility has been added – it allows specifying a list of ports for scanning and taking screenshots of their web interfaces (both http and https);
 
-24. Доработаны диаграммы состояния - вынесены на отдельную страницу в проекте. Сейчас слегка более информативны, чем в оригинальном проекте;
+17. **Nmap import can now read even incomplete scan files** – if the file cannot be read, it attempts to complete and read it.
 
-25. Добавлен функционал координации действий с отделом ИБ организации через создание событий исследования и событий обнаружения;
+18. **Chat messages** – now via WebSockets, and, most importantly – they work!
 
-26. Добавлен функционал заводских учётных данных - пока что как просто вкладка модулей автоматизации, в дальнейшем распространится и на карточки объекта с возможностью проверки;
+19. **Minor interface improvements** – added user avatars, notifications (via WebSockets), theme selection (color scheme), automatic database population with initial values, traffic minification;
 
-27. Добавлены команды - это объекты, позволяющие ускорять создание проектов и добавление новых ролей на проект;
+20. **Hashing type for password storage** – Streebog512;
 
-28. Добавлены утилиты для быстрой проверки RDP на отсутствие NLA, модуль для автоматического получения хэшей из IPMI;
+21. **Improved logging** – now you can maintain a separate log of user actions, not just the standard Flask log.
 
-29. Реализован функционал карусели проблем, что позволит ускорить создание визуального отчёта о проделанной работе;
+22. **Added Content Security Policy**, increasing application security;
 
-30. Добавлена поддержка аутентификации на прокси сервере, что позволит не хранить и не запоминать пароли в случае использования, например, mTLS;
+23. **The service inventory stage is now also conducted through a separate tab in the web interface**, allowing it to be performed faster;
 
-31. Настроена интеграция с MetaSploit Framework, что позволит автоматизировать процессы атаки;
+24. **Improved state diagrams** – moved to a separate page in the project. They are now slightly more informative than in the original project;
 
-32. Добавлена возможность создания пользовательских блоков кода - хуков.
+25. **Added functionality for coordinating actions with the organization's security department** through creating research events and detection events;
 
-## Что не реализовано из исходного проекта, что планируется реализовать
+26. **Added factory credentials functionality** – currently just as an automation module tab, will later extend to object cards with verification capability;
 
-По текущим доработкам:
+27. **Added commands** – objects that accelerate project creation and adding new roles to the project;
 
-- Добавить WebDAV - для упрощения хранения файлов в проекте. Кроме того, необходимо отключить правую кнопку мыши на файлах - из-за поведения Chrome/Firefox они отображаются некорректно;
+28. **Added utilities for quick RDP NLA absence checking, module for automatic hash retrieval from IPMI**;
 
-- Доработать безопасность - эндпоинт для CSP-отчётов;
+29. **Implemented issue carousel functionality**, which will speed up the creation of a visual report on work done;
 
-## Установка зависимостей
-### Deb-системы
+30. **Added proxy server authentication support**, allowing passwords not to be stored or remembered when using, for example, mTLS;
+
+31. **Configured integration with MetaSploit Framework**, which will automate attack processes;
+
+32. **Added ability to create custom code blocks – hooks**.
+
+33. **Added ability to send notifications via WebPush**. Chat messages can be sent via this technology.
+
+## What is not implemented from the original project, what is planned to be implemented
+
+Current improvements:
+
+- Add WebDAV – to simplify file storage in the project. Additionally, it is necessary to disable the right mouse button on files – due to Chrome/Firefox behavior they are displayed incorrectly;
+
+- Improve security – endpoint for CSP reports;
+
+## Installing Dependencies
+### Debian-based systems
 1. Google Chrome:
-Для начала необходимо скачать пакеты зависимостей:
+First, download dependency packages:
 
 ```bash
 sudo apt install curl software-properties-common apt-transport-https ca-certificates -y
 ```
-Далее необходимо добавить репозитории и ключи для подписи:
+
+Next, add repositories and signing keys:
 
 ```bash
 curl -fSsL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /usr/share/keyrings/google-chrome.gpg > /dev/null
 echo deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main | sudo tee /etc/apt/sources.list.d/google-chrome.list
 ```
 
-Теперь обновляем кэш пакетов и устанавливаем Google Chrome:
+Now update the package cache and install Google Chrome:
 
 ```bash
 sudo apt update
@@ -103,137 +152,151 @@ sudo apt install google-chrome-stable
 sudo apt install nmap
 ```
 
-## Настройка параметров приложения
+## Configuring Application Parameters
 
-При создании нового приложения (после клонирования проекта) необходимо для начала отредактировать файл config.py, где указать свои предпочитаемые настройки, или же передать их через следующие переменные окружения:
-- `SECRET_KEY` - указывает на секретный ключ приложения, которым будут шифроваться Cookie-файлы. Желательно указать, поскольку без этого Cookie-файлы не будут валидны между стартом/остановкой приложения;
-- `SQLALCHEMY_DATABASE_URI` - путь до базы данных. Задаётся как `Тип БД:///URI`. Например, для использования sqlite значение будет указано как `sqlite:////opt/test_database.db`;
-- `REST_FORBIDDEN_ATTRIBUTES` - атрибуты объектов, которые не будут возвращаться или изменяться при REST-запросах. По умолчанию: `User.password_hash,User.token,User.token_expiration`;
-- `TOKEN_EXPIRATION` - время жизни токена для REST-запросов. По умолчанию - 1 год;
-- `CELERY_BROKER_URL` - адрес БД, выступающей в качестве брокера задач Celery. Желательно использовать Redis. Задаётся в виде: `redis://username:password@localhost:6379/0`. Помимо этого, можно указать протокол Redis Over TLS: `rediss://username:password@localhost:6379/0?ssl_cert_reqs=required`;
-- `CELERY_RESULT_BACKEND` - адрес БД, в которую Celery worker'ы будут складывать свои результаты. Задаётся так же, как и `CELERY_BROKER_URL`;
-- `CELERY_TASK_IGNORE_RESULT` - указывает, игнорировать ли результаты выполнения задач или нет. Задаётся в виде `True` или `False`;
-- `CELERY_WORKERS_COUNT` - указывает на количество worker'ов, которые будут автоматически запущены вместе с приложением. По умолчанию - 1. Для отключения запуска worker'ов необходимо установить этот параметр в 0. Параметр работает только в Debug-режиме;
-- `CELERY_WORKERS_CONCURRENCY_COUNT` - количество потоков, приходящееся на каждого рабочего Celery. По умолчанию - 4. Параметр работает только в Debug-режиме;
-- `DEFAULT_LANGUAGE` - язык, который будет использоваться для приложения при инициации базы данных. По умолчанию - `ru`;
-- `CSP_ENABLED` - будет ли работать Content Security Policy;
-- `PAGINATION_ELEMENTS_COUNT_SELECT2` - количество элементов пагинации для плагина Select2 (в форму селекта данные загружаются динамически). По умолчанию - 30;
-- `USER_ACTION_LOGGING_IN_STDOUT` - будут ли логироваться действия пользователей на STDOUT. По умолчанию - `True`;
-- `USER_ACTION_LOGGING_FILE` - файл, в который будут дополнительно сохраняться действия пользователей. По умолчанию (для Production-конфига) этот файл отсутствует
-- `FLASK_LOGGING_ON_STDOUT` - будут ли писаться логи Flask на STDOUT. По умолчанию - True;
-- `FLASK_LOGGING_FILE` - файл, в который будут дополнительно сохраняться логи Flask. По умолчанию - отсутствует;
-- `ERROR_LOGGING_FILE` - файл, в который будут сохраняться ошибки приложения (ошибка 500). По умолчанию - `/logs/error.log`;
-- `METASPLOIT_HOST` - адрес хоста, на котором запущен прослушиватель MetaSploit (обычно через `msfrpcd -P <password> -p 55553`);
-- `METASPLOIT_PORT` - порт, на котором запущен прослушиватель MetaSploit;
-- `METASPLOIT_PASSWORD` - пароль для доступа к прослушивателю MetaSploit.
+When creating a new application (after cloning the project), you first need to edit the config.py file to specify your preferred settings, or pass them via the following environment variables:
+- `SECRET_KEY` – specifies the application secret key used to encrypt cookie files. It is advisable to set this, as without it cookies will not be valid between application start/stop;
+- `SQLALCHEMY_DATABASE_URI` – path to the database. Specified as `DB_TYPE:///URI`. For example, for sqlite the value would be `sqlite:////opt/test_database.db`;
+- `REST_FORBIDDEN_ATTRIBUTES` – object attributes that will not be returned or modified in REST requests. Default: `User.password_hash,User.token,User.token_expiration`;
+- `TOKEN_EXPIRATION` – token lifetime for REST requests. Default – 1 year;
+- `CELERY_BROKER_URL` – address of the database acting as Celery task broker. Redis is recommended. Specified as: `redis://username:password@localhost:6379/0`. Additionally, Redis Over TLS protocol can be specified: `rediss://username:password@localhost:6379/0?ssl_cert_reqs=required`;
+- `CELERY_RESULT_BACKEND` – address of the database where Celery workers will store their results. Specified the same as `CELERY_BROKER_URL`;
+- `CELERY_TASK_IGNORE_RESULT` – specifies whether to ignore task execution results or not. Set as `True` or `False`;
+- `CELERY_WORKERS_COUNT` – specifies the number of workers that will be automatically started with the application. Default – 1. To disable worker startup, set this parameter to 0. The parameter works only in Debug mode;
+- `CELERY_WORKERS_CONCURRENCY_COUNT` – number of threads per each Celery worker. Default – 4. The parameter works only in Debug mode;
+- `DEFAULT_LANGUAGE` – language that will be used for the application when initializing the database. Default – `ru`;
+- `CSP_ENABLED` – whether Content Security Policy will be active;
+- `PAGINATION_ELEMENTS_COUNT_SELECT2` – number of pagination elements for the Select2 plugin (data is loaded dynamically into the select form). Default – 30;
+- `USER_ACTION_LOGGING_IN_STDOUT` – whether user actions will be logged to STDOUT. Default – `True`;
+- `USER_ACTION_LOGGING_FILE` – file where user actions will be additionally saved. Default (for Production config) this file is absent;
+- `FLASK_LOGGING_ON_STDOUT` – whether Flask logs will be written to STDOUT. Default – True;
+- `FLASK_LOGGING_FILE` – file where Flask logs will be additionally saved. Default – absent;
+- `ERROR_LOGGING_FILE` – file where application errors (error 500) will be saved. Default – `/logs/error.log`;
+- `METASPLOIT_HOST` – address of the host where the MetaSploit listener is running (usually via `msfrpcd -P <password> -p 55553`);
+- `METASPLOIT_PORT` – port where the MetaSploit listener is running;
+- `METASPLOIT_PASSWORD` – password for accessing the MetaSploit listener.
 
-Кроме того, необходимо передавать аргумент `ENVIRONMENT`, устанавливая его в значение `PRODUCTION`, поскольку по умолчанию для целей разработки используется Development-сервер.
+Additionally, you need to pass the `ENVIRONMENT` argument, setting it to `PRODUCTION`, since by default the Development server is used for development purposes.
 
-Дополнительно можно передать аргумент `APP_PORT`, указывающий на порт, на котором будет слушать приложение. По умолчанию - 5000.
+You can also optionally pass the `APP_PORT` argument, specifying the port on which the application will listen. Default – 5000.
 
-## Основные команды
+## Main Commands
 
-После установки параметров приложения необходимо проинициализировать базу данных приложения. Для этого используются следующие команды:
-- `FLASK_APP=GreenMine flask greenmine db-init` - инициирует новую базу данных (даже если она не существовала ранее, как, например, с sqlite). Этот этап можно пропустить - база данных может быть создана на этапе внесения изменений;
-- `FLASK_APP=GreenMine flask db migrate` - создаёт новые скрипты миграции для записи данных в базу данных. Этот этап можно пропустить - миграции будут идти вместе с приложением;
-- `FLASK_APP=GreenMine flask db upgrade` - вносит изменения в базу данных;
-- `FLASK_APP=GreenMine flask greenmine load-default-database` - загружает данные по умолчанию в базу данных. Если данные по умолчанию не были внесены на этапе обновления - они будут внесены при первом запуске приложения;
+After setting application parameters, you need to initialize the application database. The following commands are used for this:
+- `FLASK_APP=GreenMine flask greenmine db-init` – initializes a new database (even if it didn't exist before, as with sqlite). This step can be skipped – the database can be created during the change entry stage;
+- `FLASK_APP=GreenMine flask db migrate` – creates new migration scripts for writing data to the database. This step can be skipped – migrations will run with the application;
+- `FLASK_APP=GreenMine flask db upgrade` – applies changes to the database;
+- `FLASK_APP=GreenMine flask greenmine load-default-database` – loads default data into the database. If default data was not inserted during the upgrade stage – they will be inserted on the first application launch;
 
-При обновлении базы данных (например, при обновлении проекта) используются следующие команды:
-- `FLASK_APP=GreenMine flask db migrate` - создаёт новые скрипты миграции;
-- `FLASK_APP=GreenMine flask db upgrade` - вносит изменения в базу данных;
-- `FLASK_APP=GreenMine flask greenmine update-database-value` - заполняет только что созданные таблицы в базе данных значениями из файла `initial_database_value.yml`;
+When updating the database (e.g., when updating the project), the following commands are used:
+- `FLASK_APP=GreenMine flask db migrate` – creates new migration scripts;
+- `FLASK_APP=GreenMine flask db upgrade` – applies changes to the database;
+- `FLASK_APP=GreenMine flask greenmine update-database-value` – populates newly created tables in the database with values from the `initial_database_value.yml` file;
 
-А при пересоздании базы данных:
-- `FLASK_APP=GreenMine flask greenmine reset-database` - полностью пересоздаёт существующую базу данных, заполняя её данными из файла `initial_database_value.yml`;
-- `FLASK_APP=GreenMine flask greenmine recreate-table --table <table_name>` - пересоздаёт указанную таблицу в базе данных (сперва удаляет, потом заново создаёт).
+And when recreating the database:
+- `FLASK_APP=GreenMine flask greenmine reset-database` – completely recreates the existing database, populating it with data from the `initial_database_value.yml` file;
+- `FLASK_APP=GreenMine flask greenmine recreate-table --table <table_name>` – recreates the specified table in the database (first deletes, then recreates).
 
-Дополнительно, если были введены новые таблицы с данными по умолчанию, можно использовать команду:
+Additionally, if new tables with default data have been introduced, you can use the command:
 ```bash
 FLASK_APP=GreenMine flask greenmine update-database-value
 ```
 
-Которая загрузит в пустые таблицы значения из файла `initial_database_value.yml`.
+Which will load values from the `initial_database_value.yml` file into empty tables.
 
-А для пересоздания таблицы и заполнения её значениями из файла `initial_database_value.yml` можно использовать команду:
+And to recreate a table and populate it with values from the `initial_database_value.yml` file, you can use the command:
 ```bash
 FLASK_APP=GreenMine flask greenmine recreate-table --table <table_name> 
 ```
 
-Значение `<table_name>` задаётся в том виде, в котором таблица описана в файле `default_database_value.yml`.
+The `<table_name>` value is specified in the form described in the `default_database_value.yml` file.
 
-Для обновления переводов приложения предусмотрены 2 команды:
-- `FLASK_APP=GreenMine flask translate update` - извлекает все переводы из исходных файлов и помещает в файл messages.pot, после чего обновляет po-файлы в директории app/translations;
-- `FLASK_APP=GreenMine flask translate compile` - после того, как исходные po-файлы переводов созданы, данная команда компилирует их в файл .mo. Имеет опцию `-f`, которая позволяет включить в конечный скомпилированный файл перевода так же переводы, помеченные как `fuzzy`.
+For updating application translations, 2 commands are provided:
+- `FLASK_APP=GreenMine flask translate update` – extracts all translations from source files and places them in the messages.pot file, then updates po-files in the app/translations directory;
+- `FLASK_APP=GreenMine flask translate compile` – after the source po translation files are created, this command compiles them into a .mo file. Has the `-f` option, which allows including translations marked as `fuzzy` in the final compiled translation file.
 
-## Автоматическое исправление ошибок
-GreenMine перед самым первым запросом может проводить проверку на наличие минимальных значений в БД, и в случае отсутствия этих значений - автоматически их туда заносить.
-По умолчанию проводятся следующие проверки:
+## Automatic Error Correction
 
-- Существует хотя бы один пользователь, который является администратором. Если его не существует - то либо создаётся новый пользователь (Логин/пароль - admin/admin), либо существующему пользователю с логином **admin** выставляется флаг, указывающий на то, что он является администратором;
+GreenMine can perform checks for minimum values in the database before the very first request, and if these values are missing – automatically insert them.
+By default, the following checks are performed:
 
-- Существует Роль на проекте, называемая "Анонимная". Если не существует - она автоматически добавляется в БД;
+- There exists at least one user who is an administrator. If it doesn't exist – either a new user is created (Login/password – admin/admin), or an existing user with the login **admin** is given the flag indicating they are an administrator;
 
-- В БД присутствует один экземпляр глобальных настроек;
+- There exists a Project Role called "Anonymous". If it doesn't exist – it is automatically added to the database;
 
-- В БД присутствует язык приложения, имеющий слаг "auto" - т.е. язык приложения будет определяться на основе предпочтений пользователя.
+- The database contains one instance of global settings;
 
-## Логины пользователей
+- The database contains the application language with the slug "auto" – i.e., the application language will be determined based on user preferences.
 
-Логины пользователей должны начинаться с буквы, и должны содержать символы алфавита, цифры, символы "-" и "_". Это сделано для того, чтобы их можно было упоминать через CKEditor.
+## User Logins
 
-Заводские учётные данные для приложения - `admin/admin` и `worker/worker`.
+User logins must start with a letter, and must contain alphabet characters, digits, "-" and "_" symbols. This is done so they can be mentioned via CKEditor.
 
-## Запуск в дебаг-режиме
+Factory credentials for the application – `admin/admin` and `worker/worker`.
 
-Для ознакомления с проектом без сборки Docker-контейнера его можно запустить в дебаг-режиме следующим образом:
+## Running in Debug Mode
+
+To explore the project without building a Docker container, you can run it in debug mode as follows:
 ```bash
-# Для начала клонируем проект
+# First clone the project
 git clone https://gitverse.ru/NekiyUser/GreenMine
 cd GreenMine
-# Устанавливаем зависимости в виртуальное окружение
+# Install dependencies into a virtual environment
 python -m venv ./venv
 source ./venv/bin/activate
 pip install -r ./requirements.txt
-# Создаём и инициируем начальными значениями БД:
+# Create and initialize the database with initial values:
 FLASK_APP=GreenMine flask greenmine db-init
 flask db migrate
 flask db upgrade
 FLASK_APP=GreenMine flask greenmine load-default-database
-# Теперь мы можем запустить приложение
+# Now we can run the application
 ./GreenMine.py
 ```
 
-Для того, чтобы в дебаг-режиме работали бэкграунд-задачи, в отдельном окне необходимо запустить Redis и Celery Worker следующим образом:
+For background tasks to work in debug mode, you need to run Redis and Celery Worker in a separate window as follows:
 ```bash
 docker run -d -p 6379:6379 redis
 celery -A run_celery worker --loglevel=INFO
 ```
 
-Далее мы можем
+Then we can
 
-## Запуск через Docker
+## Running via Docker
 
-Для запуска приложения через Docker необходимо собрать контейнер:
+To run the application via Docker, you need to build the container:
 
 ```bash
 docker build . -t greenmine
 ```
 
-Далее контейнер со всеми зависимостями можно запустить через `Docker compose`:
+Then the container with all dependencies can be launched via `Docker compose`:
 
 ```bash
 docker compose up
 ```
 
-После завершения процесса инициализации (когда в БД вносятся начальные значения) проект будет доступен на порту 5000.
+After the initialization process completes (when initial values are inserted into the database), the project will be available on port 5000.
 
-## Хуки
+## Hooks
 
-**Хуки** - это блоки пользовательского кода, которые вызываются в ответ на соответствующие события в приложении: создание проекта, создание задачи, изменение задачи, добавление комментария и т.п.
+**Hooks** are custom code blocks that are called in response to corresponding events in the application: project creation, task creation, task modification, comment addition, etc.
 
-В общем случае, хуки получают следующие переменные, с которыми они могут взаимодействовать:
-- `db` - база данных;
-- `this` - объект, над которым произошло изменение/добавление/удаление и т.п.;
-- `session` - текущая сессия;
-- `app` - текущее приложение.
+In general, hooks receive the following variables with which they can interact:
+- `db` – database;
+- `this` – the object over which the change/addition/deletion etc. occurred;
+- `session` – current session;
+- `app` – current application.
+
+## Acknowledgments
+
+GreenMine is a complete redesign of the [Pentest Collaboration Framework (PCF)](https://gitlab.com/invuls/pentest-projects/pcf).
+
+Special thanks to:
+- The original PCF developers for the inspiration
+- Contributors who have helped improve GreenMine
+- The open-source community for valuable tools and libraries
+
+## License
+
+See `LICENSE.txt` for full license text. For commercial use, please contact the author.
