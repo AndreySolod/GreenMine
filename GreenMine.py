@@ -24,6 +24,8 @@ cli.register(app)
 def create_gunicorn_app():
     logging.basicConfig(level=logging.INFO)
     app.setting_custom_attributes_for_application()
+    if not app.debug:
+        app.init_task_processor()
     return app
 
 if __name__ == "__main__":
