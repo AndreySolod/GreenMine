@@ -16,7 +16,7 @@ def index():
         abort(400)
     project = db.get_or_404(models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, models.ChatMessage(), 'index', project=project)
-    chat_messages = db.session.scalars(sa.select(models.ChatMessage).where(models.ChatMessage.project_id == project.id))
+    chat_messages = db.session.scalars(sa.select(models.ChatMessage).where(models.ChatMessage.project_id == project.id).order_by(models.ChatMessage.created_at.asc()))
     ctx = get_default_environment(models.ChatMessage(project=project), 'index')
     side_libraries.library_required('ckeditor')
     context = {'chat_messages': chat_messages, 'project': project, 'ckeditor_height': '20vh'}

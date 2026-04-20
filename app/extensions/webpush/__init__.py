@@ -5,12 +5,13 @@ import cryptography.hazmat.primitives.serialization as serialization
 import json
 import base64
 from urllib.parse import urlparse
+import time
 import logging
 logger = logging.getLogger("WebPush")
 
 
 class WebPusher:
-    def __init__(self, vapid_private_key: Vapid | None = None, vapid_claims: dict = {"sub": "mailto:your-email@example.com"},
+    def __init__(self, vapid_private_key: Vapid | None = None, vapid_claims: dict | None = None,
                  app: Flask | None = None,
                  icon_path: str | None = None):
         self._vapid_private_key = vapid_private_key
@@ -25,18 +26,20 @@ class WebPusher:
             self._vapid_private_key = app.config['VAPID_PRIVATE_KEY']
         if 'VAPID_EMAIL' in app.config and self.vapid_claims is None:
             self.vapid_claims = {"sub": f"mailto:{app.config['VAPID_EMAIL']}"}
+        else:
+            self.vapid_claims = {"sub": "mailto:your-email@example.com"}
 
     def send(self, subscription_info: dict, title: str, message: str, url: str, **params):
         try:
             logger.info(f"Sending push notification to {subscription_info['endpoint']}")
             endpoint = subscription_info['endpoint']
-            # Извлекаем origin (протокол + хост) из эндпоинта
             parsed = urlparse(endpoint)
-            audience = f"{parsed.scheme}://{parsed.netloc}"   # например https://updates.push.services.mozilla.com
+            audience = f"{parsed.scheme}://{parsed.netloc}/"
 
-            # Копируем базовые claims и добавляем aud
             claims = self.vapid_claims.copy() if self.vapid_claims else {}
-            claims['aud'] = audience
+            if 'mozilla.com' in audience:
+                claims['aud'] = audience
+                claims['exp'] = int(time.time()) + 3600 * 9
             data = {
                 'title': title,
                 'body': message,
