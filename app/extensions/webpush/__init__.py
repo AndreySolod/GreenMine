@@ -4,6 +4,7 @@ from py_vapid import Vapid
 import cryptography.hazmat.primitives.serialization as serialization
 import json
 import base64
+from urllib.parse import urlparse
 import logging
 logger = logging.getLogger("WebPush")
 
@@ -28,6 +29,14 @@ class WebPusher:
     def send(self, subscription_info: dict, title: str, message: str, url: str, **params):
         try:
             logger.info(f"Sending push notification to {subscription_info['endpoint']}")
+            endpoint = subscription_info['endpoint']
+            # Извлекаем origin (протокол + хост) из эндпоинта
+            parsed = urlparse(endpoint)
+            audience = f"{parsed.scheme}://{parsed.netloc}"   # например https://updates.push.services.mozilla.com
+
+            # Копируем базовые claims и добавляем aud
+            claims = self.vapid_claims.copy() if self.vapid_claims else {}
+            claims['aud'] = audience
             data = {
                 'title': title,
                 'body': message,
