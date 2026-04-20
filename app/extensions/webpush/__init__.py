@@ -34,12 +34,11 @@ class WebPusher:
             logger.info(f"Sending push notification to {subscription_info['endpoint']}")
             endpoint = subscription_info['endpoint']
             parsed = urlparse(endpoint)
-            audience = f"{parsed.scheme}://{parsed.netloc}/"
+            audience = f"{parsed.scheme}://{parsed.netloc}"
 
             claims = self.vapid_claims.copy() if self.vapid_claims else {}
-            if 'mozilla.com' in audience:
-                claims['aud'] = audience
-                claims['exp'] = int(time.time()) + 3600 * 9
+            claims['aud'] = audience
+            claims['exp'] = int(time.time()) + 3600 * 9
             data = {
                 'title': title,
                 'body': message,
@@ -51,7 +50,7 @@ class WebPusher:
                 subscription_info=subscription_info,
                 data=json.dumps(data),
                 vapid_private_key=self.private_key(),
-                vapid_claims=self.vapid_claims
+                vapid_claims=claims
             )
         except WebPushException as e:
             logger.error(f"WebPushException: {e}")
