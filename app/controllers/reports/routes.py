@@ -5,6 +5,7 @@ from flask import request, render_template, abort, send_file
 import app.models as models
 from app.helpers.general_helpers import get_or_404
 from app.helpers.projects_helpers import get_default_environment
+import  app.helpers.report_temlpate_helpers as template_helpers
 import docxtpl
 import sqlalchemy as sa
 from flask_babel import lazy_gettext as _l
@@ -42,19 +43,23 @@ def generate_report_from_template(template_id):
     project = db.get_or_404(models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, models.ProjectReportTemplate(), 'create', project=project)
     try:
+        jinja_env = jinja2.Environment(
+            extensions=['jinja2.ext.do']
+        )
         if report_template.template.extension == 'docx': # https://docxtpl.readthedocs.io/en/latest/
             template_data = BytesIO()
             template_data.write(report_template.template.data)
             template_data.seek(0)
             env = docxtpl.DocxTemplate(template_file=template_data)
             env.render({'project': project, 'user': current_user, 'db': db, 'sa': sa, 'models': importlib.import_module('app.models'), 'sanitizer': sanitizer,
-                        'BeautifulSoup': BeautifulSoup})
+                        'BeautifulSoup': BeautifulSoup, 'template_helpers': template_helpers}, jinja_env=jinja_env)
             result = BytesIO()
             env.save(result)
         else:
             env = jinja2.Environment(loader=jinja2.BaseLoader).from_string(report_template.template.data.decode())
             result = BytesIO()
-            result.write(env.render(project=project, user=current_user, db=db, sa=sa, models=importlib.import_module('app.models')).encode())
+            result.write(env.render(project=project, user=current_user, db=db, sa=sa, models=importlib.import_module('app.models'), sanitizer=sanitizer,
+                                    BeautifulSoup=BeautifulSoup).encode())
         title = report_template.template.title
     except Exception as e:
         result = BytesIO()

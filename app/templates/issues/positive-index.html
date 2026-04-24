@@ -59,9 +59,17 @@
                         field: 'status.id-select',
                         title: '{{ Issue.status.info["label"] }}',
                         filterControl: 'select',
-                        filterData: 'json:{{ filters["IssueStatus"]|safe }}',
+                        filterData: "json:" + JSON.stringify(JSON.parse('{{ filters["IssueStatus"]|safe|escapejs }}')),
                         sortable: true,
                         align: 'center',
+                    },
+                    {
+                        field: "vector.id-select",
+                        title: "{{ Issue.vector.info['label'] }}",
+                        filterControl: 'select',
+                        filterData: "json:" + JSON.stringify(JSON.parse('{{ filters["IssueVector"]|safe|escapejs }}')),
+                        sortable: true,
+                        align: 'center'
                     },
                     {
                         field: 'cvss',

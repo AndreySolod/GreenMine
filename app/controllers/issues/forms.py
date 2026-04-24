@@ -24,7 +24,8 @@ class IssueForm(FlaskForm):
         self.hosts.validate_funcs = lambda x: validate_host(project_id, x)
         self.cve_id.callback = url_for('cves.get_cve_select2_data')
         self.cve_id.locale = g.locale
-        self.cve_id.validate_funcs = lambda x: db.session.scalars(sa.select(models.CriticalVulnerability).where(models.CriticalVulnerability.id == int(x))).first() is not None
+        self.cve_id.validate_funcs = lambda x: db.session.scalars(sa.select(models.IssueVector).where(models.IssueVector.id == int(x))).first() is not None
+        self.vector_id.choices = [(i[0], i[1]) for i in db.session.execute(sa.select(models.IssueVector.id, models.IssueVector.title))]
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Issue.title.info["label"]),
                                 validators=[validators.DataRequired(message=_l("This field is mandatory!")),
                                             validators.Length(max=models.Issue.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Issue.title.type.length))])
@@ -45,6 +46,7 @@ class IssueForm(FlaskForm):
     tasks_by_issue = TreeSelectMultipleField(_l("%(field_name)s:", field_name=models.Issue.tasks_by_issue.info["label"]), validators=[validators.Optional()])
     order_number = wtforms.IntegerField(_l("%(field_name)s:", field_name=models.Issue.order_number.info["label"]), validators=[validators.Optional()],
                                         description=models.Issue.order_number.info['help_text'])
+    vector_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Issue.vector_id.info["label"]), validators=[validators.Optional()])
 
 
 class IssueCreateForm(IssueForm):
