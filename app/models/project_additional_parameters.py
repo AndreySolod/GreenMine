@@ -43,7 +43,7 @@ class ProjectAdditionalField(db.Model):
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
     field_type: so.Mapped[ProjectAdditionalParameterFieldType] = so.mapped_column(default=ProjectAdditionalParameterFieldType.StringField,
                                                                          info={'label': _l("Field type")}, server_default=sa.text("StringField"))
-    group_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectAdditionalFieldGroup.id, ondelete='CASCADE'), info={'label': _l("Group")})
+    group_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectAdditionalFieldGroup.id, ondelete='CASCADE'), index=True, info={'label': _l("Group")})
     group: so.Mapped[ProjectAdditionalFieldGroup] = so.relationship(lazy='select', back_populates="fields", info={'label': _l("Group")})
     project_fields: so.Mapped["ProjectAdditionalFieldData"] = so.relationship(lazy='select', back_populates='field_type', info={'label': _l("Created fields")}, cascade='all,delete')
 
@@ -58,7 +58,7 @@ class ProjectAdditionalFieldData(db.Model):
     updated_at: so.Mapped[UpdatedAt]
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={"label": _l("Updated by")}) # type: ignore
-    field_type_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectAdditionalField.id, ondelete='CASCADE'), info={'label': _l("Field type")})
+    field_type_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectAdditionalField.id, ondelete='CASCADE'), index=True, info={'label': _l("Field type")})
     field_type: so.Mapped[ProjectAdditionalField] = so.relationship(lazy='select', back_populates="project_fields", info={'label': _l("Field type")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l("Project")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', info={'label': _l("Project")}, back_populates='additional_parameters') # type: ignore

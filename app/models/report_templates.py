@@ -13,7 +13,7 @@ class ProjectReportTemplate(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
-    template_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='CASCADE'), info={'label': _l("File template")})
+    template_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='CASCADE'), index=True, info={'label': _l("File template")})
     template: so.Mapped[FileData] = so.relationship(lazy='select', info={'label': _l("File template")})
 
     class Meta:

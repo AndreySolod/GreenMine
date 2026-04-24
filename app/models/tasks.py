@@ -126,12 +126,12 @@ class ProjectTask(HasComment, db.Model, HasHistory):
     updated_at: so.Mapped[UpdatedAt] = so.mapped_column(info={"label": _l("Updated at"), 'help_text': _l("It is filled in automatically when the task is changed")})
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by"), 'help_text': _l("The user who updated the task")})
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={"label": _l("Updated by"), 'help_text': _l("The user who updated the task")}) # type: ignore
-    tracker_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskTracker.id, ondelete='SET NULL'), info={'label': _l("Tracker"), 'help_text': _l("A hypothesis about a possible problem")})
+    tracker_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskTracker.id, ondelete='SET NULL'), index=True, info={'label': _l("Tracker"), 'help_text': _l("A hypothesis about a possible problem")})
     tracker: so.Mapped["ProjectTaskTracker"] = so.relationship(lazy='select',
                                                                info={'label': _l("Tracker"),
                                                                      'help_text': _l("A hypothesis about a possible problem")})
     priority_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(ProjectTaskPriority.id,
-                                                   ondelete='SET NULL'), info={'label': _l("Priority"),
+                                                   ondelete='SET NULL'), index=True, info={'label': _l("Priority"),
                                                                                'help_text': _l("The assigned priority of the task. Simplifies filtering by tasks")})
     priority: so.Mapped["ProjectTaskPriority"] = so.relationship(lazy='joined',
                                                                  info={'label': _l("Priority"),
@@ -139,9 +139,9 @@ class ProjectTask(HasComment, db.Model, HasHistory):
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id',
                                                   ondelete='CASCADE'), index=True, info={'label': _l("Project"), 'help_text': _l("The project to which the task belongs")})
     project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates="tasks", info={'label': _l("Project"), 'help_text': _l("The project to which the task belongs")}) # type: ignore
-    state_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(TaskState.id, ondelete='SET NULL'), info={'label': _l("Status"), 'help_text': _l("The status of a task is the state in which the task is located")})
+    state_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(TaskState.id, ondelete='SET NULL'), index=True, info={'label': _l("Status"), 'help_text': _l("The status of a task is the state in which the task is located")})
     state: so.Mapped["TaskState"] = so.relationship(lazy='select', info={'label': _l("Status"), 'help_text': _l("The status of a task is the state in which the task is located")})
-    assigned_to_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Assigned to")})
+    assigned_to_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), index=True, info={'label': _l("Assigned to")})
     assigned_to: so.Mapped["User"] = so.relationship(foreign_keys=[assigned_to_id], backref=so.backref("assigned_tasks", lazy='select', info={'label': _l("Assigned tasks")}), # type: ignore
                                                      info={'label': _l("Assigned to")})
     date_start: so.Mapped[Optional[datetime.date]] = so.mapped_column(default=utcnow, info={'label': _l("The planned start date for solving the task")})
@@ -364,9 +364,9 @@ class ProjectTaskTemplate(db.Model):
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Template description")})
     task_title: so.Mapped[str] = so.mapped_column(sa.String(ProjectTask.title.type.length), info={'label': _l("Task theme")})
     task_description: so.Mapped[str] = so.mapped_column(info={'label': _l("Task description")})
-    task_tracker_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskTracker.id, ondelete='SET NULL'), info={'label': _l('Task tracker')})
+    task_tracker_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskTracker.id, ondelete='SET NULL'), index=True, info={'label': _l('Task tracker')})
     task_tracker: so.Mapped[ProjectTaskTracker] = so.relationship(lazy='select', info={'label': _l("Task tracker")})
-    task_priority_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskPriority.id, ondelete='SET NULL'), info={'label': _l("Task priority")})
+    task_priority_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProjectTaskPriority.id, ondelete='SET NULL'), index=True, info={'label': _l("Task priority")})
     task_priority: so.Mapped[ProjectTaskPriority] = so.relationship(lazy='select', info={'label': _l("Task priority")})
     task_estimation_time_cost: so.Mapped[Optional[datetime.timedelta]] = so.mapped_column(info={'label': _l("Task time cost estimation")})
     is_default: so.Mapped[bool] = so.mapped_column(default=False, server_default=sa.false(), info={'label': _l("Is default"), 'help_text': _l("This task will be created when a new project is added.")})

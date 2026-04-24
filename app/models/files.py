@@ -18,7 +18,7 @@ class FileDirectory(db.Model):
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l('Updated by')})
     updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l('Updated by')}) # type: ignore
     files: so.Mapped[List["FileData"]] = so.relationship(lazy='select', back_populates='directory', cascade='all, delete-orphan', info={'label': _l('Files')})
-    parent_dir_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_directory.id', ondelete='CASCADE'), info={'label': _l('Parent directory')})
+    parent_dir_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_directory.id', ondelete='CASCADE'), index=True, info={'label': _l('Parent directory')})
     parent_dir: so.Mapped['FileDirectory'] = so.relationship(backref=so.backref('subdirectories', cascade="all, delete-orphan"), post_update=True, # type: ignore
                                                  lazy='select', join_depth=2,
                                                  foreign_keys=[parent_dir_id], remote_side=[id], info={'label': _l('Parent directory')})

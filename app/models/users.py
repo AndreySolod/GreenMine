@@ -158,13 +158,13 @@ class User(UserMixin, db.Model):
     first_name: so.Mapped[str] = so.mapped_column(sa.String(20), default='', info={'label': _l("First Name")})
     last_name: so.Mapped[str] = so.mapped_column(sa.String(30), default='', info={'label': _l("Last Name")})
     middle_name: so.Mapped[str] = so.mapped_column(sa.String(30), default='', info={'label': _l("Patronymic")})
-    avatar_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='CASCADE'), info={'label': _l("Avatar")})
+    avatar_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('file_data.id', ondelete='CASCADE'), index=True, info={'label': _l("Avatar")})
     avatar: so.Mapped["FileData"] = so.relationship(lazy='select', foreign_keys=[avatar_id], info={'label': _l("Avatar")})
     manager_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Immediate supervisor")})
     manager: so.Mapped["User"] = so.relationship(backref='subordinates', post_update=True,
                                                  lazy='select', join_depth=2,
                                                  foreign_keys=[manager_id], remote_side=[id], info={'label': _l("Immediate supervisor")})
-    position_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user_position.id', ondelete='SET NULL'), info={'label': _l("Position")})
+    position_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user_position.id', ondelete='SET NULL'), index=True, info={'label': _l("Position")})
     position: so.Mapped["UserPosition"] = so.relationship(lazy='select', info={'label': _l("Position")})
     programming_language_theme_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(ProgrammingLanguageTheme.id, ondelete='SET NULL'),
                                                                                info={'label': _l("Programming language theme")})
@@ -174,7 +174,7 @@ class User(UserMixin, db.Model):
                                                                                     primaryjoin="User.id==UserHasProgramLanguage.user_id",
                                                                                     secondaryjoin="UserHasProgramLanguage.programming_language_id==ProgrammingLanguage.id",
                                                                                     info={'label': _l("Programming languages used")})
-    theme_style_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user_theme_style.id', ondelete='SET NULL'), info={'label': _l("Interface design theme")})
+    theme_style_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user_theme_style.id', ondelete='SET NULL'), index=True, info={'label': _l("Interface design theme")})
     theme_style: so.Mapped["UserThemeStyle"] = so.relationship(lazy="select", foreign_keys=[theme_style_id], info={'label': _l("Interface design theme")})
     teams: so.Mapped[List["UserHasTeam"]] = so.relationship(lazy='select', back_populates='user', cascade="all,delete", info={'label': _l("Member of the team")})
     created_comments: so.Mapped[List["Comment"]] = so.relationship(foreign_keys=[Comment.created_by_id], back_populates="created_by",
@@ -183,7 +183,7 @@ class User(UserMixin, db.Model):
     token: so.Mapped[str] = so.mapped_column(sa.String(60), default=default_user_token, index=True, unique=True, info={'label': _l("Token")})
     token_expiration: so.Mapped[datetime.datetime] = so.mapped_column(default=utcnow, info={'label': _l("Token expiration")})
     environment_setting: so.Mapped["UserEnvironmentSetting"] = so.relationship(back_populates='to_user', lazy='joined', cascade='all, delete-orphan', info={'label': _l("Environment settings")})
-    preferred_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('application_language.id', ondelete='SET NULL'), info={'label': _l("Preferred language")})
+    preferred_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('application_language.id', ondelete='SET NULL'), index=True, info={'label': _l("Preferred language")})
     preferred_language: so.Mapped["ApplicationLanguage"] = so.relationship(lazy='select', info={'label': _l("Preferred language")}) # type: ignore
     last_used_language_code: so.Mapped[Optional[str]] = so.mapped_column(sa.String(7), info={'label': _l("Last used language")}) # This is last preferred language for user if he use preferred_language 'auto'
     project_roles: so.Mapped[List["UserRoleHasProject"]] = so.relationship(lazy='select', cascade="all,delete", info={'label': _l("Roles on project")}, back_populates="user") # type: ignore
@@ -399,7 +399,7 @@ class Team(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(30), index=True, info={'label': _l("Title")})
     string_slug: so.Mapped[StringSlug]
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("Description")})
-    leader_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='SET NULL'), info={'label': _l("Leader of the team")})
+    leader_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(User.id, ondelete='SET NULL'), index=True, info={'label': _l("Leader of the team")})
     leader: so.Mapped["User"] = so.relationship(lazy="joined", foreign_keys=[leader_id], info={'label': _l("Leader of the team")})
     members: so.Mapped[List["UserHasTeam"]] = so.relationship(lazy='select', back_populates="team", cascade='all,delete', info={'label': _l("Team members")})
 
@@ -434,7 +434,7 @@ class Team(db.Model):
 
 class UserPositionHasObjectAction(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
-    position_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(UserPosition.id, ondelete='CASCADE'), info={'label': _l("Position")})
+    position_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(UserPosition.id, ondelete='CASCADE'), index=True, info={'label': _l("Position")})
     position: so.Mapped[UserPosition] = so.relationship(lazy='joined')
     object_class_name: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Object class name")})
     action: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Object action")})

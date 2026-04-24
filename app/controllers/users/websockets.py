@@ -48,7 +48,8 @@ def get_user_notification(data):
         lang = 'en'
     with force_locale(lang):
         logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' requested new notification #{notification.id}")
-        return {'link': notification.link_to_object, 'by_user': notification.by_user.title, 'description': sanitizer.sanitize(gettext(notification.description, **notification.technical_info))}
+        return {'link': notification.link_to_object, 'by_user': notification.by_user.title, 'description': sanitizer.sanitize(gettext(notification.description, **notification.technical_info)),
+                'notification_type': notification.notification_type.value}
 
 
 @socketio.on('toggle sidebar', namespace="/user")

@@ -156,7 +156,7 @@
 					let new_li = document.createElement('li');
 					new_li.appendChild(new_a);
 					notification_list.prepend(new_li);
-					$.notify(data.description, "info", {
+					$.notify(data.description, data.notification_type, {
 						clickToHide: true,
 						autoHide: true,
 						autoHideDelay: 5000,
@@ -187,7 +187,6 @@
 	{% endif %}
 	{# Process WebPush Subscribe #}
 	<script nonce="{{ csp_nonce() }}" src="{{ url_for('static', filename='js/webpush_client.js') }}"></script>
-	{% if current_user.is_authenticated and current_user.webpush_enabled == none %}
 	<script nonce="{{ csp_nonce() }}">
 		if (navigator.serviceWorker && 'PushManager' in window) {
 			initServiceWorker('{{ url_for("main_page.service_worker") }}', '{{ url_for("main_page.subscribe_webpush") }}', "{{ csrf_token() }}").then((state) => {
@@ -202,7 +201,6 @@
 			console.warn('Push-notification did not support in this browser');
 		}
 	</script>
-	{% endif %}
 	<script src="{{ url_for('static', filename='js/unifyMenu.js') }}" nonce="{{ csp_nonce() }}"></script>
 	<script src="{{ url_for('static', filename='js/onoffcanvas.js') }}" nonce="{{ csp_nonce() }}"></script>
 	<script src="{{ url_for('static', filename='js/main_style_script.js') }}" nonce="{{ csp_nonce() }}"></script>

@@ -183,6 +183,13 @@ def updated_paramethers_updated_by_id_if_exist(session):
             i.updated_by_id = current_user.id
 
 
+class UserNotificationType(enum.Enum):
+    INFO = "info"
+    SUCCESS = "success"
+    WARN = "warn"
+    ERROR = "error"
+
+
 class UserNotification(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     to_user_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('user.id', ondelete='CASCADE'), info={'label': _l("Refer to user")})
@@ -195,6 +202,7 @@ class UserNotification(db.Model):
     technical_info: so.Mapped[Optional[dict]] = so.mapped_column(JSONType(), info={'label': _l("Technical detaled")})
     link_to_object: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Link to object")})
     require_webpush: so.Mapped[bool] = so.mapped_column(info={'label': _l("Require Web push Notification")}, server_default=sa.true(), default=sa.true())
+    notification_type: so.Mapped[UserNotificationType] = so.mapped_column(info={'label': _l("Notification type")}, default=UserNotificationType.INFO, server_default=UserNotificationType.INFO.name)
     created_at: so.Mapped[CreatedAt]
 
     class Meta:

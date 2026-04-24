@@ -175,10 +175,12 @@ class CredentialImportTemplate(db.Model):
     string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(80), info={'label': _l("Title")})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Template description")})
+    domain_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Domain column number")})
     login_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Login column number")})
     password_hash_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Password hash column number")})
     description_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Additional description column number")})
     password_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Password column number")})
+    static_domain: so.Mapped[Optional[str]] = so.mapped_column(sa.String(Credential.domain.type.length), info={'label': _l("Static domain")})
     static_login: so.Mapped[Optional[str]] = so.mapped_column(sa.String(Credential.login.type.length), info={'label': _l("Static login")})
     static_password_hash: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Static password hash")})
     static_hash_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HashType.id, ondelete='CASCADE'), info={'label': _l("Static hash type")})

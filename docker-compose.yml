@@ -74,7 +74,7 @@ services:
         stop_signal: SIGINT
         command: celery -A run worker --loglevel=INFO --concurrency 1
     postgres:
-        image: postgres
+        image: postgres:17
         restart: always
         container_name: postgres
         hostname: postgres

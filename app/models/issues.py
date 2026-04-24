@@ -27,6 +27,18 @@ class IssueStatus(db.Model):
         column_index = ['id', 'string_slug', 'title', 'description', 'color']
 
 
+class IssueVector(db.Model):
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
+    string_slug: so.Mapped[StringSlug]
+    title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Title")})
+
+    class Meta:
+        verbose_name = _l("Issue vector")
+        verbose_name_plural = _l("Issue vectors")
+        title_new = _l("Add new Issue vector")
+        column_index = ["id", "string_slug", "title"]
+
+
 @project_enumerated_object
 class VulnerableEnvironmentType(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
@@ -55,13 +67,13 @@ class CriticalVulnerability(HasComment, db.Model, HasHistory):
     cvss: so.Mapped[float] = so.mapped_column(info={'label': _l('CVSS')})
     title: so.Mapped[int] = so.mapped_column(sa.String(50), info={'label': _l('Title')})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l('Description')})
-    vulnerable_environment_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(VulnerableEnvironmentType.id, ondelete='SET NULL'), info={'label': _l('Type of vulnerable environment')})
+    vulnerable_environment_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(VulnerableEnvironmentType.id, ondelete='SET NULL'), index=True, info={'label': _l('Type of vulnerable environment')})
     vulnerable_environment_type: so.Mapped[VulnerableEnvironmentType] = so.relationship(lazy='joined', info={'label': _l('Type of vulnerable environment')})
     vulnerable_environment: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Vulnerable environment creation script')})
-    proof_of_concept_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('programming_language.id', ondelete='SET NULL'), info={'label': _l('Proof of Concept language')})
+    proof_of_concept_language_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('programming_language.id', ondelete='SET NULL'), index=True, info={'label': _l('Proof of Concept language')})
     proof_of_concept_language: so.Mapped["ProgrammingLanguage"] = so.relationship(lazy='joined', info={'label': _l('Proof of Concept language')}) # type: ignore
     proof_of_concept_code: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('Proof of Concept')})
-    wikipage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('wiki_page.id', ondelete='SET NULL'), info={'label': _l('Page in Wiki')})
+    wikipage_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('wiki_page.id', ondelete='SET NULL'), index=True, info={'label': _l('Page in Wiki')})
     wikipage: so.Mapped["WikiPage"] = so.relationship(lazy='select', info={'label': _l("Page in Wiki")}) # type: ignore
 
     __table_args__ = (sa.UniqueConstraint('year', 'identifier', name='_unique_year_and_identifier_together'),)
@@ -130,8 +142,10 @@ class Issue(HasComment, db.Model, HasHistory):
     cvss: so.Mapped[Optional[float]] = so.mapped_column(info={'label': _l('CVSS')})
     cve_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CriticalVulnerability.id, ondelete='SET NULL'), info={'label': _l('CVE')})
     cve: so.Mapped['CriticalVulnerability'] = so.relationship(lazy='joined', info={'label': _l('CVE')})
-    status_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('issue_status.id', ondelete='SET NULL'), info={'label': _l('Status')})
-    status: so.Mapped['IssueStatus'] = so.relationship(lazy='joined', info={'label': _l('Status')})
+    status_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(IssueStatus.id, ondelete='SET NULL'), index=True, info={'label': _l('Status')})
+    status: so.Mapped[IssueStatus] = so.relationship(lazy='joined', info={'label': _l('Status')})
+    vector_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(IssueVector.id, ondelete="SET NULL"), index=True, info={'label': _l("Vector")})
+    vector: so.Mapped[IssueVector] = so.relationship(lazy='joined', info={'label': _l("Vector")})
     services: so.Mapped[Set["Service"]] = so.relationship(secondary=IssueHasService.__table__, # type: ignore
                                                                      primaryjoin=id==IssueHasService.issue_id,
                                                                      secondaryjoin='Service.id==IssueHasService.service_id',

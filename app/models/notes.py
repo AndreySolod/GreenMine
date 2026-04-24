@@ -35,7 +35,7 @@ class Note(db.Model):
     updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
     description: so.Mapped[str] = so.mapped_column(info={'label': _l("The body of the note")})
-    importance_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(NoteImportance.id, ondelete='SET NULL'), info={'label': _l("Importance")})
+    importance_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(NoteImportance.id, ondelete='SET NULL'), index=True, info={'label': _l("Importance")})
     importance: so.Mapped[NoteImportance] = so.relationship(lazy='joined', info={'label': _l("Importance")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l("Project")})
     project: so.Mapped['Project'] = so.relationship(lazy='select', back_populates="notes", info={'label': _l("Project")}) # type: ignore

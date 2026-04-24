@@ -31,7 +31,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id', name=op.f('pk_hook'))
     )
     with op.batch_alter_table('project_task_template', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('is_default', sa.Boolean(), server_default=sa.text('0'), nullable=False))
+        batch_op.add_column(sa.Column('is_default', sa.Boolean(), server_default=sa.false(), nullable=False))
 
     # ### end Alembic commands ###
 

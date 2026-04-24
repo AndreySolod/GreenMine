@@ -30,7 +30,7 @@ class CeleryManager():
         celery_app = Celery(flask_app.name, task_cls=FlaskTask)
         celery_app.config_from_object({'broker_url': broker_url,
                                        'result_backend': backend_result, 
-                                       'task_ignore_result': flask_app.config.get('CELERY_TASK_IGNORE_RESULT'),
+                                       'task_ignore_result': False,
                                        'imports': ('app', 'app.models', 'app.action_modules'),
                                        'include': ('app', 'app.action_modules'),
                                        "broker_connection_retry_on_startup": True})

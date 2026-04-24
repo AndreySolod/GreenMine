@@ -28,7 +28,6 @@ class DevelopmentConfig:
     TOKEN_EXPIRATION = os.environ.get('TOKEN_EXPIRATION') or 365 * 24 * 60 * 60
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL') or 'redis://localhost:6379/0'
     CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND') or 'redis://localhost:6379/0'
-    CELERY_TASK_IGNORE_RESULT = False if os.environ.get("CELERY_TASK_IGNORE_RESULT") == 'False' else True
     CSP_ENABLED = False if os.environ.get("CSP_ENABLED") == 'False' else True
     ACTIVATE_PASSWORD_POLICY = False if os.environ.get('ACTIVATE_PASSWORD_POLICY') == 'False' else True
     DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE') or 'ru'

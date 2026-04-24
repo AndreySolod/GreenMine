@@ -2008,3 +2008,9 @@ NetworkIcon:
         title: "Сервера"
         icon_class: "fa-solid fa-computer"
         icon_number: 58597
+
+IssueVector:
+    - inner:
+        title: "Внутренний злоумышленник"
+    - outer:
+        title: "Внешний злоумышленник"

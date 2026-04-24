@@ -1,10 +1,14 @@
 import app.models as models
-from app import celery
+from app import celery, db, celery_task_observer
 from flask import Flask
 from app.action_modules import AutomationModules
 from app.controllers.forms import FlaskForm
 from sqlalchemy.orm.session import Session
 from typing import Callable, Any, Dict
+from flask_babel import lazy_gettext as _l, force_locale, gettext
+import time
+import logging
+logger = logging.getLogger("ActionModule")
 
 
 class ActionModuleError(Exception):
@@ -19,6 +23,7 @@ class ActionModule:
     
     title: str = "Automation module"
     description: str = "Basic class for automation module"
+    link_to_object: str = "#"
     admin_form: FlaskForm
     run_form: FlaskForm
     exploit_single_target: Callable
@@ -54,4 +59,39 @@ class ActionModule:
                 ff[name] = field.data
         if hasattr(filled_form, 'additional_form_attrs'):
             ff.update(filled_form.additional_form_attrs)
-        bt.delay(ff, running_user.id, self.default_options, locale=locale, project_id=project_id)
+        async_result = bt.delay(ff, running_user.id, self.default_options, locale=locale, project_id=project_id)
+        celery_task_observer.add_task(self._monitor_celery_task, async_result.id, task_name=self.title, running_user_id=running_user.id)
+
+
+    def _monitor_celery_task(self, async_result_id: str, task_name: str, running_user_id: int):
+        """Observer-function, performed in TaskProcessor"""
+        _l('The celery task "%(task_name)s" was completed successfully.')
+        async_result = celery.AsyncResult(async_result_id)
+        logger.info(f"Monitoring Celery task {task_name} (id={async_result.id})")
+        
+        # Отладка: убедимся, что задача видна и бекенд работает
+        print(f"Initial state: {async_result.state}, backend: {async_result.backend}")
+        try:
+            while not async_result.ready():
+                time.sleep(1)
+                # Опционально: прерывание по флагу остановки TaskProcessor
+                #if threading.current_thread().is_shutdown(): break
+            
+            if async_result.successful():
+                result = async_result.get()
+                logger.info(f"Celery task {task_name} completed successfully. Result: {result}")
+                u: models.User = db.celery_monitor_session.get(models.User, running_user_id)
+                with force_locale(u.last_used_language_code):
+                    task_name = gettext(task_name)
+                un = models.UserNotification(to_user=u, by_user=u, description='The celery task "%(task_name)s" was completed successfully.',
+                                             technical_info={'task_name': str(task_name)}, notification_type=models.UserNotificationType.SUCCESS, link_to_object=self.link_to_object)
+                db.celery_monitor_session.add(un)
+                db.celery_monitor_session.commit()
+            else:
+                try:
+                    exc = async_result.get(propagate=False)
+                    logger.error(f"Celery task {task_name} failed. Exception: {exc}")
+                except Exception as e:
+                    logger.error(f"Celery task {task_name} failed with unknown error: {e}")
+        except Exception as e:
+            logger.error(f"Error while monitoring Celery task {task_name}: {e}")

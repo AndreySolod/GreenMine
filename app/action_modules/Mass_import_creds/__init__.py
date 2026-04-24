@@ -23,6 +23,8 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
         cred.password = sanitizer.escape(element['password'])
         if element['password'] == '':
             cred.is_empty = True
+    if 'domain' in element:
+        cred.domain = sanitizer.escape(element['domain'])
     if 'password_hash' in element:
         cred.password_hash = sanitizer.escape(element['password_hash'])
     if 'description' in element:
@@ -48,44 +50,37 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
 
 def process_credentials_multiple_import_data(project_id: int, processed_data: List[Dict[str, str]], created_by_id: int, session:so.Session) -> None:
     for e in processed_data:
-        if all([i in e for i in ("domain", "login", "password", "received_from")]):
-            creds =  session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+        e.setdefault('is_admin', False)
+        if 'domain' in e:
+            domain_condition = models.Credential.domain == e['domain']
+        else:
+            domain_condition = models.Credential.domain.in_([None, ""])
+        if all([i in e for i in ("login", "password")]):
+            creds =  session.scalars(sa.select(models.Credential).where(sa.and_(domain_condition,
                                                                                 models.Credential.login == e['login'],
                                                                                 models.Credential.password == e['password'],
                                                                                 models.Credential.project_id == project_id))).all()
             for i in creds:
-                i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
-                i.updated_by_id = created_by_id
-        if all([i in e for i in ("domain", "login", "password_hash", "hash_type", "received_from")]):
+                if 'received_from' in e:
+                    i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
+                    i.updated_by_id = created_by_id
+                if 'services' in e:
+                    i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
+                    i.updated_by_id = created_by_id
+        if all([i in e for i in ("login", "password_hash", "hash_type")]):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).first()
-            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+            creds = session.scalars(sa.select(models.Credential).where(sa.and_(domain_condition,
                                                                                models.Credential.login == e['login'],
                                                                                models.Credential.password_hash == e['password_hash'].strip().lower(),
                                                                                models.Credential.hash_type_id == hash_type_id,
                                                                                models.Credential.project_id == project_id))).all()
             for i in creds:
-                i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
-                i.updated_by_id = created_by_id
-        if all([i in e for i in ("domain", "login", "password", "is_admin", "services")]):
-            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
-                                                                               models.Credential.login == e['login'],
-                                                                               models.Credential.password == e['password'],
-                                                                               models.Credential.is_admin == e['is_admin'],
-                                                                               models.Credential.project_id == project_id))).all()
-            for i in creds:
-                i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
-                i.updated_by_id = created_by_id
-        if all([i in e for i in ("domain", "login", "password_hash", "hash_type", "is_admin", "services")]):
-            hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).first()
-            creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
-                                                                               models.Credential.login == e['login'],
-                                                                               models.Credential.password_hash == e['password_hash'].strip().lower(),
-                                                                               models.Credential.hash_type_id == hash_type_id,
-                                                                               models.Credential.is_admin == e['is_admin'],
-                                                                               models.Credential.project_id == project_id))).all()
-            for i in creds:
-                i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
-                i.updated_by_id = created_by_id
+                if 'received_from' in e:
+                    i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
+                    i.updated_by_id = created_by_id
+                if 'services' in e:
+                    i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
+                    i.updated_by_id = created_by_id
         if all([i in e for i in ("password_hash", "hash_type", "password")]):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).first()
             creds = session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.password_hash == e['password_hash'].strip().lower(),
@@ -98,6 +93,12 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
                 i.updated_by_id = created_by_id
                 if i.check_wordlist is None and 'check_wordlist' in e:
                     i.check_wordlist_id = session.scalars(sa.select(models.CheckWordlist.id).where(models.CheckWordlist.id == int(e['check_wordlist']))).first()
+                if 'received_from' in e:
+                    i.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
+                    i.updated_by_id = created_by_id
+                if 'services' in e:
+                    i.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
+                    i.updated_by_id = created_by_id
         # Now check - if this credential is exist
         creds = []
         if all([i in e for i in ("domain", "login", "password", 'is_admin')]):
@@ -135,12 +136,6 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
             e.setdefault('login', '-')
             cred = models.Credential(login=sanitizer.escape(e['login']), created_by_id=created_by_id, project_id=project_id)
             set_credential_data(cred, e, project_id, session)
-        else:
-            for cred in creds:
-                cred.received_from.update(session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, e['received_from']))))).all())
-                if cred.check_wordlist_id is None:
-                    cred.check_wordlist_id = session.scalars(sa.select(models.CheckWordlist.id).where(models.CheckWordlist.id == int(e['check_wordlist']))).first()
-                cred.services.update(session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, e['services']))))).all())
     session.commit()
             
 
@@ -194,14 +189,14 @@ class CredentialMultipleAddForm(FlaskForm):
         
     def validate_delimiter(form, field): # maybe hide, because this will be an celery task
         if (form.file_data.data.filename != '' or form.content_data.data.strip() != ''):
-            if not form.parse_result(field.data):
+            if not form.parse_result(field.data, form.domain_delimiter.data):
                 logger.warning("Incorrect input delimiter in user input - not enough columns to parse")
                 raise validators.ValidationError(_l("Incorrect input delimiter - not enough columns to parse"))
         else:
             logger.warning("Incorrect input delimiter in user input - not enough columns to parse")
             raise validators.ValidationError(_l("Incorrect input delimiter - not enough columns to parse"))
     
-    def parse_result(self, delimiter: str) -> bool:
+    def parse_result(self, delimiter: str, domain_delimiter: str) -> bool:
         logger.info("Start parse result")
         if self.content_data.data:
             parse_data = self.content_data.data
@@ -252,6 +247,13 @@ class CredentialMultipleAddForm(FlaskForm):
                         current_elem[key] = line_data.strip()
                         if key == 'password_hash': # To lower case value if key is password hash
                             current_elem[key] = current_elem[key].lower()
+                        if key == 'login' and domain_delimiter not in ["", None] and 'domain' not in current_elem:
+                            domain_and_login = line[value].split(domain_delimiter, 1)
+                            if len(domain_and_login) == 1:
+                                current_elem[key] = line_data.strip()
+                            else:
+                                current_elem['domain'] = domain_and_login[0]
+                                current_elem['login'] = domain_and_login[1]
                     except IndexError:
                         return False
             if len(current_elem) == 0:

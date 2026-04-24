@@ -62,7 +62,8 @@ automation_modules = AutomationModules()
 babel = Babel()
 csp = CSPManager()
 sanitizer = TextSanitizerManager()
-task_processor = TaskProcessor()
+task_processor = TaskProcessor("TaskProcessor")
+celery_task_observer = TaskProcessor("CeleryTaskObserver")
 web_pusher = WebPusher(icon_path="/static/img/favicon_white.webp")
 side_libraries = SideLibraries(libraries_file=Path(__file__).parent / "static_config_paths.yml", always_required_libraries=['notify', 'socketio'])
 password_policy = PasswordPolicyManager(change_password_callback='users.user_change_password_callback', exempt_bp=set(['files']), exempt_endpoint=set(["generic.get_current_user_theme_style", "generic.get_ckeditor_styles"]))
@@ -82,21 +83,28 @@ class FlaskGreenMine(Flask):
         logger.info("Graceful shutdown initiated by signal %s", signum)
         if hasattr(self, 'task_processor'):
             self.task_processor.stop(wait=True)
+        if hasattr(self, 'celery_task_observer'):
+            self.celery_task_observer.stop(wait=True)
         sys.exit(0)
 
-    def init_task_processor(self):
+    def init_task_processors(self):
         self.task_processor = task_processor
         self.task_processor.start(self)
+        self.celery_task_observer = celery_task_observer
+        self.celery_task_observer.start(self)
+
         signal.signal(signal.SIGINT, self._graceful_shutdown)
         if not hasattr(self, '_cleanup_registered'):
             atexit.register(lambda: self.task_processor.stop(wait=True)) 
+            atexit.register(lambda: self.celery_task_observer.stop(wait=True))
             self._cleanup_registered = True
+
 
     def run(self, *args, **kwargs):
         self.setting_custom_attributes_for_application()
         self.init_hooks()
         if not self.debug or is_running_from_reloader():
-            self.init_task_processor()
+            self.init_task_processors()
         return super(FlaskGreenMine, self).run(*args, **kwargs)
 
 def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenMine:
@@ -231,6 +239,7 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     with app.app_context():
         db.session.configure(autoflush=False)
         db.technical_session = so.scoped_session(so.sessionmaker(bind=db.engine, autoflush=False, info={'is_technical': True})) # Session without autoflush, that help us to correctly create technical objects like notification etc...
+        db.celery_monitor_session = so.scoped_session(so.sessionmaker(bind=db.engine, autoflush=False, info={'is_technical': True}))
 
     # setting logging
     if config_class.USER_ACTION_LOGGING_ON_STDOUT:

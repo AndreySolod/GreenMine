@@ -33,6 +33,7 @@ def add_comment(data):
     if cr is None:
         return None
     current_room, current_room_name = cr
+    project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(data))).one()
     if not project_role_can_make_action(current_user, models.ChatMessage(), 'create', project_id=current_room):
         return None
     cm = models.ChatMessage(created_by=current_user, project_id=current_room, text=data['text'])
@@ -44,6 +45,7 @@ def add_comment(data):
           namespace="/chats", to=current_room_name)
     project_user_roles = db.session.scalars(sa.select(models.UserRoleHasProject).where(models.UserRoleHasProject.project_id == current_room)).all()
     project_users = set([project_user_role.user for project_user_role in project_user_roles])
+    project_users.add(project.leader)
     _ = _l("New comment in project #%(project_id)s: «%(comment_text)s»")
     for user in project_users:
         if project_role_can_make_action(user, models.ChatMessage(), 'index', project_id=current_room) and user != current_user:
