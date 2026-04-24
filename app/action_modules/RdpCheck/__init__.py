@@ -64,10 +64,8 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == target.host.from_network.project_id, models.Issue.by_template_slug == 'rdp_without_nla'))).first()
         if not issue:
             issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'rdp_without_nla')).first()
-            issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
-            if issue_template and issue_status:
+            if issue_template:
                 issue = issue_template.create_issue_by_template()
-                issue.status = issue_status
                 issue.created_by_id = running_user_id
                 issue.project_id = target.host.from_network.project_id
                 session.add(issue)

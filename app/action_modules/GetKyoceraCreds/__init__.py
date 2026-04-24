@@ -47,11 +47,9 @@ def action_run(target_id: Union[str, int], running_user_id: int, domain_search: 
             return None
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.by_template_slug == 'cve_2022_1026', models.Issue.project_id == target.from_network.project_id))).first()
         if issue is None:
-            issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
             issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'cve_2022_1026')).first()
-            if issue_status is not None and issue_template is not None:
+            if issue_template is not None:
                 issue = issue_template.create_issue_by_template()
-                issue.status = issue_status
                 issue.project_id = target.from_network.project_id
                 issue.created_by_id = running_user_id
                 session.add(issue)

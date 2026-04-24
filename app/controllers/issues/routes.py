@@ -166,6 +166,7 @@ def issue_data_by_template(template_id):
            "riscs": templ.issue_riscs,
            "references": templ.issue_references,
            "cvss": templ.issue_cvss,
+           "vector": templ.issue_vector_id,
            'slug': templ.string_slug}
     if templ.issue_cve_id is None:
         res["cve_id"] = 0

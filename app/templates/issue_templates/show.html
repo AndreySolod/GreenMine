@@ -58,6 +58,10 @@
                             <td><a href="{{ url_for('cves.cve_show', cve_id=template.issue_cve_id) }}">{{ template.issue_cve.title }}</a></td>
                             {% endif %}
                         </tr>
+                        <tr>
+                            <td>{{ models.IssueTemplate.issue_vector_id.info["label"] }}:</td>
+                            <td>{{ getattr(template.issue_vector, 'title', "") }}</td>
+                        </tr>
                     </tbody>
                 </table>
                 <h5>{{ models.IssueTemplate.issue_description.info["label"] }}:</h5>

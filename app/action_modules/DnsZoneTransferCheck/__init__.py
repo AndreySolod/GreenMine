@@ -25,12 +25,10 @@ def action_run(target: models.Service, running_user_id: int, zone_name: str, ses
         return []
     logger.info(f"Target has transfer DNS zone: {target}")
     issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'dns_zone_transfer')).first()
-    issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
-    if issue_template and issue_status:
+    if issue_template:
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == project_id, models.Issue.by_template_slug == 'dns_zone_transfer'))).first()
         if issue is None:
             issue = issue_template.create_issue_by_template()
-            issue.status = issue_status
             issue.project_id = project_id
             issue.created_by_id = running_user_id
             session.add(issue)

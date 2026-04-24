@@ -37,12 +37,10 @@ def action_run(target: models.Service, running_user_id: int, session: Session, c
             issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == project_id, models.Issue.by_template_slug == 'cve_2017_0144'))).first()
             if issue is None:
                 issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == 'cve_2017_0144')).first()
-                issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
-                if issue_template and issue_status:
+                if issue_template:
                     issue = issue_template.create_issue_by_template()
                     issue.project_id = project_id
                     issue.created_by_id = running_user_id
-                    issue.status = issue_status
                 else:
                     logger.error("Error when getting issue template or issue status")
             else:

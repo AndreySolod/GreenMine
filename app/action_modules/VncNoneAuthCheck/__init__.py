@@ -24,10 +24,10 @@ def action_run(target: models.Service, console: MsfRpcConsole, running_user_id: 
     console.write("run")
     vnc_data = console.read_all()
     # OUTPUT:
-    # [*] 10.68.20.10:5900      - 10.68.20.10:5900 - VNC server protocol version: 3.3
-    # [*] 10.68.20.10:5900      - 10.68.20.10:5900 - VNC server security types supported: None
-    # [+] 10.68.20.10:5900      - 10.68.20.10:5900 - VNC server security types includes None, free access!
-    # [*] 10.68.20.10:5900      - Scanned 1 of 1 hosts (100% complete)
+    # [*] 10.0.0.1:5900      - 10.0.0.1:5900 - VNC server protocol version: 3.3
+    # [*] 10.0.0.1:5900      - 10.0.0.1:5900 - VNC server security types supported: None
+    # [+] 10.0.0.1:5900      - 10.0.0.1:5900 - VNC server security types includes None, free access!
+    # [*] 10.0.0.1:5900      - Scanned 1 of 1 hosts (100% complete)
     # [*] Auxiliary module execution completed
     vnc_version = None
     security_types_supported = None
@@ -58,12 +58,10 @@ def action_run(target: models.Service, console: MsfRpcConsole, running_user_id: 
         issue = session.scalars(sa.select(models.Issue).where(sa.and_(models.Issue.project_id == project_id, models.Issue.by_template_slug == "vnc_none_auth"))).first()
         if not issue:
             issue_template = session.scalars(sa.select(models.IssueTemplate).where(models.IssueTemplate.string_slug == "vnc_none_auth")).first()
-            issue_status = session.scalars(sa.select(models.IssueStatus).where(models.IssueStatus.string_slug == 'confirmed')).first()
-            if issue_template and issue_status:
+            if issue_template:
                 issue = issue_template.create_issue_by_template()
                 issue.project_id = project_id
                 issue.created_by_id = running_user_id
-                issue.status = issue_status
                 issue.services.add(target)
                 session.add(issue)
         else:

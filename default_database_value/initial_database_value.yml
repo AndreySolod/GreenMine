@@ -738,30 +738,37 @@ IssueStatus:
         title: "Нуждается в проверке"
         description: "Проблема ещё не подтверждена"
         color: "#00FFFF"
+        is_default: false
     - recheck:
         title: "Нуждается в повторной проверке"
         description: "Наличие проблемы необходимо проверить ещё раз"
         color: "#7FFFD4"
+        is_default: false
     - confirmed:
         title: "Подтверждена"
         description: "Проблема действительно присутствует"
         color: "#FF4500"
+        is_default: true
     - notconfirmed:
         title: "Не подтверждена"
         description: "Проблема не подтверждена"
         color: "#808000"
+        is_default: false
     - pending:
         title: "Рассматривается"
         description: "Наличие проблемы на текущий момент только рассматривается"
         color: "#1E90FF"
+        is_default: false
     - fixing:
         title: "В процессе исправления"
         description: "Проблема находится в процессе исправления"
         color: "#6B8E23"
+        is_default: false
     - fixed:
         title: "Исправлена"
         description: "Проблема более не наблюдается"
         color: "#228B22"
+        is_default: false
 
 NoteImportance:
     - low:
@@ -2012,5 +2019,7 @@ NetworkIcon:
 IssueVector:
     - inner:
         title: "Внутренний злоумышленник"
+        is_default: true
     - outer:
         title: "Внешний злоумышленник"
+        is_default: false

@@ -5,6 +5,7 @@ import datetime
 from .generic import HasComment, HasHistory
 from .datatypes import ID, StringSlug, CreatedAt, UpdatedAt, Archived, LimitedLengthString
 import sqlalchemy as sa
+from sqlalchemy.orm.session import Session as SessionBase
 import sqlalchemy.orm as so
 import wtforms
 from app.controllers.forms import PickrColorField
@@ -19,6 +20,7 @@ class IssueStatus(db.Model):
     title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l('Title')})
     description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l('State description'), 'form': wtforms.TextAreaField})
     color: so.Mapped[str] = so.mapped_column(sa.String(60), info={'label': _l('Color'), 'form': PickrColorField})
+    is_default: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l('Is default')}, server_default=sa.false())
 
     class Meta:
         verbose_name = _l('Issue status')
@@ -27,10 +29,12 @@ class IssueStatus(db.Model):
         column_index = ['id', 'string_slug', 'title', 'description', 'color']
 
 
+@project_enumerated_object
 class IssueVector(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
     string_slug: so.Mapped[StringSlug]
     title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Title")})
+    is_default: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Is default")}, server_default=sa.false())
 
     class Meta:
         verbose_name = _l("Issue vector")
@@ -189,6 +193,30 @@ class Issue(HasComment, db.Model, HasHistory):
         return '\n'.join([i.shorttitle for i in self.services])
 
 
+@sa.event.listens_for(SessionBase, 'before_commit')
+def update_default_value_for_issue(session: SessionBase):
+    ni = [u for u in session.new if isinstance(u, Issue)]
+    if len(ni) == 0:
+        return None
+    default_status = session.scalars(sa.select(IssueStatus).where(IssueStatus.is_default == True)).first()
+    if default_status is None:
+        default_status = session.scalars(sa.select(IssueStatus)).first()
+    default_vector = session.scalars(sa.select(IssueVector).where(IssueVector.is_default == True)).first()
+    if default_vector is None:
+        default_vector = session.scalars(sa.select(IssueVector)).first()
+    for issue in ni:
+        max_order_number = session.scalars(sa.select(Issue.order_number).where(Issue.project_id == issue.project_id).order_by(Issue.order_number.desc()).limit(1)).first()
+        if max_order_number is None:
+            max_order_number = 0
+        if issue.order_number is None:
+            issue.order_number = max_order_number + 1
+        if issue.status is None and issue.status_id in [0, None]:
+            issue.status = default_status
+        if issue.vector is None and issue.vector_id in [0, None]:
+            issue.vector = default_vector
+        
+
+
 class IssueTemplate(db.Model):
     id: so.Mapped[ID] = so.mapped_column(primary_key=True)
     archived: so.Mapped[Archived]
@@ -204,6 +232,8 @@ class IssueTemplate(db.Model):
     issue_cvss: so.Mapped[Optional[float]] = so.mapped_column(info={'label': _l('Issue CVSS')})
     issue_cve_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(CriticalVulnerability.id, ondelete='SET NULL'), info={'label': _l('Issue CVE')})
     issue_cve: so.Mapped['CriticalVulnerability'] = so.relationship(lazy='joined', info={'label': _l('Issue CVE')})
+    issue_vector_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(IssueVector.id, ondelete='SET NULL'), info={'label': _l('Issue vector')})
+    issue_vector: so.Mapped['IssueVector'] = so.relationship(lazy='joined', info={'label': _l('Issue vector')})
 
     def create_issue_by_template(self) -> Issue:
         issue = Issue(title = self.issue_title, description=self.issue_description, fix=self.issue_fix)
@@ -212,6 +242,7 @@ class IssueTemplate(db.Model):
         issue.references = self.issue_references
         issue.cvss = self.issue_cvss
         issue.cve_id = self.issue_cve_id
+        issue.vector_id = self.issue_vector_id
         issue.by_template_slug = self.string_slug
         return issue
 

@@ -43,6 +43,7 @@
                     <th data-field="issue_technical" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_technical.info["label"] }}</th>
                     <th data-field="issue_riscs" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_riscs.info["label"] }}</th>
                     <th data-field="issue_cvss" data-sortable="true" data-align="center" data-filter-control="input">{{ models.IssueTemplate.issue_cvss.info["label"] }}</th>
+                    <th data-field="issue_vector" data-sortable="true" data-align="center" data-filter-control="select">{{ models.IssueTemplate.issue_vector.info["label"] }}</th>
             </thead>
             <tbody>
                 {% for template in templates %}
@@ -56,11 +57,8 @@
                     <td>{{ sanitizer.pure_text(template.issue_fix) }}</td>
                     <td>{{ sanitizer.pure_text(template.issue_technical) }}</td>
                     <td>{{ sanitizer.pure_text(template.issue_riscs) }}</td>
-                    {% if template.issue_cvss != none %}
-                    <td>{{ template.issue_cvss }}</td>
-                    {% else %}
-                    <td></td>
-                    {% endif %}
+                    <td>{{ template.issue_cvss|suppress_none }}</td>
+                    <td>{{ getattr(template.issue_vector, 'title', '') }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
