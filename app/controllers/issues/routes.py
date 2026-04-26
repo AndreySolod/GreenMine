@@ -28,6 +28,7 @@ def issue_index():
     filters = {'IssueStatus': json.dumps(issue_statuses), "IssueVector": json.dumps(issue_vectors)}
     ctx = get_default_environment(Issue(project=project), 'index')
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
     context = {'project': project, 'filters': filters, 'Issue': Issue}
     return render_template('issues/index.html', **context, **ctx)
 
@@ -61,6 +62,7 @@ def exist_issue_index():
     filters = {'IssueStatus': json.dumps(issue_statuses), 'IssueVector': json.dumps(issue_vectors)}
     ctx = get_default_environment(Issue(project=project), 'exist-index')
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
     context = {'project': project, 'filters': filters, 'Issue': Issue}
     return render_template('issues/exist-index.html', **context, **ctx)
 
@@ -95,6 +97,7 @@ def positive_issue_index():
     filters = {'IssueStatus': json.dumps(issue_statuses), 'IssueVector': json.dumps(issue_vectors)}
     ctx = get_default_environment(Issue(project=project), 'positive-index')
     side_libraries.library_required('bootstrap_table')
+    side_libraries.library_required('contextmenu')
     context = {'project': project, 'filters': filters, 'Issue': Issue}
     return render_template('issues/positive-index.html', **context, **ctx)
 
@@ -195,8 +198,13 @@ def issue_show(issue_id):
     return render_template('issues/show.html', **context, **ctx)
 
 
-@bp.route('/<int:issue_id>/edit', methods=['GET', 'POST'])
+@bp.route('/<issue_id>/edit', methods=['GET', 'POST'])
 def issue_edit(issue_id):
+    try:
+        issue_id = int(issue_id)
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request issue edit with non-integer id {issue_id}")
+        abort(404)
     issue = get_or_404(db.session, Issue, issue_id)
     project_role_can_make_action_or_abort(current_user, issue, 'update')
     form = forms.IssueEditForm(issue.project_id)
@@ -214,8 +222,13 @@ def issue_edit(issue_id):
     return render_template('issues/edit.html', **context, **ctx)
 
 
-@bp.route('/<int:issue_id>/delete', methods=["POST"])
+@bp.route('/<issue_id>/delete', methods=["POST"])
 def issue_delete(issue_id):
+    try:
+        issue_id = int(issue_id)
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' request delete issue with non-integer id {issue_id}")
+        abort(404)
     issue = get_or_404(db.session, Issue, issue_id)
     project_role_can_make_action_or_abort(current_user, issue, 'delete')
     project_id = issue.project_id

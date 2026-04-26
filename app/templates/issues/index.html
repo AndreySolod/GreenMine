@@ -102,8 +102,83 @@
                     onDblClickRow: function(row, element, field) {
                           location = "{{ url_for('issues.issue_show', issue_id='__row_id') }}".replace("__row_id", row.id);
                     },
-                    rowStyle: (row, index) => {return { css: { cursor: 'pointer' } }},
+                    rowStyle: (row, index) => {return { classes: "with-context-menu-issue", css: { cursor: 'pointer' } }},
                 })
+        });
+         $(function () {
+            $.contextMenu({
+                selector: '.with-context-menu-issue',
+                callback: function (key, options) {
+                    if (key === 'open') {
+                        window.open("{{ url_for('issues.issue_show', issue_id='__issue_id') }}".replace("__issue_id", options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank')
+                    }
+                    else if(key === 'edit') {
+                        window.open("{{ url_for('issues.issue_edit', issue_id='__issue_id') }}".replace('__issue_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus()
+                    }
+                    else if(key === 'increase_order_number') {
+                        let issue_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                        let rowIndex = options.$trigger.data('index');
+                        fetch("{{ url_for('issues.increase_order_number', issue_id='__issue_id') }}".replace("__issue_id", issue_id),
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token() }}'
+                                }
+                            }).then(response => { 
+                            if (response.ok) { return response.json() } else {alert("{{ _('Something went wrong. Try to refresh the page') }}")} }).then(response => {
+                                if (response.success === true) {
+                                    options.$trigger.parent().parent().bootstrapTable('updateCell', {
+                                        index: rowIndex,
+                                        field: 'order_number',
+                                        value: response.order_number
+                                    });
+                                }
+                            })
+                    }
+                    else if (key === 'decrease_order_number') {
+                        let issue_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                        let rowIndex = options.$trigger.data('index');
+                        fetch("{{ url_for('issues.decrease_order_number', issue_id='__issue_id') }}".replace("__issue_id", issue_id),
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token() }}'
+                                }
+                            }).then(response => { 
+                            if (response.ok) { return response.json() } else {alert("{{ _('Something went wrong. Try to refresh the page') }}")} }).then(response => {
+                                if (response.success === true) {
+                                    options.$trigger.parent().parent().bootstrapTable('updateCell', {
+                                        index: rowIndex,
+                                        field: 'order_number',
+                                        value: response.order_number
+                                    });
+                                }
+                            })
+                    }
+                    else if (key === 'delete') {
+                        if (confirm("{{ _('Are you sure you want to delete this issue?') }}")) {
+                            let issue_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                            fetch("{{ url_for('issues.issue_delete', issue_id='__issue_id') }}".replace('__issue_id', issue_id), {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRFToken': '{{ csrf_token() }}'
+                                }
+                            }).then(response => {
+                                if (response.redirected) {
+                                    document.location = response.url;
+                                }
+                            });
+                        };
+                    }
+                },
+                items: {
+                    "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
+                    "increase_order_number": { name: '{{ _("Increase order number") }}', icon: "increase" },
+                    "decrease_order_number": { name: '{{ _("Decrease order number") }}', icon: "decrease" },
+                    "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
+                    "delete": { name: '{{ _("Delete") }}' , icon: "delete"}
+                }
+            });
         });
       </script>
 {% endblock %}

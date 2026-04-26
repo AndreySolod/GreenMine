@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-19 13:41+1000\n"
-"PO-Revision-Date: 2026-04-19 13:41+1000\n"
+"POT-Creation-Date: 2026-04-26 20:03+1000\n"
+"PO-Revision-Date: 2026-04-26 20:03+1000\n"
 "Last-Translator: \n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "To perform this action, you need to log in"
 msgstr "Для выполнения этого действия необходимо авторизоваться"
 
-#: app/__init__.py:180 app/helpers/general_helpers.py:593
+#: app/__init__.py:188 app/helpers/general_helpers.py:593
 #: app/templates/admin/authentication_settings.html:48
 #: app/templates/admin/authentication_settings.html:52
 #: app/templates/admin/authentication_settings.html:56
@@ -45,7 +45,7 @@ msgstr "Для выполнения этого действия необходи
 msgid "Yes"
 msgstr "Да"
 
-#: app/__init__.py:180 app/helpers/general_helpers.py:593
+#: app/__init__.py:188 app/helpers/general_helpers.py:593
 #: app/templates/admin/authentication_settings.html:48
 #: app/templates/admin/authentication_settings.html:52
 #: app/templates/admin/authentication_settings.html:56
@@ -66,7 +66,7 @@ msgstr "Да"
 msgid "No"
 msgstr "Нет"
 
-#: app/__init__.py:268
+#: app/__init__.py:277
 #, python-format
 msgid ""
 "Internal server error. Please report on GitVerse about this issue (log file in "
@@ -95,19 +95,24 @@ msgstr "Запускать модули автоматизации"
 msgid "Access to Default Credentials module"
 msgstr "Доступ к модулю заводских учётных данных"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:64
+#: app/action_modules/classes.py:68
+#, python-format
+msgid "The celery task \"%(task_name)s\" was completed successfully."
+msgstr "Задача celery #%(task_name)s успешно завершена."
+
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:62
 msgid "Services to scan:"
 msgstr "Службы для сканирования:"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:65
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:63
 msgid "Zone name:"
 msgstr "Наименование зоны:"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:65
-#: app/action_modules/GetKyoceraCreds/__init__.py:145
-#: app/action_modules/GetKyoceraCreds/__init__.py:158
-#: app/action_modules/ImportFromRelayking/__init__.py:88
-#: app/action_modules/ImportFromRelayking/__init__.py:89
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:63
+#: app/action_modules/GetKyoceraCreds/__init__.py:143
+#: app/action_modules/GetKyoceraCreds/__init__.py:156
+#: app/action_modules/ImportFromRelayking/__init__.py:85
+#: app/action_modules/ImportFromRelayking/__init__.py:86
 #: app/action_modules/Import_from_nmap/__init__.py:58
 #: app/action_modules/Import_from_zmap/__init__.py:95
 #: app/action_modules/Import_from_zmap/__init__.py:96
@@ -124,8 +129,8 @@ msgstr "Наименование зоны:"
 #: app/controllers/admin/forms_global_permission_actions.py:18
 #: app/controllers/admin/forms_global_permission_actions.py:21
 #: app/controllers/admin/issue_template_forms.py:18
-#: app/controllers/admin/issue_template_forms.py:34
 #: app/controllers/admin/issue_template_forms.py:35
+#: app/controllers/admin/issue_template_forms.py:36
 #: app/controllers/admin/main_settings_forms.py:12
 #: app/controllers/admin/main_settings_forms.py:24
 #: app/controllers/admin/main_settings_forms.py:26
@@ -142,7 +147,7 @@ msgstr "Наименование зоны:"
 #: app/controllers/admin/task_templates_forms.py:21
 #: app/controllers/credentials/forms.py:25 app/controllers/cves/forms.py:16
 #: app/controllers/cves/forms.py:18 app/controllers/cves/forms.py:26
-#: app/controllers/issues/forms.py:29 app/controllers/issues/forms.py:89
+#: app/controllers/issues/forms.py:30 app/controllers/issues/forms.py:91
 #: app/controllers/networks/forms.py:23 app/controllers/networks/forms.py:167
 #: app/controllers/networks/forms.py:173 app/controllers/networks/forms.py:227
 #: app/controllers/networks/forms.py:275 app/controllers/networks/forms.py:276
@@ -169,7 +174,7 @@ msgstr "Наименование зоны:"
 msgid "This field is mandatory!"
 msgstr "Это поле является обязательным!"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:66
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:64
 #: app/controllers/admin/authentication_forms.py:17
 #: app/controllers/admin/credential_templates_forms.py:19
 #: app/controllers/admin/credential_templates_forms.py:20
@@ -179,8 +184,8 @@ msgstr "Это поле является обязательным!"
 #: app/controllers/admin/forms_global_permission_actions.py:22
 #: app/controllers/admin/hooks_forms.py:20
 #: app/controllers/admin/issue_template_forms.py:22
-#: app/controllers/admin/issue_template_forms.py:34
 #: app/controllers/admin/issue_template_forms.py:35
+#: app/controllers/admin/issue_template_forms.py:36
 #: app/controllers/admin/main_settings_forms.py:25
 #: app/controllers/admin/project_additional_parameters_forms.py:16
 #: app/controllers/admin/project_additional_parameters_forms.py:17
@@ -192,8 +197,8 @@ msgstr "Это поле является обязательным!"
 #: app/controllers/admin/task_templates_forms.py:23
 #: app/controllers/credentials/forms.py:25 app/controllers/credentials/forms.py:30
 #: app/controllers/credentials/forms.py:37 app/controllers/cves/forms.py:19
-#: app/controllers/cves/forms.py:22 app/controllers/issues/forms.py:30
-#: app/controllers/issues/forms.py:90 app/controllers/networks/forms.py:24
+#: app/controllers/cves/forms.py:22 app/controllers/issues/forms.py:31
+#: app/controllers/issues/forms.py:92 app/controllers/networks/forms.py:24
 #: app/controllers/networks/forms.py:31 app/controllers/networks/forms.py:83
 #: app/controllers/networks/forms.py:92 app/controllers/networks/forms.py:102
 #: app/controllers/networks/forms.py:105 app/controllers/networks/forms.py:109
@@ -219,51 +224,51 @@ msgstr "Это поле является обязательным!"
 msgid "This field must not exceed %(length)s characters in length"
 msgstr "Это поле не может быть больше %(length)s символов в длину"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:67
-#: app/action_modules/ImportFromRelayking/__init__.py:89
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:65
+#: app/action_modules/ImportFromRelayking/__init__.py:86
 #: app/action_modules/Import_from_nmap/__init__.py:72
 #: app/action_modules/Import_from_zmap/__init__.py:96
 #: app/action_modules/NmapScan/__init__.py:123
 msgid "Project ID:"
 msgstr "ID проекта:"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:68
-#: app/action_modules/EthernalBlueCheck/__init__.py:78
-#: app/action_modules/GetKyoceraCreds/__init__.py:159
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:66
+#: app/action_modules/EthernalBlueCheck/__init__.py:76
+#: app/action_modules/GetKyoceraCreds/__init__.py:157
 #: app/action_modules/Inner_enumerate/__init__.py:143
-#: app/action_modules/IpmiCheck/__init__.py:135
-#: app/action_modules/RdpCheck/__init__.py:104
-#: app/action_modules/VncNoneAuthCheck/__init__.py:96
+#: app/action_modules/IpmiCheck/__init__.py:133
+#: app/action_modules/RdpCheck/__init__.py:102
+#: app/action_modules/VncNoneAuthCheck/__init__.py:94
 msgid "Run"
 msgstr "Запустить"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:72
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:70
 msgid "DNS Zone Transfer"
 msgstr "Трансфер DNS зоны"
 
-#: app/action_modules/DnsZoneTransferCheck/__init__.py:73
+#: app/action_modules/DnsZoneTransferCheck/__init__.py:71
 msgid "Test specified DNS services on zone transfer"
 msgstr "Проверяет указанные службы DNS на наличие трансфера"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:77
-#: app/action_modules/IpmiCheck/__init__.py:134
-#: app/action_modules/RdpCheck/__init__.py:103
-#: app/action_modules/VncNoneAuthCheck/__init__.py:95
+#: app/action_modules/EthernalBlueCheck/__init__.py:75
+#: app/action_modules/IpmiCheck/__init__.py:132
+#: app/action_modules/RdpCheck/__init__.py:101
+#: app/action_modules/VncNoneAuthCheck/__init__.py:93
 msgid "Services:"
 msgstr "Службы:"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:77
-#: app/action_modules/IpmiCheck/__init__.py:134
-#: app/action_modules/RdpCheck/__init__.py:103
-#: app/action_modules/VncNoneAuthCheck/__init__.py:95
+#: app/action_modules/EthernalBlueCheck/__init__.py:75
+#: app/action_modules/IpmiCheck/__init__.py:132
+#: app/action_modules/RdpCheck/__init__.py:101
+#: app/action_modules/VncNoneAuthCheck/__init__.py:93
 msgid "Choose targets to exploit"
 msgstr "Выберите цели для эксплуатации"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:82
+#: app/action_modules/EthernalBlueCheck/__init__.py:80
 msgid "EthernalBlue check"
 msgstr "Проверка на EthernalBlue"
 
-#: app/action_modules/EthernalBlueCheck/__init__.py:83
+#: app/action_modules/EthernalBlueCheck/__init__.py:81
 msgid ""
 "Check given address on MS17-010 vulnerability, and, if true, save data to "
 "database"
@@ -271,17 +276,17 @@ msgstr ""
 "Проверяет заданные адреса на уязвимость MS17-010, и, если уязвимы, сохраняет "
 "соответствующие данные в базу"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:97
-#: app/action_modules/GetKyoceraCreds/__init__.py:112
+#: app/action_modules/GetKyoceraCreds/__init__.py:95
+#: app/action_modules/GetKyoceraCreds/__init__.py:110
 #, python-format
 msgid "<p>Destination: %(destination)s</p>"
 msgstr "<p>Для: %(destination)s</p>"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:145
+#: app/action_modules/GetKyoceraCreds/__init__.py:143
 msgid "Delay between requests:"
 msgstr "Задержка между запросами:"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:145
+#: app/action_modules/GetKyoceraCreds/__init__.py:143
 msgid ""
 "Default delay between create export address book task and gain an address book "
 "to generate data on the device"
@@ -289,31 +294,31 @@ msgstr ""
 "Задержка по умолчанию между запросом на экспорт адресной книги и запросом на "
 "получение адресной книги для генерации данных устройством"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:149
+#: app/action_modules/GetKyoceraCreds/__init__.py:147
 #: app/action_modules/Inner_enumerate/__init__.py:132
 msgid "The page load timeout must be greater than 0!"
 msgstr "Время ожидания загрузки страницы должно быть больше 0!"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:157
+#: app/action_modules/GetKyoceraCreds/__init__.py:155
 #: app/action_modules/Inner_enumerate/__init__.py:141
 msgid "Target verification range:"
 msgstr "Целевой диапазон сканирования:"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:158
+#: app/action_modules/GetKyoceraCreds/__init__.py:156
 msgid "Domain search:"
 msgstr "Домен поиска:"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:158
+#: app/action_modules/GetKyoceraCreds/__init__.py:156
 msgid ""
 "The domain to search for the DNS name if the SMB credentials are set via NetBIOS"
 msgstr ""
 "Домен для поиска DNS-имён, если учётные данные для SMB заданы через NetBIOS"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:163
+#: app/action_modules/GetKyoceraCreds/__init__.py:161
 msgid "Mass exploit Kyocera CVE-2022-1026"
 msgstr "Массовый эксплоит для Kyocera CVE-2022-1026"
 
-#: app/action_modules/GetKyoceraCreds/__init__.py:164
+#: app/action_modules/GetKyoceraCreds/__init__.py:162
 msgid ""
 "On a given list of printer targets, Kyocera is trying to exploit the "
 "vulnerability CVE-2022-1026 and save the received credentials."
@@ -321,19 +326,19 @@ msgstr ""
 "На заданном списке принтеров Kyocera пытается проэксплуатировать уязвимость "
 "CVE-2022-1026 и сохранить полученные учётные данные."
 
-#: app/action_modules/ImportFromRelayking/__init__.py:88
+#: app/action_modules/ImportFromRelayking/__init__.py:85
 msgid "RelayKing scan result file:"
 msgstr "Файл результатов скана RelayKing:"
 
-#: app/action_modules/ImportFromRelayking/__init__.py:88
+#: app/action_modules/ImportFromRelayking/__init__.py:85
 msgid "Only an json file!"
 msgstr "Только json-файлы!"
 
-#: app/action_modules/ImportFromRelayking/__init__.py:90
+#: app/action_modules/ImportFromRelayking/__init__.py:87
 #: app/action_modules/Import_from_nmap/__init__.py:73
 #: app/action_modules/Import_from_zmap/__init__.py:97
 #: app/controllers/admin/credential_templates_forms.py:51
-#: app/controllers/admin/issue_template_forms.py:65
+#: app/controllers/admin/issue_template_forms.py:67
 #: app/controllers/admin/task_templates_forms.py:49
 #: app/controllers/projects/forms.py:162
 #: app/templates/credential_import_templates/index.html:11
@@ -342,11 +347,11 @@ msgstr "Только json-файлы!"
 msgid "Import"
 msgstr "Импортировать"
 
-#: app/action_modules/ImportFromRelayking/__init__.py:94
+#: app/action_modules/ImportFromRelayking/__init__.py:91
 msgid "Import from RelayKing"
 msgstr "Импорт из RelayKing"
 
-#: app/action_modules/ImportFromRelayking/__init__.py:95
+#: app/action_modules/ImportFromRelayking/__init__.py:92
 msgid "Imports the data of the scan results with RelayKing-Depth scanner"
 msgstr "Импортирует данные результатов сканирования через сканер RelayKing-Depth"
 
@@ -383,8 +388,8 @@ msgid "Process host operating system data:"
 msgstr "Обрабатывать данные об операционной системе хоста:"
 
 #: app/action_modules/Import_from_nmap/__init__.py:63
-#: app/action_modules/Mass_import_creds/__init__.py:180
-#: app/action_modules/Mass_import_creds/__init__.py:181
+#: app/action_modules/Mass_import_creds/__init__.py:175
+#: app/action_modules/Mass_import_creds/__init__.py:176
 #: app/action_modules/NmapScan/__init__.py:98
 #: app/controllers/admin/authentication_forms.py:12
 #: app/controllers/admin/authentication_forms.py:13
@@ -418,7 +423,6 @@ msgstr "Обрабатывать данные об операционной си
 #: app/controllers/admin/hooks_forms.py:20 app/controllers/admin/hooks_forms.py:21
 #: app/controllers/admin/hooks_forms.py:22 app/controllers/admin/hooks_forms.py:23
 #: app/controllers/admin/hooks_forms.py:24 app/controllers/admin/hooks_forms.py:25
-#: app/controllers/admin/issue_template_forms.py:34
 #: app/controllers/admin/issue_template_forms.py:35
 #: app/controllers/admin/issue_template_forms.py:36
 #: app/controllers/admin/issue_template_forms.py:37
@@ -429,6 +433,8 @@ msgstr "Обрабатывать данные об операционной си
 #: app/controllers/admin/issue_template_forms.py:42
 #: app/controllers/admin/issue_template_forms.py:43
 #: app/controllers/admin/issue_template_forms.py:44
+#: app/controllers/admin/issue_template_forms.py:45
+#: app/controllers/admin/issue_template_forms.py:46
 #: app/controllers/admin/main_settings_forms.py:23
 #: app/controllers/admin/main_settings_forms.py:24
 #: app/controllers/admin/main_settings_forms.py:26
@@ -467,51 +473,52 @@ msgstr "Обрабатывать данные об операционной си
 #: app/controllers/cves/forms.py:31 app/controllers/cves/forms.py:33
 #: app/controllers/cves/forms.py:35 app/controllers/generics/forms.py:11
 #: app/controllers/generics/forms.py:12 app/controllers/generics/forms.py:18
-#: app/controllers/issues/forms.py:28 app/controllers/issues/forms.py:31
-#: app/controllers/issues/forms.py:32 app/controllers/issues/forms.py:34
-#: app/controllers/issues/forms.py:36 app/controllers/issues/forms.py:38
-#: app/controllers/issues/forms.py:40 app/controllers/issues/forms.py:41
-#: app/controllers/issues/forms.py:42 app/controllers/issues/forms.py:43
-#: app/controllers/issues/forms.py:44 app/controllers/issues/forms.py:45
-#: app/controllers/issues/forms.py:46 app/controllers/issues/forms.py:58
-#: app/controllers/issues/forms.py:84 app/controllers/issues/forms.py:86
-#: app/controllers/issues/forms.py:88 app/controllers/issues/forms.py:89
-#: app/controllers/issues/forms.py:91 app/controllers/issues/forms.py:92
-#: app/controllers/issues/forms.py:93 app/controllers/networks/forms.py:22
-#: app/controllers/networks/forms.py:25 app/controllers/networks/forms.py:26
-#: app/controllers/networks/forms.py:27 app/controllers/networks/forms.py:28
-#: app/controllers/networks/forms.py:29 app/controllers/networks/forms.py:32
-#: app/controllers/networks/forms.py:33 app/controllers/networks/forms.py:34
-#: app/controllers/networks/forms.py:82 app/controllers/networks/forms.py:85
-#: app/controllers/networks/forms.py:86 app/controllers/networks/forms.py:87
-#: app/controllers/networks/forms.py:88 app/controllers/networks/forms.py:89
-#: app/controllers/networks/forms.py:91 app/controllers/networks/forms.py:94
-#: app/controllers/networks/forms.py:96 app/controllers/networks/forms.py:98
-#: app/controllers/networks/forms.py:100 app/controllers/networks/forms.py:101
-#: app/controllers/networks/forms.py:104 app/controllers/networks/forms.py:107
-#: app/controllers/networks/forms.py:108 app/controllers/networks/forms.py:110
-#: app/controllers/networks/forms.py:130 app/controllers/networks/forms.py:161
-#: app/controllers/networks/forms.py:164 app/controllers/networks/forms.py:166
-#: app/controllers/networks/forms.py:168 app/controllers/networks/forms.py:169
-#: app/controllers/networks/forms.py:170 app/controllers/networks/forms.py:172
-#: app/controllers/networks/forms.py:174 app/controllers/networks/forms.py:175
-#: app/controllers/networks/forms.py:176 app/controllers/networks/forms.py:177
-#: app/controllers/networks/forms.py:178 app/controllers/networks/forms.py:179
-#: app/controllers/networks/forms.py:220 app/controllers/networks/forms.py:221
-#: app/controllers/networks/forms.py:222 app/controllers/networks/forms.py:226
-#: app/controllers/networks/forms.py:229 app/controllers/networks/forms.py:241
-#: app/controllers/networks/forms.py:257 app/controllers/networks/forms.py:260
-#: app/controllers/networks/forms.py:262 app/controllers/networks/forms.py:264
-#: app/controllers/networks/forms.py:266 app/controllers/networks/forms.py:269
-#: app/controllers/notes/forms.py:13 app/controllers/notes/forms.py:16
-#: app/controllers/notes/forms.py:17 app/controllers/notes/forms.py:26
-#: app/controllers/notes/forms.py:29 app/controllers/notes/forms.py:30
-#: app/controllers/projects/forms.py:22 app/controllers/projects/forms.py:25
-#: app/controllers/projects/forms.py:27 app/controllers/projects/forms.py:29
-#: app/controllers/projects/forms.py:31 app/controllers/projects/forms.py:47
-#: app/controllers/projects/forms.py:64 app/controllers/projects/forms.py:110
-#: app/controllers/projects/forms.py:112 app/controllers/projects/forms.py:114
-#: app/controllers/projects/forms.py:116 app/controllers/projects/forms.py:118
+#: app/controllers/issues/forms.py:29 app/controllers/issues/forms.py:32
+#: app/controllers/issues/forms.py:33 app/controllers/issues/forms.py:35
+#: app/controllers/issues/forms.py:37 app/controllers/issues/forms.py:39
+#: app/controllers/issues/forms.py:41 app/controllers/issues/forms.py:42
+#: app/controllers/issues/forms.py:43 app/controllers/issues/forms.py:44
+#: app/controllers/issues/forms.py:45 app/controllers/issues/forms.py:46
+#: app/controllers/issues/forms.py:47 app/controllers/issues/forms.py:49
+#: app/controllers/issues/forms.py:60 app/controllers/issues/forms.py:86
+#: app/controllers/issues/forms.py:88 app/controllers/issues/forms.py:90
+#: app/controllers/issues/forms.py:91 app/controllers/issues/forms.py:93
+#: app/controllers/issues/forms.py:94 app/controllers/issues/forms.py:95
+#: app/controllers/networks/forms.py:22 app/controllers/networks/forms.py:25
+#: app/controllers/networks/forms.py:26 app/controllers/networks/forms.py:27
+#: app/controllers/networks/forms.py:28 app/controllers/networks/forms.py:29
+#: app/controllers/networks/forms.py:32 app/controllers/networks/forms.py:33
+#: app/controllers/networks/forms.py:34 app/controllers/networks/forms.py:82
+#: app/controllers/networks/forms.py:85 app/controllers/networks/forms.py:86
+#: app/controllers/networks/forms.py:87 app/controllers/networks/forms.py:88
+#: app/controllers/networks/forms.py:89 app/controllers/networks/forms.py:91
+#: app/controllers/networks/forms.py:94 app/controllers/networks/forms.py:96
+#: app/controllers/networks/forms.py:98 app/controllers/networks/forms.py:100
+#: app/controllers/networks/forms.py:101 app/controllers/networks/forms.py:104
+#: app/controllers/networks/forms.py:107 app/controllers/networks/forms.py:108
+#: app/controllers/networks/forms.py:110 app/controllers/networks/forms.py:130
+#: app/controllers/networks/forms.py:161 app/controllers/networks/forms.py:164
+#: app/controllers/networks/forms.py:166 app/controllers/networks/forms.py:168
+#: app/controllers/networks/forms.py:169 app/controllers/networks/forms.py:170
+#: app/controllers/networks/forms.py:172 app/controllers/networks/forms.py:174
+#: app/controllers/networks/forms.py:175 app/controllers/networks/forms.py:176
+#: app/controllers/networks/forms.py:177 app/controllers/networks/forms.py:178
+#: app/controllers/networks/forms.py:179 app/controllers/networks/forms.py:220
+#: app/controllers/networks/forms.py:221 app/controllers/networks/forms.py:222
+#: app/controllers/networks/forms.py:226 app/controllers/networks/forms.py:229
+#: app/controllers/networks/forms.py:241 app/controllers/networks/forms.py:257
+#: app/controllers/networks/forms.py:260 app/controllers/networks/forms.py:262
+#: app/controllers/networks/forms.py:264 app/controllers/networks/forms.py:266
+#: app/controllers/networks/forms.py:269 app/controllers/notes/forms.py:13
+#: app/controllers/notes/forms.py:16 app/controllers/notes/forms.py:17
+#: app/controllers/notes/forms.py:26 app/controllers/notes/forms.py:29
+#: app/controllers/notes/forms.py:30 app/controllers/projects/forms.py:22
+#: app/controllers/projects/forms.py:25 app/controllers/projects/forms.py:27
+#: app/controllers/projects/forms.py:29 app/controllers/projects/forms.py:31
+#: app/controllers/projects/forms.py:47 app/controllers/projects/forms.py:64
+#: app/controllers/projects/forms.py:110 app/controllers/projects/forms.py:112
+#: app/controllers/projects/forms.py:114 app/controllers/projects/forms.py:116
+#: app/controllers/projects/forms.py:118
 #: app/controllers/research_events/forms.py:30
 #: app/controllers/research_events/forms.py:33
 #: app/controllers/research_events/forms.py:34
@@ -648,7 +655,7 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/admin/forms.py:89 app/controllers/admin/forms.py:145
 #: app/controllers/admin/forms_global_permission_actions.py:92
 #: app/controllers/admin/hooks_forms.py:33
-#: app/controllers/admin/issue_template_forms.py:59
+#: app/controllers/admin/issue_template_forms.py:61
 #: app/controllers/admin/main_settings_forms.py:16
 #: app/controllers/admin/main_settings_forms.py:28
 #: app/controllers/admin/project_additional_parameters_forms.py:36
@@ -656,7 +663,7 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/admin/roles_forms.py:38 app/controllers/admin/roles_forms.py:90
 #: app/controllers/admin/task_templates_forms.py:43
 #: app/controllers/credentials/forms.py:45 app/controllers/cves/forms.py:52
-#: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:64
+#: app/controllers/generics/forms.py:19 app/controllers/issues/forms.py:66
 #: app/controllers/networks/forms.py:61 app/controllers/networks/forms.py:139
 #: app/controllers/networks/forms.py:203 app/controllers/notes/forms.py:31
 #: app/controllers/projects/forms.py:52 app/controllers/projects/forms.py:95
@@ -666,8 +673,8 @@ msgstr "Время ожидания загрузки страницы:"
 #: app/controllers/users/forms.py:92 app/controllers/users/teams_forms.py:51
 #: app/controllers/users/teams_forms.py:77 app/controllers/wiki_pages/forms.py:33
 #: app/controllers/wiki_pages/forms.py:54 app/templates/credentials/show.html:266
-#: app/templates/issues/show.html:424 app/templates/issues/show.html:449
-#: app/templates/issues/show.html:475 app/templates/issues/show.html:507
+#: app/templates/issues/show.html:428 app/templates/issues/show.html:453
+#: app/templates/issues/show.html:479 app/templates/issues/show.html:511
 #: app/templates/services/show.html:365 app/templates/services/show.html:390
 #: app/templates/services/show.html:415 app/templates/tasks/show.html:399
 #: app/templates/tasks/show.html:423 app/templates/tasks/show.html:448
@@ -714,11 +721,11 @@ msgstr ""
 msgid "Extracted via CVE-2013-4786 from IPMI"
 msgstr "Извлечён через CVE-2013-4786 из IPMI"
 
-#: app/action_modules/IpmiCheck/__init__.py:139
+#: app/action_modules/IpmiCheck/__init__.py:137
 msgid "IPMI exploit"
 msgstr "Эксплуатация IPMI"
 
-#: app/action_modules/IpmiCheck/__init__.py:140
+#: app/action_modules/IpmiCheck/__init__.py:138
 msgid ""
 "For a given address, if the IPMI port is open, the module will try to exploit "
 "all vulnerabilities (such as CVE-2013-4786) and save result in database"
@@ -727,19 +734,19 @@ msgstr ""
 "проэксплуатировать известные уязвимости (такие как CVE-2013-4786) и сохранить "
 "результаты в базу данных"
 
-#: app/action_modules/Mass_import_creds/__init__.py:165
+#: app/action_modules/Mass_import_creds/__init__.py:160
 msgid "Login column number:"
 msgstr "Номер столбца логина:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:166
+#: app/action_modules/Mass_import_creds/__init__.py:161
 msgid "Password hash column number:"
 msgstr "Номер столбца хэша пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:167
+#: app/action_modules/Mass_import_creds/__init__.py:162
 msgid "Credential description column number:"
 msgstr "Номер столбца дополнительного описания учётных данных:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:167
+#: app/action_modules/Mass_import_creds/__init__.py:162
 msgid ""
 "If credential is exists, the value of this field will be added to the end of the "
 "current one."
@@ -747,36 +754,36 @@ msgstr ""
 "Если учётные данные существуют, значение этого поля будет добавлено в конец к "
 "существующему полю."
 
-#: app/action_modules/Mass_import_creds/__init__.py:168
+#: app/action_modules/Mass_import_creds/__init__.py:163
 msgid "Password column number:"
 msgstr "Номер столбца пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:169
+#: app/action_modules/Mass_import_creds/__init__.py:164
 msgid "Is admin column number:"
 msgstr "Номер столбца флага администратора:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:169
+#: app/action_modules/Mass_import_creds/__init__.py:164
 msgid "Set to True for all values other than empty"
 msgstr "Устанавливается как \"Да\" для всех значений, отличных от пустого"
 
-#: app/action_modules/Mass_import_creds/__init__.py:170
+#: app/action_modules/Mass_import_creds/__init__.py:165
 msgid "Domain column number:"
 msgstr "Номер столбца домена:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:171
+#: app/action_modules/Mass_import_creds/__init__.py:166
 msgid "Column delimiter:"
 msgstr "Разделитель столбцов:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:171
+#: app/action_modules/Mass_import_creds/__init__.py:166
 #: app/action_modules/Mass_import_scan_data/__init__.py:65
 msgid "The symbol by which the rows will be divided into columns"
 msgstr "Символ, по которому строки будут разделены на столбцы"
 
-#: app/action_modules/Mass_import_creds/__init__.py:172
+#: app/action_modules/Mass_import_creds/__init__.py:167
 msgid "Domain delimiter:"
 msgstr "Разделитель домена:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:172
+#: app/action_modules/Mass_import_creds/__init__.py:167
 msgid ""
 "The symbol by which the column 'login' will be divided into login and domain. "
 "Leave blank to skip this function"
@@ -784,65 +791,65 @@ msgstr ""
 "Символ, с помощью которого столбец 'логин' будет разделен на логин и домен. "
 "Оставьте поле пустым, чтобы пропустить эту функцию"
 
-#: app/action_modules/Mass_import_creds/__init__.py:173
+#: app/action_modules/Mass_import_creds/__init__.py:168
 msgid "Static domain:"
 msgstr "Статический домен:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:173
+#: app/action_modules/Mass_import_creds/__init__.py:168
 msgid "The domain that will match all the lines"
 msgstr "Домен, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:174
+#: app/action_modules/Mass_import_creds/__init__.py:169
 msgid "Static login:"
 msgstr "Статический логин:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:174
+#: app/action_modules/Mass_import_creds/__init__.py:169
 msgid "The login that will match all the lines"
 msgstr "Логин, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:175
+#: app/action_modules/Mass_import_creds/__init__.py:170
 msgid "Static password hash:"
 msgstr "Статический хэш пароля:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:175
-#: app/action_modules/Mass_import_creds/__init__.py:179
+#: app/action_modules/Mass_import_creds/__init__.py:170
+#: app/action_modules/Mass_import_creds/__init__.py:174
 msgid "The password that will match all the lines"
 msgstr "Пароль, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:176
+#: app/action_modules/Mass_import_creds/__init__.py:171
 msgid "Static hash type:"
 msgstr "Статический тип хэша:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:176
+#: app/action_modules/Mass_import_creds/__init__.py:171
 msgid "An hash type, that will be added to all the lines"
 msgstr "Тип хэша, который будет соответствовать всем строкам"
 
-#: app/action_modules/Mass_import_creds/__init__.py:177
+#: app/action_modules/Mass_import_creds/__init__.py:172
 msgid "Static check wordlist:"
 msgstr "Статическое значение \"Проверен на словаре\":"
 
-#: app/action_modules/Mass_import_creds/__init__.py:178
+#: app/action_modules/Mass_import_creds/__init__.py:173
 msgid "Static description:"
 msgstr "Статическое описание:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:178
+#: app/action_modules/Mass_import_creds/__init__.py:173
 msgid "An description string, that will be added to all credentials"
 msgstr "Строка описания, которая будет добавлена всем учётным данным"
 
-#: app/action_modules/Mass_import_creds/__init__.py:179
+#: app/action_modules/Mass_import_creds/__init__.py:174
 msgid "Static password:"
 msgstr "Статический пароль:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:182
+#: app/action_modules/Mass_import_creds/__init__.py:177
 msgid "Statis is admin:"
 msgstr "Статический администратор:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:183
+#: app/action_modules/Mass_import_creds/__init__.py:178
 #: app/action_modules/Mass_import_scan_data/__init__.py:66
 msgid "Content:"
 msgstr "Содержимое:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:183
+#: app/action_modules/Mass_import_creds/__init__.py:178
 msgid ""
 "Input content to add here (one credential per line with attribute, separated by "
 "column delimither)"
@@ -850,12 +857,12 @@ msgstr ""
 "Введите содержимое для импорта сюда (по одному объекту учётных данных с "
 "атрибутами, разделёнными по заданному символу)"
 
-#: app/action_modules/Mass_import_creds/__init__.py:184
+#: app/action_modules/Mass_import_creds/__init__.py:179
 #: app/action_modules/Mass_import_scan_data/__init__.py:67
 msgid "File:"
 msgstr "Файл:"
 
-#: app/action_modules/Mass_import_creds/__init__.py:184
+#: app/action_modules/Mass_import_creds/__init__.py:179
 msgid ""
 "A file with credentials to add (one credential per line, separated by column "
 "delimither)"
@@ -863,11 +870,11 @@ msgstr ""
 "Файл с учётными данным для добавления (по одному объекту учётных данных на "
 "строку, разделённым по заданному символу)"
 
-#: app/action_modules/Mass_import_creds/__init__.py:184
+#: app/action_modules/Mass_import_creds/__init__.py:179
 msgid "Only .txt file are allowed!"
 msgstr "Разрешены только файлы .txt!"
 
-#: app/action_modules/Mass_import_creds/__init__.py:185
+#: app/action_modules/Mass_import_creds/__init__.py:180
 #: app/action_modules/Mass_import_scan_data/__init__.py:68
 #: app/controllers/networks/forms.py:284 app/helpers/admin_helpers.py:164
 #: app/templates/chats/index.html:45 app/templates/hosts/show.html:478
@@ -875,25 +882,25 @@ msgstr "Разрешены только файлы .txt!"
 msgid "Add"
 msgstr "Добавить"
 
-#: app/action_modules/Mass_import_creds/__init__.py:189
-#: app/action_modules/Mass_import_creds/__init__.py:193
+#: app/action_modules/Mass_import_creds/__init__.py:184
+#: app/action_modules/Mass_import_creds/__init__.py:188
 #: app/action_modules/Mass_import_scan_data/__init__.py:72
 #: app/action_modules/Mass_import_scan_data/__init__.py:76
 msgid "At least one of the two fields is required: 'Content' or 'File'!"
 msgstr "Как минимум одно из двух полей 'Содержимое' или 'Файл' необходимо!"
 
-#: app/action_modules/Mass_import_creds/__init__.py:199
-#: app/action_modules/Mass_import_creds/__init__.py:202
+#: app/action_modules/Mass_import_creds/__init__.py:194
+#: app/action_modules/Mass_import_creds/__init__.py:197
 #: app/action_modules/Mass_import_scan_data/__init__.py:81
 #: app/action_modules/Mass_import_scan_data/__init__.py:83
 msgid "Incorrect input delimiter - not enough columns to parse"
 msgstr "Некорректный символ разделителя - недостаточно столбцов"
 
-#: app/action_modules/Mass_import_creds/__init__.py:275
+#: app/action_modules/Mass_import_creds/__init__.py:277
 msgid "Mass import a credential data"
 msgstr "Множественный импорт учётных данных"
 
-#: app/action_modules/Mass_import_creds/__init__.py:276
+#: app/action_modules/Mass_import_creds/__init__.py:278
 msgid ""
 "Creates or updates credentials from the transferred file, split according to the "
 "specified separator"
@@ -1090,27 +1097,27 @@ msgstr "Сканирование Nmap"
 msgid "Scan project network via Nmap scanner"
 msgstr "Сканирует сеть проекта с помощью сканера Nmap"
 
-#: app/action_modules/RdpCheck/__init__.py:108
+#: app/action_modules/RdpCheck/__init__.py:106
 msgid "RDP check"
 msgstr "Проверка RDP"
 
-#: app/action_modules/RdpCheck/__init__.py:109
+#: app/action_modules/RdpCheck/__init__.py:107
 msgid ""
 "For a given address, check classic RDP misconfigures (such as RDP without NLA)"
 msgstr ""
 "Проверяет классические ошибки настройки RDP (такие как RDP без NLA) на заданных "
 "адресах."
 
-#: app/action_modules/VncNoneAuthCheck/__init__.py:100
+#: app/action_modules/VncNoneAuthCheck/__init__.py:98
 msgid "VNC None Authentication check"
 msgstr "Проверка VNC None Authentication"
 
-#: app/action_modules/VncNoneAuthCheck/__init__.py:101
+#: app/action_modules/VncNoneAuthCheck/__init__.py:99
 msgid "VNC checks for None Authentication for the specified addresses."
 msgstr "Проверяет указанные службы VNC на недостаток None Authentication."
 
 #: app/controllers/forms.py:399 app/controllers/forms.py:586
-#: app/templates/issues/new.html:70 app/templates/tasks/new.html:81
+#: app/templates/issues/new.html:71 app/templates/tasks/new.html:81
 msgid "Select an option"
 msgstr "Выберите опцию"
 
@@ -1193,13 +1200,13 @@ msgstr "Шаблон импорта учётных данных с указан�
 #: app/controllers/admin/forms.py:84
 #: app/controllers/admin/forms_global_permission_actions.py:37
 #: app/controllers/admin/hooks_forms.py:29
-#: app/controllers/admin/issue_template_forms.py:55
+#: app/controllers/admin/issue_template_forms.py:57
 #: app/controllers/admin/project_additional_parameters_forms.py:32
 #: app/controllers/admin/report_template_forms.py:19
 #: app/controllers/admin/roles_forms.py:27
 #: app/controllers/admin/task_templates_forms.py:39
 #: app/controllers/credentials/forms.py:40 app/controllers/cves/forms.py:48
-#: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:59
+#: app/controllers/generics/forms.py:13 app/controllers/issues/forms.py:61
 #: app/controllers/networks/forms.py:53 app/controllers/networks/forms.py:131
 #: app/controllers/networks/forms.py:196 app/controllers/notes/forms.py:18
 #: app/controllers/projects/forms.py:48 app/controllers/research_events/forms.py:63
@@ -1210,14 +1217,14 @@ msgid "Create"
 msgstr "Создать"
 
 #: app/controllers/admin/credential_templates_forms.py:49
-#: app/controllers/admin/issue_template_forms.py:63
+#: app/controllers/admin/issue_template_forms.py:65
 #: app/controllers/admin/task_templates_forms.py:47
 #: app/controllers/projects/forms.py:161
 msgid "Templates file:"
 msgstr "Файл шаблона:"
 
 #: app/controllers/admin/credential_templates_forms.py:49
-#: app/controllers/admin/issue_template_forms.py:63
+#: app/controllers/admin/issue_template_forms.py:65
 #: app/controllers/admin/task_templates_forms.py:47
 #: app/controllers/projects/forms.py:161
 msgid "Only JSON File allowed!"
@@ -1229,14 +1236,14 @@ msgid "Override exist task templates:"
 msgstr "Перезаписать существующие шаблоны задач:"
 
 #: app/controllers/admin/credential_templates_forms.py:55
-#: app/controllers/admin/issue_template_forms.py:69
+#: app/controllers/admin/issue_template_forms.py:71
 #: app/controllers/admin/task_templates_forms.py:53
 #: app/controllers/projects/forms.py:166
 msgid "File is required!"
 msgstr "Требуется файл!"
 
 #: app/controllers/admin/credential_templates_forms.py:59
-#: app/controllers/admin/issue_template_forms.py:73
+#: app/controllers/admin/issue_template_forms.py:75
 #: app/controllers/admin/task_templates_forms.py:57
 #: app/controllers/projects/forms.py:170
 msgid "File is not a valid JSON file!"
@@ -1259,7 +1266,7 @@ msgid "This Slug is already exist!"
 msgstr "Такой слаг уже зарегистрирован!"
 
 #: app/controllers/admin/forms_global_permission_actions.py:41
-#: app/controllers/credentials/__init__.py:70 app/controllers/issues/__init__.py:82
+#: app/controllers/credentials/__init__.py:70 app/controllers/issues/__init__.py:83
 #: app/controllers/networks/__init__.py:115
 #: app/controllers/networks/__init__.py:164
 #: app/controllers/networks/__init__.py:227 app/controllers/projects/__init__.py:52
@@ -1276,6 +1283,8 @@ msgstr "Такой слаг уже зарегистрирован!"
 #: app/templates/admin/user_positions_index.html:73
 #: app/templates/credentials/index.html:219 app/templates/hooks/index.html:91
 #: app/templates/hosts/excluded-index.html:117 app/templates/hosts/index.html:407
+#: app/templates/issues/exist-index.html:173 app/templates/issues/index.html:178
+#: app/templates/issues/positive-index.html:173
 #: app/templates/networks/index.html:432
 #: app/templates/project_additional_parameters/admin_index.html:134
 #: app/templates/project_additional_parameters/admin_index.html:148
@@ -1315,11 +1324,11 @@ msgstr "Хук успешно обновлён"
 msgid "Hook #%(hook_id)s was successfully deleted"
 msgstr "Хук #%(hook_id)s успешно удалён"
 
-#: app/controllers/admin/issue_template_forms.py:51
+#: app/controllers/admin/issue_template_forms.py:53
 msgid "Issue template with the specified string slug has already been registered"
 msgstr "Шаблон проблемы с указанным слагом уже зарегистрирован"
 
-#: app/controllers/admin/issue_template_forms.py:64
+#: app/controllers/admin/issue_template_forms.py:66
 msgid "Override exist issue templates:"
 msgstr "Перезаписать существующие шаблоны проблем:"
 
@@ -1467,7 +1476,7 @@ msgstr "Шаблон задачи успешно удалён"
 msgid "Project chat"
 msgstr "Чат проекта"
 
-#: app/controllers/chats/websockets.py:47
+#: app/controllers/chats/websockets.py:49
 #, python-format
 msgid "New comment in project #%(project_id)s: «%(comment_text)s»"
 msgstr "Добавлено сообщение на проекте #%(project_id)s: «%(comment_text)s»"
@@ -1522,7 +1531,7 @@ msgstr "Задачи, выполняемые в рамках данного пр
 msgid "«%(login)s» login credentials"
 msgstr "Учётные данные для логина «%(login)s»"
 
-#: app/controllers/credentials/__init__.py:73 app/controllers/issues/__init__.py:85
+#: app/controllers/credentials/__init__.py:73 app/controllers/issues/__init__.py:86
 #: app/controllers/networks/__init__.py:118
 #: app/controllers/networks/__init__.py:177
 #: app/controllers/networks/__init__.py:230 app/controllers/projects/__init__.py:61
@@ -1541,6 +1550,8 @@ msgstr "Учётные данные для логина «%(login)s»"
 #: app/templates/credentials/pentest-index.html:117
 #: app/templates/hooks/index.html:92 app/templates/hosts/index.html:409
 #: app/templates/issue_templates/index.html:16
+#: app/templates/issues/exist-index.html:174 app/templates/issues/index.html:179
+#: app/templates/issues/positive-index.html:174
 #: app/templates/networks/index.html:434
 #: app/templates/project_additional_parameters/admin_index.html:135
 #: app/templates/task_templates/index.html:15
@@ -1554,8 +1565,8 @@ msgid "Are you sure you want to delete these credentials?"
 msgstr "Вы действительно уверены в том, что хотите удалить данные учётные данные?"
 
 #: app/controllers/credentials/__init__.py:76
-#: app/controllers/credentials/__init__.py:78 app/controllers/issues/__init__.py:88
-#: app/controllers/issues/__init__.py:90 app/controllers/networks/__init__.py:121
+#: app/controllers/credentials/__init__.py:78 app/controllers/issues/__init__.py:89
+#: app/controllers/issues/__init__.py:91 app/controllers/networks/__init__.py:121
 #: app/controllers/networks/__init__.py:123
 #: app/controllers/networks/__init__.py:186
 #: app/controllers/networks/__init__.py:188
@@ -1571,7 +1582,7 @@ msgid "Created by <a href=\"%(link)s\">%(created_by)s</a> %(date)s"
 msgstr "Создал(а) <a href=\"%(link)s\">%(created_by)s</a> %(date)s"
 
 #: app/controllers/credentials/__init__.py:78
-#: app/controllers/generics/websockets.py:176 app/controllers/issues/__init__.py:90
+#: app/controllers/generics/websockets.py:176 app/controllers/issues/__init__.py:91
 #: app/controllers/networks/__init__.py:123
 #: app/controllers/networks/__init__.py:188
 #: app/controllers/networks/__init__.py:235 app/controllers/projects/__init__.py:64
@@ -1601,7 +1612,7 @@ msgstr "Редактировать учётные данные"
 msgid "The dictionary for which the verification was performed/is planned"
 msgstr "Словарь, по которому была выполнена/планируется к выполнению проверка"
 
-#: app/controllers/credentials/forms.py:41 app/controllers/issues/forms.py:60
+#: app/controllers/credentials/forms.py:41 app/controllers/issues/forms.py:62
 #: app/controllers/networks/forms.py:54 app/controllers/networks/forms.py:132
 #: app/controllers/tasks/forms.py:64
 msgid "Create and add another one"
@@ -1652,81 +1663,82 @@ msgstr "Критическая уязвимость успешно обновл�
 msgid "Critical vulnerability has been successvully deleted"
 msgstr "Критическая уязвимость успешно удалена"
 
-#: app/controllers/issues/__init__.py:37 app/controllers/issues/__init__.py:71
-#: app/controllers/issues/__init__.py:75
+#: app/controllers/issues/__init__.py:38 app/controllers/issues/__init__.py:72
+#: app/controllers/issues/__init__.py:76
 msgid "Existing issues"
 msgstr "Существующие проблемы"
 
-#: app/controllers/issues/__init__.py:39 app/controllers/issues/__init__.py:65
-#: app/controllers/issues/__init__.py:69
+#: app/controllers/issues/__init__.py:40 app/controllers/issues/__init__.py:66
+#: app/controllers/issues/__init__.py:70
 msgid "Fixed issues"
 msgstr "Исправленные проблемы"
 
-#: app/controllers/issues/__init__.py:40 app/controllers/issues/__init__.py:77
-#: app/controllers/issues/__init__.py:78
+#: app/controllers/issues/__init__.py:41 app/controllers/issues/__init__.py:78
+#: app/controllers/issues/__init__.py:79
 msgid "Issue carousel"
 msgstr "Карусель проблем"
 
-#: app/controllers/issues/__init__.py:41 app/controllers/issues/__init__.py:59
-#: app/controllers/issues/__init__.py:63
+#: app/controllers/issues/__init__.py:42 app/controllers/issues/__init__.py:60
+#: app/controllers/issues/__init__.py:64
 msgid "All issues"
 msgstr "Все проблемы"
 
-#: app/controllers/issues/__init__.py:46 app/controllers/issues/__init__.py:61
-#: app/controllers/issues/__init__.py:73 app/controllers/issues/__init__.py:93
+#: app/controllers/issues/__init__.py:47 app/controllers/issues/__init__.py:62
+#: app/controllers/issues/__init__.py:74 app/controllers/issues/__init__.py:94
 msgid "Add new issue"
 msgstr "Добавить новую проблему"
 
-#: app/controllers/issues/__init__.py:50 app/models/issues.py:166
+#: app/controllers/issues/__init__.py:51 app/models/issues.py:184
 #: app/models/networks.py:554 app/models/projects.py:39 app/models/tasks.py:162
 msgid "Issues"
 msgstr "Проблемы"
 
-#: app/controllers/issues/__init__.py:67
+#: app/controllers/issues/__init__.py:68
 msgid "Add fixed issues"
 msgstr "Добавить исправленную проблему"
 
-#: app/controllers/issues/__init__.py:80
+#: app/controllers/issues/__init__.py:81
 #, python-format
 msgid "Issue #%(issue_id)s"
 msgstr "Проблема #%(issue_id)s"
 
-#: app/controllers/issues/__init__.py:85
+#: app/controllers/issues/__init__.py:86 app/templates/issues/exist-index.html:154
+#: app/templates/issues/index.html:159 app/templates/issues/positive-index.html:154
 msgid "Are you sure you want to delete this issue?"
 msgstr "Вы уверены, что хотите удалить эту проблему?"
 
-#: app/controllers/issues/__init__.py:96
+#: app/controllers/issues/__init__.py:97
 #, python-format
 msgid "Edit issue #%(issue_id)s"
 msgstr "Редактировать проблему #%(issue_id)s"
 
-#: app/controllers/issues/forms.py:33
+#: app/controllers/issues/forms.py:34
 msgid "What is required to fix this problem"
 msgstr "Что необходимо сделать для исправления этой проблемы"
 
-#: app/controllers/issues/forms.py:35
+#: app/controllers/issues/forms.py:36
 msgid "Additional technical information about the problem"
 msgstr "Дополнительная техническая информация о проблеме"
 
-#: app/controllers/issues/forms.py:37
+#: app/controllers/issues/forms.py:38
 msgid "The risks of exploiting this problem"
 msgstr "Риски эксплуатации проблемы"
 
-#: app/controllers/issues/forms.py:39
+#: app/controllers/issues/forms.py:40
 msgid "Additional links with information about the problem"
 msgstr "Дополнительные ссылки с информацией о проблеме"
 
-#: app/controllers/issues/routes.py:132
+#: app/controllers/issues/routes.py:138
 #, python-format
 msgid "Issue #%(issue_id)s has been successfully added"
 msgstr "Проблема #%(issue_id)s была успешно добавлена"
 
-#: app/controllers/issues/routes.py:204
+#: app/controllers/issues/routes.py:216
 #, python-format
 msgid "Issue #%(issue_id)s successfully changed"
 msgstr "Проблема #%(issue_id)s успешно изменена"
 
-#: app/controllers/issues/routes.py:218
+#: app/controllers/issues/routes.py:235
 #, python-format
 msgid "Issue #%(issue_id)s has been successfully deleted"
 msgstr "Проблема #%(issue_id)s успешно удалена"
@@ -2440,7 +2452,7 @@ msgid "%(field_name)s"
 msgstr "%(field_name)s"
 
 #: app/controllers/users/forms.py:15 app/models/credentials.py:100
-#: app/models/credentials.py:202 app/models/global_settings.py:11
+#: app/models/credentials.py:204 app/models/global_settings.py:11
 msgid "Password"
 msgstr "Пароль"
 
@@ -2728,7 +2740,7 @@ msgstr "Состояния фоновых задач"
 msgid "Background task options"
 msgstr "Опции фоновых задач"
 
-#: app/helpers/admin_helpers.py:127 app/models/generic.py:378
+#: app/helpers/admin_helpers.py:127 app/models/generic.py:386
 msgid "Hooks"
 msgstr "Хуки"
 
@@ -3139,8 +3151,8 @@ msgstr "База знаний"
 msgid "CVE pages"
 msgstr "Страницы CVE"
 
-#: app/helpers/main_page_helpers.py:46 app/models/issues.py:131
-#: app/models/issues.py:132
+#: app/helpers/main_page_helpers.py:46 app/models/issues.py:147
+#: app/models/issues.py:148
 msgid "CVE"
 msgstr "CVE"
 
@@ -3226,7 +3238,7 @@ msgstr "Добавить новую критическую уязвимость"
 msgid "CVE list"
 msgstr "Список CVE"
 
-#: app/helpers/main_page_helpers.py:136 app/models/issues.py:78
+#: app/helpers/main_page_helpers.py:136 app/models/issues.py:94
 msgid "Critical vulnerabilities"
 msgstr "Критические уязвимости"
 
@@ -3298,8 +3310,8 @@ msgstr "Ответить"
 
 #: app/helpers/projects_helpers.py:448 app/models/networks.py:595
 #: app/models/networks.py:600 app/templates/issues/carousel.html:13
-#: app/templates/issues/show.html:114 app/templates/issues/show.html:144
-#: app/templates/issues/show.html:160 app/templates/layout/_macrosses.html:139
+#: app/templates/issues/show.html:118 app/templates/issues/show.html:148
+#: app/templates/issues/show.html:164 app/templates/layout/_macrosses.html:139
 #: app/templates/layout/_macrosses.html:278 app/templates/notes/index.html:23
 #: app/templates/notes/index.html:78 app/templates/projects/index.html:50
 #: app/templates/projects/index.html:83 app/templates/projects/index.html:112
@@ -3322,7 +3334,7 @@ msgstr "Добавил(а)"
 
 #: app/models/chats.py:16 app/models/chats.py:18 app/models/credentials.py:84
 #: app/models/credentials.py:85 app/models/files.py:25 app/models/files.py:26
-#: app/models/issues.py:145 app/models/issues.py:146 app/models/networks.py:42
+#: app/models/issues.py:163 app/models/issues.py:164 app/models/networks.py:42
 #: app/models/networks.py:43 app/models/notes.py:40 app/models/notes.py:41
 #: app/models/pentest_events.py:121 app/models/pentest_events.py:122
 #: app/models/pentest_events.py:173 app/models/pentest_events.py:174
@@ -3333,7 +3345,7 @@ msgstr "Добавил(а)"
 msgid "Project"
 msgstr "Проект"
 
-#: app/models/chats.py:19 app/models/credentials.py:203 app/models/generic.py:67
+#: app/models/chats.py:19 app/models/credentials.py:205 app/models/generic.py:67
 msgid "Comment"
 msgstr "Комментарий"
 
@@ -3374,20 +3386,21 @@ msgid "Add hash prototype"
 msgstr "Добавить прототип хэша"
 
 #: app/models/credentials.py:38 app/models/credentials.py:60
-#: app/models/credentials.py:176 app/models/credentials.py:200
+#: app/models/credentials.py:176 app/models/credentials.py:202
 #: app/models/datatypes.py:159 app/models/files.py:13 app/models/files.py:44
-#: app/models/generic.py:307 app/models/global_settings.py:45
-#: app/models/global_settings.py:51 app/models/issues.py:19 app/models/issues.py:34
-#: app/models/issues.py:56 app/models/issues.py:87 app/models/issues.py:124
-#: app/models/networks.py:29 app/models/networks.py:101 app/models/networks.py:120
-#: app/models/networks.py:138 app/models/networks.py:159 app/models/networks.py:176
-#: app/models/networks.py:211 app/models/networks.py:223 app/models/networks.py:241
-#: app/models/networks.py:261 app/models/networks.py:428 app/models/networks.py:443
-#: app/models/networks.py:484 app/models/networks.py:506 app/models/networks.py:527
-#: app/models/notes.py:15 app/models/notes.py:36 app/models/pentest_events.py:17
-#: app/models/pentest_events.py:34 app/models/pentest_events.py:51
-#: app/models/pentest_events.py:71 app/models/pentest_events.py:101
-#: app/models/pentest_events.py:154 app/models/project_additional_parameters.py:15
+#: app/models/generic.py:315 app/models/global_settings.py:45
+#: app/models/global_settings.py:51 app/models/issues.py:20 app/models/issues.py:36
+#: app/models/issues.py:50 app/models/issues.py:72 app/models/issues.py:103
+#: app/models/issues.py:140 app/models/networks.py:29 app/models/networks.py:101
+#: app/models/networks.py:120 app/models/networks.py:138 app/models/networks.py:159
+#: app/models/networks.py:176 app/models/networks.py:211 app/models/networks.py:223
+#: app/models/networks.py:241 app/models/networks.py:261 app/models/networks.py:428
+#: app/models/networks.py:443 app/models/networks.py:484 app/models/networks.py:506
+#: app/models/networks.py:527 app/models/notes.py:15 app/models/notes.py:36
+#: app/models/pentest_events.py:17 app/models/pentest_events.py:34
+#: app/models/pentest_events.py:51 app/models/pentest_events.py:71
+#: app/models/pentest_events.py:101 app/models/pentest_events.py:154
+#: app/models/project_additional_parameters.py:15
 #: app/models/project_additional_parameters.py:41 app/models/projects.py:22
 #: app/models/projects.py:117 app/models/report_templates.py:14
 #: app/models/tasks.py:38 app/models/tasks.py:66 app/models/tasks.py:86
@@ -3433,8 +3446,8 @@ msgid "Add hash type"
 msgstr "Добавить новый тип хэша"
 
 #: app/models/credentials.py:61 app/models/datatypes.py:160 app/models/files.py:46
-#: app/models/generic.py:194 app/models/generic.py:308 app/models/issues.py:35
-#: app/models/issues.py:57 app/models/issues.py:88 app/models/issues.py:125
+#: app/models/generic.py:201 app/models/generic.py:316 app/models/issues.py:51
+#: app/models/issues.py:73 app/models/issues.py:104 app/models/issues.py:141
 #: app/models/networks.py:30 app/models/networks.py:139 app/models/networks.py:177
 #: app/models/networks.py:262 app/models/networks.py:528
 #: app/models/pentest_events.py:113 app/models/pentest_events.py:170
@@ -3462,8 +3475,8 @@ msgid "Add new wordlist"
 msgstr "Добавить новый словарь"
 
 #: app/models/credentials.py:87 app/models/credentials.py:88 app/models/files.py:15
-#: app/models/files.py:16 app/models/generic.py:39 app/models/issues.py:47
-#: app/models/issues.py:48 app/models/issues.py:119 app/models/issues.py:120
+#: app/models/files.py:16 app/models/generic.py:39 app/models/issues.py:63
+#: app/models/issues.py:64 app/models/issues.py:135 app/models/issues.py:136
 #: app/models/networks.py:32 app/models/networks.py:33 app/models/networks.py:268
 #: app/models/networks.py:269 app/models/networks.py:531 app/models/networks.py:532
 #: app/models/notes.py:31 app/models/notes.py:32 app/models/pentest_events.py:96
@@ -3477,8 +3490,8 @@ msgid "Created by"
 msgstr "Добавил(а)"
 
 #: app/models/credentials.py:90 app/models/credentials.py:91 app/models/files.py:18
-#: app/models/files.py:19 app/models/issues.py:50 app/models/issues.py:51
-#: app/models/issues.py:122 app/models/issues.py:123 app/models/networks.py:35
+#: app/models/files.py:19 app/models/issues.py:66 app/models/issues.py:67
+#: app/models/issues.py:138 app/models/issues.py:139 app/models/networks.py:35
 #: app/models/networks.py:36 app/models/networks.py:271 app/models/networks.py:272
 #: app/models/networks.py:534 app/models/networks.py:535 app/models/notes.py:34
 #: app/models/notes.py:35 app/models/pentest_events.py:99
@@ -3492,7 +3505,7 @@ msgstr "Добавил(а)"
 msgid "Updated by"
 msgstr "Изменил(а)"
 
-#: app/models/credentials.py:92 app/models/credentials.py:201
+#: app/models/credentials.py:92 app/models/credentials.py:203
 #: app/models/users.py:153
 msgid "Login"
 msgstr "Логин"
@@ -3513,8 +3526,8 @@ msgstr "Проверен на словаре"
 msgid "Domain"
 msgstr "Домен"
 
-#: app/models/credentials.py:104 app/models/issues.py:139
-#: app/models/networks.py:283 app/templates/issues/show.html:82
+#: app/models/credentials.py:104 app/models/issues.py:157
+#: app/models/networks.py:283 app/templates/issues/show.html:86
 msgid "Related services"
 msgstr "Связанные службы"
 
@@ -3555,7 +3568,7 @@ msgstr "Учётные данные"
 msgid "Add new credential"
 msgstr "Добавить новые учётные данные"
 
-#: app/models/credentials.py:168 app/models/issues.py:169 app/models/networks.py:86
+#: app/models/credentials.py:168 app/models/issues.py:187 app/models/networks.py:86
 #: app/models/networks.py:403 app/models/networks.py:628 app/models/notes.py:48
 #: app/models/pentest_events.py:140 app/models/pentest_events.py:180
 #: app/models/projects.py:101 app/models/report_templates.py:23
@@ -3567,14 +3580,14 @@ msgstr "Просматривать список объектов"
 msgid "Show created object list"
 msgstr "Просматривать список созданных объектов"
 
-#: app/models/credentials.py:168 app/models/issues.py:169 app/models/networks.py:86
+#: app/models/credentials.py:168 app/models/issues.py:187 app/models/networks.py:86
 #: app/models/networks.py:403 app/models/networks.py:628 app/models/notes.py:48
 #: app/models/pentest_events.py:140 app/models/pentest_events.py:180
 #: app/models/tasks.py:220
 msgid "Create new object"
 msgstr "Создавать новые объекты"
 
-#: app/models/credentials.py:168 app/models/issues.py:79 app/models/issues.py:169
+#: app/models/credentials.py:168 app/models/issues.py:95 app/models/issues.py:187
 #: app/models/networks.py:86 app/models/networks.py:403 app/models/networks.py:628
 #: app/models/pentest_events.py:140 app/models/pentest_events.py:180
 #: app/models/projects.py:97 app/models/tasks.py:220 app/models/users.py:279
@@ -3582,14 +3595,14 @@ msgstr "Создавать новые объекты"
 msgid "Show object card"
 msgstr "Просматривать карточку объекта"
 
-#: app/models/credentials.py:169 app/models/issues.py:170 app/models/networks.py:87
+#: app/models/credentials.py:169 app/models/issues.py:188 app/models/networks.py:87
 #: app/models/networks.py:404 app/models/networks.py:629 app/models/notes.py:48
 #: app/models/pentest_events.py:141 app/models/pentest_events.py:181
 #: app/models/projects.py:97 app/models/tasks.py:221
 msgid "Edit and update object"
 msgstr "Редактировать и изменять объект"
 
-#: app/models/credentials.py:169 app/models/issues.py:79 app/models/issues.py:170
+#: app/models/credentials.py:169 app/models/issues.py:95 app/models/issues.py:188
 #: app/models/networks.py:87 app/models/networks.py:404 app/models/networks.py:629
 #: app/models/notes.py:49 app/models/pentest_events.py:141
 #: app/models/pentest_events.py:181 app/models/projects.py:97
@@ -3598,21 +3611,21 @@ msgstr "Редактировать и изменять объект"
 msgid "Delete object"
 msgstr "Удалять объект"
 
-#: app/models/credentials.py:169 app/models/issues.py:170 app/models/networks.py:87
+#: app/models/credentials.py:169 app/models/issues.py:188 app/models/networks.py:87
 #: app/models/networks.py:404 app/models/networks.py:629
 #: app/models/pentest_events.py:141 app/models/pentest_events.py:181
 #: app/models/tasks.py:221
 msgid "Add comment to object"
 msgstr "Добавлять комментарии к объекту"
 
-#: app/models/credentials.py:170 app/models/issues.py:171 app/models/networks.py:88
+#: app/models/credentials.py:170 app/models/issues.py:189 app/models/networks.py:88
 #: app/models/networks.py:405 app/models/networks.py:630
 #: app/models/pentest_events.py:142 app/models/pentest_events.py:182
 #: app/models/tasks.py:222
 msgid "Show comment list of object"
 msgstr "Просматривать список комментариев к объекту"
 
-#: app/models/credentials.py:170 app/models/issues.py:171 app/models/networks.py:88
+#: app/models/credentials.py:170 app/models/issues.py:189 app/models/networks.py:88
 #: app/models/networks.py:405 app/models/networks.py:630
 #: app/models/pentest_events.py:142 app/models/pentest_events.py:182
 #: app/models/tasks.py:222
@@ -3624,58 +3637,66 @@ msgid "Template description"
 msgstr "Описание шаблона"
 
 #: app/models/credentials.py:178
+msgid "Domain column number"
+msgstr "Номер столбца домена"
+
+#: app/models/credentials.py:179
 msgid "Login column number"
 msgstr "Номер столбца логина"
 
-#: app/models/credentials.py:179
+#: app/models/credentials.py:180
 msgid "Password hash column number"
 msgstr "Номер столбца хэша пароля"
 
-#: app/models/credentials.py:180
+#: app/models/credentials.py:181
 msgid "Additional description column number"
 msgstr "Номер столбца дополнительного описания учётных данных"
 
-#: app/models/credentials.py:181
+#: app/models/credentials.py:182
 msgid "Password column number"
 msgstr "Номер столбца пароля"
 
-#: app/models/credentials.py:182
+#: app/models/credentials.py:183
+msgid "Static domain"
+msgstr "Статический домен"
+
+#: app/models/credentials.py:184
 msgid "Static login"
 msgstr "Статический логин"
 
-#: app/models/credentials.py:183
+#: app/models/credentials.py:185
 msgid "Static password hash"
 msgstr "Статический хэш пароля"
 
-#: app/models/credentials.py:184 app/models/credentials.py:185
+#: app/models/credentials.py:186 app/models/credentials.py:187
 msgid "Static hash type"
 msgstr "Статический тип хэша"
 
-#: app/models/credentials.py:186 app/models/credentials.py:187
+#: app/models/credentials.py:188 app/models/credentials.py:189
 msgid "Static check wordlist"
 msgstr "Статическое значение \"Проверен на словаре\""
 
-#: app/models/credentials.py:188
+#: app/models/credentials.py:190
 msgid "Static description"
 msgstr "Статическое описание"
 
-#: app/models/credentials.py:191
+#: app/models/credentials.py:193
 msgid "Credential import template"
 msgstr "Шаблон импорта учётных данных"
 
-#: app/models/credentials.py:192
+#: app/models/credentials.py:194
 msgid "Credential import templates"
 msgstr "Шаблоны импорта учётных данных"
 
-#: app/models/credentials.py:206
+#: app/models/credentials.py:208
 msgid "Default credential"
 msgstr "Учётные данные по умолчанию"
 
-#: app/models/credentials.py:207
+#: app/models/credentials.py:209
 msgid "Default credentials"
 msgstr "Учётные данные по умолчанию"
 
-#: app/models/credentials.py:208
+#: app/models/credentials.py:210
 msgid ""
 "Factory credentials installed by default by various manufacturers on their "
 "devices"
@@ -3683,11 +3704,12 @@ msgstr ""
 "Заводские учетные данные, установленные по умолчанию различными производителями "
 "на их устройствах"
 
-#: app/models/credentials.py:209
+#: app/models/credentials.py:211
 msgid "Add new default credential"
 msgstr "Добавить новые учётные данные по умолчанию"
 
-#: app/models/datatypes.py:154 app/templates/admin/background_tasks_index.html:34
+#: app/models/datatypes.py:154 app/models/issues.py:34
+#: app/templates/admin/background_tasks_index.html:34
 msgid "ID"
 msgstr "ID"
 
@@ -3770,7 +3792,7 @@ msgstr "Ответ на"
 
 #: app/models/generic.py:68 app/templates/credentials/show.html:203
 #: app/templates/cves/show.html:111 app/templates/hosts/show.html:415
-#: app/templates/issues/show.html:360
+#: app/templates/issues/show.html:364
 #: app/templates/research_events/organization-detection-show.html:91
 #: app/templates/research_events/pentest-show.html:166
 #: app/templates/services/show.html:303 app/templates/tasks/show.html:340
@@ -3826,65 +3848,69 @@ msgstr "Добавлен комментарий: <b><br />%(comment_text)s</b>"
 msgid "Changes in object"
 msgstr "Изменения у объекта"
 
-#: app/models/generic.py:188 app/models/generic.py:191
+#: app/models/generic.py:195 app/models/generic.py:198
 msgid "Refer to user"
 msgstr "Относится к пользователю"
 
-#: app/models/generic.py:189
+#: app/models/generic.py:196
 msgid "User notifications"
 msgstr "Уведомления"
 
-#: app/models/generic.py:192 app/models/generic.py:193
+#: app/models/generic.py:199 app/models/generic.py:200
 msgid "By user"
 msgstr "Создан пользователем"
 
-#: app/models/generic.py:195
+#: app/models/generic.py:202
 msgid "Technical detaled"
 msgstr "Технические детали"
 
-#: app/models/generic.py:196
+#: app/models/generic.py:203
 msgid "Link to object"
 msgstr "Ссылка на объект"
 
-#: app/models/generic.py:197
+#: app/models/generic.py:204
 msgid "Require Web push Notification"
 msgstr "Требует уведомления WebPush"
 
-#: app/models/generic.py:201
+#: app/models/generic.py:205
+msgid "Notification type"
+msgstr "Тип уведомления"
+
+#: app/models/generic.py:209
 msgid "Notification"
 msgstr "Уведомление"
 
-#: app/models/generic.py:202
+#: app/models/generic.py:210
 msgid "Notifications"
 msgstr "Уведомления"
 
-#: app/models/generic.py:248
+#: app/models/generic.py:256
 msgid "New GreenMine Notification"
 msgstr "Уведомление GreenMine"
 
-#: app/models/generic.py:310
+#: app/models/generic.py:318
 msgid "On object"
 msgstr "На объект"
 
-#: app/models/generic.py:311
+#: app/models/generic.py:319
 msgid "On action"
 msgstr "На действие"
 
-#: app/models/generic.py:312 app/models/tasks.py:134 app/models/tasks.py:137
+#: app/models/generic.py:320 app/models/tasks.py:134 app/models/tasks.py:137
 msgid "Priority"
 msgstr "Приоритет"
 
-#: app/models/generic.py:312
+#: app/models/generic.py:320
 msgid "Higher priority hooks are executed after lower priority hooks."
 msgstr ""
 "Хуки с более высоким приоритетом выполняются после хуков с более низким "
 "приоритетом."
 
-#: app/models/generic.py:313
+#: app/models/generic.py:321
 msgid "Code"
 msgstr "Код"
 
-#: app/models/generic.py:377
+#: app/models/generic.py:385
 msgid "Hook"
 msgstr "Хук"
 
@@ -3990,193 +4016,214 @@ msgstr "Внутреннее название параметра"
 msgid "Parameter value"
 msgstr "Значение параметра"
 
-#: app/models/issues.py:20
+#: app/models/issues.py:21
 msgid "State description"
 msgstr "Описание параметра"
 
-#: app/models/issues.py:21 app/models/notes.py:16 app/models/tasks.py:39
+#: app/models/issues.py:22 app/models/notes.py:16 app/models/tasks.py:39
 #: app/models/tasks.py:68
 msgid "Color"
 msgstr "Цвет"
 
-#: app/models/issues.py:24
+#: app/models/issues.py:23 app/models/issues.py:37 app/models/pentest_events.py:18
+#: app/models/pentest_events.py:35 app/models/tasks.py:372
+msgid "Is default"
+msgstr "По умолчанию"
+
+#: app/models/issues.py:26
 msgid "Issue status"
 msgstr "Статус проблемы"
 
-#: app/models/issues.py:25
+#: app/models/issues.py:27
 msgid "Issue statuses"
 msgstr "Статусы проблем"
 
-#: app/models/issues.py:26
+#: app/models/issues.py:28
 msgid "Add issue status"
 msgstr "Добавить новый статус проблемы"
 
-#: app/models/issues.py:38 app/models/issues.py:58 app/models/issues.py:59
+#: app/models/issues.py:40 app/models/issues.py:235 app/models/issues.py:236
+msgid "Issue vector"
+msgstr "Вектор проблемы"
+
+#: app/models/issues.py:41
+msgid "Issue vectors"
+msgstr "Вектора проблемы"
+
+#: app/models/issues.py:42
+msgid "Add new Issue vector"
+msgstr "Добавить новый вектор проблемы"
+
+#: app/models/issues.py:54 app/models/issues.py:74 app/models/issues.py:75
 msgid "Type of vulnerable environment"
 msgstr "Тип уязвимой среды"
 
-#: app/models/issues.py:39
+#: app/models/issues.py:55
 msgid "Types of vulnerable environment"
 msgstr "Типы уязвимых сред"
 
-#: app/models/issues.py:40
+#: app/models/issues.py:56
 msgid "Add new type of vulnerable environment"
 msgstr "Добавить новый тип уязвимой среды"
 
-#: app/models/issues.py:53
+#: app/models/issues.py:69
 msgid "The year the vulnerability was released"
 msgstr "Год, в который данная уязвимость была выпущена"
 
-#: app/models/issues.py:54
+#: app/models/issues.py:70
 msgid "CVE identifier"
 msgstr "Идентификатор CVE"
 
-#: app/models/issues.py:55 app/models/issues.py:130
+#: app/models/issues.py:71 app/models/issues.py:146
 msgid "CVSS"
 msgstr "CVSS"
 
-#: app/models/issues.py:60
+#: app/models/issues.py:76
 msgid "Vulnerable environment creation script"
 msgstr "Скрипт создания уязвимой среды"
 
-#: app/models/issues.py:61 app/models/issues.py:62
+#: app/models/issues.py:77 app/models/issues.py:78
 msgid "Proof of Concept language"
 msgstr "Язык концепции доказательства"
 
-#: app/models/issues.py:63 app/models/issues.py:94 app/models/issues.py:152
-#: app/models/issues.py:153 app/templates/cves/new.html:17
+#: app/models/issues.py:79 app/models/issues.py:110 app/models/issues.py:170
+#: app/models/issues.py:171 app/templates/cves/new.html:17
 #: app/templates/cves/show.html:19
 msgid "Proof of Concept"
 msgstr "Концепция доказательства"
 
-#: app/models/issues.py:64 app/models/issues.py:65
+#: app/models/issues.py:80 app/models/issues.py:81
 msgid "Page in Wiki"
 msgstr "Страница в Базе знаний"
 
-#: app/models/issues.py:77
+#: app/models/issues.py:93
 msgid "Critical vulnerability"
 msgstr "Критическая уязвимость"
 
-#: app/models/issues.py:79 app/models/users.py:279 app/models/users.py:431
+#: app/models/issues.py:95 app/models/users.py:279 app/models/users.py:431
 #: app/models/wiki_pages.py:38 app/models/wiki_pages.py:70
 msgid "Update object"
 msgstr "Редактировать объект"
 
-#: app/models/issues.py:80 app/models/projects.py:101 app/models/users.py:280
+#: app/models/issues.py:96 app/models/projects.py:101 app/models/users.py:280
 #: app/models/users.py:432 app/models/wiki_pages.py:39 app/models/wiki_pages.py:71
 msgid "Create object"
 msgstr "Создавать новые объекты"
 
-#: app/models/issues.py:89
+#: app/models/issues.py:105
 msgid "Source code"
 msgstr "Исходный код"
 
-#: app/models/issues.py:90 app/models/issues.py:91 app/models/users.py:100
+#: app/models/issues.py:106 app/models/issues.py:107 app/models/users.py:100
 msgid "Programming language"
 msgstr "Язык программирования"
 
-#: app/models/issues.py:95
+#: app/models/issues.py:111
 msgid "Proofs of Concept"
 msgstr "Доказательства концепции"
 
-#: app/models/issues.py:117 app/models/tasks.py:120
+#: app/models/issues.py:133 app/models/tasks.py:120
 msgid "Created by template"
 msgstr "Создан по шаблону"
 
-#: app/models/issues.py:126
+#: app/models/issues.py:142
 msgid "Fix"
 msgstr "Исправление"
 
-#: app/models/issues.py:127 app/models/networks.py:263 app/models/networks.py:529
+#: app/models/issues.py:143 app/models/networks.py:263 app/models/networks.py:529
 msgid "Technical information"
 msgstr "Техническая информация"
 
-#: app/models/issues.py:128
+#: app/models/issues.py:144
 msgid "Exploitation riscs"
 msgstr "Риски эксплуатации"
 
-#: app/models/issues.py:129
+#: app/models/issues.py:145
 msgid "Links to additional information"
 msgstr "Ссылки на дополнительную информацию"
 
-#: app/models/issues.py:133 app/models/issues.py:134 app/models/networks.py:264
+#: app/models/issues.py:149 app/models/issues.py:150 app/models/networks.py:264
 #: app/models/networks.py:265 app/models/tasks.py:142 app/models/tasks.py:143
 #: app/templates/admin/background_tasks_index.html:37
 msgid "Status"
 msgstr "Статус"
 
-#: app/models/issues.py:144 app/templates/issues/show.html:98
+#: app/models/issues.py:151 app/models/issues.py:152
+msgid "Vector"
+msgstr "Вектор"
+
+#: app/models/issues.py:162 app/templates/issues/show.html:102
 msgid "Related hosts"
 msgstr "Связанные конечные устройства"
 
-#: app/models/issues.py:151 app/models/networks.py:560 app/models/tasks.py:170
-#: app/templates/hosts/show.html:285 app/templates/issues/show.html:90
+#: app/models/issues.py:169 app/models/networks.py:560 app/models/tasks.py:170
+#: app/templates/hosts/show.html:285 app/templates/issues/show.html:94
 #: app/templates/networks/show.html:79 app/templates/services/show.html:82
 msgid "Related tasks"
 msgstr "Связанные задачи"
 
-#: app/models/issues.py:154
+#: app/models/issues.py:172
 msgid "Order Number"
 msgstr "Порядковый номер"
 
-#: app/models/issues.py:154
+#: app/models/issues.py:172
 msgid "The serial number in which the problem will be displayed"
 msgstr "Порядковый номер, в котором будет отображаться проблема"
 
-#: app/models/issues.py:158
+#: app/models/issues.py:176
 #, python-format
 msgid "Issue #%(issue_id)s: «%(issue_title)s»"
 msgstr "Проблема #%(issue_id)s: «%(issue_title)s»"
 
-#: app/models/issues.py:165
+#: app/models/issues.py:183
 msgid "Issue"
 msgstr "Проблема"
 
-#: app/models/issues.py:182 app/models/tasks.py:363
+#: app/models/issues.py:224 app/models/tasks.py:363
 msgid "Template title"
 msgstr "Заголовок шаблона"
 
-#: app/models/issues.py:183
+#: app/models/issues.py:225
 msgid "Template Description"
 msgstr "Описание шаблона"
 
-#: app/models/issues.py:184
+#: app/models/issues.py:226
 msgid "Issue Title"
 msgstr "Заголовок проблемы"
 
-#: app/models/issues.py:185
+#: app/models/issues.py:227
 msgid "Issue Description"
 msgstr "Описание проблемы"
 
-#: app/models/issues.py:186
+#: app/models/issues.py:228
 msgid "Issue fix"
 msgstr "Исправление проблемы"
 
-#: app/models/issues.py:187
+#: app/models/issues.py:229
 msgid "Technical information about issue"
 msgstr "Техническая информация о проблеме"
 
-#: app/models/issues.py:188
+#: app/models/issues.py:230
 msgid "Issue exploitation riscs"
 msgstr "Риски эксплуатации проблемы"
 
-#: app/models/issues.py:189
+#: app/models/issues.py:231
 msgid "Issue links to additional information"
 msgstr "Ссылки на дополнительную информацию о проблеме"
 
-#: app/models/issues.py:190
+#: app/models/issues.py:232
 msgid "Issue CVSS"
 msgstr "CVSS проблемы"
 
-#: app/models/issues.py:191 app/models/issues.py:192
+#: app/models/issues.py:233 app/models/issues.py:234
 msgid "Issue CVE"
 msgstr "CVE проблемы"
 
-#: app/models/issues.py:205
+#: app/models/issues.py:250
 msgid "Issue template"
 msgstr "Шаблон проблемы"
 
-#: app/models/issues.py:206
+#: app/models/issues.py:251
 msgid "Issue templates"
 msgstr "Шаблоны проблем"
 
@@ -4621,11 +4668,6 @@ msgstr "Важность"
 #: app/models/notes.py:44
 msgid "Note"
 msgstr "Заметка"
-
-#: app/models/pentest_events.py:18 app/models/pentest_events.py:35
-#: app/models/tasks.py:372
-msgid "Is default"
-msgstr "По умолчанию"
 
 #: app/models/pentest_events.py:24 app/models/pentest_events.py:115
 #: app/models/pentest_events.py:116
@@ -5470,9 +5512,9 @@ msgstr "Результат выполнения команды"
 #: app/templates/admin/console.html:53
 #: app/templates/credential_import_templates/index.html:76
 #: app/templates/credentials/show.html:256 app/templates/hosts/show.html:467
-#: app/templates/hosts/show.html:493 app/templates/issue_templates/index.html:78
-#: app/templates/issues/show.html:414 app/templates/issues/show.html:439
-#: app/templates/issues/show.html:465 app/templates/issues/show.html:491
+#: app/templates/hosts/show.html:493 app/templates/issue_templates/index.html:76
+#: app/templates/issues/show.html:418 app/templates/issues/show.html:443
+#: app/templates/issues/show.html:469 app/templates/issues/show.html:495
 #: app/templates/notes/index.html:132 app/templates/projects/index.html:125
 #: app/templates/services/show.html:355 app/templates/services/show.html:380
 #: app/templates/services/show.html:405 app/templates/task_templates/index.html:82
@@ -5572,7 +5614,7 @@ msgid "Import credential templates"
 msgstr "Импортировать шаблоны учётных данных"
 
 #: app/templates/credential_import_templates/index.html:131
-#: app/templates/issue_templates/index.html:134
+#: app/templates/issue_templates/index.html:132
 #: app/templates/task_templates/index.html:137 app/templates/webfiles/index.html:96
 msgid "Are you sure you want to delete this objects?"
 msgstr "Вы уверены, что хотите удалить эти объекты?"
@@ -5582,7 +5624,7 @@ msgid "All specified credential import templates successfully deleted"
 msgstr "Все указанные шаблоны импорта учётных данных успешно удалены"
 
 #: app/templates/credential_import_templates/index.html:157
-#: app/templates/issue_templates/index.html:160
+#: app/templates/issue_templates/index.html:158
 #: app/templates/task_templates/index.html:163 app/templates/webfiles/index.html:79
 msgid "Something went wrong. Try refreshing the page"
 msgstr "Что-то пошло не так. Попробуйте обновить страницу"
@@ -5600,6 +5642,8 @@ msgstr "Экспортировать в формате"
 #: app/templates/credentials/index.html:218
 #: app/templates/credentials/pentest-index.html:105
 #: app/templates/hosts/excluded-index.html:116 app/templates/hosts/index.html:406
+#: app/templates/issues/exist-index.html:170 app/templates/issues/index.html:175
+#: app/templates/issues/positive-index.html:170
 #: app/templates/networks/index.html:431 app/templates/services/index.html:237
 #: app/templates/services/index_group_by_port.html:175
 #: app/templates/tasks/index-on-me.html:153 app/templates/tasks/index.html:153
@@ -5633,27 +5677,27 @@ msgstr ""
 msgid "Parameters for getting data from records"
 msgstr "Параметры для получения данных из записей"
 
-#: app/templates/credentials/multiple_import.html:44
+#: app/templates/credentials/multiple_import.html:45
 msgid "Static data paramethers"
 msgstr "Статические параметры"
 
-#: app/templates/credentials/multiple_import.html:45
+#: app/templates/credentials/multiple_import.html:46
 msgid "These parameters will be added to each new and/or existing object"
 msgstr "Эти параметры будут добавлены каждому новому и/или существующему объекту"
 
-#: app/templates/credentials/multiple_import.html:45
+#: app/templates/credentials/multiple_import.html:46
 msgid "Parameter for adding to data from records"
 msgstr "Параметры для добавления данным к записям"
 
-#: app/templates/credentials/multiple_import.html:63
+#: app/templates/credentials/multiple_import.html:65
 msgid "Content paramether"
 msgstr "Параметры содержимого"
 
-#: app/templates/credentials/multiple_import.html:64
+#: app/templates/credentials/multiple_import.html:66
 msgid "See conversation rules in the docs"
 msgstr "Смотри правила преобразования в документации"
 
-#: app/templates/credentials/multiple_import.html:64
+#: app/templates/credentials/multiple_import.html:66
 msgid "Data that will be uploaded and converted into objects."
 msgstr "Данные, которые будут загружены и преобразованы в объекты."
 
@@ -5674,15 +5718,15 @@ msgid "Basic information"
 msgstr "Основная информация"
 
 #: app/templates/credentials/show.html:89 app/templates/credentials/show.html:255
-#: app/templates/issues/show.html:192 app/templates/issues/show.html:438
+#: app/templates/issues/show.html:196 app/templates/issues/show.html:442
 #: app/templates/tasks/show.html:125 app/templates/tasks/show.html:412
 msgid "Edit related services"
 msgstr "Редактировать связанные службы"
 
 #: app/templates/credentials/show.html:211 app/templates/credentials/show.html:217
 #: app/templates/cves/show.html:117 app/templates/hosts/show.html:423
-#: app/templates/hosts/show.html:429 app/templates/issues/show.html:369
-#: app/templates/issues/show.html:376 app/templates/networks/show.html:248
+#: app/templates/hosts/show.html:429 app/templates/issues/show.html:373
+#: app/templates/issues/show.html:380 app/templates/networks/show.html:248
 #: app/templates/networks/show.html:254
 #: app/templates/research_events/organization-detection-show.html:99
 #: app/templates/research_events/pentest-show.html:174
@@ -5768,7 +5812,7 @@ msgstr "Добавить новую DNS-запись"
 msgid "Specify another host as the interface of the current one"
 msgstr "Указать другой хост как интерфейс к текущему"
 
-#: app/templates/hosts/show.html:248 app/templates/issues/show.html:344
+#: app/templates/hosts/show.html:248 app/templates/issues/show.html:348
 #: app/templates/research_events/organization-detection-show.html:77
 #: app/templates/research_events/pentest-show.html:138
 #: app/templates/research_events/pentest-show.html:152
@@ -5777,8 +5821,8 @@ msgctxt "other"
 msgid "(Missing)"
 msgstr "(Отсутствует)"
 
-#: app/templates/hosts/show.html:261 app/templates/issues/show.html:124
-#: app/templates/issues/show.html:134 app/templates/layout/_macrosses.html:337
+#: app/templates/hosts/show.html:261 app/templates/issues/show.html:128
+#: app/templates/issues/show.html:138 app/templates/layout/_macrosses.html:337
 #: app/templates/layout/_macrosses.html:363
 #: app/templates/research_events/timeline.html:13
 #: app/templates/services/inventory.html:59
@@ -5803,11 +5847,11 @@ msgstr "Копировать DNS-запись"
 msgid "Delete DNS record"
 msgstr "Удалить DNS-запись"
 
-#: app/templates/issue_templates/index.html:77
+#: app/templates/issue_templates/index.html:75
 msgid "Import issue templates"
 msgstr "Импортировать шаблоны проблем"
 
-#: app/templates/issue_templates/index.html:146
+#: app/templates/issue_templates/index.html:144
 msgid "All specified issue templates successfully deleted"
 msgstr "Все указанные шаблоны проблем успешно удалены"
 
@@ -5816,19 +5860,19 @@ msgstr "Все указанные шаблоны проблем успешно �
 msgid "Parameters of the issue being created"
 msgstr "Параметры создаваемой проблемы"
 
-#: app/templates/issue_templates/new.html:65 app/templates/issues/new.html:100
-#: app/templates/issues/new.html:116 app/templates/tasks/new.html:100
+#: app/templates/issue_templates/new.html:66 app/templates/issues/new.html:102
+#: app/templates/issues/new.html:118 app/templates/tasks/new.html:100
 #: app/templates/wiki_pages/index.html:190 app/templates/wiki_pages/index.html:229
 #: app/templates/wiki_pages/index.html:266
 msgid "Something went wrong. Try to reload page"
 msgstr "Что-то пошло не так. Попробуйте обновить страницу"
 
 #: app/templates/issue_templates/show.html:25
-#: app/templates/issue_templates/show.html:65
-#: app/templates/issue_templates/show.html:73
-#: app/templates/issue_templates/show.html:79
-#: app/templates/issue_templates/show.html:85
-#: app/templates/issue_templates/show.html:91
+#: app/templates/issue_templates/show.html:69
+#: app/templates/issue_templates/show.html:77
+#: app/templates/issue_templates/show.html:83
+#: app/templates/issue_templates/show.html:89
+#: app/templates/issue_templates/show.html:95
 #: app/templates/services/access_protocols_parameter_templates/http.html:37
 #: app/templates/services/access_protocols_parameter_templates/http.html:63
 #: app/templates/services/show.html:12 app/templates/services/show.html:256
@@ -5842,35 +5886,52 @@ msgstr "(Отсутствует)"
 msgid "Finding issues"
 msgstr "Обнаруженные проблемы"
 
-#: app/templates/issues/carousel.html:60 app/templates/issues/show.html:179
+#: app/templates/issues/carousel.html:60 app/templates/issues/show.html:183
 #: app/templates/services/inventory.html:47
 msgid "Previous"
 msgstr "Предыдущий"
 
-#: app/templates/issues/carousel.html:64 app/templates/issues/show.html:183
+#: app/templates/issues/carousel.html:64 app/templates/issues/show.html:187
 #: app/templates/services/inventory.html:51
 msgid "Next"
 msgstr "Следующий"
+
+#: app/templates/issues/exist-index.html:123
+#: app/templates/issues/exist-index.html:143 app/templates/issues/index.html:128
+#: app/templates/issues/index.html:148 app/templates/issues/positive-index.html:123
+#: app/templates/issues/positive-index.html:143
+msgid "Something went wrong. Try to refresh the page"
+msgstr "Что-то пошло не так. Попробуйте обновить страницу"
+
+#: app/templates/issues/exist-index.html:171 app/templates/issues/index.html:176
+#: app/templates/issues/positive-index.html:171
+msgid "Increase order number"
+msgstr "Увеличить порядковый номер"
+
+#: app/templates/issues/exist-index.html:172 app/templates/issues/index.html:177
+#: app/templates/issues/positive-index.html:172
+msgid "Decrease order number"
+msgstr "Уменьшить порядковый номер"
 
 #: app/templates/issues/new.html:9 app/templates/tasks/new.html:9
 msgid "Create by template"
 msgstr "Создать по шаблону"
 
-#: app/templates/issues/show.html:69
+#: app/templates/issues/show.html:73
 msgid "Additional info"
 msgstr "Дополнительная информация"
 
-#: app/templates/issues/show.html:151 app/templates/issues/show.html:490
+#: app/templates/issues/show.html:155 app/templates/issues/show.html:494
 msgid "Edit Proof of Concept"
 msgstr "Редактировать концепцию доказательства"
 
-#: app/templates/issues/show.html:239 app/templates/issues/show.html:413
+#: app/templates/issues/show.html:243 app/templates/issues/show.html:417
 #: app/templates/services/show.html:182 app/templates/services/show.html:354
 #: app/templates/tasks/show.html:388
 msgid "Edit related tasks"
 msgstr "Редактировать связанные задачи"
 
-#: app/templates/issues/show.html:287 app/templates/issues/show.html:464
+#: app/templates/issues/show.html:291 app/templates/issues/show.html:468
 msgid "Edit related hosts"
 msgstr "Редактировать связанные конечные устройства"
 
@@ -6842,3 +6903,9 @@ msgstr "Содержание"
 
 #~ msgid "Column index started from 0"
 #~ msgstr "Номера столбцов начинаются с 0"
+
+#~ msgid "Raise priority"
+#~ msgstr "Повысить приоритет"
+
+#~ msgid "Lower priority"
+#~ msgstr "Понизить приоритет"

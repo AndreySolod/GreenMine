@@ -22,6 +22,7 @@ def check_login_required():
 
 import app.controllers.issues.routes
 import app.controllers.issues.websockets
+import app.controllers.issues.ajax_routes
 
 
 def sidebar(current_object, act: str, **kwargs) -> SidebarElement:

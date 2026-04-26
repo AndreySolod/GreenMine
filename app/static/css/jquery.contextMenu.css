@@ -151,6 +151,14 @@
   content: "\e901";
   font-family: "icomoon";
 }
+.context-menu-icon-increase:before {
+  content: "\f885";
+  font-family: "FontAwesome";
+}
+.context-menu-icon-decrease:before {
+  content: "\f884";
+  font-family: "FontAwesome";
+}
 
 .context-menu-icon::before {
   position: absolute;
