@@ -4,7 +4,7 @@ from typing import List
 from bs4 import BeautifulSoup
 
 
-def convert_html_to_word(html_data: str) -> RichText:
+def convert_html_to_word(html_data: str, bold=False, italic=False, underline=False) -> RichText:
     soup = BeautifulSoup(html_data, 'html.parser')
     rt = RichText()
 
@@ -51,8 +51,11 @@ def convert_html_to_word(html_data: str) -> RichText:
         # Обрабатываем детей
         for child in node.children:
             parse(child, new_bold, new_italic, new_underline, new_highlight)
+        
+        if node.name == 'p':
+            rt.add('\n')
 
-    parse(soup)
+    parse(soup, bold, italic, underline)
     return rt
 
 
