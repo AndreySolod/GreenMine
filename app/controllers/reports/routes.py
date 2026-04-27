@@ -14,6 +14,7 @@ import jinja2
 from io import BytesIO
 from bs4 import BeautifulSoup
 import importlib
+import datetime
 
 
 @bp.route('/index')
@@ -42,6 +43,7 @@ def generate_report_from_template(template_id):
     report_template = db.get_or_404(models.ProjectReportTemplate, template_id)
     project = db.get_or_404(models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, models.ProjectReportTemplate(), 'create', project=project)
+    current_time = datetime.datetime.now(datetime.UTC)
     try:
         jinja_env = jinja2.Environment(
             extensions=['jinja2.ext.do']
@@ -52,14 +54,14 @@ def generate_report_from_template(template_id):
             template_data.seek(0)
             env = docxtpl.DocxTemplate(template_file=template_data)
             env.render({'project': project, 'user': current_user, 'db': db, 'sa': sa, 'models': importlib.import_module('app.models'), 'sanitizer': sanitizer,
-                        'BeautifulSoup': BeautifulSoup, 'template_helpers': template_helpers}, jinja_env=jinja_env)
+                        'BeautifulSoup': BeautifulSoup, 'template_helpers': template_helpers, 'current_time': current_time, 'datetime': datetime}, jinja_env=jinja_env)
             result = BytesIO()
             env.save(result)
         else:
             env = jinja2.Environment(loader=jinja2.BaseLoader).from_string(report_template.template.data.decode())
             result = BytesIO()
             result.write(env.render(project=project, user=current_user, db=db, sa=sa, models=importlib.import_module('app.models'), sanitizer=sanitizer,
-                                    BeautifulSoup=BeautifulSoup).encode())
+                                    BeautifulSoup=BeautifulSoup, template_helpers=template_helpers, current_time=current_time, datetime=datetime).encode())
         title = report_template.template.title
     except Exception as e:
         result = BytesIO()
