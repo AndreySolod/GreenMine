@@ -413,7 +413,7 @@ class NmapScriptSMBShares(NmapScriptProcessor):
 
 class NmapScriptHTTPOpenProxy(NmapScriptProcessor):
     script_id = "http-open-proxy"
-    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str='en'):
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Host, current_user_id: int, locale: str='en'):
         issue = get_issue_by_template('http_open_proxy', project, current_user_id, session)
         if "Potentially OPEN proxy" in script_element.get("output"):
-            issue.services.add(service)
+            issue.hosts.add(service)
