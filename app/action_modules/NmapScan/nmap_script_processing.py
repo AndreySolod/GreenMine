@@ -259,6 +259,7 @@ class NmapScriptNBSTAT(NmapScriptProcessor):
             if m:
                 host.title = m.groups()[0]
         if host.mac == '' or host.mac == None:
+            out = script_element.get('output')
             m = re.search(pattern="NetBIOS MAC: (.*?),", string=out)
             if m:
                 curr_mac = m.groups()[0]
@@ -386,9 +387,33 @@ class NmapScriptSnmpInfo(NmapScriptProcessor):
             str: Empty string.
         """
         if service.additional_attributes is None:
-            service.additional_attributes = {"snmp"}
+            service.additional_attributes = {"snmp": {}}
         elif "snmp" not in service.additional_attributes:
             service.additional_attributes["snmp"] = {}
         for elem in script_element.findall("elem"):
             service.additional_attributes["snmp"][elem.attrib.get("key")] = elem.text
         return ''
+
+
+class NmapScriptSMBShares(NmapScriptProcessor):
+    script_id = "smb-enum-shares"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str='en'):
+        issue = get_issue_by_template('anonymous_access_to_smb_share', project, current_user_id, session)
+        for table in script_element.findall("table"):
+            current_share = {"name": table.get('key')}
+            for elem in table.findall("elem"):
+                current_share[elem.get('key')] = elem.text
+            if 'READ' in current_share['Anonymous access']:
+                issue.services.add(service)
+                if issue.technical is None:
+                    issue.technical = '<p>' + str(_l("Affected resources:")) + '</p>'
+                issue.technical += f"<p>{current_share["name"]}</p>"
+        return ''
+    
+
+class NmapScriptHTTPOpenProxy(NmapScriptProcessor):
+    script_id = "http-open-proxy"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str='en'):
+        issue = get_issue_by_template('http_open_proxy', project, current_user_id, session)
+        if "Potentially OPEN proxy" in script_element.get("output"):
+            issue.services.add(service)

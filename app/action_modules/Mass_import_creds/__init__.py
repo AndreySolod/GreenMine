@@ -23,6 +23,8 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
         cred.password = sanitizer.escape(element['password'])
         if element['password'] == '':
             cred.is_empty = True
+        else:
+            cred.is_empty = False
     if 'domain' in element:
         cred.domain = sanitizer.escape(element['domain'])
     if 'password_hash' in element:
@@ -36,9 +38,9 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
         rfi = session.scalars(sa.select(models.Host).where(models.Host.id.in_(list(map(int, element['received_from']))))).all()
         cred.received_from.update(set(rfi))
     if 'hash_type' in element:
-        cred.hash_type = db.session.scalars(sa.select(models.HashType).where(models.HashType.id == int(element['hash_type']))).first()
+        cred.hash_type = session.scalars(sa.select(models.HashType).where(models.HashType.id == int(element['hash_type']))).first()
     if 'check_wordlist' in element:
-        cred.check_wordlist = db.session.scalars(sa.select(models.CheckWordlist).where(models.CheckWordlist.id == int(element['check_wordlist']))).first()
+        cred.check_wordlist = session.scalars(sa.select(models.CheckWordlist).where(models.CheckWordlist.id == int(element['check_wordlist']))).first()
     if 'is_admin' in element:
         cred.is_admin = element['is_admin'] not in ['', None]
     if 'services' in element:

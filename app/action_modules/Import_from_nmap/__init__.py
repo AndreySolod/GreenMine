@@ -32,13 +32,12 @@ def action_run(nmap_file_data: str, project_id: int, current_user_id: int,
 
 
 def exploit(filled_form: dict, running_user: int, default_options: dict, locale: str, project_id: int) -> None:
-    with so.sessionmaker(bind=db.engine)() as session:
-        action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
-                   filled_form["ignore_host_without_open_ports_and_arp_response"],
-                   filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"],
-                   filled_form["scanning_host"], filled_form["add_network_accessible"], filled_form["add_host_to_service_accessible"],
-                   filled_form["created_host_marks"], filled_form["edited_host_marks"], filled_form["added_comment"],
-                   session=session, locale=locale)
+    action_run(filled_form['nmap_file'], int(filled_form["project_id"]), running_user, filled_form["ignore_closed_ports"],
+                filled_form["ignore_host_without_open_ports_and_arp_response"],
+                filled_form["add_host_with_only_arp_response"], filled_form["process_operation_system"],
+                filled_form["scanning_host"], filled_form["add_network_accessible"], filled_form["add_host_to_service_accessible"],
+                filled_form["created_host_marks"], filled_form["edited_host_marks"], filled_form["added_comment"],
+                session=db.session, locale=locale)
 
 
 class AdminOptionsForm(FlaskForm):
