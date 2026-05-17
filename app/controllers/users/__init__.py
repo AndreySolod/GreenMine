@@ -9,3 +9,4 @@ import app.controllers.users.routes
 import app.controllers.users.websockets
 import app.controllers.users.ajax_routes
 import app.controllers.users.teams_routes
+import app.controllers.users.themes_routes

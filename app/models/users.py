@@ -240,9 +240,9 @@ class User(UserMixin, db.Model):
     @classmethod
     def create_random_user(cls, login: str) -> "User":
         password = random_string(25)
-        first_names = ["Таракан", "Тараканоид", 'Бактерия', 'Белый', 'Чёрный', 'Хрен', 'Глиста', 'Гриб', 'Шланг', "Тряпка", 'Юдишка', "Конь", "Шмель"]
-        last_names = ["Резиновый", "Зелёный", "Странный", "Юдишкоподобный", "Шестилапый", "Усатый", "Нормальный"]
-        middle_names = ["Тараканьевич", "Глистович", "Грибович", "Хренович", "Шмелевич", "Зеленович"]
+        first_names = ["Таракан", "Тараканоид", 'Бактерия', 'Белый', 'Чёрный', 'Хрен', 'Глиста', 'Гриб', 'Шланг', "Камень", "Тряпка", 'Юдишка', "Конь", "Шмель"]
+        last_names = ["Резиновый", "Зелёный", "Странный", "Юдишкоподобный", "Шестилапый", "Усатый", "Нормальный", "Стрёмный"]
+        middle_names = ["Тараканьевич", "Глистович", "Грибович", "Хренович", "Шмелевич", "Зеленович", "Дятлович", "Шлангович"]
         admin_user = db.session.scalars(sa.select(User).join(User.position).where(UserPosition.is_administrator == True)).first()
         default_position = db.session.scalars(sa.select(UserPosition).where(UserPosition.is_default == True)).first()
         programming_language_theme = db.session.scalars(sa.select(ProgrammingLanguageTheme).where(ProgrammingLanguageTheme.is_default == True)).first()
@@ -282,41 +282,41 @@ class User(UserMixin, db.Model):
 
 
 class UserThemeStyle(db.Model):
-    id: so.Mapped[ID] = so.mapped_column(primary_key=True)
+    id: so.Mapped[ID] = so.mapped_column(primary_key=True, info={'label': _l("ID")})
     string_slug: so.Mapped[StringSlug]
-    title: so.Mapped[str] = so.mapped_column(sa.String(40))
-    is_default: so.Mapped[bool] = so.mapped_column(default=False)
-    main_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    neightboring_main_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    secondary_main_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    main_text_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    hovering_main_element_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    sidebar_background_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    main_content_background_color: so.Mapped[str] = so.mapped_column(sa.String(60))
-    color_card_background_header: so.Mapped[str] = so.mapped_column(sa.String(60))
-    color_chats_hour: so.Mapped[str] = so.mapped_column(sa.String(40))
-    color_chats_my_message: so.Mapped[str] = so.mapped_column(sa.String(40))
-    color_chats_my_message_text: so.Mapped[str] = so.mapped_column(sa.String(40))
-    color_chats_other_message: so.Mapped[str] = so.mapped_column(sa.String(40))
-    color_chats_other_message_text: so.Mapped[str] = so.mapped_column(sa.String(40))
-    bs_card_color: so.Mapped[str] = so.mapped_column(sa.String(40))
-    dark_color: so.Mapped[str] = so.mapped_column(sa.String(40))
-    timeline_time_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#8796af")
-    timeline_line_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#000")
-    timeline_red_team_background_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="rgb(138, 2, 2)")
-    timeline_red_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#fff")
-    timeline_blue_team_background_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="rgb(0, 0, 138)")
-    timeline_blue_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#fff")
-    fixed_sidebar: so.Mapped[bool] = so.mapped_column(default=False)
-    sidebar_position_left: so.Mapped[bool] = so.mapped_column(default=True)
-    archived_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#a3a3a3")
-    archived_main_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#000000")
-    archived_secondary_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#7d7d7d")
-    archived_neightboring_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#ccb6b6")
-    network_on_graph_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#008000")
-    normal_host_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#0000ff")
-    compromised_host_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#ff0000")
-    service_on_graph_color: so.Mapped[str] = so.mapped_column(sa.String(40), server_default="#FFFF00")
+    title: so.Mapped[str] = so.mapped_column(sa.String(40), info={'label': _l("Title")})
+    is_default: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Is default")})
+    main_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#0a7700", info={'label': _l("Main color")})
+    neightboring_main_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#167000", info={'label': _l("Neightboring main color")})
+    secondary_main_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#65ab53", info={'label': _l("Secondary main color")})
+    main_text_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#ffffff", info={'label': _l("Main text color")})
+    hovering_main_element_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#1fb7dd", info={'label': _l("Hovering main element color")} )
+    sidebar_background_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#2b394c", info={'label': _l("Sidebar background color")})
+    main_content_background_color: so.Mapped[str] = so.mapped_column(sa.String(60), default="#e6ecf3", info={'label': _l("Main content background color")})
+    color_card_background_header: so.Mapped[str] = so.mapped_column(sa.String(60), default="#f0f4f9", info={'label': _l("Color card background header")})
+    color_chats_hour: so.Mapped[str] = so.mapped_column(sa.String(40), default="#004715", info={'label': _l("Color chats hour")})
+    color_chats_my_message: so.Mapped[str] = so.mapped_column(sa.String(40), default="#89ff99", info={'label': _l("Color chats my message")})
+    color_chats_my_message_text: so.Mapped[str] = so.mapped_column(sa.String(40), default="#000000", info={'label': _l("Color chats my message text")})
+    color_chats_other_message: so.Mapped[str] = so.mapped_column(sa.String(40), default="#e6ecf3", info={'label': _l("Color chats other message")})
+    color_chats_other_message_text: so.Mapped[str] = so.mapped_column(sa.String(40), default="#000000", info={'label': _l("Color chats other message text")})
+    bs_card_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#000000", info={'label': _l("Bootstrap card color")})
+    dark_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#777", info={'label': _l("Dark color")})
+    timeline_time_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#8796af", server_default="#8796af", info={'label': _l("Timeline time color")})
+    timeline_line_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#000", server_default="#000", info={'label': _l("Timeline line color")})
+    timeline_red_team_background_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="rgb(138, 2, 2)", server_default="rgb(138, 2, 2)", info={'label': _l("Timeline red team background color")})
+    timeline_red_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#fff", server_default="#fff", info={'label': _l("Timeline red team text color")})
+    timeline_blue_team_background_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="rgb(0, 0, 138)", server_default="rgb(0, 0, 138)", info={'label': _l("Timeline blue team background color")})
+    timeline_blue_team_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#fff", server_default="#fff", info={'label': _l("Timeline blue team text color")})
+    fixed_sidebar: so.Mapped[bool] = so.mapped_column(default=False, info={'label': _l("Fixed sidebar")})
+    sidebar_position_left: so.Mapped[bool] = so.mapped_column(default=True, info={'label': _l("Sidebar position left")})
+    archived_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#a3a3a3", server_default="#a3a3a3", info={'label': _l("Archived main color")})
+    archived_main_text_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#000000", server_default="#000000", info={'label': _l("Archived main text color")})
+    archived_secondary_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#7d7d7d", server_default="#7d7d7d", info={'label': _l("Archived secondary main color")})
+    archived_neightboring_main_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#ccb6b6", server_default="#ccb6b6", info={'label': _l("Archived neighboring main color")})
+    network_on_graph_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#008000", server_default="#008000", info={'label': _l("Network on graph color")})
+    normal_host_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#0000ff", server_default="#0000ff", info={'label': _l("Normal host color")})
+    compromised_host_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#ff0000", server_default="#ff0000", info={'label': _l("Compromised host color")})
+    service_on_graph_color: so.Mapped[str] = so.mapped_column(sa.String(40), default="#FFFF00", server_default="#FFFF00", info={'label': _l("Service on graph color")})
     
 
     @hybrid_property
@@ -329,6 +329,9 @@ class UserThemeStyle(db.Model):
     class Meta:
         verbose_name = _l("Theme style")
         verbose_name_plural = _l("Theme styles")
+        icon = "fa-brands fa-affiliatetheme"
+        global_permission_actions = {"create": _l("Create theme style"), "update": _l("Update theme style"),
+                                     "delete": _l("Delete theme style")}
 
 
 class UserEnvironmentSetting(db.Model):

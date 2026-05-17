@@ -1,0 +1,87 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row gutters">
+                        <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_element(form, form.title, inline=True) }}
+                        {{ form_element(form, form.string_slug, inline=True) }}
+                        {{ form_element(form, form.is_default, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.fixed_sidebar, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.sidebar_position_left, inline=True, subdivide=9) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 coll-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_element(form, form.main_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.neightboring_main_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.secondary_main_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.main_text_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.hovering_main_element_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.sidebar_background_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.main_content_background_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.color_card_background_header, inline=True, subdivide=9) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_element(form, form.color_chats_hour, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.color_chats_my_message, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.color_chats_my_message_text, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.color_chats_other_message, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.color_chats_other_message_text, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.bs_card_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.dark_color, inline=True, subdivide=9) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_element(form, form.timeline_time_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.timeline_line_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.timeline_red_team_background_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.timeline_red_team_text_color, inline=True, subdivide=9) }}
+                        {{  form_element(form, form.timeline_blue_team_background_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.timeline_blue_team_text_color, inline=True, subdivide=9) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_element(form, form.archived_main_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.archived_main_text_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.archived_secondary_main_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.archived_neightboring_main_color, inline=True, subdivide=9) }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_element(form, form.network_on_graph_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.normal_host_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.compromised_host_color, inline=True, subdivide=9) }}
+                        {{ form_element(form, form.service_on_graph_color, inline=True, subdivide=9) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

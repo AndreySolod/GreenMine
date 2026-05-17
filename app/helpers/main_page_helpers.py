@@ -58,7 +58,12 @@ class DefaultSidebar:
         if user_position_can_make_action(current_user, models.Team, 'create'):
             sel55 = SidebarElementSublink(_l("Add new team"), url_for('users.team_new'), act=='team_new')
             sels_users.append(sel55)
-        se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj in ['User', 'Team'], sels_users)
+        sel56 = SidebarElementSublink(models.UserThemeStyle.Meta.verbose_name_plural, url_for('users.user_themes_index'), obj == 'UserThemeStyle' and act=='index')
+        sels_users.append(sel56)
+        if user_position_can_make_action(current_user, models.UserThemeStyle, 'create'):
+            sel57 = SidebarElementSublink(_l("Add new theme"), url_for('users.user_themes_new'), obj == 'UserThemeStyle' and act=='new')
+            sels_users.append(sel57)
+        se5 = SidebarElement(_l("Users"), url_for('users.user_index'), 'fa-solid fa-users', obj in ['User', 'Team', 'UserThemeStyle'], sels_users)
         ses.append(se5)
         self.se = ses
         if not current_user.is_anonymous and current_user.position.is_administrator:
@@ -72,7 +77,8 @@ class DefaultSidebar:
             sel68 = SidebarElementSublink(_l("Background task states"), url_for('admin.background_tasks_index'), obj=='admin')
             sel69 = SidebarElementSublink(_l("Project roles"), url_for('admin.project_role_index'), obj=='admin')
             sel610 = SidebarElementSublink(models.FileData.Meta.verbose_name_plural, url_for('admin.admin_file_index'), obj=='admin')
-            se6 = SidebarElement(_l("Admin"), url_for('admin.index'), "fa-solid fa-gears", obj=='admin', [sel61, sel62, sel63, sel64, sel65, sel66, sel67, sel68, sel69,sel610])
+            sel611 = SidebarElementSublink(_l("Console"), url_for('admin.console'), obj=='admin')
+            se6 = SidebarElement(_l("Admin"), url_for('admin.index'), "fa-solid fa-gears", obj=='admin', [sel61, sel62, sel63, sel64, sel65, sel66, sel67, sel68, sel69, sel610, sel611])
             self.se.append(se6)
 
     def __call__(self):
@@ -183,6 +189,20 @@ class DefaultEnvironment:
             current_object = CurrentObjectInfo(_l("Team #%(team_id)s: «%(team_title)s»", team_id=kwargs['obj_val'].id, team_title=kwargs['obj_val'].title), models.Team.Meta.icon, subtitle=models.Team.Meta.description, actions=acts)
         elif obj == 'Team' and op == 'team_edit':
             title = _l("Edit team #%(team_id)s", team_id=kwargs['obj_val'].id)
+            current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
+        # Theme Styles
+        elif obj == 'UserThemeStyle' and op == 'index':
+            title = _l("All themes")
+            acts = []
+            if user_position_can_make_action(current_user, models.UserThemeStyle, 'create'):
+                act1 = CurrentObjectAction(_l("Add new theme"), "fa-solid fa-square-plus", url_for('users.user_themes_new'))
+                acts.append(act1)
+            current_object = CurrentObjectInfo(_l("Themes list"), models.UserThemeStyle.Meta.icon, actions=acts)
+        elif obj == 'UserThemeStyle' and op == 'new':
+            title = _l("Add new theme style")
+            current_object = CurrentObjectInfo(title, "fa-solid fa-square-plus")
+        elif obj == 'UserThemeStyle' and op == 'edit':
+            title = _l("Edit theme style #%(theme_id)s", theme_id=kwargs['obj_val'].id)
             current_object = CurrentObjectInfo(title, "fa-solid fa-square-pen")
         sidebar_data = DefaultSidebar(obj, op)()
         self.context = {'title': title, 'current_object': current_object,
