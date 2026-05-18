@@ -33,7 +33,7 @@ def add_comment(data):
     if cr is None:
         return None
     current_room, current_room_name = cr
-    project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(data))).one()
+    project = db.session.scalars(sa.select(models.Project).where(models.Project.id == int(current_room))).one()
     if not project_role_can_make_action(current_user, models.ChatMessage(), 'create', project_id=current_room):
         return None
     cm = models.ChatMessage(created_by=current_user, project_id=current_room, text=data['text'])

@@ -42,7 +42,7 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
     if 'check_wordlist' in element:
         cred.check_wordlist = session.scalars(sa.select(models.CheckWordlist).where(models.CheckWordlist.id == int(element['check_wordlist']))).first()
     if 'is_admin' in element:
-        cred.is_admin = element['is_admin'] not in ['', None]
+        cred.is_admin = element['is_admin'] not in ['', None, False]
     if 'services' in element:
         svc = session.scalars(sa.select(models.Service).where(models.Service.id.in_(list(map(int, element['services']))))).all()
         cred.services.update(svc)
@@ -261,6 +261,18 @@ class CredentialMultipleAddForm(FlaskForm):
             if len(current_elem) == 0:
                 logger.info("Length of current element is 0")
                 return False
+            if self.static_login.data:
+                current_elem['login'] = self.static_login.data.strip()
+            if self.static_password_hash.data:
+                current_elem['password_hash'] = self.static_password_hash.data.strip().lower()
+            if self.static_description.data:
+                current_elem['description'] = self.static_description.data.strip()
+            if self.static_password.data:
+                current_elem['password'] = self.static_password.data.strip()
+            if self.static_is_admin.data:
+                current_elem['is_admin'] = True
+            if self.static_domain.data:
+                current_elem['domain'] = self.static_domain.data.strip()
             if self.static_hash_type.data:
                 current_elem['hash_type'] = self.static_hash_type.data
             if self.static_check_wordlist.data:
