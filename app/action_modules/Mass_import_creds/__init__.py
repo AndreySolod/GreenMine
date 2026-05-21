@@ -50,7 +50,7 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
     session.commit()
 
 
-def process_credentials_multiple_import_data(project_id: int, processed_data: List[Dict[str, str]], created_by_id: int, session:so.Session) -> None:
+def process_credentials_multiple_import_data(project_id: int, processed_data: List[Dict[str, str]], created_by_id: int, session:so.Session, create_new_entries: bool=True) -> None:
     for e in processed_data:
         e.setdefault('is_admin', False)
         if 'domain' in e:
@@ -134,7 +134,7 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
             creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.password_hash == e['password_hash'],
                                                                                     models.Credential.hash_type_id == hash_type_id,
                                                                                     models.Credential.project_id == project_id))).all())
-        if len(creds) == 0: # Creds is not exist. Create new creds
+        if len(creds) == 0 and create_new_entries: # Creds is not exist. Create new creds
             e.setdefault('login', '-')
             cred = models.Credential(login=sanitizer.escape(e['login']), created_by_id=created_by_id, project_id=project_id)
             set_credential_data(cred, e, project_id, session)
@@ -143,7 +143,7 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
 
 
 def exploit(filled_form: dict, running_user_id: int, default_options: dict, locale: str, project_id: int):
-    process_credentials_multiple_import_data(project_id, filled_form['processed_credentials_data'], running_user_id, session=db.session)
+    process_credentials_multiple_import_data(project_id, filled_form['processed_credentials_data'], running_user_id, session=db.session, create_new_entries=filled_form['create_new_entries'])
 
 
 class CredentialMultipleAddForm(FlaskForm):
@@ -179,6 +179,7 @@ class CredentialMultipleAddForm(FlaskForm):
     static_is_admin = wtforms.BooleanField(_l("Statis is admin:"), validators=[validators.Optional()])
     content_data = wtforms.TextAreaField(_l("Content:"), description=_l("Input content to add here (one credential per line with attribute, separated by column delimither)"), render_kw={'rows': 10})
     file_data = wtforms.FileField(_l("File:"), description=_l("A file with credentials to add (one credential per line, separated by column delimither)"), validators=[FileAllowed(set(["txt"]), message=_l("Only .txt file are allowed!")), validators.Optional()])
+    create_new_entries = wtforms.BooleanField(_l("Create new entries:"), validators=[validators.Optional()], default=True, description=_l("Create new entries if does not exist"))
     submit = wtforms.SubmitField(_l("Add"))
 
     def validate_content_data(form, field):
@@ -256,6 +257,8 @@ class CredentialMultipleAddForm(FlaskForm):
                             else:
                                 current_elem['domain'] = domain_and_login[0]
                                 current_elem['login'] = domain_and_login[1]
+                        if key == 'is_admin':
+                            current_elem[key] = line_data.strip() not in ['', None]
                     except IndexError:
                         return False
             if len(current_elem) == 0:
