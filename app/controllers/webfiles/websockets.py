@@ -197,7 +197,7 @@ def delete_elements(data):
             return None
     if len(deleted_files) != 0:
         try:
-            random_file = db.session.scalars(sa.select(models.FileData).where(models.FileData.id == deleted_dirs[0])).one()
+            random_file = db.session.scalars(sa.select(models.FileData).where(models.FileData.id == deleted_files[0])).one()
         except (exc.MultipleResultsFound, exc.NoResultFound):
             return None
         if not project_role_can_make_action(current_user, random_file.directory, 'delete'):

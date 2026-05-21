@@ -417,3 +417,26 @@ class NmapScriptHTTPOpenProxy(NmapScriptProcessor):
         issue = get_issue_by_template('http_open_proxy', project, current_user_id, session)
         if "Potentially OPEN proxy" in script_element.get("output"):
             issue.hosts.add(service)
+
+
+class NmapScriptHttpTitle(NmapScriptProcessor):
+    script_id = "http-title"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {"http": {}}
+        elif "http" not in service.additional_attributes:
+            service["additional_attributes"]["http"] = {}
+        for elem in script_element.findall("elem"):
+            if elem.get("key") == "title":
+                service.additional_attributes["http"]["title"] = elem.text
+                return ""
+
+
+class NmapScriptHttpServerHeader(NmapScriptProcessor):
+    script_id = "http-server-header"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {"http": {}}
+        elif "http" not in service.additional_attributes:
+            service["additional_attributes"]["http"] = {}
+        service.additional_attributes["http"]["server_header"] = script_element.get("output")
