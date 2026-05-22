@@ -208,12 +208,14 @@ def create_app(config_class=DevelopmentConfig, debug: bool=False) -> FlaskGreenM
     from app.controllers.chats import bp as chats_bp
     from app.controllers.reports import bp as report_template_bp
     from app.controllers.research_events import bp as research_events_bp
+    from app.controllers.domains import bp as domains_bp
 
     app.register_blueprint(main_page_bp)
     app.register_blueprint(extensions_bp)
     app.register_blueprint(projects_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(tasks_bp)
+    app.register_blueprint(domains_bp)
     app.register_blueprint(files_bp)
     app.register_blueprint(networks_bp)
     app.register_blueprint(api_bp)

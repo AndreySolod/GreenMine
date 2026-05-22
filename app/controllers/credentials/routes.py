@@ -1,16 +1,19 @@
 from app import db, side_libraries, logger, automation_modules
 from app.controllers.credentials import bp
 from flask_login import current_user
-from flask import request, render_template, url_for, redirect, flash, abort, jsonify, g
+from flask import request, render_template, url_for, redirect, flash, abort, jsonify, g, current_app
 from app.models import Credential, Project
 import app.models as models
 from app.helpers.general_helpers import get_or_404
 from app.helpers.projects_helpers import get_default_environment
 from app.helpers.credential_helpers import NameThatHash
 import app.controllers.credentials.forms as forms
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, BootstrapTableSearchParams
 from flask_babel import lazy_gettext as _l
 import sqlalchemy as sa
 from app.helpers.roles import project_role_can_make_action, project_role_can_make_action_or_abort
+import json
+from  typing import List
 
 
 @bp.route('/index')
@@ -22,13 +25,40 @@ def credential_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Credential(), 'index', project=project)
-    creds = db.session.scalars(sa.select(Credential).where(sa.and_(Credential.project_id == project_id, Credential.archived == False, Credential.is_pentest_credentials == False))).all()
     ctx = get_default_environment(Credential(project=project), 'index')
     side_libraries.library_required('bootstrap_table')
-    context = {'credentials': creds, 'project': project}
+    filters = {'domains': json.dumps({i: t for i, t in db.session.execute(sa.select(models.Domain.id, models.Domain.title).where(models.Domain.project_id == project_id))}),
+               'hash_types': json.dumps({i: t for i, t in db.session.execute(sa.select(models.HashType.id, models.HashType.title).select_from(models.Credential).join(models.Credential.hash_type).where(models.Credential.project_id == project_id))}),
+               'check_wordlists': json.dumps({i: t for i, t in db.session.execute(sa.select(models.CheckWordlist.id, models.CheckWordlist.title))})}
+    context = {'project': project, 'filters': filters}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all credentials on project #{project_id}")
     side_libraries.library_required('contextmenu')
     return render_template('credentials/index.html', **context, **ctx)
+
+
+@bp.route('/index-data')
+def credential_index_data():
+    try:
+        project_id = int(request.args.get('project_id'))
+    except (ValueError, TypeError):
+        logger.warning(f"User '{getattr(current_user, 'login', 'Anonymous')}' trying to get list credentials with non-integer project_id {request.args.get('project_id')}")
+        abort(400)
+    project = db.get_or_404(Project, project_id)
+    project_role_can_make_action_or_abort(current_user, Credential(), 'index', project=project)
+    def services_convert_funcs(services: List[models.Service]) -> str:
+        first_elems = current_app.config["GlobalSettings"].m2m_join_symbol.join(map(lambda x: str(x.host.ip_address) + ":" + str(x.port), services[:current_app.config['GlobalSettings'].m2m_max_items:]))
+        total_m2m_elems = len(services)
+        if total_m2m_elems > current_app.config['GlobalSettings'].m2m_max_items:
+            first_elems += current_app.config['GlobalSettings'].m2m_join_symbol + str(_l("Total: %(total)s elements", total=total_m2m_elems))
+        return first_elems
+    additional_params: BootstrapTableSearchParams = {'obj': models.Credential,
+            'column_index': ['id', 'domain', 'login', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input', 'password_hash', 'password', 'hash_type',
+                             'description', 'check_wordlist', 'services.title-input', 'received_from.ip_address-input', 'is_admin'],
+            'base_select': lambda x: x.where(models.Credential.project_id == project_id),
+            'convert_funcs': {'services.title-input': lambda x: services_convert_funcs(list(x.services)),
+                              'password': lambda x: x.pretty_password}}
+    logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request index credentials on project #{project_id}")
+    return get_bootstrap_table_json_data(request, additional_params)
 
 
 @bp.route('/pentest-index')

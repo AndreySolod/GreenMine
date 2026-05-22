@@ -77,7 +77,7 @@ def environment(obj, action, **kwargs) -> dict:
             act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('tasks.projecttask_edit', projecttask_id=obj.id))
             acts.append(act1)
         if project_role_can_make_action(current_user, obj, 'delete'):
-            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('tasks.projecttask_delete', projecttask_id=obj.id), confirm="Вы уверены, что хотите удалить эту задачу?", btn_class='btn-danger', method='DELETE')
+            act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('tasks.projecttask_delete', projecttask_id=obj.id), confirm=_l("Are you sure you want to delete this task?"), btn_class='btn-danger', method='DELETE')
             acts.append(act2)
         if obj.created_by is not None:
             co_subtitle = sanitizer.markup(_l('Created by <a href="%(link)s">%(created_by)s</a> %(date)s', link=url_for('users.user_show', user_id=obj.created_by.id), created_by=sanitizer.pure_text(obj.created_by.title), date=str(moment(obj.created_at).fromNow())))

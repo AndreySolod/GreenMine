@@ -33,6 +33,9 @@
 {% block script %}
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
+        function stateFormatter(value, row, index, field) {
+            return `<div style="background-color: ${row.task_background_color}; padding: 5px; border-radius: 3px; color: ${row.task_text_color}">${value}</div>`;
+        }
         $(function() {
             $('#task-table').bootstrapTable({
                 columns: [
@@ -101,7 +104,8 @@
                     sortable: true,
                     filterControl: 'select',
                     filterData: 'json:{{ filters["TaskState"]|escapejs }}',
-                    cellStyle: tasksCellStyle
+                    cellStyle: tasksCellStyle,
+                    formatter: stateFormatter
                 }
                 ],
                 icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
@@ -116,12 +120,7 @@
             })
           });
         function tasksCellStyle(value, row, index, field) {
-            if(field !== "state") {
-                return { css: {"cursor": 'pointer', 'background-color': row.row_background_color} };
-            }
-            else {
-                return { css: {"cursor": 'pointer', 'background-color': row.task_background_color, 'color': row.task_text_color} };
-            }
+            return { css: {"cursor": 'pointer', 'background-color': row.row_background_color} };
         };
         $(function () {
             $.contextMenu({

@@ -29,6 +29,9 @@
     {{ super() }}
     <script nonce="{{ csp_nonce() }}">
         $(function() {
+            function statusFormatter(value, row, index, field) {
+                return `<div style="background-color: ${row.status_background_color}; padding: 5px; border-radius: 3px; color: ${row.status_text_color}">${value}</div>`;
+            }
           $('#issues-table').bootstrapTable('destroy').bootstrapTable({
                     filterControl: true,
                     disableUnusedSelectOptions: true,
@@ -62,6 +65,7 @@
                         filterData: "json:" + JSON.stringify(JSON.parse('{{ filters["IssueStatus"]|safe|escapejs }}')),
                         sortable: true,
                         align: 'center',
+                        formatter: statusFormatter
                     },
                     {
                         field: "vector.id-select",

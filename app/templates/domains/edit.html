@@ -1,0 +1,24 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import form_element %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="row">
+            <div class="col-sm-12 col-md-6 col-lg-6">
+                {{ form_element(form, form.title) }}
+                {{ form_element(form, form.domain_controllers) }}
+                {{ form_element(form, form.hosts) }}
+                {{ form_element(form, form.credentials) }}
+                {{ form_element(form, form.description) }}
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

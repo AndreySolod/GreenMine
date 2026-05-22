@@ -98,7 +98,8 @@ class Credential(HasComment, db.Model, HasHistory):
                                                                    info={'label': _l("Checked on wordlist")})
     check_wordlist: so.Mapped['CheckWordlist'] = so.relationship(lazy='select', info={'label': _l("Checked on wordlist")})
     password: so.Mapped[Optional[str]] = so.mapped_column(sa.String(70), info={'label': _l('Password')})
-    domain: so.Mapped[Optional[str]] = so.mapped_column(sa.String(50), info={'label': _l("Domain")})
+    domain_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('domain.id', ondelete='SET NULL'), index=True, info={'label': _l("Domain")})
+    domain: so.Mapped["Domain"] = so.relationship(lazy='joined', back_populates="credentials", foreign_keys=[domain_id], info={'label': _l("Domain")}) # type: ignore
     services: so.Mapped[Set["Service"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin=id==CredentialByService.credential_id, # type: ignore
                                                            secondaryjoin='CredentialByService.service_id==Service.id', back_populates='credentials',
                                                            lazy='select', info={'label': _l("Related services")})
@@ -116,7 +117,7 @@ class Credential(HasComment, db.Model, HasHistory):
     @property
     def treeselecttitle(self):
         if self.domain is not None:
-            return f'{self.domain}/{self.login}:{self.password}'
+            return f'{self.domain.title}/{self.login}:{self.password}'
         else:
             return f"{self.login}:{self.password}"
 
@@ -180,7 +181,6 @@ class CredentialImportTemplate(db.Model):
     password_hash_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Password hash column number")})
     description_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Additional description column number")})
     password_column_number: so.Mapped[Optional[int]] = so.mapped_column(info={'label': _l("Password column number")})
-    static_domain: so.Mapped[Optional[str]] = so.mapped_column(sa.String(Credential.domain.type.length), info={'label': _l("Static domain")})
     static_login: so.Mapped[Optional[str]] = so.mapped_column(sa.String(Credential.login.type.length), info={'label': _l("Static login")})
     static_password_hash: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Static password hash")})
     static_hash_type_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(HashType.id, ondelete='CASCADE'), info={'label': _l("Static hash type")})

@@ -20,6 +20,8 @@ class CredentialForm(FlaskForm):
         self.received_from.callback = url_for('networks.get_select2_host_data', project_id=project_id)
         self.received_from.locale = g.locale
         self.received_from.validate_funcs = lambda x: validate_host(project_id, x)
+        self.domain_id.choices = [('0', '')] + [(str(i.id), i) for i in db.session.scalars(sa.select(models.Domain).where(models.Domain.project_id == project_id))]
+        self.domain_id.locale = g.locale
 
     login = wtforms.StringField(_l("%(field_name)s:", field_name=models.Credential.login.info["label"]), 
                                 validators=[validators.InputRequired(message=_l("This field is mandatory!")), validators.Length(max=models.Credential.login.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Credential.login.type.length))])
@@ -33,8 +35,7 @@ class CredentialForm(FlaskForm):
     received_from = Select2MultipleField(models.Host, label=_l("%(field_name)s:", field_name=models.Credential.received_from.info["label"]), description=models.Credential.received_from.info["help_text"], validators=[validators.Optional()], attr_title="treeselecttitle")
     is_admin = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_admin.info["label"]), validators=[validators.Optional()])
     is_empty = wtforms.BooleanField(_l("%(field_name)s:", field_name=models.Credential.is_empty.info["label"]), validators=[validators.Optional()])
-    domain = wtforms.StringField(_l("%(field_name)s:", field_name=models.Credential.domain.info["label"]), 
-                                validators=[validators.Length(max=models.Credential.domain.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Credential.domain.type.length)), validators.Optional()])
+    domain_id = Select2Field(models.Domain, label=_l("%(field_name)s:", field_name=models.Credential.domain_id.info["label"]), validators=[validators.Optional()])
 
 class CredentialCreateForm(CredentialForm):
     submit = wtforms.SubmitField(_l("Create"))

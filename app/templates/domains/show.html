@@ -1,0 +1,432 @@
+{% extends 'layout/base.html' %}
+{% from 'layout/_macrosses.html' import bootstrap_table_icons, object_comments, object_history %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ _("Domain") }} «{{ domain.title }}»</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ models.Domain.description.info['label'] }}:</p>
+                    {{ domain.description|safe }}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs" id="additionalParamethers" role="tablist">
+                        {% set first_tab = False %}
+                        {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=domain.project) %}
+                        {% set first_tab = True %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="domain-controllers-tab" data-bs-toggle="tab" data-bs-target="#domain-controllers"
+                                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="fa-solid fa-signs-post"></i>
+                                {{ models.Domain.domain_controllers.info['label'] }}</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="hosts-tab" data-bs-toggle="tab" data-bs-target="#hosts"
+                                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Host.Meta.icon }}"></i>
+                                {{ models.Domain.hosts.info["label"] }}</button>
+                        </li>
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=domain.project) %}
+                        {% if first_tab %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="credentials-tab" data-bs-toggle="tab" data-bs-target="#credentials"
+                                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Credential.Meta.icon }}"></i>
+                                {{ models.Domain.credentials.info["label"] }}</button>
+                        </li>
+                        {% else %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="credentials-tab" data-bs-toggle="tab" data-bs-target="#credentials"
+                                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Credential.Meta.icon }}"></i>
+                                {{ models.Domain.credentials.info["label"] }}</button>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="DomainTabContent">
+                        {% set first_tab = False %}
+                        {% if roles.project_role_can_make_action(current_user, models.Host(), 'index', project=domain.project) %}
+                        {% set first_tab = True %}
+                        <div class="tab-pane fade show active" id="domain-controllers" role="tabpanel" aria-labelledby="domain-controllers-tab">
+                            <table class="table" id="domain-controllers-table"
+                                             data-pagination="true"
+                                             data-side-pagination="server"
+                                             data-show-pagination-switch="true"
+                                             data-page-list="[10, 25, 50, 100, All]"
+                                             data-url="{{ url_for('domains.domain_controllers_to_domain', domain_id=domain.id) }}"     
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true" 
+                                             data-buttons-class="primary"
+                                             data-page-size="5"
+                                             data-cookie="true"
+                                             data-cookie-id-table="DomainControllersByDomainShow"
+                                             data-cookie-storage="localStorage">
+                                </table>
+                        </div>
+                        <div class="tab-pane fade" id="hosts" role="tabpanel" aria-labelledby="hosts-tab">
+                            <table class="table" id="hosts-table"
+                                             data-pagination="true"
+                                             data-side-pagination="server"
+                                             data-show-pagination-switch="true"
+                                             data-page-list="[10, 25, 50, 100, All]"
+                                             data-url="{{ url_for('domains.hosts_to_domain', domain_id=domain.id) }}"     
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true" 
+                                             data-buttons-class="primary"
+                                             data-page-size="5"
+                                             data-cookie="true"
+                                             data-cookie-id-table="HostsByDomainShow"
+                                             data-cookie-storage="localStorage">
+                                </table>
+                        </div>
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, models.Credential(), 'index', project=domain.project) %}
+                        {% if first_tab %}
+                        <div class="tab-pane fade" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+                            <table class="table" id="credentials-table"
+                                             data-pagination="true"
+                                             data-side-pagination="server"
+                                             data-show-pagination-switch="true"
+                                             data-page-list="[10, 25, 50, 100, All]"
+                                             data-url="{{ url_for('domains.credentials_to_domain', domain_id=domain.id) }}"     
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true" 
+                                             data-buttons-class="primary"
+                                             data-page-size="5"
+                                             data-cookie="true"
+                                             data-cookie-id-table="CredentialsByDomainShow"
+                                             data-cookie-storage="localStorage">
+                                </table>
+                        </div>
+                        {% else %}
+                        <div class="tab-pane fade show active" id="credentials" role="tabpanel" aria-labelledby="credentials-tab">
+                            <table class="table" id="credentials-table"
+                                             data-pagination="true"
+                                             data-side-pagination="server"
+                                             data-show-pagination-switch="true"
+                                             data-page-list="[10, 25, 50, 100, All]"
+                                             data-url="{{ url_for('domains.credentials_to_domain', domain_id=domain.id) }}"     
+                                             data-search="true"
+                                             data-show-columns="true"
+                                             data-show-toggle="true"
+                                             data-show-export="true"
+                                             data-show-multi-sort="true" 
+                                             data-buttons-class="primary"
+                                             data-page-size="5"
+                                             data-cookie="true"
+                                             data-cookie-id-table="CredentialsByDomainShow"
+                                             data-cookie-storage="localStorage">
+                                </table>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        {% set first_tab = False %}
+                        {% if roles.project_role_can_make_action(current_user, domain, 'show_comments') %}
+                        {% set first_tab = True %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments"
+                                type="button" role="tab" aria-controls="home" aria-selected="true"><i class="{{ models.Comment.Meta.icon }}"></i>
+                                {{ models.Comment.Meta.verbose_name_plural }}</button>
+                        </li>
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, domain, 'show_history') %}
+                        {% if first_tab %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                                role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-grip"></i>
+                                {{ _("History of property changes") }}</button>
+                        </li>
+                        {% else %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button"
+                                role="tab" aria-controls="home" aria-selected="false"><i class="fa-solid fa-grip"></i>
+                                {{ _("History of property changes") }}</button>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="commentsTabContent">
+                        {% if roles.project_role_can_make_action(current_user, domain, 'show_comments') %}
+                        <div class="tab-pane fade show active" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                            {{ object_comments(domain, moment, comment_form, current_user, roles) }}
+                        </div>
+                        {% endif %}
+                        {% if roles.project_role_can_make_action(current_user, domain, 'show_history') %}
+                        {% if first_tab %}
+                        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                        {{ object_history(domain, moment, current_user) }}
+                        </div>
+                        {% else %}
+                        <div class="tab-pane fade show active" id="history" role="tabpanel" aria-labelledby="history-tab">
+                            {{ object_history(domain, moment, current_user) }}
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+    $('#domain-controllers-table').bootstrapTable({
+            filterControl: true,
+            disableUnusedSelectOptions: true,
+            columns: [
+            {
+                field: 'id',
+                title: '{{ models.Host.id.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'title',
+                title: '{{ models.Host.title.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'ip_address',
+                title: '{{ models.Host.ip_address.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: "labels.title-input",
+                title: "{{ models.Host.labels.info['label']|escapejs }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'operation_system_family',
+                title: '{{ models.Host.operation_system_family.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}'
+            },
+            {
+                field: 'operation_system_gen',
+                title: '{{ models.Host.operation_system_gen.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'device_type',
+                title: '{{ models.Host.device_type.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["DeviceType"]|escapejs }}'
+            },
+            {
+                field: 'device_vendor',
+                title: '{{ models.Host.device_vendor.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            }
+            ],
+            showColumns: true,
+            search: true,
+            showToggle: true,
+            showExport: true,
+            showMultiSort: true,
+            filterControl: true,
+            buttonClass: 'primary',
+            pagination: true,
+            sidePagination: 'server',
+            rowStyle: hostRowStyle,
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            onDblClickRow: function(row, element, field) {
+                location = '{{ url_for("networks.host_show", host_id="__host_id") }}'.replace('__host_id', row.id)
+            }
+        })
+    
+        function hostRowStyle(row, index) {
+            return { css: {"cursor": 'pointer' } }
+        }
+        $('#hosts-table').bootstrapTable({
+            filterControl: true,
+            disableUnusedSelectOptions: true,
+            columns: [
+            {
+                field: 'id',
+                title: '{{ models.Host.id.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'title',
+                title: '{{ models.Host.title.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'ip_address',
+                title: '{{ models.Host.ip_address.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: "labels.title-input",
+                title: "{{ models.Host.labels.info['label']|escapejs }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'operation_system_family',
+                title: '{{ models.Host.operation_system_family.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["OperationSystemFamily"]|escapejs }}'
+            },
+            {
+                field: 'operation_system_gen',
+                title: '{{ models.Host.operation_system_gen.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'device_type',
+                title: '{{ models.Host.device_type.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["DeviceType"]|escapejs }}'
+            },
+            {
+                field: 'device_vendor',
+                title: '{{ models.Host.device_vendor.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            }
+            ],
+            showColumns: true,
+            search: true,
+            showToggle: true,
+            showExport: true,
+            showMultiSort: true,
+            filterControl: true,
+            buttonClass: 'primary',
+            pagination: true,
+            sidePagination: 'server',
+            rowStyle: hostRowStyle,
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            onDblClickRow: function(row, element, field) {
+                location = '{{ url_for("networks.host_show", host_id="__host_id") }}'.replace('__host_id', row.id)
+            }
+        })
+    
+        $('#credentials-table').bootstrapTable({
+            filterControl: true,
+            disableUnusedSelectOptions: true,
+            columns: [
+            {
+                field: 'id',
+                title: '{{ models.Credential.id.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: 'login',
+                title: '{{ models.Credential.login.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: "password_hash",
+                title: "{{ models.Credential.password_hash.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'input'
+            },
+            {
+                field: "hash_type",
+                title: "{{ models.Credential.hash_type.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["hash_types"]|escapejs }}'
+            },
+            {
+                field: "check_wordlist",
+                title: "{{ models.Credential.check_wordlist.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["check_wordlists"]|escapejs }}'
+            },
+            {
+                field: "is_admin",
+                title: "{{ models.Credential.is_admin.info['label'] }}",
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: `json:{"true":"{{ _('Yes') }}","false":"{{ _('No') }}" }`
+            }
+            ],
+            showColumns: true,
+            search: true,
+            showToggle: true,
+            showExport: true,
+            showMultiSort: true,
+            filterControl: true,
+            buttonClass: 'primary',
+            pagination: true,
+            sidePagination: 'server',
+            rowStyle: hostRowStyle,
+            icons: JSON.parse("{{ bootstrap_table_icons().strip() }}"),
+            onDblClickRow: function(row, element, field) {
+                location = '{{ url_for("credentials.credential_show", credential_id="__credential_id") }}'.replace('__credential_id', row.id)
+            }
+        })
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@ from flask_login import current_user
 from app.controllers.issues import bp
 from app import db, side_libraries, logger
 from app.models import Issue, Project, IssueStatus, IssueTemplate, IssueVector
-from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, BootstrapTableSearchParams
+from app.helpers.general_helpers import get_or_404, get_bootstrap_table_json_data, BootstrapTableSearchParams, get_complementary_color
 from app.helpers.projects_helpers import get_default_environment
 import app.controllers.issues.forms as forms
 from sqlalchemy import exc
@@ -43,7 +43,9 @@ def issue_data_index():
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': Issue,
                                                      'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve', 'order_number', 'vector.id-select'],
-                                                     'base_select': lambda x: x.where(db.and_(Issue.project_id==project_id, Issue.archived == False))}
+                                                     'base_select': lambda x: x.where(db.and_(Issue.project_id==project_id, Issue.archived == False)),
+                                                     'print_params': [('status_background_color', lambda x: getattr(x.status, 'color', None)),
+                                                                      ('status_text_color', lambda x: get_complementary_color(getattr(x.status, 'color', None)))]}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request all issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -78,7 +80,9 @@ def exist_issue_data_index():
     aliased = so.aliased(IssueStatus)
     additional_params: BootstrapTableSearchParams = {'obj': Issue,
                                                      'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve', 'order_number', 'vector.id-select'],
-                                                     'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived == False, aliased.string_slug != 'fixed'))}
+                                                     'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived == False, aliased.string_slug != 'fixed')),
+                                                     'print_params': [('status_background_color', lambda x: getattr(x.status, 'color', None)),
+                                                                      ('status_text_color', lambda x: get_complementary_color(getattr(x.status, 'color', None)))]}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request exist issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 
@@ -113,7 +117,9 @@ def positive_issue_data_index():
     aliased = so.aliased(IssueStatus)
     additional_params: BootstrapTableSearchParams = {'obj': Issue,
                                                      'column_index': ['id', 'title', 'description', 'status.id-select', 'cvss', 'cve', 'order_number', 'vector.id-select'],
-                                                     'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived==False, aliased.string_slug == 'fixed'))}
+                                                     'base_select': lambda x: x.join(Issue.status.of_type(aliased)).where(db.and_(Issue.project_id==project_id, Issue.archived==False, aliased.string_slug == 'fixed')),
+                                                     'print_params': [('status_background_color', lambda x: getattr(x.status, 'color', None)),
+                                                                      ('status_text_color', lambda x: get_complementary_color(getattr(x.status, 'color', None)))]}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request positive issues on project #{project_id}")
     return get_bootstrap_table_json_data(request, additional_params)
 

@@ -306,6 +306,10 @@ class Host(HasComment, db.Model, HasHistory):
                                                         primaryjoin=id==HostByLabel.host_id,
                                                         secondaryjoin=HostByLabel.label_id==HostLabel.id,
                                                         info={'label': _l("Labels")})
+    domain_controller_for_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey("domain.id", ondelete='SET NULL'), info={'label': _l("Domain controller for")})
+    domain_controller_for: so.Mapped["Domain"] = so.relationship(back_populates="domain_controllers", lazy="select", foreign_keys=[domain_controller_for_id], info={'label': _l("Domain controller for")})
+    domain_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('domain.id', ondelete='SET NULL'), info={'label': _l("Domain")})
+    domain: so.Mapped["Domain"] = so.relationship(lazy='select', foreign_keys=[domain_id], back_populates="hosts", info={'label': _l("Domain")})
 
     @property
     def fulltitle(self):
@@ -629,3 +633,28 @@ class Service(HasComment, db.Model, HasHistory):
                                       'update': _l("Edit and update object"), 'delete': _l("Delete object"), 'add_comment': _l("Add comment to object"),
                                       'show_comments': _l("Show comment list of object"), 'show_history': _l("Show object history"),
                                       'take_screenshot': _l("Takes services screenshot")}
+
+
+class Domain(HasComment, db.Model, HasHistory):
+    id: so.Mapped[ID]
+    title: so.Mapped[str] = so.mapped_column(sa.String(50), info={'label': _l("Title")})
+    created_at: so.Mapped[CreatedAt]
+    created_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Created by")})
+    created_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[created_by_id], info={'label': _l("Created by")}) # type: ignore
+    updated_at: so.Mapped[UpdatedAt]
+    updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
+    updated_by: so.Mapped["User"] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
+    description: so.Mapped[Optional[str]] = so.mapped_column(info={'label': _l("Description")})
+    domain_controllers: so.Mapped[Set[Host]] = so.relationship(back_populates="domain_controller_for", foreign_keys="[Host.domain_controller_for_id]", info={'label': _l("Domain controllers")})
+    hosts: so.Mapped[Set[Host]] = so.relationship(back_populates="domain", foreign_keys="[Host.domain_id]", info={'label': _l("Hosts")})
+    credentials: so.Mapped[Set["Credential"]] = so.relationship(back_populates="domain", info={'label': _l("Credentials")})
+    project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l("Project")})
+    project: so.Mapped["Project"] = so.relationship(lazy='select', foreign_keys=[project_id], info={'label': _l("Project")}) # type: ignore
+
+    class Meta:
+        verbose_name = _l('Domain')
+        verbose_name_plural = _l("Domains")
+        icon = "fa-solid fa-boxes-stacked"
+        project_permission_actions = {'index': _l("Show object list"), 'create': _l("Create new object"), 'show': _l("Show object card"),
+                                      "update": _l("Edit and update object"), 'delete': _l("Delete object"), 'add_comment': _l("Add comment to object"),
+                                      "show_comments": _l("Show comment list of object"), 'show_history': _l("Show object history")}

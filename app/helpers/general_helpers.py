@@ -524,30 +524,78 @@ def find_data_by_request_params(obj: Any, request: Request, column_index: List[s
     else:
         sql_subquery = sql_subquery.where(where_all)
         sql_count = sql_count.where(where_all)
-    # Теперь обработаем упорядочивание элементов:
-    for e in multi_sort:
-        if e["sortName"] in simple_attrs:
-            sql_subquery = sql_subquery.order_by(getattr(getattr(obj, e["sortName"]), e['sortOrder'])())
-        elif e["sortName"] in rels or e['sortName'] in rels_uselist:
-            sql_subquery = sql_subquery.order_by(getattr(dict_aliases[e['sortName']].title, e['sortOrder'])())
-        else:
-            pass
-    # Отдельно необходимо обработать операцию простой сортировки:
-    if sort is not None and order is not None:
-        if sort in simple_attrs:
-            sql_subquery = sql_subquery.order_by(getattr(getattr(obj, sort), order)())
-        elif sort in rels:
-            sql_subquery = sql_subquery.order_by(getattr(dict_aliases[sort].title, order)())
-        elif sort not in rels_uselist:
-            attr_path = sort.split('-')[0].split('.')
-            attr_name = ".".join(attr_path[:len(attr_path) - 1:])
-            sql_subquery = sql_subquery.order_by(getattr(getattr(dict_aliases[attr_name], attr_path[-1]), order)())
-    # Теперь обработаем limit и offset - они обрабатываются очень просто
-    sql_subquery = sql_subquery.limit(limit).offset(offset)
     # Отдельно - указание на поиск уникальных объектов (поскольку выполняем, в том числе, и Many-To-Many Join'ы):
     sql_subquery = sql_subquery.subquery()
     obj_aliased = so.aliased(obj, sql_subquery)
     sql = sa.select(obj_aliased).select_from(sql_subquery).where(sql_subquery.c.rn_current_obj == 1)
+    # Теперь обработаем сортировку объектов
+    def get_sort_expression(sort_name: str, sort_order: str):
+        # Простой атрибут
+        if sort_name in simple_attrs:
+            col = getattr(obj, sort_name)
+            return col.asc() if sort_order == 'asc' else col.desc()
+        # Отношение one-to-one / many-to-one
+        if sort_name in rels:
+            # Для отношения берём атрибут 'title' связанной сущности
+            alias = dict_aliases.get(sort_name)
+            col = alias.title
+            return col.asc() if sort_order == 'asc' else col.desc()
+        # M2M отношение
+        if sort_name in rels_uselist:
+            # Используем коррелирующий подзапрос, возвращающий MIN(title) по связанной таблице
+            rel = getattr(obj, sort_name)
+            target_entity = rel.entity.class_
+            # Предполагаем, что сортируем по полю 'title'
+            subq = sa.select(func.min(target_entity.title)).select_from(target_entity).where(
+                target_entity.id == rel.any(id=obj.id)
+            ).correlate(obj).scalar_subquery()
+            return subq.asc() if sort_order == 'asc' else subq.desc()
+        # Сложный путь (например "services.title-input")
+        if '-' in sort_name and sort_name not in simple_attrs and sort_name not in rels and sort_name not in rels_uselist:
+            attr_path = sort_name.split('-')[0].split('.')
+            prefix = ".".join(attr_path[:-1])
+            last_attr = attr_path[-1]
+            target_col = getattr(dict_aliases[prefix], last_attr)
+            return target_col.asc() if sort_order == 'asc' else target_col.desc()
+        return None
+    
+    # Для начала собираем условия сортировки
+    sort_specs = []   # список кортежей (sort_name, sort_order)
+    for ms in multi_sort:
+        sort_specs.append((ms.get('sortName'), ms.get('sortOrder')))
+    if not multi_sort and sort and order:
+        sort_specs.append((sort, order))
+    # Теперь выполняем сортировку
+    for sort_name, sort_order in sort_specs:
+        # 1. Простые атрибуты
+        if sort_name in simple_attrs:
+            col = getattr(obj_aliased, sort_name)
+            sql = sql.order_by(col.asc() if sort_order == 'asc' else col.desc())
+
+        # 2. Отношения one‑to‑one / many‑to‑one (без дефиса)
+        elif sort_name in rels:
+            rel = getattr(obj, sort_name)
+            target_entity = rel.entity.class_
+            fk_col = getattr(obj_aliased, f"{sort_name}_id")
+            subq = sa.select(target_entity.title).where(
+                target_entity.id == fk_col
+            ).correlate(obj_aliased).scalar_subquery()
+            sql = sql.order_by(subq.asc() if sort_order == 'asc' else subq.desc())
+
+        # 3. M2M отношения
+        elif sort_name in rels_uselist:
+            rel = getattr(obj, sort_name)
+            target_entity = rel.entity.class_
+            subq = sa.select(sa.func.min(target_entity.title)).select_from(target_entity).where(
+                target_entity.id == rel.any(id=obj_aliased.id)
+            ).correlate(obj_aliased).scalar_subquery()
+            sql = sql.order_by(subq.asc() if sort_order == 'asc' else subq.desc())
+
+        # 4. Сложный путь вида "relation.subrelation.attr-input" или "relation.attr-select"
+        elif '-' in sort_name:
+            pass # Временно не обрабатываем сортировку
+    # Теперь обработаем limit и offset - они обрабатываются очень просто
+    sql = sql.limit(limit).offset(offset)
     return sql, sql_count
 
 

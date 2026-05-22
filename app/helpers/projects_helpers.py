@@ -331,6 +331,15 @@ def validate_host(project_id, field) -> None:
         raise wtforms.ValidationError(_l("Not a valid choice."))
 
 
+def validate_credential(project_id, field) -> None:
+    try:
+        if not db.session.scalars(sa.select(sa.func.count(models.Credential.id))
+                           .where(sa.and_(models.Credential.project_id == project_id, models.Credential.id.in_([field.coerce(i) for i in field.data])))).one() == len(field.data):
+            raise wtforms.ValidationError(_l("Not a valid choice."))
+    except (ValueError, TypeError, exc.MultipleResultsFound, exc.NoResultFound):
+        raise wtforms.ValidationError(_l("Not a valid choice."))
+
+
 def load_comment_script(comment_form, object_with_comments) -> str:
     """
     Generates and loads JavaScript script for handling comments via WebSocket.

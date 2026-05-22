@@ -246,6 +246,6 @@ def environment_service(obj, action, **kwargs):
     return {'title': title, 'current_object': current_object, 'archived': proj.archived}
 
 
-register_environment(EnvironmentObjectAttrs('Network', sidebar_network, environment_network), 'ProjectTask')
+register_environment(EnvironmentObjectAttrs('Network', sidebar_network, environment_network), 'Domain')
 register_environment(EnvironmentObjectAttrs('Host', sidebar_host, environment_host), 'Network')
 register_environment(EnvironmentObjectAttrs('Service', sidebar_service, environment_service), 'Host')
