@@ -26,6 +26,11 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
         else:
             cred.is_empty = False
     if 'domain' in element:
+        if 'static_domain' in element:
+            cred.domain_id = int(element['domain'])
+        else:
+            domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project_id, models.Domain.title == element['domain'].upper()))).first()
+            cred.domain = domain
         cred.domain = sanitizer.escape(element['domain'])
     if 'password_hash' in element:
         cred.password_hash = sanitizer.escape(element['password_hash'])
@@ -158,6 +163,8 @@ class CredentialMultipleAddForm(FlaskForm):
         self.static_received_from.callback = url_for('networks.get_select2_host_data', project_id=project_id)
         self.static_received_from.locale = g.locale
         self.static_received_from.validate_funcs = lambda x: validate_host(project_id, x)
+        self.static_domain.choices = [(str(i.id), i.title) for i in db.session.scalars(sa.select(models.Domain).where(models.Domain.project_id == project_id))]
+        self.static_domain.locale = g.locale
 
     login_position = wtforms.IntegerField(_l("Login column number:"), validators=[validators.Optional()])
     password_hash_position = wtforms.IntegerField(_l("Password hash column number:"), validators=[validators.Optional()])
@@ -167,7 +174,7 @@ class CredentialMultipleAddForm(FlaskForm):
     domain_position = wtforms.IntegerField(_l("Domain column number:"), validators=[validators.Optional()])
     delimiter = wtforms.StringField(_l("Column delimiter:"), default=":", validators=[], description=_l("The symbol by which the rows will be divided into columns"))
     domain_delimiter = wtforms.StringField(_l("Domain delimiter:"), default="\\", validators=[validators.Optional()], description=_l("The symbol by which the column 'login' will be divided into login and domain. Leave blank to skip this function"))
-    static_domain = wtforms.StringField(_l("Static domain:"), description=_l("The domain that will match all the lines"), validators=[validators.Optional()])
+    static_domain = Select2Field(None, label=_l("Static domain:"), validators=[validators.Optional()], description=_l("A static domain, that will be added to all the lines"))
     static_login = wtforms.StringField(_l("Static login:"), description=_l("The login that will match all the lines"))
     static_password_hash = wtforms.StringField(_l("Static password hash:"), validators=[validators.Optional()], description=_l("The password that will match all the lines"))
     static_hash_type = Select2Field(models.HashType, label=_l("Static hash type:"), description=_l("An hash type, that will be added to all the lines"), validators=[validators.Optional()])
@@ -238,8 +245,6 @@ class CredentialMultipleAddForm(FlaskForm):
                     current_elem[key] = self.static_password.data.strip()
                 elif key == 'is_admin' and self.static_is_admin.data:
                     current_elem['is_admin'] = True
-                elif key == 'domain' and self.static_domain.data:
-                    current_elem['domain'] = self.static_domain.data.strip()
                 else: # It's normal -i.e. not static data. trying to get it from sources
                     try:
                         line_data = line[value]
@@ -275,7 +280,8 @@ class CredentialMultipleAddForm(FlaskForm):
             if self.static_is_admin.data:
                 current_elem['is_admin'] = True
             if self.static_domain.data:
-                current_elem['domain'] = self.static_domain.data.strip()
+                current_elem['domain'] = self.static_domain.data
+                current_elem['static_domain'] = True
             if self.static_hash_type.data:
                 current_elem['hash_type'] = self.static_hash_type.data
             if self.static_check_wordlist.data:

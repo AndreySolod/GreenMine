@@ -300,6 +300,14 @@
                 filterControl: 'input'
             },
             {
+                field: "domain",
+                title: '{{ models.Host.domain.info["label"] }}',
+                sortable: true,
+                align: 'center',
+                filterControl: 'select',
+                filterData: 'json:{{ filters["Domain"]|escapejs }}'
+            },
+            {
                 field: 'title',
                 title: '{{ models.Host.title.info["label"] }}',
                 sortable: true,

@@ -24,7 +24,7 @@ def host_to_network(network_id):
         abort(404)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-                                                     'column_index': ['id', 'title', 'ip_address', "labels.title-input", 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
+                                                     'column_index': ['id', 'domain', 'title', 'ip_address', "labels.title-input", 'operation_system_family', 'operation_system_gen', 'device_type', 'device_vendor'],
                                                      'base_select': lambda x: x.where(models.Host.from_network_id == network_id),
                                                      "convert_funcs": {"labels.title-input": lambda host: "".join(map(lambda t: f'<i class="{t.icon_class}" style="color: {t.icon_color}"></i>', host.labels))}}
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request hosts from network #{network_id}")

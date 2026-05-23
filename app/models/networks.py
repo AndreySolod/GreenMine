@@ -658,3 +658,7 @@ class Domain(HasComment, db.Model, HasHistory):
         project_permission_actions = {'index': _l("Show object list"), 'create': _l("Create new object"), 'show': _l("Show object card"),
                                       "update": _l("Edit and update object"), 'delete': _l("Delete object"), 'add_comment': _l("Add comment to object"),
                                       "show_comments": _l("Show comment list of object"), 'show_history': _l("Show object history")}
+    
+    @validates("title")
+    def validates_title(self, key, title):
+        return title.upper()

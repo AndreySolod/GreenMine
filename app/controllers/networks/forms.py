@@ -79,10 +79,13 @@ class HostForm(FlaskForm):
         self.device_model_id.choices = [('0', '')] + db.session.execute(sa.select(models.DeviceModel.id, models.DeviceModel.title)).all()
         self.status_id.choices =[("0", "---")] + db.session.execute(sa.select(models.HostStatus.id, models.HostStatus.title)).all()
         self.labels.choices = [(i.id, i) for i in db.session.scalars(sa.select(models.HostLabel)).all()]
+        self.domain_id.choices = [(str(i.id), i.title) for i in db.session.scalars(sa.select(models.Domain).where(models.Domain.project_id == project_id))]
+        self.domain_id.locale = g.locale
     title = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.title.info["label"]),
                                 validators=[validators.Length(min=0, max=models.Host.title.type.length, message=_l('This field must not exceed %(length)s characters in length', length=models.Host.title.type.length)),
                                             validators.Optional()])
     description = WysiwygField(_l("%(field_name)s:", field_name=models.Host.description.info["label"]), validators=[validators.Optional()])
+    domain_id = Select2Field(None, label=_l("%(field_name)s:", field_name=models.Host.domain_id.info["label"]), validators=[validators.Optional()])
     from_network_id = wtforms.SelectField(_l("%(field_name)s:", field_name=models.Host.from_network_id.info["label"]), validators=[validators.DataRequired()])
     ip_address = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.ip_address.info["label"]), validators=[validators.DataRequired()], render_kw={"pattern": r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"})
     mac = wtforms.StringField(_l("%(field_name)s:", field_name=models.Host.mac.info["label"]), validators=[validators.Optional()])

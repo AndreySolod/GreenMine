@@ -32,7 +32,8 @@ def network_index():
     device_vendors = {i: t for i, t in db.session.execute(sa.select(models.DeviceVendor.id, models.DeviceVendor.title))}
     filters = {"Network": json.dumps(networks), "OperationSystemFamily": json.dumps(operation_systems),
                "ServiceTransportLevelProtocol": json.dumps(transport_level_protocols), 'ServicePortState': json.dumps(port_states),
-               'DeviceType': json.dumps(device_types), 'DeviceVendor': json.dumps(device_vendors)}
+               'DeviceType': json.dumps(device_types), 'DeviceVendor': json.dumps(device_vendors),
+               'Domain': json.dumps({i: t for i, t in db.session.execute(sa.select(models.Domain.id, models.Domain.title).where(models.Domain.project_id==project_id))})}
     ctx = get_default_environment(models.Network(project=project), 'index')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('ckeditor')
@@ -70,7 +71,7 @@ def host_by_network_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project=project)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-            'column_index': ['id', 'title', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input',
+            'column_index': ['id', "domain", 'title', 'created_at', 'created_by.title-input', 'updated_at', 'updated_by.title-input',
                              'description', 'ip_address', 'mac', 'labels.title-input', 'operation_system_family', 'operation_system_gen',
                              'device_type', 'device_vendor'],
             'base_select': lambda x: x.where(models.Host.from_network_id == network_id),
@@ -119,7 +120,7 @@ def host_index_data():
         abort(400)
     project_role_can_make_action_or_abort(current_user, models.Host(), 'index', project_id=project_id)
     additional_params: BootstrapTableSearchParams = {'obj': models.Host,
-            'column_index': ['id', 'from_network', 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'created_at', 'created_by.title-input',
+            'column_index': ['id', 'from_network', "domain", 'dnsnames.title-input', 'interfaces.ip_address-input', 'title', 'created_at', 'created_by.title-input',
                              'updated_at', 'updated_by.title-input', 'status', 'status_reason',
                              'technical', 'description', 'ip_address', 'mac', 'mac_info.title-input', "labels.title-input", 'operation_system_family',
                              'operation_system_gen', 'device_type', 'device_vendor', 'device_model.title-input'],
@@ -167,7 +168,8 @@ def host_index():
     host_statuses = {i: t for i, t in db.session.execute(sa.select(models.HostStatus.id, models.HostStatus.title))}
     filters = {"Network": json.dumps(networks), "OperationSystemFamily": json.dumps(operation_systems),
                "ServiceTransportLevelProtocol": json.dumps(transport_level_protocols), 'ServicePortState': json.dumps(port_states),
-               "DeviceType": json.dumps(device_types), "DeviceVendor": json.dumps(device_vendors), "HostStatus": json.dumps(host_statuses)}
+               "DeviceType": json.dumps(device_types), "DeviceVendor": json.dumps(device_vendors), "HostStatus": json.dumps(host_statuses),
+               'Domain': json.dumps({i: t for i, t in db.session.execute(sa.select(models.Domain.id, models.Domain.title).where(models.Domain.project_id==project_id))})}
     ctx = get_default_environment(models.Host(), 'index', proj=project)
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
@@ -320,7 +322,8 @@ def network_show(network_id):
     project_role_can_make_action_or_abort(current_user, network, 'show')
     operation_systems = {i: t for i, t in db.session.execute(sa.select(models.OperationSystemFamily.id, models.OperationSystemFamily.title))}
     device_types = {i: t for i, t in db.session.execute(sa.select(models.DeviceType.id, models.DeviceType.title))}
-    filters = {'OperationSystemFamily': json.dumps(operation_systems), 'DeviceType': json.dumps(device_types)}
+    filters = {'OperationSystemFamily': json.dumps(operation_systems), 'DeviceType': json.dumps(device_types),
+               "Domain": json.dumps({i: t for i, t in db.session.execute(sa.select(models.Domain.id, models.Domain.title).where(models.Domain.project_id == network.project_id))})}
     ctx = get_default_environment(network, 'show')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('ckeditor')

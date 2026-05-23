@@ -371,43 +371,87 @@ class Select2Widget:
         self.multiple = multiple
     
     def __call__(self, field, locale: str='EN', callback: Optional[str]=None, dropdownParent: Optional[str]=None, **kwargs) -> Markup:
-        if field.data:
-            try:
-                if not self.multiple:
-                    field_val = getattr(db.session.scalars(sa.select(field.object_class).where(field.object_class.id==int(field.data))).one(), field.attr_title)
-                    field_data = f'<option value="{field.data}" selected="selected">{field_val}</option>'
-                else:
+        use_static = (field.choices and callback is None and field.callback is None and field.object_class is None)
+        
+        # ---- 1. Генерация HTML-опций (<option>) ----
+        if use_static:
+            options_html = []
+            has_selected = False
+
+            for value, label, selected, _ in field.iter_choices():
+                if selected:
+                    has_selected = True
+                selected_attr = ' selected="selected"' if selected else ''
+                options_html.append(f'<option value="{value}"{selected_attr}>{label}</option>')
+
+            # Если нет выбранного значения и поле НЕ множественное – добавляем пустой option, выбранный по умолчанию
+            if not has_selected and not self.multiple:
+                options_html.insert(0, '<option value="" selected="selected"></option>')
+            field_data = '\n'.join(options_html)
+        else:
+            # Динамический режим: только выбранное значение (остальное подгрузит AJAX)
+            if field.data:
+                try:
+                    if not self.multiple:
+                        obj = db.session.scalar(
+                            sa.select(field.object_class)
+                              .where(field.object_class.id == int(field.data))
+                        )
+                        if obj:
+                            field_val = getattr(obj, field.attr_title)
+                            field_data = f'<option value="{field.data}" selected="selected">{field_val}</option>'
+                        else:
+                            field_data = ''
+                    else:
+                        options = []
+                        for e in db.session.scalars(
+                            sa.select(field.object_class)
+                              .where(field.object_class.id.in_([int(k) for k in field.data]))
+                        ):
+                            options.append(f'<option value="{e.id}" selected="selected">{getattr(e, field.attr_title)}</option>')
+                        field_data = '\n'.join(options)
+                except (MultipleResultsFound, NoResultFound, ValueError, TypeError):
                     field_data = ''
-                    for e in db.session.scalars(sa.select(field.object_class).where(field.object_class.id.in_([int(k) for k in field.data]))):
-                        field_data += f'<option value="{e.id}" selected="selected">{getattr(e, field.attr_title)}</option>\n'
-            except (MultipleResultsFound, NoResultFound, ValueError, TypeError):
+            else:
                 field_data = ''
-        else:
-            field_data = ''
-        if callback is None:
-            if field.object_class is None:
-                raise ValueError("Object class of Select2Field cannot being None when callback is None")
-            callback = url_for('generic.enumeration_object_list', object_class=field.object_class.__name__)
-        if 'class' in kwargs:
-            additional_classes = " " + kwargs['class']
-        else:
-            additional_classes = ''
+
+        # ---- 2. Построение <select> ----
+        additional_classes = " " + kwargs.get('class', '')
         if not self.multiple:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}">{field_data}</select>'
         else:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
-        jquery_script = '$(document).ready(function() { $("#' + field.id + '").select2({ language: "' + locale + '", placeholder: "' + _l("Select an option") + '", '
+
+        # ---- 3. Настройка Select2 через JS ----
+        jquery_script = f'$(document).ready(function() {{ $("#{field.id}").select2({{ language: "{locale}", placeholder: "{_l('Select an option')}", '
+
         if self.multiple:
-            jquery_script += '\ncloseOnSelect: false, '
-        if callback is not None:
-            jquery_script += "\nallowClear: true,"
-        if dropdownParent is not None:
-            jquery_script += f'\ndropdownParent: $("#{dropdownParent}"),'
-        jquery_script += '''ajax: {
-            url: "''' + callback + '''",'''
-        jquery_script += '''
-        dataType: 'json',
-        } })})'''
+            jquery_script += 'closeOnSelect: false, '
+
+        if use_static:
+            # Статический режим: нет AJAX, но allowClear полезен
+            jquery_script += 'allowClear: true'
+        else:
+            # Динамический режим: настраиваем AJAX
+            # Определяем итоговый callback
+            if callback is None:
+                if field.callback is not None:
+                    callback = field.callback
+                elif field.object_class is not None:
+                    callback = url_for('generic.enumeration_object_list', object_class=field.object_class.__name__)
+                else:
+                    raise ValueError("Select2Field requires either callback, object_class, or static choices")
+
+            if dropdownParent is not None:
+                jquery_script += f'dropdownParent: $("#{dropdownParent}"), '
+
+            jquery_script += f'''ajax: {{
+                url: "{callback}",
+                dataType: 'json',
+            }}, allowClear: true'''
+
+        jquery_script += ' }) })'
+
         field.script_tag = jquery_script
         side_libraries.require_script(jquery_script)
         return Markup(select_field)
@@ -425,6 +469,10 @@ class Select2Field(SelectField):
 
     def pre_validate(self, form):
         if not self.validate_choice:
+            return
+        
+        if self.choices:
+            super().pre_validate(form)
             return
 
         try:
