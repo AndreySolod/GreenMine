@@ -428,7 +428,19 @@
                     }
                     else if(key === 'delete') {
                         if(confirm("{{ _('Are you sure you want to delete this network?') }}")) {
-                            window.open("{{ url_for('networks.network_delete', network_id='__network_id') }}".replace('__network_id', options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id), '_blank').focus();
+                            let network_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                            fetch('{{ url_for("networks.network_delete", network_id="__network_id") }}'.replace("__network_id", network_id), {
+                                method: "POST",
+                                headers: { 'X-CSRFToken': "{{ csrf_token() }}" }
+                            }).then(response => { if (response.ok) { 
+                                options.$trigger.parent().parent().bootstrapTable('remove', {field: 'id', values: [network_id]});
+                                $.notify("{{ _('Network #%(network_id)s has been successfully deleted', network_id='__network_id') }}".replace('__network_id', network_id), "success", {
+                                    clickToHide: true,
+                                    autoHide: true,
+                                    autoHideDelay: 5000,
+                                    globalPosition: 'top right'
+                                });
+                            } });
                         }
                     }
                     else if(key === 'copy_ip') {

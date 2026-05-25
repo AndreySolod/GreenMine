@@ -31,7 +31,6 @@ def set_credential_data(cred: models.Credential, element: Dict[str, str], projec
         else:
             domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project_id, models.Domain.title == element['domain'].upper()))).first()
             cred.domain = domain
-        cred.domain = sanitizer.escape(element['domain'])
     if 'password_hash' in element:
         cred.password_hash = sanitizer.escape(element['password_hash'])
     if 'description' in element:
@@ -59,9 +58,14 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
     for e in processed_data:
         e.setdefault('is_admin', False)
         if 'domain' in e:
-            domain_condition = models.Credential.domain == e['domain']
+            if 'static_domain' in e:
+                domain = session.scalars(sa.select(models.Domain).where(models.Domain.id == int(e['domain']))).first()
+            else:
+                domain  = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.title == e['domain'].upper(),
+                                                                                models.Domain.project_id == project_id))).first()
+            domain_condition = models.Credential.domain_id == domain.id
         else:
-            domain_condition = models.Credential.domain.in_([None, ""])
+            domain_condition = models.Credential.domain_id.in_([None, 0])
         if all([i in e for i in ("login", "password")]):
             creds =  session.scalars(sa.select(models.Credential).where(sa.and_(domain_condition,
                                                                                 models.Credential.login == e['login'],
@@ -109,14 +113,14 @@ def process_credentials_multiple_import_data(project_id: int, processed_data: Li
         # Now check - if this credential is exist
         creds = []
         if all([i in e for i in ("domain", "login", "password", 'is_admin')]):
-            creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+            creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(domain_condition,
                                                                                     models.Credential.login == e['login'],
                                                                                     models.Credential.password == e['password'],
                                                                                     models.Credential.is_admin == e['is_admin'],
                                                                                     models.Credential.project_id == project_id))).all())
         if all([i in e for i in ("domain", "login", "password_hash", "hash_type", "is_admin")]):
             hash_type_id = session.scalars(sa.select(models.HashType.id).where(models.HashType.id == int(e['hash_type']))).one()
-            creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(models.Credential.domain == e['domain'],
+            creds.extend(session.scalars(sa.select(models.Credential).where(sa.and_(domain_condition,
                                                                                     models.Credential.login == e['login'],
                                                                                     models.Credential.password_hash == e['password_hash'].strip().lower(),
                                                                                     models.Credential.hash_type_id == hash_type_id,

@@ -371,7 +371,7 @@ class Select2Widget:
         self.multiple = multiple
     
     def __call__(self, field, locale: str='EN', callback: Optional[str]=None, dropdownParent: Optional[str]=None, **kwargs) -> Markup:
-        use_static = (field.choices and callback is None and field.callback is None and field.object_class is None)
+        use_static = (field.choices is not None and callback is None and field.callback is None and field.object_class is None)
         
         # ---- 1. Генерация HTML-опций (<option>) ----
         if use_static:

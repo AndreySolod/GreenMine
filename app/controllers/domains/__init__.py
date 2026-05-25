@@ -54,7 +54,7 @@ def environment(obj, action, **kwargs) -> dict:
             acts.append(act1)
         current_object = CurrentObjectInfo(_l("All domains"), obj.Meta.icon, subtitle=obj.project.fulltitle, actions=acts)
     elif action == 'show':
-        title = _l("Domain #%(task_id)s", task_id=obj.id)
+        title = _l("Domain #%(domain_id)s", domain_id=obj.id)
         acts = []
         if project_role_can_make_action(current_user, obj, 'update'):
             act1 = CurrentObjectAction(_l("Edit"), "fa-solid fa-square-pen", url_for('domains.domain_edit', domain_id=obj.id))

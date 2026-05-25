@@ -84,6 +84,17 @@ def get_issue_by_template(template_slug: str, project: models.Project, created_b
     return issue
 
 
+def get_dns_record(dnsname: str, project: models.Project, session: Session) -> models.HostDnsName | None:
+    for i in session.new:
+        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.project_id ==project.id:
+            return i
+    for i in session.dirty:
+        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.project_id == project.id:
+            return i
+    dns = session.scalars(sa.select(models.HostDnsName).join(models.HostDnsName.to_host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project.id,
+                                                                                                                                      models.HostDnsName.title.ilike(dnsname)))).first()
+    return dns
+
 
 class NmapScriptNbnsInterfaces(NmapScriptProcessor):
     """
@@ -416,7 +427,7 @@ class NmapScriptHTTPOpenProxy(NmapScriptProcessor):
     def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Host, current_user_id: int, locale: str='en'):
         issue = get_issue_by_template('http_open_proxy', project, current_user_id, session)
         if "Potentially OPEN proxy" in script_element.get("output"):
-            issue.hosts.add(service)
+            issue.services.add(service)
 
 
 class NmapScriptHttpTitle(NmapScriptProcessor):
@@ -428,7 +439,10 @@ class NmapScriptHttpTitle(NmapScriptProcessor):
             service["additional_attributes"]["http"] = {}
         for elem in script_element.findall("elem"):
             if elem.get("key") == "title":
-                service.additional_attributes["http"]["title"] = elem.text
+                try:
+                    service.additional_attributes["http"]["title"] = elem.text.encode('latin-1').decode('cp1251')
+                except Exception as e:
+                    service.additional_attributes["http"]["title"] = elem.text
                 return ""
 
 
@@ -440,3 +454,52 @@ class NmapScriptHttpServerHeader(NmapScriptProcessor):
         elif "http" not in service.additional_attributes:
             service["additional_attributes"]["http"] = {}
         service.additional_attributes["http"]["server_header"] = script_element.get("output")
+
+
+class NmapScriptSmbOsDiscovery(NmapScriptProcessor):
+    script_id = "smb-os-discovery"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Host, current_user_id: int, locale: str="en"):
+        for elem in script_element.findall("elem"):
+            if elem.get('key') == 'os':
+                try:
+                    os, version = elem.text.split(' ', 2)
+                except ValueError:
+                    continue
+                operation_system = session.scalars(sa.select(models.OperationSystemFamily).where(models.OperationSystemFamily.title.ilike(os))).first()
+                if operation_system:
+                    service.operation_system_family = operation_system
+                    service.operation_system_gen = version
+            elif elem.get('key') == 'server':
+                service.title = elem.text.strip().replace('\\x00', '')
+            elif elem.get('key') == 'fqdn':
+                dns = get_dns_record(elem.text, project=project, session=session)
+                if dns is None:
+                    dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service)
+                    session.add(dns)
+            elif elem.get('key') == 'workgroup' or elem.get('key') == 'domain_dns':
+                text = elem.text or ""
+                domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
+                                                                                models.Domain.title.ilike(text.replace("\\x00", "").upper())))).first()
+                if domain and service.domain is None:
+                    service.domain = domain
+        return ""
+    
+
+class NmapScriptRdpNtlmInfo(NmapScriptProcessor):
+    script_id = 'rdp-ntlm-info'
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        for elem in script_element.findall('elem'):
+            if elem.get('key') == 'NetBIOS_Computer_Name':
+                service.host.title = elem.text.strip()
+            elif elem.get('key') == 'DNS_Computer_Name':
+                dns = get_dns_record(elem.text, project=project, session=session)
+                if dns is None:
+                    dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
+                    session.add(dns)
+            elif elem.get('key') == 'NetBIOS_Domain_Name' or elem.get('key') == 'DNS_Domain_Name':
+                text = elem.text or ""
+                domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
+                                                                                models.Domain.title.ilike(text.strip().replace('\\x00', '').upper())))).first()
+                if domain and service.host.domain is None:
+                    service.host.domain = domain
+        return ""

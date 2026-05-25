@@ -271,7 +271,7 @@ class Host(HasComment, db.Model, HasHistory):
     updated_by_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey('user.id', ondelete='SET NULL'), info={'label': _l("Updated by")})
     updated_by: so.Mapped['User'] = so.relationship(lazy='select', foreign_keys=[updated_by_id], info={'label': _l("Updated by")}) # type: ignore
     ip_address: so.Mapped[ipaddress.IPv4Address] = so.mapped_column(IPAddress, info={"label": _l("IP address")})
-    dnsnames: so.Mapped[List[HostDnsName]] = so.relationship(lazy='select', back_populates='to_host', cascade="all,delete-orphan", info={'label': _l("DNS-names")})
+    dnsnames: so.Mapped[Set[HostDnsName]] = so.relationship(lazy='select', back_populates='to_host', cascade="all,delete-orphan", info={'label': _l("DNS-names")})
     mac: so.Mapped[Optional[str]] = so.mapped_column(sa.String(17), info={'label': _l("MAC-address")})
     mac_info_id: so.Mapped[Optional[int]] = so.mapped_column(sa.ForeignKey(MacAddressInfo.id, ondelete='SET NULL'), index=True, info={'label': _l("MAC address vendor")})
     mac_info: so.Mapped[MacAddressInfo] = so.relationship(lazy='select', foreign_keys='Host.mac_info_id', info={'label': _l("MAC address vendor")})
