@@ -436,7 +436,7 @@ class NmapScriptHttpTitle(NmapScriptProcessor):
         if service.additional_attributes is None:
             service.additional_attributes = {"http": {}}
         elif "http" not in service.additional_attributes:
-            service["additional_attributes"]["http"] = {}
+            service.additional_attributes["http"] = {}
         for elem in script_element.findall("elem"):
             if elem.get("key") == "title":
                 try:
