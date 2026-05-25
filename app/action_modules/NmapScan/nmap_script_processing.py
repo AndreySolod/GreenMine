@@ -452,7 +452,7 @@ class NmapScriptHttpServerHeader(NmapScriptProcessor):
         if service.additional_attributes is None:
             service.additional_attributes = {"http": {}}
         elif "http" not in service.additional_attributes:
-            service["additional_attributes"]["http"] = {}
+            service.additional_attributes["http"] = {}
         service.additional_attributes["http"]["server_header"] = script_element.get("output")
 
 
