@@ -373,23 +373,21 @@ class Select2Widget:
     def __call__(self, field, locale: str='EN', callback: Optional[str]=None, dropdownParent: Optional[str]=None, **kwargs) -> Markup:
         use_static = (field.choices is not None and callback is None and field.callback is None and field.object_class is None)
         
-        # ---- 1. Генерация HTML-опций (<option>) ----
         if use_static:
             options_html = []
             has_selected = False
 
             for value, label, selected, _ in field.iter_choices():
+                selected = selected or value == field.data
                 if selected:
                     has_selected = True
                 selected_attr = ' selected="selected"' if selected else ''
                 options_html.append(f'<option value="{value}"{selected_attr}>{label}</option>')
 
-            # Если нет выбранного значения и поле НЕ множественное – добавляем пустой option, выбранный по умолчанию
             if not has_selected and not self.multiple:
                 options_html.insert(0, '<option value="" selected="selected"></option>')
             field_data = '\n'.join(options_html)
         else:
-            # Динамический режим: только выбранное значение (остальное подгрузит AJAX)
             if field.data:
                 try:
                     if not self.multiple:
@@ -415,25 +413,20 @@ class Select2Widget:
             else:
                 field_data = ''
 
-        # ---- 2. Построение <select> ----
         additional_classes = " " + kwargs.get('class', '')
         if not self.multiple:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}">{field_data}</select>'
         else:
             select_field = f'<select class="select2-standard-widget{additional_classes}" id="{field.id}" name="{field.name}" multiple>{field_data}</select>'
 
-        # ---- 3. Настройка Select2 через JS ----
         jquery_script = f'$(document).ready(function() {{ $("#{field.id}").select2({{ language: "{locale}", placeholder: "{_l('Select an option')}", '
 
         if self.multiple:
             jquery_script += 'closeOnSelect: false, '
 
         if use_static:
-            # Статический режим: нет AJAX, но allowClear полезен
             jquery_script += 'allowClear: true'
         else:
-            # Динамический режим: настраиваем AJAX
-            # Определяем итоговый callback
             if callback is None:
                 if field.callback is not None:
                     callback = field.callback
