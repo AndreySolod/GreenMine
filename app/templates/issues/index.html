@@ -174,11 +174,48 @@
                             });
                         };
                     }
+                    else if (key.startsWith('to_status_')) {
+                        let status_id = parseInt(key.substr(10));
+                        let issue_id = options.$trigger.parent().parent().bootstrapTable('getData')[options.$trigger.data('index')].id;
+                        let rowIndex = options.$trigger.data('index');
+                        let $table = options.$trigger.parent().parent();
+                        fetch('{{ url_for("issues.change_issue_status", issue_id="__issue_id") }}'.replace("__issue_id", issue_id), {
+                            method: "POST",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ "status_id": status_id })
+                        }).then(response => { if (response.ok) { return response.json() } else {alert("{{ _('Something went wrong. Try to refresh the page') }}")} }).then(response => {
+                            if (response.success === true) {
+                                let rowData = $table.bootstrapTable('getData')[rowIndex];
+                                let updatedRow = {
+                                    ...rowData,
+                                    status_background_color: response['background-color'],
+                                    status_text_color: response['color'],
+                                    'status.id-select': response['status_title']
+                                };
+                                $table.bootstrapTable('updateRow', {
+                                    index: rowIndex,
+                                    row: updatedRow
+                                });
+                            }
+                        });
+                    }
                 },
                 items: {
                     "open": { name: '{{ _("Open in new tab") }}', icon: "filescroll" },
                     "increase_order_number": { name: '{{ _("Increase order number") }}', icon: "increase" },
                     "decrease_order_number": { name: '{{ _("Decrease order number") }}', icon: "decrease" },
+                    "to_status": {
+                        name: '{{ _("Change the status") }}',
+                        icon: "thermometer",
+                        items: {
+                            // {% for i in issue_statuses %}
+                            "to_status_{{ i.id|safe }}": { name: '{{ i.title|escapejs }}', icon: '' },
+                            //{% endfor %}
+                        },
+                    },
                     "edit": { name: '{{ _("Edit") }}' , icon: "edit"},
                     "delete": { name: '{{ _("Delete") }}' , icon: "delete"}
                 }

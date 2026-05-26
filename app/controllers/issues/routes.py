@@ -23,13 +23,14 @@ def issue_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project=project)
-    issue_statuses = {i: t for i, t in db.session.execute(sa.select(IssueStatus.id, IssueStatus.title))}
+    full_statuses = db.session.scalars(sa.select(IssueStatus)).all()
+    issue_statuses = {i.id: i.title for i in full_statuses}
     issue_vectors = {i: t for i, t in db.session.execute(sa.select(IssueVector.id, IssueVector.title))}
     filters = {'IssueStatus': json.dumps(issue_statuses), "IssueVector": json.dumps(issue_vectors)}
     ctx = get_default_environment(Issue(project=project), 'index')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
-    context = {'project': project, 'filters': filters, 'Issue': Issue}
+    context = {'project': project, 'filters': filters, 'Issue': Issue, 'issue_statuses': full_statuses}
     return render_template('issues/index.html', **context, **ctx)
 
 
@@ -59,13 +60,14 @@ def exist_issue_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project=project)
-    issue_statuses = {i: t for i, t in db.session.execute(sa.select(IssueStatus.id, IssueStatus.title))}
+    full_statuses = db.session.scalars(sa.select(IssueStatus)).all()
+    issue_statuses = {i.id: i.title for i in full_statuses}
     issue_vectors = {i: t for i, t in db.session.execute(sa.select(IssueVector.id, IssueVector.title))}
     filters = {'IssueStatus': json.dumps(issue_statuses), 'IssueVector': json.dumps(issue_vectors)}
     ctx = get_default_environment(Issue(project=project), 'exist-index')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
-    context = {'project': project, 'filters': filters, 'Issue': Issue}
+    context = {'project': project, 'filters': filters, 'Issue': Issue, 'issue_statuses': full_statuses}
     return render_template('issues/exist-index.html', **context, **ctx)
 
 
@@ -96,13 +98,14 @@ def positive_issue_index():
         abort(400)
     project = db.get_or_404(Project, project_id)
     project_role_can_make_action_or_abort(current_user, Issue(), 'index', project=project)
-    issue_statuses = {i: t for i, t in db.session.execute(sa.select(IssueStatus.id, IssueStatus.title))}
+    full_statuses = db.session.scalars(sa.select(IssueStatus)).all()
+    issue_statuses = {i.id: i.title for i in full_statuses}
     issue_vectors = {i: t for i, t in db.session.execute(sa.select(IssueVector.id, IssueVector.title))}
     filters = {'IssueStatus': json.dumps(issue_statuses), 'IssueVector': json.dumps(issue_vectors)}
     ctx = get_default_environment(Issue(project=project), 'positive-index')
     side_libraries.library_required('bootstrap_table')
     side_libraries.library_required('contextmenu')
-    context = {'project': project, 'filters': filters, 'Issue': Issue}
+    context = {'project': project, 'filters': filters, 'Issue': Issue, 'issue_statuses': full_statuses}
     return render_template('issues/positive-index.html', **context, **ctx)
 
 

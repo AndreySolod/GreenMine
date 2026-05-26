@@ -649,7 +649,7 @@ class Domain(HasComment, db.Model, HasHistory):
     hosts: so.Mapped[Set[Host]] = so.relationship(back_populates="domain", foreign_keys="[Host.domain_id]", info={'label': _l("Hosts")})
     credentials: so.Mapped[Set["Credential"]] = so.relationship(back_populates="domain", info={'label': _l("Credentials")})
     project_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey('project.id', ondelete='CASCADE'), index=True, info={'label': _l("Project")})
-    project: so.Mapped["Project"] = so.relationship(lazy='select', foreign_keys=[project_id], info={'label': _l("Project")}) # type: ignore
+    project: so.Mapped["Project"] = so.relationship(lazy='select', back_populates='domains', foreign_keys=[project_id], info={'label': _l("Project")}) # type: ignore
 
     class Meta:
         verbose_name = _l('Domain')

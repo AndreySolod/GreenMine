@@ -159,6 +159,10 @@
   content: "\f884";
   font-family: "FontAwesome";
 }
+.context-menu-icon-thermometer:before {
+  content: "\f491";
+  font-family: "FontAwesome";
+}
 
 .context-menu-icon::before {
   position: absolute;
