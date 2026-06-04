@@ -221,10 +221,10 @@ def create_history(session: Session, object_elements: List[Any]) -> None:
                     continue
                 old_val = get_history(obj, attr_name).deleted
                 new_val = get_history(obj, attr_name).added
-                if old_val and new_val:
+                if old_val and new_val and new_val[0]:
                     changes['changes'].append({"action": "modify_paramether", "attrs": {'lazy_name': str(attr_label), "old_value": old_val[0].title, "new_value": new_val[0].title}})
                     changed = True
-                elif old_val:
+                elif old_val and old_val[0]:
                     changes['changes'].append({"action": "delete_paramether", "attrs": {'lazy_name': str(attr_label), 'old_value': old_val[0].title}})
                     changed = True
                 elif new_val and new_val[0]:
