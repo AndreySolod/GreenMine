@@ -1,0 +1,10 @@
+<table class="table table-stripped table-hovered">
+    <tr>
+        <th>{{ _("POP3 Capabilities") }}:</th>
+    </tr>
+    {% if service.additional_attributes and service.additional_attributes.get('pop3') and service.additional_attributes['pop3'].get('capabilities') %}
+    <tr>
+        <td>{{ service.additional_attributes["pop3"]["capabilities"]|suppress_none }}</td>
+    </tr>
+    {% endif %}
+</table>

@@ -271,6 +271,8 @@ class NmapScanner:
                     scanning_host.from_network.can_see_network.add(current_host.from_network)
             # processing ports
             for port in host.iter('port'):
+                if port.get("hostname") not in ["", None] and current_host.title in ["", None]:
+                    current_host.title = port.get("hostname")
                 state = port.find('state').get('state').strip()
                 if ignore_closed_ports and state != 'open':
                     continue
@@ -315,7 +317,7 @@ class NmapScanner:
                         technical = NmapScriptProcessor.process(script, session, project, serv, current_user_id, locale)
                         if serv.technical is None and technical != '':
                             serv.technical = technical
-                        elif serv.technical is not None and technical not in serv.technical:
+                        elif serv.technical is not None and sanitizer.sanitize(technical) not in serv.technical:
                             serv.technical += technical
                 serv.technical = sanitizer.sanitize(serv.technical)
                 session.add(serv)

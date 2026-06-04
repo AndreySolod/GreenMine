@@ -3,11 +3,14 @@ import app.models as models
 import sqlalchemy as sa
 from typing import Optional
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from xml.etree.ElementTree import Element as etreeElement
 from flask_babel import force_locale, lazy_gettext as _l
 from app.helpers.general_helpers import validates_mac
 import ipaddress
 import re
+import logging
+logger = logging.getLogger("Nmap script processing")
 
 class NmapScriptProcessor:
     """
@@ -403,6 +406,7 @@ class NmapScriptSnmpInfo(NmapScriptProcessor):
             service.additional_attributes["snmp"] = {}
         for elem in script_element.findall("elem"):
             service.additional_attributes["snmp"][elem.attrib.get("key")] = elem.text
+        flag_modified(service, "additional_attributes")
         return ''
 
 
@@ -435,14 +439,17 @@ class NmapScriptHttpTitle(NmapScriptProcessor):
     def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
         if service.additional_attributes is None:
             service.additional_attributes = {"http": {}}
-        elif "http" not in service.additional_attributes:
+        if "http" not in service.additional_attributes:
             service.additional_attributes["http"] = {}
         for elem in script_element.findall("elem"):
             if elem.get("key") == "title":
                 try:
-                    service.additional_attributes["http"]["title"] = elem.text.encode('latin-1').decode('cp1251')
-                except Exception as e:
+                    service.additional_attributes["http"]["title"] = elem.text.encode('latin-1').decode('unicode_escape').encode('latin-1').decode()
+                except UnicodeDecodeError as e:
                     service.additional_attributes["http"]["title"] = elem.text
+                except Exception as e:
+                    logging.error(f"Unknown exception when decode http-title: {e}")
+                flag_modified(service, "additional_attributes")
                 return ""
 
 
@@ -451,9 +458,11 @@ class NmapScriptHttpServerHeader(NmapScriptProcessor):
     def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
         if service.additional_attributes is None:
             service.additional_attributes = {"http": {}}
-        elif "http" not in service.additional_attributes:
+        if "http" not in service.additional_attributes:
             service.additional_attributes["http"] = {}
         service.additional_attributes["http"]["server_header"] = script_element.get("output")
+        flag_modified(service, "additional_attributes")
+        return ""
 
 
 class NmapScriptSmbOsDiscovery(NmapScriptProcessor):
@@ -502,4 +511,162 @@ class NmapScriptRdpNtlmInfo(NmapScriptProcessor):
                                                                                 models.Domain.title.ilike(text.strip().replace('\\x00', '').upper())))).first()
                 if domain and service.host.domain is None:
                     service.host.domain = domain
+        return ""
+
+class NmapScriptSSHhostkey(NmapScriptProcessor):
+    script_id = "ssh-hostkey"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes == None:
+            service.additional_attributes = {"ssh": {"hostkeys": []}}
+        if 'ssh' in service.additional_attributes:
+            service.additional_attributes["ssh"]["hostkeys"] = []
+        else:
+            service.additional_attributes["ssh"] = {"hostkeys": []}
+        for table in script_element.findall("table"):
+            hostkey = {}
+            for elem in table:
+                hostkey[elem.get('key')] = elem.text
+            service.additional_attributes["ssh"]["hostkeys"].append(hostkey)
+        flag_modified(service, "additional_attributes")
+        return ""
+
+
+class NmapScriptSMTPCommands(NmapScriptProcessor):
+    script_id = "smtp-commands"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "smtp" not in service.additional_attributes:
+            service.additional_attributes["smtp"] = {}
+        service.additional_attributes["smtp"]["commands"] = script_element.get("output")
+        flag_modified(service, "additional_attributes")
+        return ""
+
+
+class NmapScriptIMAPCapabilities(NmapScriptProcessor):
+    script_id = "imap-capabilities"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "imap" not in service.additional_attributes:
+            service.additional_attributes["imap"] = {}
+        service.additional_attributes["imap"]["capabilities"] = script_element.get("output")
+        flag_modified(service, "additional_attributes")
+        return ""
+
+
+class NmapScriptPOP3Capabilities(NmapScriptProcessor):
+    script_id = "pop3-capabilities"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "pop3" not in service.additional_attributes:
+            service.additional_attributes["pop3"] = {}
+        service.additional_attributes["pop3"]["capabilities"] = script_element.get("output")
+        flag_modified(service, "additional_attributes")
+        return ""
+
+
+class NmapScriptSSLCert(NmapScriptProcessor):
+    script_id = "ssl-cert"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "tls" not in service.additional_attributes:
+            service.additional_attributes["tls"] = {"subject": {}, "issuer": {}, "pubkey": {}, "validity": {}, "pem": None, "date": None, "alpn_protos": []}
+        for table in script_element.findall("table"):
+            if table.get("key") == "subject":
+                for elem in table.findall("elem"):
+                    match elem.get("key"):
+                        case "commonName":
+                            service.additional_attributes["tls"]["subject"]["commonName"] = elem.text
+                        case "countryName":
+                            service.additional_attributes["tls"]["subject"]["countryName"] = elem.text
+                        case "localityName":
+                            service.additional_attributes["tls"]["subject"]["localityName"] = elem.text
+                        case "organizationName":
+                            service.additional_attributes["tls"]["subject"]["organizationName"] = elem.text
+                        case "organizationalUnitName":
+                            service.additional_attributes["tls"]["subject"]["organizationalUnitName"] = elem.text
+                        case "stateOrProvinceName":
+                            service.additional_attributes["tls"]["subject"]["stateOrProvinceName"] = elem.text
+                        case "emailAddress":
+                            service.additional_attributes["tls"]["subject"]["emailAddress"] = elem.text
+            elif table.get("key") == "issuer":
+                for elem in table.findall("elem"):
+                    match elem.get("key"):
+                        case "commonName":
+                            service.additional_attributes["tls"]["issuer"]["commonName"] = elem.text
+                        case "countryName":
+                            service.additional_attributes["tls"]["issuer"]["countryName"] = elem.text
+                        case "localityName":
+                            service.additional_attributes["tls"]["issuer"]["localityName"] = elem.text
+                        case "organizationName":
+                            service.additional_attributes["tls"]["issuer"]["organizationName"] = elem.text
+                        case "organizationalUnitName":
+                            service.additional_attributes["tls"]["issuer"]["organizationalUnitName"] = elem.text
+                        case "stateOrProvinceName":
+                            service.additional_attributes["tls"]["issuer"]["stateOrProvinceName"] = elem.text
+                        case "emailAddress":
+                            service.additional_attributes["tls"]["subject"]["emailAddress"] = elem.text
+            elif table.get('key') == 'pubkey':
+                for elem in table.findall("elem"):
+                    match elem.get("key"):
+                        case "type":
+                            service.additional_attributes["tls"]["pubkey"]["type"] = elem.text
+                        case "bits":
+                            service.additional_attributes["tls"]["pubkey"]["bits"] = elem.text
+                        case "modulus":
+                            service.additional_attributes["tls"]["pubkey"]["modulus"] = elem.text
+            elif table.get("key") == "validity":
+                for elem in table.findall("elem"):
+                    match elem.get("key"):
+                        case "notBefore":
+                            service.additional_attributes["tls"]["validity"]["notBefore"] = elem.text
+                        case "notAfter":
+                            service.additional_attributes["tls"]["validity"]["notAfter"] = elem.text
+            else:
+                is_san_subject = False
+                dns_name = ""
+                for elem in table.findall("elem"):
+                    if elem.get("key") == "name" and "Subject Alternative Name" in elem.text:
+                        is_san_subject = True
+                    elif elem.get("key") == "value" and elem.text.strip().startswith("DNS:"):
+                        dns_name = elem.text[4::].strip()
+                if is_san_subject and "*" not in dns_name:
+                    dns = get_dns_record(dns_name, project=project, session=session)
+                    if dns is None:
+                        dns = models.HostDnsName(title=dns_name, dns_type='A', to_host=service)
+                        session.add(dns)
+        for elem in script_element.findall("elem"):
+            match elem.get("key"):
+                case "pem":
+                    service.additional_attributes["tls"]["pem"] = elem.text
+        flag_modified(service, "additional_attributes")
+        return ""
+
+
+class NmapScriptSSLDate(NmapScriptProcessor):
+    script_id = "ssl-date"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "tls" not in service.additional_attributes:
+            service.additional_attributes["tls"] = {"subject": {}, "issuer": {}, "pubkey": {}, "validity": {}, "pem": None, "date": None, "alpn_protos": []}
+        service.additional_attributes["tls"]["date"] = script_element.get("output")
+        flag_modified(service, "additional_attributes")
+        return ""
+
+class NmapScriptTLSALPN(NmapScriptProcessor):
+    script_id = "tls-alpn"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "tls" not in service.additional_attributes:
+            service.additional_attributes["tls"] = {"subject": {}, "issuer": {}, "pubkey": {}, "validity": {}, "pem": None, "date": None, "alpn_protos": []}
+        if "alpn_protos" not in service.additional_attributes["tls"]:
+            service.additional_attributes["tls"]["alpn_protos"] = []
+        for elem in script_element.findall("elem"):
+            service.additional_attributes["tls"]["alpn_protos"].append(elem.text.strip())
+        flag_modified(service, "additional_attributes")
         return ""

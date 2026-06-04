@@ -11,7 +11,7 @@
         <tr>
             <td>{{ _("Server security types supported") }}:</td>
             {% if service.additional_attributes and service.additional_attributes.get('vnc') %}
-            <td>{{ service.additional_attributes["vnc"].get('security_types_supported') }}</td>
+            <td>{{ service.additional_attributes["vnc"].get('security_types_supported')|suppress_none }}</td>
             {% else %}
             <td>{{ _("Not defined") }}</td>
             {% endif %}

@@ -3,7 +3,7 @@ from app.helpers.general_helpers import validates_port, validates_mac
 from app.helpers.admin_helpers import project_enumerated_object, project_object_with_permissions
 from app.controllers.forms import PickrColorField, FontAwesomeIconField
 from .generic import HasComment, HasHistory
-from .datatypes import NetworkAddress, IPAddress, LimitedLengthString, ID, StringSlug, CreatedAt, UpdatedAt, Archived, JSONType
+from .datatypes import NetworkAddress, IPAddress, LimitedLengthString, ID, StringSlug, CreatedAt, UpdatedAt, Archived
 from .issues import Issue
 from .tasks import ProjectTask
 from .credentials import Credential, DefaultCredential, CredentialByService
@@ -13,6 +13,7 @@ from sqlalchemy import event
 import sqlalchemy.orm as so
 from sqlalchemy.orm import validates
 from sqlalchemy.orm.session import Session as SessionBase
+from sqlalchemy.ext.mutable import MutableDict
 from .issues import IssueHasService
 import ipaddress
 from flask_babel import lazy_gettext as _l, pgettext
@@ -557,7 +558,7 @@ class Service(HasComment, db.Model, HasHistory):
                                                        back_populates="services",
                                                        info={'label': _l("Issues")})
     credentials: so.Mapped[List["Credential"]] = so.relationship(secondary=CredentialByService.__table__, primaryjoin='Service.id==CredentialByService.service_id', secondaryjoin='CredentialByService.credential_id==Credential.id', back_populates='services', lazy='select', info={'label': _l("Credentials")})
-    additional_attributes: so.Mapped[Optional[dict]] = so.mapped_column(JSONType(), default={}, info={'label': _l("Additional service attributes")})
+    additional_attributes: so.Mapped[Optional[dict]] = so.mapped_column(MutableDict.as_mutable(sa.JSON()), default={}, info={'label': _l("Additional service attributes")})
     tasks: so.Mapped[List["ProjectTask"]] = so.relationship(secondary='service_has_task',
                                                             primaryjoin='Service.id==ServiceHasTask.service_id',
                                                             secondaryjoin='ServiceHasTask.task_id==ProjectTask.id',
@@ -602,8 +603,8 @@ class Service(HasComment, db.Model, HasHistory):
         template_path = Path(__file__).parent.parent / "templates" / "services" / "access_protocols_parameter_templates"
         if not os.path.exists(template_path / (self.access_protocol.string_slug + ".html")):
             return sanitizer.markup(pgettext("they", "(Missing)"))
-        with open(template_path / (self.access_protocol.string_slug + ".html"), "r") as f:
-            template = current_app.jinja_env.from_string(f.read(),
+        with open(template_path / (self.access_protocol.string_slug + ".html"), "r") as f, open(template_path / "tls.html", 'r') as f2:
+            template = current_app.jinja_env.from_string(f.read() + f2.read(),
                                                         {"service": self, 'models': importlib.import_module('app.models'),
                                                          'roles': importlib.import_module('app.helpers.roles')})
         return sanitizer.markup(template.render())

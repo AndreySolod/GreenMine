@@ -1,0 +1,23 @@
+<table class="table table-stripped table-hovered">
+    <tbody>
+        <tr>
+            <th colspan="4">{{ _("Fingerprints") }}</th>
+        </tr>
+        <tr>
+            <th>{{ _("Key type") }}</th>
+            <th>{{ _("Bits") }}</th>
+            <th>{{ _("Fingerprint") }}</th>
+            <th>{{ _("Key") }}</th>
+        </tr>
+        {% if service.additional_attributes and service.additional_attributes.get('ssh') and service.additional_attributes['ssh'].get('hostkeys') %}
+        {% for hostkey in service.additional_attributes['ssh']['hostkeys'] %}
+        <tr>
+            <td>{{ hostkey['type']|suppress_none }}</td>
+            <td>{{ hostkey['bits']|suppress_none }}</td>
+            <td>{{ hostkey['fingerprint']|suppress_none }}</td>
+            <td>{{ hostkey['key']|suppress_none }}</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </tbody>
+</table>

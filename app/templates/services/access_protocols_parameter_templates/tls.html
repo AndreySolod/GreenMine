@@ -1,0 +1,131 @@
+{% if service.additional_attributes and service.additional_attributes.get("tls") %}
+<h5>{{ _("TLS Info") }}</h5>
+<table class="table table-borderless">
+    <tr>
+        <td>{{ _("SSL Date") }}:</td>
+        <td class="text-break">{{ service.additional_attributes["tls"]["date"] }}</td>
+    </tr>
+    <tr>
+        <td>{{ _("TLS ALPN Protocols") }}:</td>
+        <td class="text-break">{{ ", ".join(service.additional_attributes["tls"]["alpn_protos"]) }}</td>
+    </tr>
+</table>
+<div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <table class="table table-stripped table-hovered">
+            <tr>
+                <th colspan="2">{{ _("Subject") }}:</th>
+            </tr>
+            {% if service.additional_attributes["tls"].get("subject") %}
+            <tr>
+                <td>{{ _("Country name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("countryName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Locality name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("localityName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("State or Province name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("stateOrProvinceName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Organization name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("organizationName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Organization unit name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("organizationalUnitName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Common name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("commonName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("E-Mail address") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["subject"].get("emailAddress")|suppress_none }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <table class="table table-stripped table-hovered">
+            <tr>
+                <th colspan="2">{{ _("Issuer") }}:</th>
+            </tr>
+            {% if service.additional_attributes["tls"].get("issuer") %}
+            <tr>
+                <td>{{ _("Country name") }}:</td>
+                <td>{{ service.additional_attributes["tls"]["issuer"].get("countryName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Locality name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["issuer"].get("localityName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("State or Province name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["issuer"].get("stateOrProvinceName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Organization name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["issuer"].get("organizationName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Organization unit name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["issuer"].get("organizationalUnitName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Common name") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["issuer"].get("commonName")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("E-Mail address") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["issuer"].get("emailAddress")|suppress_none }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <table class="table table-stripped table-hovered">
+            <tr>
+                <th colspan="2">{{ _("Public key") }}:</th>
+            </tr>
+            {% if service.additional_attributes["tls"].get("pubkey")|suppress_none %}
+            <tr>
+                <td>{{ _("Type") }}:</td>
+                <td>{{ service.additional_attributes["tls"]["pubkey"].get("type")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Bits") }}:</td>
+                <td>{{ service.additional_attributes["tls"]["pubkey"].get("bits")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Modulus") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["pubkey"].get("modulus")|suppress_none }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="col-sm-12 col-md-12 col-lg-6">
+        <table class="table table-stripped table-hovered">
+            <tr>
+                <th colspan="2">{{ _("Validity") }}</th>
+            </tr>
+            {% if service.additional_attributes["tls"].get("validity") %}
+            <tr>
+                <td>{{ _("Not before") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["validity"].get("notBefore")|suppress_none }}</td>
+            </tr>
+            <tr>
+                <td>{{ _("Not after") }}:</td>
+                <td class="text-break">{{ service.additional_attributes["tls"]["validity"].get("notAfter")|suppress_none }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+</div>
+
+
+
+
+{% endif %}

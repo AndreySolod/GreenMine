@@ -1,0 +1,10 @@
+<table class="table table-stripped table-hovered">
+    <tr>
+        <th>{{ _("SMTP Commands") }}:</th>
+    </tr>
+    {% if service.additional_attributes and service.additional_attributes.get('smtp') and service.additional_attributes['smtp'].get('commands') %}
+    <tr>
+        <td>{{ service.additional_attributes["smtp"]["commands"]|suppress_none }}</td>
+    </tr>
+    {% endif %}
+</table>
