@@ -31,12 +31,15 @@ class ObjectFormMeta(FormMeta):
                 valids.append(validators.length(max=col.type.length, message=_l('This field must not exceed %(length)s characters in length', length=col.type.length)))
             if col.unique:
                 validate_name = 'validate_' + col.name
-                def validate_func(form, field):
-                    another_object = db.session.scalars(sa.select(obj).where(getattr(obj, col.name) == field.data.strip())).first()
-                    if hasattr(form, 'current_object_value') and form.current_object_value is not None and getattr(form.current_object_value, col.name) == field.data:
-                        return None
-                    if another_object is not None:
-                        raise validators.ValidationError(_l("Object with specified field value already exist in database"))
+                def create_validate_func(col_name: str):
+                    def validate_func(form, field):
+                        another_object = db.session.scalars(sa.select(obj).where(getattr(obj, col_name) == field.data.strip())).first()
+                        if hasattr(form, 'current_object_value') and form.current_object_value is not None and getattr(form.current_object_value, col_name) == field.data:
+                            return None
+                        if another_object is not None:
+                            raise validators.ValidationError(_l("Object with specified field value already exist in database"))
+                    return validate_func
+                validate_func = create_validate_func(col.name)
                 attrs.update({validate_name: validate_func})
             # Обработка полей
             if 'form' in col.info:
