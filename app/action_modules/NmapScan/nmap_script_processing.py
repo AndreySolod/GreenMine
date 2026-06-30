@@ -89,10 +89,10 @@ def get_issue_by_template(template_slug: str, project: models.Project, created_b
 
 def get_dns_record(dnsname: str, project: models.Project, session: Session) -> models.HostDnsName | None:
     for i in session.new:
-        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.project_id ==project.id:
+        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id ==project.id:
             return i
     for i in session.dirty:
-        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.project_id == project.id:
+        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id == project.id:
             return i
     dns = session.scalars(sa.select(models.HostDnsName).join(models.HostDnsName.to_host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project.id,
                                                                                                                                       models.HostDnsName.title.ilike(dnsname)))).first()
@@ -147,6 +147,9 @@ class NmapScriptNbnsInterfaces(NmapScriptProcessor):
             for host in [i for i in session.new if isinstance(i, models.Host)]:
                 if host.ip_address == ip_address:
                     return host
+            for i in session.dirty:
+                if isinstance(i, models.Host) and i.ip_address == host_ip:
+                    return i
             # check if network with this host is exist:
             for n in session.scalars(sa.select(models.Network).where(models.Network.project_id == project.id)).all():
                 if host_ip in n.ip_address:

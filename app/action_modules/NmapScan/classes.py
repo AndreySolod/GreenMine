@@ -188,6 +188,12 @@ class NmapScanner:
             host = session.scalars(sa.select(models.Host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project_id, models.Host.ip_address == host_ip))).first()
             if host is not None:
                 return host
+            for i in session.new:
+                if isinstance(i, models.Host) and i.ip_address == host_ip:
+                    return i
+            for i in session.dirty:
+                if isinstance(i, models.Host) and i.ip_address == host_ip:
+                    return i
             nonlocal hosts_with_only_arp
             for host_only_arp in hosts_with_only_arp:
                 if host_only_arp.ip_address == host_ip:
@@ -256,7 +262,7 @@ class NmapScanner:
             current_network = get_network_by_host(ipaddress.IPv4Address(ip_addr))
             if current_network is None:
                 continue
-            current_host = create_host_if_not_exist(ip_addr, current_user_id)
+            current_host = create_host_if_not_exist(ipaddress.IPv4Address(ip_addr), current_user_id)
             current_host.mac = mac_addr
             current_host.from_network = current_network
             try:

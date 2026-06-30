@@ -585,6 +585,11 @@ ProgrammingLanguage:
         alias: "yaml"
         is_default: true
         language_class: configs
+    - xml:
+        title: "XML"
+        alias: "xml"
+        is_default: true
+        language_class: noclass
 
 ProgrammingLanguageTheme:
     - _import_module: 'gen_list_themes'

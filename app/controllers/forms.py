@@ -464,7 +464,7 @@ class Select2Field(SelectField):
         if not self.validate_choice:
             return
         
-        if self.choices:
+        if self.choices or self.object_class is None:
             super().pre_validate(form)
             return
 
