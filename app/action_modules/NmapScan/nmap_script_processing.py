@@ -444,6 +444,9 @@ class NmapScriptHttpTitle(NmapScriptProcessor):
             service.additional_attributes = {"http": {}}
         if "http" not in service.additional_attributes:
             service.additional_attributes["http"] = {}
+        if "Site doesn't have a title" in script_element.get("output"):
+            service.additional_attributes["http"]["title"] = ""
+            return ""
         for elem in script_element.findall("elem"):
             if elem.get("key") == "title":
                 try:
@@ -454,6 +457,23 @@ class NmapScriptHttpTitle(NmapScriptProcessor):
                     logging.error(f"Unknown exception when decode http-title: {e}")
                 flag_modified(service, "additional_attributes")
                 return ""
+
+
+class NmapSciptHTTPWebDav(NmapScriptProcessor):
+    script_id = "http-webdav-scan"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {"http": {}}
+        if "http" not in service.additional_attributes:
+            service.additional_attributes["http"] = {}
+        for elem in script_element.findall("elem"):
+            if elem.get("key") == "Server Type":
+                service.additional_attributes["http"]["Server Type"] = elem.text
+            if elem.get("key") == "Server Date":
+                service.additional_attributes["http"]["Server Date"] = elem.text
+            elif elem.get("key") == "WebDAV type":
+                service.additional_attributes["http"]["WebDAV type"] = elem.text
+        return ""
 
 
 class NmapScriptHttpServerHeader(NmapScriptProcessor):
@@ -672,4 +692,65 @@ class NmapScriptTLSALPN(NmapScriptProcessor):
         for elem in script_element.findall("elem"):
             service.additional_attributes["tls"]["alpn_protos"].append(elem.text.strip())
         flag_modified(service, "additional_attributes")
+        return ""
+
+
+class NmapScriptMSSQLntlmInfo(NmapScriptProcessor):
+    script_id = "ms-sql-ntlm-info"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "ms-sql" not in service.additional_attributes:
+            service.additional_attributes["ms-sql"] = {}
+        table = next(script_element.findall("table"))
+        for elem in table.findall("elem"):
+            if elem.get('key') == 'NetBIOS_Computer_Name':
+                service.host.title = elem.text.strip()
+            elif elem.get('key') == 'DNS_Computer_Name':
+                dns = get_dns_record(elem.text, project=project, session=session)
+                if dns is None:
+                    dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
+                    session.add(dns)
+            elif elem.get('key') == 'NetBIOS_Domain_Name' or elem.get('key') == 'DNS_Domain_Name':
+                text = elem.text or ""
+                domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
+                                                                                models.Domain.title.ilike(text.strip().replace('\\x00', '').upper())))).first()
+                if domain and service.host.domain is None:
+                    service.host.domain = domain
+        return ""
+
+
+class NmapScriptMSSQLInfo(NmapScriptProcessor):
+    script_id = "ms-sql-info"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.additional_attributes is None:
+            service.additional_attributes = {}
+        if "ms-sql" not in service.additional_attributes:
+            service.additional_attributes["ms-sql"] = {}
+        for table in script_element.get("table"):
+            service.additional_attributes["ms-sql"][table.get("key")] = {}
+            for elem in table.findall("elem"):
+                if elem.key == "Instance name":
+                    service.additional_attributes["ms-sql"][table.get("key")]["Instance name"] = elem.text
+                elif elem.key == "TCP Port":
+                    try:
+                        service.additional_attributes["ms-sql"][table.get("key")]["TCP Port"] = int(elem.text)
+                    except ValueError, TypeError:
+                        pass
+                elif elem.key == "Named pipe":
+                    service.additional_attributes["ms-sql"][table.get("key")]["Named pipe"] = elem.text
+                elif elem.key == "Clustered":
+                    service.additional_attributes["ms-sql"][table.get("key")]["Clustered"] = elem.text == "true"
+            for version_table in table.findall("table"):
+                if version_table.get("key") == "Version":
+                    for elem in version_table.findall("elem"):
+                        if elem.get('key') == 'name':
+                            service.additional_attributes["ms-sql"][table.get("key")]["Version name"] = elem.text
+                        elif elem.get('key') == 'number':
+                            service.additional_attributes["ms-sql"][table.get("key")]["Version number"] = elem.text
+                        elif elem.get('key') == 'Product':
+                            service.additional_attributes["ms-sql"][table.get("key")]["Product"] = elem.text
+                        elif elem.get('key') == "Service pack level":
+                            service.additional_attributes["ms-sql"][table.get("key")]["Service pack level"] = elem.text
+        flag_modified(service, 'additional_attributes')
         return ""
