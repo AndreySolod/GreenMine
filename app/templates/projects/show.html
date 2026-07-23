@@ -107,3 +107,22 @@
   </div>
 </div>
 {% endblock %}
+
+{% block script %}
+{{ super() }}
+<script nonce="{{ csp_nonce() }}">
+  document.getElementById("click-to-export-button").addEventListener("click", function() {
+    fetch("{{ url_for('projects.export_current_project', project_id=project.id) }}").then(response => { 
+                            if (response.ok) { return response.json() } else {alert("{{ _('Something went wrong. Try to refresh the page') }}")} }).then(response => {
+                                if (response.status === 'success') {
+                                    $.notify("{{ _('The project export task has been successfully launched') }}", 'success', {
+                                      clickToHide: true,
+                                      authHide: true,
+                                      autoHideDelay: 5000,
+                                      globalPosition: 'top right'
+                                    })
+                                }
+                            })
+  })
+</script>
+{% endblock %}

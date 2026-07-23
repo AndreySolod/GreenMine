@@ -202,14 +202,33 @@ class NmapScanner:
             return host
         
         def create_service_if_not_exist(host: models.Host, portid: int, transport_proto: str) -> Optional[models.Service]:
-            nonlocal scanning_host
             transport_proto_id = session.execute(sa.select(models.ServiceTransportLevelProtocol.id).where(models.ServiceTransportLevelProtocol.string_slug == transport_proto)).first()
             if transport_proto_id is None:
                 return None
             service = session.scalars(sa.select(models.Service).where(sa.and_(models.Service.host_id == host.id, models.Service.port == portid, models.Service.transport_level_protocol_id == transport_proto_id[0]))).first()
-            if service is None:
-                service = models.Service(host=host, port=portid, transport_level_protocol_id=transport_proto_id[0])
+            if service is not None:
+                return service
+            for i in session.new:
+                if isinstance(i, models.Service) and i.host == host and i.port == portid and i.transport_level_protocol_id == transport_proto_id[0]:
+                    return i
+            for i in session.dirty:
+                if isinstance(i, models.Service) and i.host == host and i.port == portid and i.transport_level_protocol_id == transport_proto_id[0]:
+                    return i
+
+            service = models.Service(host=host, port=portid, transport_level_protocol_id=transport_proto_id[0])
             return service
+        
+        def get_dns_record(dnsname: str, dnstype: str, project: models.Project, session: Session) -> models.HostDnsName | None:
+            for i in session.new:
+                if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id ==project.id and i.dns_type == dnstype:
+                    return i
+            for i in session.dirty:
+                if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id == project.id and i.dns_type == dnstype:
+                    return i
+            dns = session.scalars(sa.select(models.HostDnsName).join(models.HostDnsName.to_host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project.id,
+                                                                                                                                            models.HostDnsName.title.ilike(dnsname),
+                                                                                                                                            models.HostDnsName.dns_type.ilike(dnstype)))).first()
+            return dns
         
         try:
             nmap_etree = ElementTree.fromstring(nmap_file_data)
@@ -345,7 +364,7 @@ class NmapScanner:
                 current_host.description += sanitizer.sanitize("\n" + added_comment)
             # processing hostnames
             for hostname in host.find('hostnames'):
-                try_dns = session.scalars(sa.select(models.HostDnsName).where(sa.and_(models.HostDnsName.title==hostname.get('name'), models.HostDnsName.dns_type==hostname.get('type'), models.HostDnsName.to_host_id == current_host.id))).first()
+                try_dns = get_dns_record(hostname.get('name'), hostname.get("type", "PTR"), project, session)
                 if try_dns is not None:
                     continue
                 dns = models.HostDnsName(title=sanitizer.escape(hostname.get('name'), models.HostDnsName.title.type.length), dns_type=sanitizer.escape(hostname.get('type'), models.HostDnsName.dns_type.type.length))

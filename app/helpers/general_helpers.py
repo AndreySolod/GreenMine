@@ -14,6 +14,7 @@ from typing import List, Optional, Tuple, Any, TypedDict, Callable, TypeVar, Req
 from flask_socketio import disconnect
 from flask_login import current_user
 from flask import url_for, abort, g, jsonify, Flask, Request, current_app
+from flask_socketio import emit
 from app.extensions.moment import moment
 from jinja2.filters import Markup
 from flask_wtf.csrf import generate_csrf
@@ -30,7 +31,7 @@ import os
 import os.path
 import importlib
 import logging
-from flask_babel import lazy_gettext as _l
+from flask_babel import lazy_gettext as _l, force_locale
 from pathlib import Path
 import ipaddress
 
@@ -906,7 +907,7 @@ def get_global_objects_with_permissions():
 
 
 def objects_export(obj_list: List[Any]) -> Dict:
-    if not isinstance(obj_list, list):
+    if not isinstance(obj_list, list) and not isinstance(obj_list, set):
         raise TypeError("obj_list must be a list")
     if len(obj_list) == 0:
         return {'string_slugs': [], 'other_instance_ids': []}
@@ -1052,9 +1053,9 @@ def import_objects_relations(obj_type: ObjType, obj_json: Dict[str, Dict], creat
                 setattr(current_object, rel, coerce([created_objects[related_object_class][k['id']] for k in object_data[rel]]))
 
 
-def project_export(project) -> dict:
+def project_export(project_id: int) -> dict:
     ''' Convert project to dict, that can being serialized to JSON '''
-    project: models.Project = project
+    project: models.Project = db.session.get(models.Project, project_id)
     simple_attrs = [i.key for i in inspect(models.Project).column_attrs if i.key not in ['string_slug', 'created_at', 'updated_at'] and not i.key.endswith('_id')]
     relationships = list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]
     results = {}
@@ -1069,7 +1070,7 @@ def project_export(project) -> dict:
     for attr in relationships:
         if getattr(project, attr) is None:
             results[attr] = None
-        elif not isinstance(getattr(project, attr), list):
+        elif not isinstance(getattr(project, attr), list) and not isinstance(getattr(project, attr), set):
             results[attr] = {'id': getattr(project, attr).id, 'string_slug': getattr(getattr(project, attr), 'string_slug', None)}
         elif attr == 'participants':
             results[attr] = [{'user_slug': i.user.string_slug, 'role_slug': i.role.string_slug} for i in project.participants]
@@ -1090,6 +1091,14 @@ def project_export(project) -> dict:
         reactions_list.extend(c.reactions)
     results['reactions'] = [{'id': r.id, 'is_positive': r.is_positive, 'created_by': r.created_by.string_slug, 'to_comment': r.to_comment_id} for r in reactions_list]
     return results
+
+
+def export_project_and_send_via_websocket(project, user_id: int) -> None:
+    try:
+        exported_project = project_export(project.id)
+    except Exception as e:
+        logging.exception(f"Exception when export project: {e}")
+    emit('exported project', {'project': f'Greenmine Project {project.title}.json', 'data': exported_project}, namespace='/user', to=str(user_id))
 
 
 def comments_import(comment_list: List[Dict[str, Any]], session: so.Session = db.session) -> Dict[int, Any]:
@@ -1184,3 +1193,39 @@ def project_import(project_json: dict, session: so.Session=db.session):
     for value in imported_objects.values():
         session.add_all(list(value.values()))
     return project
+
+
+def import_project_and_send_via_websocket(project_json: dict, to_user_id: models.User, locale: str="en"):
+    ''' Function that create new database session, add project via created session and emit signal to user that project added. '''
+    with so.sessionmaker(db.engine, autoflush=False)() as session:
+        with current_app.app_context():
+            with current_app.test_request_context():
+                try:
+                    with force_locale(locale):
+                        to_user = session.get(models.User, to_user_id)
+                        imported_project = project_import(project_json=project_json, session=session)
+                        if imported_project is not None:
+                            imported_project._no_new_task_added = True
+                            imported_project._import_project_only = True
+                            session.add(imported_project)
+                            print("committing session")
+                            session.commit()
+                            print("Added new notification")
+                            un = models.UserNotification(to_user=to_user, by_user=to_user, description=str(_l('Import project #%(project_id)s was completed successfully.')),
+                                                            technical_info={'project_id': imported_project.id}, notification_type=models.UserNotificationType.SUCCESS,
+                                                            link_to_object=url_for('projects.project_show', project_id=imported_project.id, _external=False))
+                            session.add(un)
+                            session.commit()
+                        else:
+                            un = models.UserNotification(to_user=to_user, by_user=to_user, description=str(_l('Errors when parsing file with project data to import')),
+                                                            technical_info={}, notification_type=models.UserNotificationType.WARN, link_to_object=url_for('projects.project_index', _external=False))
+                            session.add(un)
+                            session.commit()
+                except Exception as e:
+                    session.rollback()
+                    to_user = session.get(models.User, to_user_id)
+                    un = models.UserNotification(to_user=to_user, by_user=to_user, description=str(_l('Obtained error when import project')),
+                                                    technical_info={}, notification_type=models.UserNotificationType.ERROR, link_to_object=url_for('projects.project_index', _external=False))
+                    session.add(un)
+                    session.commit()
+                    logging.exception(f"Exception when import project: {e}")

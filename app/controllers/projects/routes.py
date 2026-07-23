@@ -1,9 +1,9 @@
 from app import db, logger, side_libraries
 from app.controllers.projects import bp
-from flask import request, redirect, url_for, render_template, flash, abort, send_file
+from flask import request, redirect, url_for, render_template, flash, abort, jsonify, current_app, g
 from flask_login import current_user
 import app.models as models
-from app.helpers.general_helpers import get_or_404, project_export, project_import
+from app.helpers.general_helpers import get_or_404, export_project_and_send_via_websocket, import_project_and_send_via_websocket
 from app.helpers.projects_helpers import get_default_environment, add_team_users_to_project
 from app.helpers.main_page_helpers import DefaultEnvironment as MainPageEnvironment
 from .forms import ProjectFormCreate, ProjectFormEdit, get_project_role_user_form, ImportProjectForm
@@ -11,7 +11,6 @@ from flask_babel import lazy_gettext as _l, pgettext
 from app.helpers.roles import project_role_can_make_action_or_abort
 import sqlalchemy as sa
 import json
-from io import BytesIO
 
 
 @bp.route("/index")
@@ -209,34 +208,16 @@ def project_diagrams(project_id: int):
 def export_current_project(project_id: int):
     project = db.get_or_404(models.Project, project_id)
     project_role_can_make_action_or_abort(current_user, project, 'export')
-    json_project_data_for_export = project_export(project)
-    json_data = json.dumps(json_project_data_for_export)
-    params = {'as_attachment': True, 'download_name': f'Greenmine Project {project.title}.json'}
-    buf = BytesIO()
-    buf.write(json_data.encode())
-    buf.seek(0)
     logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' request export project #{project.id}")
-    return send_file(buf, **params)
+    current_app.task_processor.add_task(export_project_and_send_via_websocket, project, current_user.id)
+    return jsonify({'status': 'success'})
 
 
 @bp.route('/import', methods=['POST'])
 def import_new_project():
     form = ImportProjectForm()
     if form.validate_on_submit():
-        created_project = project_import(form.import_file_data, db.session)
-        created_project._no_new_task_added = True
-        if created_project is not None:
-            try:
-                db.session.add(created_project)
-                db.session.commit()
-                logger.info(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the project #{created_project.id}")
-                flash(_l("Import was completed successfully"), 'success')
-            except Exception as e:
-                db.session.rollback()
-                logger.error(f"User '{getattr(current_user, 'login', 'Anonymous')}' imported the project #{created_project.id} but an error occurred: {e}")
-                flash(_l("Import was completed successfully but an error occurred when added the project to the database"), 'error')
-        else:
-            flash(_l("Errors when parsing file"), 'error')
+        current_app.task_processor.add_task(import_project_and_send_via_websocket, form.import_file_data, current_user.id, locale=g.locale)
     else:
-        flash(_l("Errors when parsing file"), 'error')
-    return redirect(url_for('projects.project_index'))
+        return jsonify({'status': 'Error', 'message': str(_l('Error when parsing file'))})
+    return jsonify({"status": "success"})

@@ -87,15 +87,16 @@ def get_issue_by_template(template_slug: str, project: models.Project, created_b
     return issue
 
 
-def get_dns_record(dnsname: str, project: models.Project, session: Session) -> models.HostDnsName | None:
+def get_dns_record(dnsname: str, dnstype: str, project: models.Project, session: Session) -> models.HostDnsName | None:
     for i in session.new:
-        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id ==project.id:
+        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id ==project.id and i.dns_type == dnstype:
             return i
     for i in session.dirty:
-        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id == project.id:
+        if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id == project.id and i.dns_type == dnstype:
             return i
     dns = session.scalars(sa.select(models.HostDnsName).join(models.HostDnsName.to_host).join(models.Host.from_network).where(sa.and_(models.Network.project_id == project.id,
-                                                                                                                                      models.HostDnsName.title.ilike(dnsname)))).first()
+                                                                                                                                    models.HostDnsName.title.ilike(dnsname),
+                                                                                                                                    models.HostDnsName.dns_type.ilike(dnstype)))).first()
     return dns
 
 
@@ -502,9 +503,11 @@ class NmapScriptSmbOsDiscovery(NmapScriptProcessor):
                     service.operation_system_family = operation_system
                     service.operation_system_gen = version
             elif elem.get('key') == 'server':
-                service.title = elem.text.strip().replace('\\x00', '')
+                text_data = elem.text
+                if text_data is not None:
+                    service.title = text_data.strip().replace('\\x00', '')
             elif elem.get('key') == 'fqdn':
-                dns = get_dns_record(elem.text, project=project, session=session)
+                dns = get_dns_record(elem.text, "A", project=project, session=session)
                 if dns is None:
                     dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service)
                     session.add(dns)
@@ -524,7 +527,7 @@ class NmapScriptRdpNtlmInfo(NmapScriptProcessor):
             if elem.get('key') == 'NetBIOS_Computer_Name':
                 service.host.title = elem.text.strip()
             elif elem.get('key') == 'DNS_Computer_Name':
-                dns = get_dns_record(elem.text, project=project, session=session)
+                dns = get_dns_record(elem.text, "A", project=project, session=session)
                 if dns is None:
                     dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
                     session.add(dns)
@@ -657,7 +660,7 @@ class NmapScriptSSLCert(NmapScriptProcessor):
                     elif elem.get("key") == "value" and elem.text.strip().startswith("DNS:"):
                         dns_name = elem.text[4::].strip()
                 if is_san_subject and "*" not in dns_name:
-                    dns = get_dns_record(dns_name, project=project, session=session)
+                    dns = get_dns_record(dns_name, "A", project=project, session=session)
                     if dns is None:
                         dns = models.HostDnsName(title=dns_name, dns_type='A', to_host=service)
                         session.add(dns)
@@ -707,7 +710,7 @@ class NmapScriptMSSQLntlmInfo(NmapScriptProcessor):
             if elem.get('key') == 'NetBIOS_Computer_Name':
                 service.host.title = elem.text.strip()
             elif elem.get('key') == 'DNS_Computer_Name':
-                dns = get_dns_record(elem.text, project=project, session=session)
+                dns = get_dns_record(elem.text, "A", project=project, session=session)
                 if dns is None:
                     dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
                     session.add(dns)
@@ -752,5 +755,16 @@ class NmapScriptMSSQLInfo(NmapScriptProcessor):
                             service.additional_attributes["ms-sql"][table.get("key")]["Product"] = elem.text
                         elif elem.get('key') == "Service pack level":
                             service.additional_attributes["ms-sql"][table.get("key")]["Service pack level"] = elem.text
+                        elif elem.get('key') == "Post-SP patches applied":
+                            service.additional_attributes["ms-sql"][table.get("key")]["Post-SP patches applied"] = elem.text == "true"
         flag_modified(service, 'additional_attributes')
+        return ""
+
+
+class NmapScriptFingerprintStrings(NmapScriptProcessor):
+    script_id = "fingerprint-strings"
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if service.description is None:
+            service.description = ""
+        service.description += "<h5>Fingerprint Strings</h5><p>" + script_element.get("output", "") + "</p>"
         return ""

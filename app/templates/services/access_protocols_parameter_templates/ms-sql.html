@@ -1,0 +1,36 @@
+<table class="table table-stripped table-hovered">
+    <tbody>
+        {% if 'ms-sql' in service.additional_attributes %}
+        <tr>
+            <th colspan="9">{{ _("Tables:") }}</th>
+        </tr>
+        {% for table in service.additional_attributes['ms-sql'].keys() %}
+        <tr>
+            <th colspan="9">{{ table }}</th>
+        </tr>
+        <tr>
+            <th>{{ _("Instance name") }}</th>
+            <th>{{ _("Version name") }}</th>
+            <th>{{ _("Version number") }}</th>
+            <th>{{ _("Product") }}</th>
+            <th>{{ _("Service pack level") }}</th>
+            <th>{{ _("Post-SP patches applied") }}</th>
+            <th>{{ _("TCP port") }}</th>
+            <th>{{ _("Named Pipe") }}</th>
+            <th>{{ _("Clustered") }}</th>
+        </tr>
+        <tr>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Instance name") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Version name") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Version number") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Product") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Service pack level") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Post-SP patches applied")|bool_to_pretty_string }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("TCP Port") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Named pipe") }}</td>
+            <td>{{ service.additional_attributes['ms-sql'][table].get("Clustered")|bool_to_pretty_string }}</td>
+        </tr>
+    </tbody>
+    {% endfor %}
+    {% endif %}
+</table>

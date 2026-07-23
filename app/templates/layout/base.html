@@ -164,6 +164,25 @@
 					})
 				});
 			});
+			userSocket.on("exported project", function(data) {
+				$.notify("{{ _('Obtained exported project data') }}", "info", {
+					clickToHide: true,
+					authHide: true,
+					autoHideDelay: 5000,
+					globalPosition: 'top right'
+				});
+				let parsed_data = JSON.stringify(data.data, null, 2);
+				const blob = new Blob([parsed_data], { type: 'application/json' });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.style.display = 'none';
+				a.href = url;
+				a.download = data["project"];
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+			});
 			document.getElementById('app-side-mini-toggler').addEventListener('click', function() {
 				userSocket.emit("toggle sidebar");
 			});

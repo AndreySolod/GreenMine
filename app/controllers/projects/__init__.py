@@ -55,7 +55,7 @@ def environment(obj, action, **kwargs):
             act3 = CurrentObjectAction(pgettext("todo", "Archive"), "fa-solid fa-box-archive", url_for('projects.project_archive', project_id=obj.id), confirm=_l("Are you sure you want to archive this project?"), btn_class="btn-light", method="DELETE")
             acts.append(act3)
         if project_role_can_make_action(current_user, obj, 'export'):
-            act4 = CurrentObjectAction(_l("Export"), "fa-solid fa-file-export", url_for('projects.export_current_project', project_id=obj.id))
+            act4 = CurrentObjectAction(_l("Export"), "fa-solid fa-file-export", "#", action_type="button_javascript", action_id="click-to-export-button")
             acts.append(act4)
         if project_role_can_make_action(current_user, obj, 'delete'):
             act2 = CurrentObjectAction(_l("Delete"), "fa-solid fa-trash", url_for('projects.project_delete', project_id=obj.id), confirm=_l("Are you sure you want to delete this project?"), btn_class='btn-danger', method='DELETE')

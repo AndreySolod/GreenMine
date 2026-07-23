@@ -45,7 +45,7 @@
                         </tr>
                         <tr>
                             <td>{{ models.Service.ssl.info["label"] }}:</td>
-                            <td>{{ _("Yes") if service.ssl else _("No") }}</td>
+                            <td>{{ service.ssl|bool_to_pretty_string }}</td>
                         </tr>
                     </tbody>
                 </table>

@@ -37,7 +37,13 @@ class TaskProcessor:
                 func = task['func']
                 args = task.get('args', ())
                 kwargs = task.get('kwargs', {})
-                logger.info(f"{self.name}: Start executed task {func.__name__} with args {args} and kwargs {kwargs}")
+                str_args = str(args)
+                if len(str_args) > 30:
+                    str_args = str_args[:30:] + "..."
+                str_kwargs = str(kwargs)
+                if len(str_kwargs) > 30:
+                    str_kwargs = str_kwargs[:30:] + "..."
+                logger.info(f"{self.name}: Start executed task {func.__name__} with args {str_args} and kwargs {str_kwargs}")
                 result = func(*args, **kwargs)
                 logger.info(f"{self.name}: Task executed successfully: {func.__name__}, result: {result}")
         except Exception as e:
