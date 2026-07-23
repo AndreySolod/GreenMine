@@ -22,7 +22,11 @@
             </tr>
             <tr>
               <td>{{ models.Project.leader.info['label'] }}:</td>
-              <td><a href="{{ url_for('users.user_show', user_id=project.leader.id) }}">{{ project.leader.title }}</a></td>
+              {% if project.leader_id != none %}
+              <td><a href='{{ url_for("users.user_show", user_id=project.leader_id) }}'>{{ project.leader.title }}</a></td>
+              {% else %}
+              <td><a href='#' class="text-muted">{{ _("(Missing)") }}</a></td>
+              {% endif %}
             <tr>
               <td>{{ models.Project.start_at.info["label"] }}:</td>
               <td>{{ moment(project.start_at).format('LL') }}</td>

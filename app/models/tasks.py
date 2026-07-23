@@ -303,8 +303,10 @@ def emit_task_edited_signal_via_websocket(mapper, connection, target):
 def create_new_notification_object_if_task_has_assigned_to_attribute(mapper, connection, target):
     ''' Create object UserNotification if created task has "assigned_to" attribute '''
     _l("A new task #%(task_id)s: «%(task_title)s» has been assigned to you")
+    if getattr(target.project, '_import_project_only'):
+        return
     new_target = db.session.get(ProjectTask, target.id)
-    if new_target.assigned_to and new_target.assigned_to.id != new_target.created_by_id:
+    if new_target and new_target.assigned_to and new_target.assigned_to.id != new_target.created_by_id:
         notif = {'to_user_id': new_target.assigned_to.id, 'description': 'A new task #%(task_id)s: «%(task_title)s» has been assigned to you'}
         notif["technical_info"] = {'task_id': new_target.id, 'task_title': new_target.title}
         notif['link_to_object'] = url_for('tasks.projecttask_show', projecttask_id=new_target.id)

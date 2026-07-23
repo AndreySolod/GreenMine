@@ -908,10 +908,10 @@ def get_global_objects_with_permissions():
 
 def objects_export(obj_list: List[Any]) -> Dict:
     if not isinstance(obj_list, list) and not isinstance(obj_list, set):
-        raise TypeError("obj_list must be a list")
+        raise TypeError("obj_list must be a list or set!")
     if len(obj_list) == 0:
         return {'string_slugs': [], 'other_instance_ids': []}
-    obj = obj_list[0]
+    obj = list(obj_list)[0]
     column_attrs = [i.key for i in inspect(obj.__class__).column_attrs if i.key not in ['string_slug', 'created_at', 'updated_at'] and not i.key.endswith('_id')]
     relationships = [i for i in inspect(obj.__class__).relationships]
     data = {'string_slugs': [], 'other_instance_ids': []}
@@ -1050,7 +1050,12 @@ def import_objects_relations(obj_type: ObjType, obj_json: Dict[str, Dict], creat
                 setattr(current_object, rel, created_objects[related_object_class][object_data[rel]['id']])
             elif isinstance(object_data[rel], list):
                 coerce = set if isinstance(getattr(current_object, rel), sacollections.InstrumentedSet) else list
-                setattr(current_object, rel, coerce([created_objects[related_object_class][k['id']] for k in object_data[rel]]))
+                if rel == 'comments':
+                    for k in object_data[rel]:
+                        if k['id'] in created_objects[related_object_class]:
+                            current_object.comments.append(created_objects[related_object_class][k['id']])
+                else:
+                    setattr(current_object, rel, coerce([created_objects[related_object_class][k['id']] for k in object_data[rel]]))
 
 
 def project_export(project_id: int) -> dict:
@@ -1079,7 +1084,7 @@ def project_export(project_id: int) -> dict:
             # comments and reactions
             if len(getattr(project, attr)) == 0:
                 continue
-            object_example = getattr(project, attr)[0]
+            object_example = list(getattr(project, attr))[0]
             if not hasattr(object_example, 'comments'):
                 continue
             for obj in getattr(project, attr):
@@ -1155,6 +1160,8 @@ def project_import(project_json: dict, session: so.Session=db.session):
     # Set relationships for project
     imported_objects: Dict[ObjType, Dict[int, ObjType]] = {models.Project: {project_json['id']: project}}
     for rel in list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]:
+        if rel == 'participants':
+            continue
         if project_json.get(rel) is not None and project_json.get(rel) not in ['', []]:
             if rel == 'hosts':
                 related_object_class = models.Host
@@ -1208,9 +1215,7 @@ def import_project_and_send_via_websocket(project_json: dict, to_user_id: models
                             imported_project._no_new_task_added = True
                             imported_project._import_project_only = True
                             session.add(imported_project)
-                            print("committing session")
                             session.commit()
-                            print("Added new notification")
                             un = models.UserNotification(to_user=to_user, by_user=to_user, description=str(_l('Import project #%(project_id)s was completed successfully.')),
                                                             technical_info={'project_id': imported_project.id}, notification_type=models.UserNotificationType.SUCCESS,
                                                             link_to_object=url_for('projects.project_show', project_id=imported_project.id, _external=False))
