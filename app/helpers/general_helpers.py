@@ -1176,8 +1176,8 @@ def project_import(project_json: dict, session: so.Session=db.session):
             elif project_json[rel]['string_slug'] is not None:
                 setattr(project, rel, session.scalars(sa.select(related_object_class).where(related_object_class.string_slug == project_json[rel]['string_slug'])).first())
     # Comments and reactions
-    imported_objects[models.Comment] = comments_import(project_json['comments'])
-    imported_objects[models.Reaction] = reactions_import(project_json['reactions'])
+    imported_objects[models.Comment] = comments_import(project_json['comments'], session=session)
+    imported_objects[models.Reaction] = reactions_import(project_json['reactions'], session=session)
     import_comment_and_reaction_relations(project_json['comments'], imported_objects[models.Comment], project_json['reactions'], imported_objects[models.Reaction])
     for rel in list(map(lambda x: x.key, inspect(models.Project).relationships)) + ["hosts", "services"]:
         if project_json.get(rel) is not None and (rel in ['hosts', 'services'] or inspect(models.Project).relationships[rel].uselist):
