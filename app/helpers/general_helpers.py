@@ -1187,8 +1187,8 @@ def project_import(project_json: dict, session: so.Session=db.session):
                 related_object_class = models.Service
             elif rel == 'participants':
                 for participant in project_json[rel]:
-                    user = db.session.scalars(sa.select(models.User).where(models.User.string_slug == participant['user_slug'])).first()
-                    role = db.session.scalars(sa.select(models.ProjectRole).where(models.ProjectRole.string_slug == participant['role_slug'])).first()
+                    user = session.scalars(sa.select(models.User).where(models.User.string_slug == participant['user_slug'])).first()
+                    role = session.scalars(sa.select(models.ProjectRole).where(models.ProjectRole.string_slug == participant['role_slug'])).first()
                     if user is not None and role is not None:
                         p = models.UserRoleHasProject(project=project, user=user, role=role)
                         session.add(p)
