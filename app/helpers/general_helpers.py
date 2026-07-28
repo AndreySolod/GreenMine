@@ -1202,7 +1202,7 @@ def project_import(project_json: dict, session: so.Session=db.session):
     return project
 
 
-def import_project_and_send_via_websocket(project_json: dict, to_user_id: models.User, locale: str="en"):
+def import_project_and_send_via_websocket(project_json: dict, to_user_id: int, locale: str="en"):
     ''' Function that create new database session, add project via created session and emit signal to user that project added. '''
     with so.sessionmaker(db.engine, autoflush=False)() as session:
         with current_app.app_context():
