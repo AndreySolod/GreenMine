@@ -88,6 +88,8 @@ def get_issue_by_template(template_slug: str, project: models.Project, created_b
 
 
 def get_dns_record(dnsname: str, dnstype: str, project: models.Project, session: Session) -> models.HostDnsName | None:
+    if dnsname is None:
+        return None
     for i in session.new:
         if isinstance(i, models.HostDnsName) and i.title == dnsname.strip() and i.to_host.from_network.project_id ==project.id and i.dns_type == dnstype:
             return i
@@ -507,10 +509,11 @@ class NmapScriptSmbOsDiscovery(NmapScriptProcessor):
                 if text_data is not None:
                     service.title = text_data.strip().replace('\\x00', '')
             elif elem.get('key') == 'fqdn':
-                dns = get_dns_record(elem.text, "A", project=project, session=session)
-                if dns is None:
-                    dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service)
-                    session.add(dns)
+                if elem.text is not None:
+                    dns = get_dns_record(elem.text, "A", project=project, session=session)
+                    if dns is None:
+                        dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service)
+                        session.add(dns)
             elif elem.get('key') == 'workgroup' or elem.get('key') == 'domain_dns':
                 text = elem.text or ""
                 domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
@@ -527,10 +530,11 @@ class NmapScriptRdpNtlmInfo(NmapScriptProcessor):
             if elem.get('key') == 'NetBIOS_Computer_Name':
                 service.host.title = elem.text.strip()
             elif elem.get('key') == 'DNS_Computer_Name':
-                dns = get_dns_record(elem.text, "A", project=project, session=session)
-                if dns is None:
-                    dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
-                    session.add(dns)
+                if elem.text is not None:
+                    dns = get_dns_record(elem.text, "A", project=project, session=session)
+                    if dns is None:
+                        dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
+                        session.add(dns)
             elif elem.get('key') == 'NetBIOS_Domain_Name' or elem.get('key') == 'DNS_Domain_Name':
                 text = elem.text or ""
                 domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
@@ -705,15 +709,19 @@ class NmapScriptMSSQLntlmInfo(NmapScriptProcessor):
             service.additional_attributes = {}
         if "ms-sql" not in service.additional_attributes:
             service.additional_attributes["ms-sql"] = {}
-        table = next(script_element.findall("table"))
+        table = script_element.findall("table")
+        if len(table) == 0:
+            return ""
+        table = table[0]
         for elem in table.findall("elem"):
             if elem.get('key') == 'NetBIOS_Computer_Name':
                 service.host.title = elem.text.strip()
             elif elem.get('key') == 'DNS_Computer_Name':
-                dns = get_dns_record(elem.text, "A", project=project, session=session)
-                if dns is None:
-                    dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
-                    session.add(dns)
+                if elem.text is not None:
+                    dns = get_dns_record(elem.text, "A", project=project, session=session)
+                    if dns is None:
+                        dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
+                        session.add(dns)
             elif elem.get('key') == 'NetBIOS_Domain_Name' or elem.get('key') == 'DNS_Domain_Name':
                 text = elem.text or ""
                 domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
@@ -726,10 +734,14 @@ class NmapScriptMSSQLntlmInfo(NmapScriptProcessor):
 class NmapScriptMSSQLInfo(NmapScriptProcessor):
     script_id = "ms-sql-info"
     def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        if isinstance(service, models.Host):
+            return ""
         if service.additional_attributes is None:
             service.additional_attributes = {}
         if "ms-sql" not in service.additional_attributes:
             service.additional_attributes["ms-sql"] = {}
+        if script_element.get("table") is None:
+            return ""
         for table in script_element.get("table"):
             service.additional_attributes["ms-sql"][table.get("key")] = {}
             for elem in table.findall("elem"):
@@ -767,4 +779,25 @@ class NmapScriptFingerprintStrings(NmapScriptProcessor):
         if service.description is None:
             service.description = ""
         service.description += "<h5>Fingerprint Strings</h5><p>" + script_element.get("output", "") + "</p>"
+        return ""
+
+
+class NmapScriptHttpNtlmInfo(NmapScriptProcessor):
+    script_id = 'http-ntlm-info'
+    def __call__(self, script_element: etreeElement, session: Session, project: models.Project, service: models.Service, current_user_id: int, locale: str="en"):
+        for elem in script_element.findall('elem'):
+            if elem.get('key') == 'NetBIOS_Computer_Name':
+                service.host.title = elem.text.strip()
+            elif elem.get('key') == 'DNS_Computer_Name':
+                if elem.text is not None:
+                    dns = get_dns_record(elem.text, "A", project=project, session=session)
+                    if dns is None:
+                        dns = models.HostDnsName(title=elem.text.strip(), dns_type='A', to_host=service.host)
+                        session.add(dns)
+            elif elem.get('key') == 'NetBIOS_Domain_Name' or elem.get('key') == 'DNS_Domain_Name':
+                text = elem.text or ""
+                domain = session.scalars(sa.select(models.Domain).where(sa.and_(models.Domain.project_id == project.id,
+                                                                                models.Domain.title.ilike(text.strip().replace('\\x00', '').upper())))).first()
+                if domain and service.host.domain is None:
+                    service.host.domain = domain
         return ""

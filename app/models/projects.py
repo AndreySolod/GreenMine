@@ -41,7 +41,7 @@ class Project(db.Model):
     file_directories: so.Mapped["FileDirectory"] = so.relationship(lazy="select", back_populates="project", info={'label': _l("File Directories")}, cascade="all, delete-orphan") # type: ignore
     participants: so.Mapped[List["UserRoleHasProject"]] = so.relationship(back_populates="project", lazy='select', cascade='all, delete-orphan', order_by="UserRoleHasProject.role_id", info={'label': _l("Participants")})
     additional_parameters: so.Mapped[List["ProjectAdditionalFieldData"]] = so.relationship(lazy='select', info={'label': _l("Additional fields")}, back_populates="project", cascade="all,delete-orphan") # type: ignore
-    domains: so.Mapped[Set["Domain"]] = so.relationship(lazy='select', back_populates="project", info={'label': _l("Domains")}) # type: ignore
+    domains: so.Mapped[Set["Domain"]] = so.relationship(lazy='select', cascade='all, delete-orphan', back_populates="project", info={'label': _l("Domains")}) # type: ignore
 
     @validates("end_at")
     def validates_end_at(self, key, end_at):

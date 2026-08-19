@@ -282,7 +282,7 @@ class NetworkMultipleAddForm(FlaskForm):
     internal_ip_position = wtforms.IntegerField(_l("Internal IP position:"), validators=[validators.Optional()])
     connect_cmd_position = wtforms.IntegerField(_l("Connect command position:"), validators=[validators.Optional()])
     asn_position = wtforms.IntegerField(_l("ASN position:"), validators=[validators.Optional()])
-    separator = wtforms.StringField(_l("Separator:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))], default=",")
+    separator = wtforms.StringField(_l("Separator:"), validators=[validators.InputRequired(message=_l("This field is mandatory!")), validators.Length(max=1, message=_l('This field must not exceed %(length)s characters in length', length=1))], default=",")
     network_data = wtforms.TextAreaField(_l("Data:"), validators=[validators.InputRequired(message=_l("This field is mandatory!"))], render_kw={"rows": "30"})
     submit = wtforms.SubmitField(_l("Add"))
 

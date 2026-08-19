@@ -18,6 +18,7 @@ from .issues import IssueHasService
 import ipaddress
 from flask_babel import lazy_gettext as _l, pgettext
 from flask import current_app, has_app_context
+from flask_login import current_user
 import importlib
 from pathlib import Path
 import os
@@ -606,7 +607,8 @@ class Service(HasComment, db.Model, HasHistory):
         with open(template_path / (self.access_protocol.string_slug + ".html"), "r") as f, open(template_path / "tls.html", 'r') as f2:
             template = current_app.jinja_env.from_string(f.read() + f2.read(),
                                                         {"service": self, 'models': importlib.import_module('app.models'),
-                                                         'roles': importlib.import_module('app.helpers.roles')})
+                                                         'roles': importlib.import_module('app.helpers.roles'),
+                                                         'current_user': current_user})
         return sanitizer.markup(template.render())
     
     def add_additional_attributes_script(self):
